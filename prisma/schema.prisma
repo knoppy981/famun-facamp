@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  email       String   @unique
+  name        String
+  cpf         Int      @unique
+  rg          Int      @unique
+  phoneNumber String
+  dateOfBirth String
+  password    String
+  role        Role     @default(DELEGADO)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Team        Teams    @relation(fields: [teamsId], references: [id])
+  teamsId     String   @db.ObjectId
+}
+
+model Teams {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String @unique
+  User User[]
+}
+
+enum Role {
+  DELEGADO
+  PROFESSOR
+  ADMIN
+}
