@@ -19,8 +19,8 @@ model User {
   role        Role     @default(DELEGADO)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  team        Teams    @relation(fields: [teamsId], references: [id])
-  teamsId     String   @db.ObjectId
+  team        Teams    @relation(fields: [teamId], references: [id])
+  teamId     String   @db.ObjectId
 }
 
 model Teams {
