@@ -2,23 +2,29 @@
   "private": true,
   "sideEffects": false,
   "scripts": {
-    "build": "remix build",
+    "build": "run-s build:*",
+    "build:remix": "remix build",
+    "build:server": "esbuild --plataform=node ./server.js --oudir=build --bundle",
     "dev": "remix build && run-p \"dev:*\"",
     "dev:node": "cross-env NODE_ENV=development nodemon ./server.js --watch ./server.js",
     "dev:remix": "remix watch",
     "start": "cross-env NODE_ENV=production node ./server.js"
+
   },
   "dependencies": {
+    "@prisma/client": "^4.2.1",
     "@remix-run/express": "^1.6.8",
     "@remix-run/node": "^1.6.8",
     "@remix-run/react": "^1.6.8",
+    "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "cross-env": "^7.0.3",
     "express": "^4.18.1",
     "morgan": "^1.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "styled-components": "^5.3.5"
+    "styled-components": "^5.3.5",
+    "tiny-invariant": "^1.2.0"
   },
   "devDependencies": {
     "@remix-run/dev": "^1.6.8",
@@ -29,5 +35,8 @@
   },
   "engines": {
     "node": ">=14"
+  },
+  "prisma": {
+    "seed": "node --require tsconfig-paths/register prisma/script.js"
   }
 }

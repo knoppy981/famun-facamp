@@ -19,18 +19,19 @@ model User {
   role        Role     @default(DELEGADO)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  Team        Teams    @relation(fields: [teamsId], references: [id])
+  team        Teams    @relation(fields: [teamsId], references: [id])
   teamsId     String   @db.ObjectId
 }
 
 model Teams {
-  id   String @id @default(auto()) @map("_id") @db.ObjectId
-  name String @unique
-  User User[]
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String @unique
+  Users User[]
 }
 
 enum Role {
   DELEGADO
+  DELEGADO_CHEFE
   PROFESSOR
   ADMIN
 }
