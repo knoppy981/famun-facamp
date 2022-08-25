@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, Link } from "@remix-run/react";
 
 import { requireUserId } from "~/session.server";
 
@@ -23,6 +23,9 @@ export default function Index() {
           <p>
             FAMUN asdasd
           </p>
+          <Link to="/logout">
+            Logout
+          </Link>
         </li>
       </ul>
     </div>
