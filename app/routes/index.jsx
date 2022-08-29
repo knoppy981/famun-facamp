@@ -1,7 +1,11 @@
+import { useState, useEffect } from "react";
 import { json } from "@remix-run/node";
 import { useLoaderData, Link } from "@remix-run/react";
 
 import { requireUserId } from "~/session.server";
+import { useUser } from "~/utils";
+
+import * as S from '~/styled-components'
 
 export const loader = async ({ request, params }) => {
 	const userId = await requireUserId(request);
@@ -11,23 +15,51 @@ export const loader = async ({ request, params }) => {
 	return json({ userId });
 };
 
-export default function Index() {
+const Index = () => {
 
 	const data = useLoaderData()
+	const user = useUser()
 
-  return (
-    <div>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <p>
-            FAMUN asdasd
-          </p>
-          <Link to="/logout">
-            Logout
-          </Link>
-        </li>
-      </ul>
-    </div>
-  );
+
+	return (
+		<S.Wrapper>
+			<S.Container>
+				<S.Title>
+					Famun 2023
+				</S.Title>
+				<S.Subtitle>
+					Bem-vindo, <br /> {user.name}
+				</S.Subtitle>
+				<S.List>
+
+					<S.ListItem>
+						<S.ItemLink
+							to="/payments"
+						>
+							Pagamentos
+						</S.ItemLink>
+					</S.ListItem>
+
+					<S.ListItem>
+						<S.ItemLink
+							to="/payments"
+						>
+							Dados de Inscricão
+						</S.ItemLink>
+					</S.ListItem>
+
+					<S.ListItem>
+						<S.ItemLink
+							to="/logout"
+						>
+							Logout
+						</S.ItemLink>
+					</S.ListItem>
+
+				</S.List>
+			</S.Container>
+		</S.Wrapper>
+	);
 }
+
+export default Index

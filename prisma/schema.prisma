@@ -8,19 +8,19 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  email       String   @unique
-  name        String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  name      String
   // cpf         Int      @unique
   // rg          Int      @unique
   // phoneNumber String
   // dateOfBirth String
-  password    String
-  role        Role     @default(DELEGADO)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  team        Teams?    @relation(fields: [teamId], references: [id])
-  teamId     String?   @db.ObjectId
+  password  String
+  role      Role     @default(DELEGADO)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  team      Teams?   @relation(fields: [teamId], references: [id])
+  teamId    String?  @db.ObjectId
 }
 
 model Teams {
