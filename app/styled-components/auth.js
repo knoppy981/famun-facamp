@@ -22,8 +22,12 @@ export const Logo = styled.div`
 	letter-spacing: 1px;
 	color: #005fcc;
 
-	@media screen and (max-width: 800px) {
+	@media screen and (max-width: 1100px) {
 		font-size: 60px;
+	}
+
+	@media screen and (max-width: 400px) {
+		font-size: 40px;
 	}
 	
 `
@@ -33,6 +37,14 @@ export const FormContainer = styled.div`
   flex-direction: column;
   width: 500px;
 	grid-gap: 25px;
+
+	@media screen and (max-width: 1400px) {
+		width: 60%;
+	}
+
+	@media screen and (max-width: 1100px) {
+		width: 80%;
+	}
 
 	@media screen and (max-width: 800px) {
     width: 100%;
@@ -56,6 +68,10 @@ export const InputWrapper = styled.div`
 `
 export const Label = styled.label`
 	font-size: 14px;
+
+	@media screen and (max-width: 300px) {
+    font-size: 10px;
+	}
 `
 export const InputContainer = styled.div`
 
@@ -76,9 +92,29 @@ export const Input = styled.input`
     
   }
 
+	@media screen and (max-width: 1400px) {
+    height: 40px;
+		font-size: 25px;
+	}
+
+	@media screen and (max-width: 1100px) {
+    height: 60px;
+		font-size: 22px;
+	}
+
 	@media screen and (max-width: 800px) {
     height: 60px;
 		font-size: 22px;
+	}
+
+	@media screen and (max-width: 400px) {
+    height: 50px;
+		font-size: 22px;
+	}
+
+	@media screen and (max-width: 300px) {
+    height: 40px;
+		font-size: 18px;
 	}
 `
 export const Error = styled.div`
@@ -92,10 +128,18 @@ export const SubmitButton = styled.button`
 	border-radius: 5px;
 	width: 30%;
 	height: 35px;
+	margin-top: 50px;
 	cursor: pointer;
 
-	@media screen and (max-width: 800px) {
+	@media screen and (max-width: 1400px) {
 		height: 60px;
+		width: 50%;
+		font-size: 20px;
+		margin-top: 30px;
+	}
+
+	@media screen and (max-width: 600px) {
+		height: 50px;
 		width: 50%;
 		font-size: 20px;
 		margin-top: 30px;
@@ -105,10 +149,18 @@ export const LinkContainer = styled.div`
 	margin-top: 40px;
 	font-size: 14px;
 
-	@media screen and (max-width: 800px) {
+	@media screen and (max-width: 1400px) {
 		font-size: 20px;
+	}
+	@media screen and (max-width: 400px) {
+		font-size: 18px;
+		margin-top: 20px;
+	}
+	@media screen and (max-width: 300px) {
+		font-size: 13px;
 	}
 `
 export const FormLink = styled(Link)`
-
+	text-decoration: underline;
+	color: blue;
 `
