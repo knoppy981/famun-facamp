@@ -7,7 +7,9 @@ import { verifyLogin } from "~/models/user.server";
 import { safeRedirect, validateEmail } from "~/utils";
 
 import * as S from '~/styled-components/auth'
-import img from '~/images/Famun.jpeg'
+import * as N from '~/styled-components/navbar'
+
+let img = "https://famun.com.br/wp-content/uploads/2022/04/icone_titulo.png"
 
 export const loader = async ({ request }) => {
 	const userId = await getUserId(request);
@@ -52,7 +54,7 @@ export const action = async ({ request }) => {
 	return createUserSession({
 		request,
 		userId: user.id,
-		remember: /* remember === "on" ? true :  */false,
+		remember: false,
 		redirectTo,
 	});
 }
@@ -80,95 +82,122 @@ const Login = () => {
 	}, [actionData]);
 
 	return (
-		<S.Wrapper>
-			<S.FormContainer>
-				<S.Logo
-					style={{
-						/* backgroundImage: `url(${img})`, */
-					}}
-				>
-					Famun 2023
-				</S.Logo>
+		<>
+			<N.Nav>
+				<N.NavContainer>
 
-				<S.AuthForm
-					method="post"
-					noValidate
-				>
-					<S.InputWrapper>
-						<S.Label
-							htmlFor="email"
+					<N.NavLogo>
+						FAMUN 2023
+					</N.NavLogo>
+
+					<N.UserNavMenu>
+						<N.NavItem
+							to="/dashboard/help"
 						>
-							Email
-						</S.Label>
-
-						<S.InputContainer>
-							<S.Input
-								ref={emailRef}
-								id="email"
-								required
-								autoFocus={true}
-								name="email"
-								type="email"
-								autoComplete="email"
-								aria-invalid={actionData?.errors?.email ? true : undefined}
-								aria-describedby="email-error"
-							/>
-
-							{actionData?.errors?.email && (
-								<S.Error id="email-error">
-									{actionData.errors.email}
-								</S.Error>
-							)}
-						</S.InputContainer>
-					</S.InputWrapper>
-
-					<S.InputWrapper>
-						<S.Label
-							htmlFor="password"
+							Ajuda
+						</N.NavItem>
+						<N.NavItem
+							to="language"
 						>
-							Password
-						</S.Label>
+							<N.UserButton>
+								PT - BR
+							</N.UserButton>
+						</N.NavItem>
+					</N.UserNavMenu>
 
-						<S.InputContainer>
-							<S.Input
-								ref={passwordRef}
-								id="password"
-								required
-								name="password"
-								type="password"
-								autoComplete="password"
-								aria-invalid={actionData?.errors?.password ? true : undefined}
-								aria-describedby="password-error"
-							/>
+				</N.NavContainer>
+			</N.Nav>
+			<S.Wrapper>
+				<S.FormContainer>
 
-							{actionData?.errors?.password && (
-								<S.Error id="password-error">
-									{actionData.errors.password}
-								</S.Error>
-							)}
-						</S.InputContainer>
-					</S.InputWrapper>
+					<S.Title>
+						Bem-vindo
+					</S.Title>
 
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-
-					<S.SubmitButton
-						type="submit"
+					<S.AuthForm
+						method="post"
+						noValidate
 					>
-						Login
-					</S.SubmitButton>
+						<S.InputWrapper>
+							<S.Label
+								htmlFor="email"
+							>
+								Email
+							</S.Label>
 
-					<S.LinkContainer>
-						Dont't have an account? {" "}
-						<S.FormLink
-							to="/signup"
-						>
-							Sign up
-						</S.FormLink>
-					</S.LinkContainer>
-				</S.AuthForm>
+							<S.InputContainer>
+								<S.Input
+									ref={emailRef}
+									id="email"
+									required
+									autoFocus={true}
+									name="email"
+									type="email"
+									autoComplete="email"
+									aria-invalid={actionData?.errors?.email ? true : undefined}
+									aria-describedby="email-error"
+								/>
 
-			</S.FormContainer>
-		</S.Wrapper>
+								{actionData?.errors?.email && (
+									<S.Error id="email-error">
+										{actionData.errors.email}
+									</S.Error>
+								)}
+							</S.InputContainer>
+						</S.InputWrapper>
+
+						<S.InputWrapper>
+							<S.Label
+								htmlFor="password"
+							>
+								Password
+							</S.Label>
+
+							<S.InputContainer>
+								<S.Input
+									ref={passwordRef}
+									id="password"
+									required
+									name="password"
+									type="password"
+									autoComplete="password"
+									aria-invalid={actionData?.errors?.password ? true : undefined}
+									aria-describedby="password-error"
+								/>
+
+								{actionData?.errors?.password && (
+									<S.Error id="password-error">
+										{actionData.errors.password}
+									</S.Error>
+								)}
+							</S.InputContainer>
+						</S.InputWrapper>
+
+						<input type="hidden" name="redirectTo" value={redirectTo} />
+
+						<S.ButtonContainer>
+							<div></div>
+							<S.SubmitButton
+								type="submit"
+							>
+								Login
+							</S.SubmitButton>
+						</S.ButtonContainer>
+
+
+						<S.LinkContainer>
+							Dont't have an account? {" "}
+							<S.FormLink
+								to="/signup"
+							>
+								Sign up
+							</S.FormLink>
+						</S.LinkContainer>
+					</S.AuthForm>
+
+				</S.FormContainer>
+			</S.Wrapper>
+		</>
 	)
 }
 

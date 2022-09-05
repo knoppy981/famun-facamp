@@ -11,15 +11,15 @@ const DEFAULT_REDIRECT = "/";
  * @param {string} defaultRedirect The redirect to use if the to is unsafe.
  */
 export function safeRedirect(to, defaultRedirect = DEFAULT_REDIRECT) {
-  if (!to || typeof to !== "string") {
-    return defaultRedirect;
-  }
+	if (!to || typeof to !== "string") {
+		return defaultRedirect;
+	}
 
-  if (!to.startsWith("/") || to.startsWith("//")) {
-    return defaultRedirect;
-  }
+	if (!to.startsWith("/") || to.startsWith("//")) {
+		return defaultRedirect;
+	}
 
-  return to;
+	return to;
 }
 
 /**
@@ -29,37 +29,63 @@ export function safeRedirect(to, defaultRedirect = DEFAULT_REDIRECT) {
  * @returns {JSON|undefined} The router data or undefined if not found
  */
 export function useMatchesData(id) {
-  const matchingRoutes = useMatches();
-  const route = useMemo(
-    () => matchingRoutes.find((route) => route.id === id),
-    [matchingRoutes, id]
-  );
+	const matchingRoutes = useMatches();
+	const route = useMemo(
+		() => matchingRoutes.find((route) => route.id === id),
+		[matchingRoutes, id]
+	);
 
-  return route?.data;
+	return route?.data;
 }
 
 function isUser(user) {
-  return user && typeof user === "object" && typeof user.email === "string";
+	return user && typeof user === "object" && typeof user.email === "string";
 }
 
 export function useOptionalUser() {
-  const data = useMatchesData("root");
-  if (!data || !isUser(data.user)) {
-    return undefined;
-  }
-  return data.user;
+	const data = useMatchesData("root");
+	if (!data || !isUser(data.user)) {
+		return undefined;
+	}
+	return data.user;
 }
 
 export function useUser() {
-  const maybeUser = useOptionalUser();
-  if (!maybeUser) {
-    throw new Error(
-      "No user found in root loader, but user is required by useUser. If user is optional, try useOptionalUser instead."
-    );
-  }
-  return maybeUser;
+	const maybeUser = useOptionalUser();
+	if (!maybeUser) {
+		throw new Error(
+			"No user found in root loader, but user is required by useUser. If user is optional, try useOptionalUser instead."
+		);
+	}
+	return maybeUser;
 }
 
 export function validateEmail(email) {
-  return typeof email === "string" && email.length > 3 && email.includes("@");
+	return typeof email === "string" && email.length > 3 && email.includes("@");
+}
+
+export function validatePhoneNumber(phoneNumber) {
+	phoneNumber = phoneNumber.replace(/\D/g, '');
+
+	if (!(phoneNumber.length >= 10 && phoneNumber.length <= 11)) return false;
+
+	if (phoneNumber.length == 11 && parseInt(phoneNumber.substring(2, 3)) != 9) return false;
+
+	for (var n = 0; n < 10; n++) {
+		if (phoneNumber == new Array(11).join(n) || phoneNumber == new Array(12).join(n)) return false;
+	}
+
+	var codigosDDD =
+		[11, 12, 13, 14, 15, 16, 17, 18, 19,
+			21, 22, 24, 27, 28, 31, 32, 33, 34,
+			35, 37, 38, 41, 42, 43, 44, 45, 46,
+			47, 48, 49, 51, 53, 54, 55, 61, 62,
+			64, 63, 65, 66, 67, 68, 69, 71, 73,
+			74, 75, 77, 79, 81, 82, 83, 84, 85,
+			86, 87, 88, 89, 91, 92, 93, 94, 95,
+			96, 97, 98, 99];
+
+	if (codigosDDD.indexOf(parseInt(phoneNumber.substring(0, 2))) == -1) return false;
+
+	return true;
 }

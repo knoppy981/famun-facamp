@@ -71,10 +71,40 @@ export async function createUserSession({
   return redirect(redirectTo, {
     headers: {
       "Set-Cookie": await sessionStorage.commitSession(session, {
-        maxAge: remember ? 60 * 60 * 24 * 7 : undefined,
+        maxAge: undefined,
       }),
     },
   });
+}
+
+export async function createSignupSession({
+	request,
+  data,
+	redirectTo
+}) {
+  const session = await getSession(request);
+	data.map((item) => {
+		session.set(item.key, item.value);
+	})
+	return redirect(redirectTo, {
+    headers: {
+      "Set-Cookie": await sessionStorage.commitSession(session, {
+        maxAge: undefined,
+      }),
+    },
+  });
+}
+
+export async function getSignupSession({
+	request,
+	keys
+}) {
+	const session = await getSession(request);
+	let items = []
+	keys.map((item) => {
+		items.push(session.get(item));
+	})
+  return items;
 }
 
 export async function logout(request) {

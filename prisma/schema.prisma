@@ -8,25 +8,41 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  name      String
-  // cpf         Int      @unique
-  // rg          Int      @unique
-  // phoneNumber String
-  // dateOfBirth String
-  password  String
-  role      Role     @default(DELEGADO)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  team      Teams?   @relation(fields: [teamId], references: [id])
-  teamId    String?  @db.ObjectId
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  email           String           @unique
+  name            String
+  password        Password?
+  cpf             Int              @unique
+  rg              Int              @unique
+  phoneNumber     String
+  dateOfBirth     String
+  country         String
+  role            Role             @default(DELEGADO)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  delegation      Delegation?      @relation(fields: [delegationId], references: [id])
+  delegationId    String?          @db.ObjectId
+  userPreferences UserPreferences?
 }
 
-model Teams {
+model Delegation {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
   name  String @unique
-  Users User[]
+  users User[]
+}
+
+model UserPreferences {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  emailUpdates Boolean
+  user         User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId       String  @unique @db.ObjectId
+}
+
+model Password {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  hash   String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
 }
 
 enum Role {

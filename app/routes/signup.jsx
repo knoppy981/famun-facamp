@@ -1,81 +1,19 @@
 import { json, redirect } from "@remix-run/node";
-import { useActionData, useSearchParams } from "@remix-run/react";
+import { useSearchParams, useLoaderData, Outlet, NavLink, useMatches } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 
-import { getUserId, createUserSession } from "~/session.server";
-import { createUser, getUserByEmail } from "~/models/user.server";
-import { safeRedirect, validateEmail } from "~/utils";
+import { getUserId } from "~/session.server";
 
 import * as S from '~/styled-components/auth'
+import * as N from '~/styled-components/navbar'
+
+let img = "https://famun.com.br/wp-content/uploads/2022/04/icone_titulo.png"
 
 export const loader = async ({ request }) => {
 	const userId = await getUserId(request)
 	if (userId) return redirect("/")
 	return json({})
 }
-
-export const action = async ({ request }) => {
-	const formData = await request.formData()
-	const name = formData.get("name")
-	const email = formData.get("email")
-	const password = formData.get("password")
-	const confirmPassword = formData.get("confirmPassword")
-
-	const redirectTo = safeRedirect(formData.get("redirectTo"), "/")
-
-	if (typeof name !== "string" || name.length === 0) {
-		return json(
-			{ errors: { name: "Name is required" } },
-			{ status: 400 }
-		);
-	}
-
-	if (!validateEmail(email)) {
-		return json(
-			{ errors: { email: "Email is invalid" } },
-			{ status: 400 }
-		);
-	}
-
-	if (typeof password !== "string" || password.length === 0) {
-		return json(
-			{ errors: { password: "Password is required" } },
-			{ status: 400 }
-		);
-	}
-
-	if (password.length < 8) {
-		return json(
-			{ errors: { password: "Password is too short" } },
-			{ status: 400 }
-		);
-	}
-
-	if (password !== confirmPassword) {
-		return json(
-			{ errors: { confirmPassword: "Passwords are not matching" } },
-			{ status: 400 }
-		);
-	}
-
-	const existingUser = await getUserByEmail(email);
-
-	if (existingUser) {
-		return json(
-			{ errors: { email: "A user already exists with this email" } },
-			{ status: 400 }
-		);
-	}
-
-	const user = await createUser(email, password, name);
-
-	return createUserSession({
-		request,
-		userId: user.id,
-		remember: false,
-		redirectTo,
-	});
-};
 
 export const meta = () => {
 	return {
@@ -85,165 +23,66 @@ export const meta = () => {
 
 const Signin = () => {
 
-	const [searchParams] = useSearchParams();
-	const redirectTo = searchParams.get("redirectTo") ?? undefined;
-	const actionData = useActionData();
+	const data = useLoaderData()
 
-	const nameRef = useRef(null);
-	const emailRef = useRef(null);
-	const passwordRef = useRef(null);
-	const confirmPasswordRef = useRef(null);
+	const matches = useMatches();
+	const [step, setStep] = useState(1)
 
 	useEffect(() => {
-		if (actionData?.errors?.name) {
-			nameRef.current?.focus();
-		} else if (actionData?.errors?.email) {
-			emailRef.current?.focus();
-		} else if (actionData?.errors?.password) {
-			passwordRef.current?.focus();
-		} else if (actionData?.errors?.confirmPassword) {
-			confirmPasswordRef.current?.focus();
-		}
-
-	}, [actionData]);
+		setStep(matches.at(-1).id.at(-1))
+	}, [matches]);
 
 	return (
-		<S.Wrapper>
-			<S.FormContainer>
-				<S.Logo
-					style={{
-						/* backgroundImage: `url(${img})`, */
-					}}
-				>
-					Famun 2023
-				</S.Logo>
+		<>
+			<N.Nav>
+				<N.NavContainer>
 
-				<S.AuthForm
-					method="post"
-					noValidate
-				>
-					<S.InputWrapper>
-						<S.Label
-							htmlFor="name"
+					<N.NavLogo>
+						FAMUN 2023
+					</N.NavLogo>
+
+					<N.UserNavMenu>
+						<N.NavItem
+							to="/dashboard/help"
 						>
-							Nome
-						</S.Label>
-
-						<S.InputContainer>
-							<S.Input
-								ref={nameRef}
-								id="name"
-								required
-								autoFocus={true}
-								name="name"
-								type="name"
-								autoComplete="name"
-								aria-invalid={actionData?.errors?.name ? true : undefined}
-								aria-describedby="name-error"
-							/>
-
-							{actionData?.errors?.name && (
-								<S.Error id="name-error">
-									{actionData.errors.name}
-								</S.Error>
-							)}
-						</S.InputContainer>
-					</S.InputWrapper>
-
-
-					<S.InputWrapper>
-						<S.Label
-							htmlFor="email"
+							Ajuda
+						</N.NavItem>
+						<N.NavItem
+							to={`/language`}
 						>
-							Email
-						</S.Label>
+							<N.UserButton>
+								PT - BR
+							</N.UserButton>
+						</N.NavItem>
+					</N.UserNavMenu>
 
-						<S.InputContainer>
-							<S.Input
-								ref={emailRef}
-								id="email"
-								required
-								name="email"
-								type="email"
-								autoComplete="email"
-								aria-invalid={actionData?.errors?.email ? true : undefined}
-								aria-describedby="email-error"
-							/>
+				</N.NavContainer>
+			</N.Nav>
+			<S.Wrapper>
+				<S.FormContainer>
 
-							{actionData?.errors?.email && (
-								<S.Error id="email-error">
-									{actionData.errors.email}
-								</S.Error>
-							)}
-						</S.InputContainer>
-					</S.InputWrapper>
-
-					<S.DividedInputWrapper
-						gridSpace={"1fr 1fr"}
-					>
-						<S.InputWrapper>
-							<S.Label
-								htmlFor="password"
+					<S.StepsContainer>
+						{[{
+							link: "/signup/step1"
+						}, {
+							link: "/signup/step2"
+						}, {
+							link: "/signup/step3"
+						}, {
+							link: "/signup/step4"
+						}].map((item, index) => (
+							<S.Step
+								key={index}
+								active={
+									step == index + 1 ? 'black' : step < index + 1 ? 'gray' : 'green'
+								}
 							>
-								Senha
-							</S.Label>
+								Passo {" "} {index + 1}
+							</S.Step>
+						))}
+					</S.StepsContainer>
 
-							<S.InputContainer>
-								<S.Input
-									ref={passwordRef}
-									id="password"
-									required
-									name="password"
-									type="password"
-									autoComplete="password"
-									aria-invalid={actionData?.errors?.password ? true : undefined}
-									aria-describedby="password-error"
-								/>
-
-								{actionData?.errors?.password && (
-									<S.Error id="password-error">
-										{actionData.errors.password}
-									</S.Error>
-								)}
-							</S.InputContainer>
-						</S.InputWrapper>
-
-						<S.InputWrapper>
-							<S.Label
-								htmlFor="confirmPassword"
-							>
-								Confirme a Senha
-							</S.Label>
-
-							<S.InputContainer>
-								<S.Input
-									ref={confirmPasswordRef}
-									id="confirmPassword"
-									required
-									name="confirmPassword"
-									type="password"
-									autoComplete="password"
-									aria-invalid={actionData?.errors?.password ? true : undefined}
-									aria-describedby="confirmPassword-error"
-								/>
-
-								{actionData?.errors?.confirmPassword && (
-									<S.Error id="confirmPassword-error">
-										{actionData.errors.confirmPassword}
-									</S.Error>
-								)}
-							</S.InputContainer>
-						</S.InputWrapper>
-
-					</S.DividedInputWrapper>
-
-					<input type="hidden" name="redirectTo" value={redirectTo} />
-
-					<S.SubmitButton
-						type="submit"
-					>
-						Sign Up
-					</S.SubmitButton>
+					<Outlet />
 
 					<S.LinkContainer>
 						Already have an account? {" "}
@@ -253,10 +92,11 @@ const Signin = () => {
 							Log in
 						</S.FormLink>
 					</S.LinkContainer>
-				</S.AuthForm>
 
-			</S.FormContainer>
-		</S.Wrapper>
+				</S.FormContainer>
+			</S.Wrapper>
+		</>
+
 	)
 }
 
