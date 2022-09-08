@@ -2,17 +2,17 @@ import { json, redirect } from "@remix-run/node";
 import { useSearchParams, useLoaderData, Outlet, NavLink, useMatches } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 
-import { getUserId } from "~/session.server";
+import { getUserId, getSignupSession } from "~/session.server";
 
 import * as S from '~/styled-components/auth'
 import * as N from '~/styled-components/navbar'
 
-let img = "https://famun.com.br/wp-content/uploads/2022/04/icone_titulo.png"
-
 export const loader = async ({ request }) => {
 	const userId = await getUserId(request)
 	if (userId) return redirect("/")
-	return json({})
+	const keys = ["step"]
+	const step = await getSignupSession({ request, keys })
+	return json({step})
 }
 
 export const meta = () => {
@@ -24,13 +24,6 @@ export const meta = () => {
 const Signin = () => {
 
 	const data = useLoaderData()
-
-	const matches = useMatches();
-	const [step, setStep] = useState(1)
-
-	useEffect(() => {
-		setStep(matches.at(-1).id.at(-1))
-	}, [matches]);
 
 	return (
 		<>
@@ -68,17 +61,22 @@ const Signin = () => {
 							link: "/signup/step2"
 						}, {
 							link: "/signup/step3"
-						}, {
-							link: "/signup/step4"
 						}].map((item, index) => (
-							<S.Step
+							<NavLink
 								key={index}
-								active={
-									step == index + 1 ? 'black' : step < index + 1 ? 'gray' : 'green'
-								}
+								to={item.link}
+								onClick={e => e.preventDefault()}
 							>
-								Passo {" "} {index + 1}
-							</S.Step>
+								{({ isActive }) => (
+									<S.Step
+										active={
+											isActive ? 'black' : data.step > index + 1 ? 'green' : 'gray'
+										}
+									>
+										Passo {" "} {index + 1}
+									</S.Step>
+								)}
+							</NavLink>
 						))}
 					</S.StepsContainer>
 

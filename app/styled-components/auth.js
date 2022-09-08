@@ -2,10 +2,7 @@ import styled from 'styled-components'
 import { Link, Form } from '@remix-run/react'
 
 export const Wrapper = styled.div`
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
+	margin: 100px auto;
 	width: 60vw;
 	display: grid;
 	justify-items: center;
@@ -36,8 +33,7 @@ export const FormContainer = styled.div`
 	}
 `
 export const Title = styled.div`
-	height: 50px;
-	width: 60%;
+	width: 80%;
 	display: flex;
 	justify-content: center;
 	font-weight: 500;
@@ -46,7 +42,7 @@ export const Title = styled.div`
 `
 export const StepsContainer = styled.div`
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: repeat(3, 1fr);
 	height: 50px;
 	width: 60%;
 	grid-gap: 15px;
@@ -68,7 +64,7 @@ export const AuthForm = styled(Form)`
   flex-direction: column;
   align-items: center;
 	width: 80%;
-	min-height: 30vh;
+	min-height: 300px;
 	grid-gap: 15px;
 `
 export const DividedInputWrapper = styled.div`
@@ -121,6 +117,25 @@ export const Error = styled.div`
 	font-size: 12px;
 	position: absolute;
 	top: 100%;
+`
+export const DelegationButtonsContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 45px;
+	margin: 50px 0;
+`
+export const DelegationButton = styled.button`
+  height: 80px;
+  width: 100%;
+  border: 2px solid #183567;
+  border-radius: 5px;
+  padding: 15px;
+  transition :0.4s all ease;
+
+  &:hover {
+    color: #2B5EB6;
+    border: 2px solid #2B5EB6;
+  }
 `
 export const ButtonContainer = styled.div`
 	margin-top: 10px;

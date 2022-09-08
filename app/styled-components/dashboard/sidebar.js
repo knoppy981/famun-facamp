@@ -4,7 +4,7 @@ import { NavLink } from '@remix-run/react'
 
 export const Sidebar = styled.div`
 	height: 100%;
-	width: 270px;
+	min-width: 270px;
 	border-right: 1px solid #fff;
 	background: #2B5EB6;
 `

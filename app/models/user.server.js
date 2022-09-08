@@ -10,30 +10,23 @@ export async function getUserByEmail(email) {
 	return prisma.user.findUnique({ where: { email } });
 }
 
-export async function getDelegationByUserId(id) {
-	const data = await prisma.user.findUnique({
-		where: {
-			id: id,
-		},
-		select: {
-			delegation: true
-		}
-	})
-	return data.delegation
-}
-
-export async function createUser(email, password, name) {
-	const hashedPassword = await bcrypt.hash(password, 10);
+export async function createUser(info) {
+	const hashedPassword = await bcrypt.hash(info.password, 10);
 
 	return prisma.user.create({
 		data: {
-			email,
-			name,
+			email: info.email,
+			name: info.email,
 			password: {
 				create: {
 					hash: hashedPassword,
 				},
 			},
+			cpf: info.cpf,
+			rg: info.rg,
+			country: info.country,
+			phoneNumber: info.phoneNumber,
+			dateOfBirth: info.dateOfBirth,
 		},
 	});
 }

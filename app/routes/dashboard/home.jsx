@@ -1,14 +1,14 @@
 import React from 'react'
-
 import { Outlet, useLoaderData, NavLink } from '@remix-run/react';
 import { json } from '@remix-run/node';
+
 import { requireUserId } from '~/session.server';
-import { getDelegationByUserId } from '~/models/user.server';
+import { getDelegationByUserId } from '~/models/delegation.server';
 
 import * as S from '~/styled-components/dashboard/sidebar'
 import { BsPeople, BsCheck2Square, BsCurrencyDollar } from "react-icons/bs";
 
-export const loader = async ({ request, params }) => {
+export const loader = async ({ request }) => {
 	const userId = await requireUserId(request)
 	const delegation = await getDelegationByUserId(userId)
 
@@ -16,61 +16,61 @@ export const loader = async ({ request, params }) => {
 		throw new Response("User not found", { status: 404 });
 	}
 
-	const sidebarData = [
-		{
-			title: "Delegação",
-			to: `/dashboard/home/${delegation.id}`,
-			subItems: [
-				{
-					title: "Delegados",
-					to: `/dashboard/home/${delegation.id}`
-				}, {
-					title: "Configuraçao da Delegação",
-					to: `/dashboard/home/${delegation.id}/settings`
-				}
-			]
-		},
-		{
-			title: "Dados da Inscrição",
-			to: "/dashboard/home/subscription",
-			subItems: [
-				{
-					title: "Editar Dados",
-					to: "/dashboard/home/subscription"
-				}, {
-					title: "Documentos",
-					to: "/dashboard/home/documents"
-				}
-			]
-		},
-		{
-			title: "Pagamento",
-			to: "/dashboard/home/payment",
-			subItems: [
-				{
-					title: "Delegação",
-					to: "/dashboard/home/payment"
-				}, {
-					title: "Indivídual",
-					to: "/dashboard/home/payment"
-				}
-			]
-		}
-	]
-
-	return json({ sidebarData, delegation });
+	return json({ delegation });
 };
 
 const menu = () => {
 
-	const data = useLoaderData()
-	const sidebarData = data.sidebarData
-	const icons = [<BsPeople />, <BsCheck2Square />, <BsCurrencyDollar />]
-	const style = {
-		color: "#E2D650",
-		borderLeft: "3px solid #E2D650",
-		background: "rgba(226, 214, 80, .4)",
+	const sidebarDataFunction = (delegation) => {
+		return [
+			{
+				title: "Delegação",
+				to: `/dashboard/home/${delegation.id}`,
+				icon: <BsPeople />,
+				subItems: [
+					{
+						title: "Delegados",
+						to: `/dashboard/home/${delegation.id}`
+					}, {
+						title: "Configuraçao da Delegação",
+						to: `/dashboard/home/${delegation.id}/settings`
+					}
+				]
+			},
+			{
+				title: "Dados da Inscrição",
+				to: "/dashboard/home/subscription",
+				icon: <BsCheck2Square />,
+				subItems: [
+					{
+						title: "Editar Dados",
+						to: "/dashboard/home/subscription"
+					}, {
+						title: "Documentos",
+						to: "/dashboard/home/documents"
+					}
+				]
+			},
+			{
+				title: "Pagamento",
+				to: "/dashboard/home/payment",
+				icon: <BsCurrencyDollar />,
+				subItems: [
+					{
+						title: "Delegação",
+						to: "/dashboard/home/payment"
+					}, {
+						title: "Indivídual",
+						to: "/dashboard/home/payment"
+					}
+				]
+			}
+		]
+
 	}
+
+	const { delegation } = useLoaderData()
+	const sidebarData = sidebarDataFunction(delegation)
 
 	return (
 		<>
@@ -95,7 +95,7 @@ const menu = () => {
 								}
 							>
 								<S.Item>
-									{icons[index]} {" "} {item.title}
+									{item.icon} {" "} {item.title}
 								</S.Item>
 							</NavLink>
 							{item.subItems.map((item, index) => (
@@ -111,7 +111,7 @@ const menu = () => {
 				</S.ItemsWrapper>
 			</S.Sidebar>
 
-			<Outlet />
+			<Outlet context={{delegation}}/>
 
 		</>
 	)

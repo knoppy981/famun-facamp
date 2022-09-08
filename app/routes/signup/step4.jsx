@@ -13,7 +13,7 @@ export const loader = async ({ request }) => {
 	const keys = ["step", "userName", "userEmail", "userPassword"]
 	const data = await getSignupSession({ request, keys })
 
-	if (url.pathname.at(-1) > data[0] + 1) {
+	if (url.pathname.at(-1) > data[0]) {
 		return redirect(url.pathname.replace(/.$/, data[0])) 
 	}
 	return json({data})

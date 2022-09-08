@@ -92,7 +92,7 @@ export const action = async ({ request }) => {
 export const loader = async ({ request }) => {
 	const keys = ["step", "userName", "userEmail", "userPassword"]
 	const data = await getSignupSession({ request, keys })
-	return json({data})
+	return json({ data })
 }
 
 const Step1 = () => {
@@ -129,6 +129,7 @@ const Step1 = () => {
 			method="post"
 			noValidate
 		>
+			
 			<S.InputWrapper>
 				<S.Label
 					htmlFor="name"
