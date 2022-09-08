@@ -1,33 +1,59 @@
-import { useEffect, useState, useRef } from 'react'
-
 import { json, redirect } from "@remix-run/node"
-import { useLoaderData } from '@remix-run/react'
+import { useLoaderData } from "@remix-run/react";
 
+import { createUser } from "~/models/user.server";
 import { getSignupSession } from '~/session.server'
+import { validateEmail, safeRedirect } from "~/utils";
 
-import * as S from '~/styled-components/auth'
+export const action = async({ request }) => {
+
+	const keys = ["step", "userName", "userEmail", "userPassword", "cpf", "rg", "phoneNumber", "country", "birthDate"]
+	const data = await getSignupSession({ request, keys })
+
+	data.map((item, index) => {
+		if (item !== "" || undefined || null) {
+			return json({ errors: { item: `${item} is invalid` } }, { status: 400 })
+		}
+	})
+
+	return redirect()
+}
 
 export const loader = async ({ request }) => {
 	const url = new URL(request.url);
-	
-	const keys = ["step", "userName", "userEmail", "userPassword"]
-	const data = await getSignupSession({ request, keys })
 
-	if (url.pathname.at(-1) > data[0]) {
-		return redirect(url.pathname.replace(/.$/, data[0])) 
+	const keys = ["step"]
+	const step = await getSignupSession({ request, keys })
+
+	const redirectIf = url.pathname.replace(/.$/, step)
+	const goBackLink = url.pathname.replace(/.$/, url.pathname.at(-1) - 1)
+
+	if (url.pathname.at(-1) > step) {
+		return redirect(redirectIf)
 	}
-	return json({data})
+	return json({ goBackLink })
 }
 
-const step4 = () => {
+const finalStep = () => {
 
-	const data = useLoaderData()
+	const loaderData = useLoaderData()
 
-	return (
+	return(
 		<S.AuthForm>
-			Step 4
+			<S.ButtonContainer>
+				<NavLink
+					to={loaderData.goBackLink}
+				>
+					Voltar
+				</NavLink>
+				<S.SubmitButton
+					type="submit"
+				>
+					Continuar
+				</S.SubmitButton>
+			</S.ButtonContainer>
 		</S.AuthForm>
 	)
 }
 
-export default step4
+export default finalStep

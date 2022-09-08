@@ -11,22 +11,22 @@ export async function getUserByEmail(email) {
 }
 
 export async function createUser(info) {
-	const hashedPassword = await bcrypt.hash(info.password, 10);
+	const hashedPassword = await bcrypt.hash(info.userPassword, 10);
 
 	return prisma.user.create({
 		data: {
-			email: info.email,
-			name: info.email,
+			email: info.userEmail,
+			name: info.userName,
 			password: {
 				create: {
 					hash: hashedPassword,
 				},
 			},
-			cpf: info.cpf,
-			rg: info.rg,
+			cpf: parseInt(info.cpf),
+			rg: parseInt(info.rg),
 			country: info.country,
 			phoneNumber: info.phoneNumber,
-			dateOfBirth: info.dateOfBirth,
+			dateOfBirth: info.birthDate,
 		},
 	});
 }

@@ -160,7 +160,7 @@ const step2 = () => {
 							required
 							autoFocus={true}
 							name="cpf"
-							type="cpf"
+							type="number"
 							autoComplete="cpf"
 							aria-invalid={actionData?.errors?.cpf ? true : undefined}
 							aria-describedby="cpf-error"
@@ -188,7 +188,7 @@ const step2 = () => {
 							id="rg"
 							required
 							name="rg"
-							type="rg"
+							type="number"
 							autoComplete="rg"
 							aria-invalid={actionData?.errors?.rg ? true : undefined}
 							aria-describedby="rg-error"

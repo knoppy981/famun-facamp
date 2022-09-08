@@ -25,15 +25,15 @@ const menu = () => {
 		return [
 			{
 				title: "Delegação",
-				to: `/dashboard/home/${delegation.id}`,
+				to: `/dashboard/home/${delegation?.id}`,
 				icon: <BsPeople />,
 				subItems: [
 					{
 						title: "Delegados",
-						to: `/dashboard/home/${delegation.id}`
+						to: `/dashboard/home/${delegation?.id}`
 					}, {
 						title: "Configuraçao da Delegação",
-						to: `/dashboard/home/${delegation.id}/settings`
+						to: `/dashboard/home/${delegation?.id}/settings`
 					}
 				]
 			},
