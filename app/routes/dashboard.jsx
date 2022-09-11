@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { json } from "@remix-run/node";
-import { useLoaderData, Link, Outlet } from "@remix-run/react";
+import { useLoaderData, Link, Outlet, NavLink } from "@remix-run/react";
 
 import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
 
 import * as S from '~/styled-components/dashboard'
 import * as N from '~/styled-components/navbar'
+import * as D from '~/styled-components/dashboard/dropdownmenu'
 
 export const loader = async ({ request, params }) => {
 	const userId = await requireUserId(request);
@@ -18,6 +19,7 @@ export const loader = async ({ request, params }) => {
 
 const Dashboard = () => {
 
+	const [menuOpen, setMenuOpen] = useState(false)
 	const data = useLoaderData()
 	const user = useUser()
 
@@ -54,13 +56,36 @@ const Dashboard = () => {
 						>
 							Ajuda
 						</N.NavItem>
-						<N.NavItem
-							to={`/dashboard/${data.userId}`}
+						<div
+							style={{ height: "100%" }}
+							onMouseEnter={() => setMenuOpen(true)}
+							onMouseLeave={() => setMenuOpen(false)}
 						>
-							<N.UserButton>
-								{user.name}
-							</N.UserButton>
-						</N.NavItem>
+							<N.NavItem
+								to={`/dashboard/${data.userId}`}
+							>
+								<N.UserButton>
+									{user.name}
+								</N.UserButton>
+							</N.NavItem>
+
+							{menuOpen &&
+								<D.Container>
+									<D.Item>
+										Perfil
+									</D.Item>
+									<D.Item>
+										Configuração
+									</D.Item>
+									<NavLink
+										to="/logout"
+									>
+										<D.Item>
+											Logout
+										</D.Item>
+									</NavLink>
+								</D.Container>}
+						</div>
 					</N.UserNavMenu>
 
 				</N.NavContainer>

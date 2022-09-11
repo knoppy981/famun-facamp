@@ -5,13 +5,12 @@ import { useLoaderData, useActionData, NavLink, useSearchParams } from '@remix-r
 import { safeRedirect } from '~/utils'
 
 import { createUser } from '~/models/user.server'
-import { getSignupSession, createSignupSession, createUserSession } from '~/session.server'
+import { getSignupSession, logout, createUserSession } from '~/session.server'
 
 import * as S from '~/styled-components/auth'
 
 export const action = async ({ request }) => {
-
-	const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
+	const redirectTo = safeRedirect("/");
 	const keys = ["step", "userName", "userEmail", "userPassword", "cpf", "rg", "phoneNumber", "country", "birthDate"]
 	const info = await getSignupSession({ request, keys })
 
@@ -23,7 +22,7 @@ export const action = async ({ request }) => {
 
 	const user = await createUser(signupData)
 
-	console.log(user)
+	logout(request)
 
 	return createUserSession({
 		request,
@@ -51,21 +50,12 @@ export const loader = async ({ request }) => {
 const step3 = () => {
 
 	const loaderData = useLoaderData()
-	const actionData = useActionData()
-	const redirectTo = searchParams.get("redirectTo") ?? undefined;
-
-	useEffect(() => {
-		console.log(actionData?.signupData)
-	}, [actionData])
 
 	return (
 		<S.AuthForm
 			method="post"
 			noValidate
 		>
-
-			<input type="hidden" name="redirectTo" value={redirectTo} />
-
 			<S.ButtonContainer>
 				<NavLink
 					to={loaderData.goBackLink}

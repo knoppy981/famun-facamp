@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { getUserId, createUserSession } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
 import { safeRedirect, validateEmail } from "~/utils";
+import { BsGlobe2 } from "react-icons/bs";
 
 import * as S from '~/styled-components/auth'
 import * as N from '~/styled-components/navbar'
@@ -35,18 +36,11 @@ export const action = async ({ request }) => {
 		);
 	}
 
-	if (password.length < 8) {
-		return json(
-			{ errors: { password: "Password must have at least 8 characters" } },
-			{ status: 400 }
-		);
-	}
-
 	const user = await verifyLogin(email, password);
 
 	if (!user) {
 		return json(
-			{ errors: { email: "Invalid email or password" } },
+			{ errors: { password: "Invalid email or password" } },
 			{ status: 400 }
 		);
 	}
@@ -54,6 +48,7 @@ export const action = async ({ request }) => {
 	return createUserSession({
 		request,
 		userId: user.id,
+		delegationId: user.delegationId,
 		remember: false,
 		redirectTo,
 	});
@@ -100,6 +95,7 @@ const Login = () => {
 							to="language"
 						>
 							<N.UserButton>
+								<BsGlobe2 />
 								PT - BR
 							</N.UserButton>
 						</N.NavItem>

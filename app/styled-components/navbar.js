@@ -43,6 +43,7 @@ export const NavItem = styled(NavLink)`
 	align-items: center;
 `
 export const UserNavMenu = styled.ul`
+	height: 100%;
 	justify-self: flex-end;
 	display: flex;
 	align-items: center;
@@ -53,11 +54,17 @@ export const UserNavMenu = styled.ul`
 	margin-right: 0%;
 `
 export const UserButton = styled.div`
-	height: 50%;
 	border-radius: 50px;
+	height: 60%;
 	padding: 20px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	border: 1px solid #EBEBEB;
+
+	svg{
+		height: 20px;
+		width: 20px;
+		margin-right: 15px;
+	}
 `

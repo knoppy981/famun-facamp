@@ -28,7 +28,8 @@ async function seed() {
 			phoneNumber: "19971547424",
 			delegation: {
 				create: {
-					name: delegationName
+					name: delegationName,
+					code: "A1B2C3"
 				}
 			}
 		},

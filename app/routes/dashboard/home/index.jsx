@@ -16,7 +16,6 @@ export const loader = async () => {
 const index = () => {
 
   const user = useUser()
-  const { delegation } = useOutletContext()
 
   return (
     <S.Wrapper>

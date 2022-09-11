@@ -1,15 +1,25 @@
 import { prisma } from "~/db.server";
 
-export async function getDelegationByUserId(id) {
-	const data = await prisma.user.findUnique({
+export async function getDelegationById(id) {
+	return prisma.delegation.findUnique({
 		where: {
 			id: id,
 		},
-		select: {
-			delegation: true
+		include: {
+			users: true,
 		}
 	})
-	return data.delegation
+}
+
+export async function findDelegationCode(code) {
+	return prisma.delegation.findFirst({
+		where: {
+			code: code
+		},
+		select: {
+			id: true
+		}
+	})
 }
 
 export async function joinDelegation(userId, delegationId) {
@@ -25,4 +35,19 @@ export async function joinDelegation(userId, delegationId) {
 			}
 		}
 	})
+}
+
+export async function updateDelegationCode(delegationId, code) {
+	return prisma.delegation.update({
+		where: {
+			id: delegationId,
+		},
+		data: {
+			code: code
+		}
+	})
+}
+
+export async function createDelegation() {
+	
 }

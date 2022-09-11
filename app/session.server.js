@@ -2,6 +2,7 @@ import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import invariant from 'tiny-invariant'
 
 import { getUserById } from "~/models/user.server";
+import { getDelegationById } from "~/models/delegation.server"
 
 invariant(process.env.SESSION_SECRET, 'session-secret must be set!!')
 
@@ -17,6 +18,7 @@ export const sessionStorage = createCookieSessionStorage({
 }) 
 
 const USER_SESSION_KEY = "userId";
+const DELEGATION_SESSION_KEY = "delegationId"
 
 export async function getSession(request) {
   const cookie = request.headers.get("Cookie");
@@ -60,14 +62,53 @@ export async function requireUser(request) {
   throw await logout(request);
 }
 
+export async function getDelegationId(request) {
+  const session = await getSession(request);
+  const delegationId = session.get(DELEGATION_SESSION_KEY);
+  return delegationId;
+}
+
+export async function getDelegation(request) {
+  const delegationId = await getDelegationId(request);
+  if (delegationId === undefined) return null;
+
+  const delegation = await getDelegationById(delegationId);
+  if (delegation) return delegation;
+
+  throw await logout(request);
+}
+
+export async function requireDelegationId(
+  request,
+  redirectTo = new URL(request.url).pathname
+) {
+  const delegationId = await getDelegationId(request);
+  if (!delegationId) {
+    const searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
+    throw redirect(`/dashboard/home/delegation/join?${searchParams}`);
+  }
+  return delegationId
+}
+
+export async function requireDelegation(request) {
+  const delegationId = await requireDelegationId(request);
+
+  const delegation = await getDelegationById(delegationId);
+  if (delegation) return delegation;
+
+  throw await logout(delegation);
+}
+
 export async function createUserSession({
   request,
   userId,
+  delegationId,
   remember,
   redirectTo,
 }) {
-  const session = await getSession(request);
-  session.set(USER_SESSION_KEY, userId);
+  const session = await getSession(request)
+  if (userId) session.set(USER_SESSION_KEY, userId)
+  if (delegationId) session.set(DELEGATION_SESSION_KEY, delegationId)
   return redirect(redirectTo, {
     headers: {
       "Set-Cookie": await sessionStorage.commitSession(session, {

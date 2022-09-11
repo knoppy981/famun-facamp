@@ -26,8 +26,9 @@ model User {
 }
 
 model Delegation {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  name  String @unique
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  name  String  @unique
+  code  String? @unique
   users User[]
 }
 
