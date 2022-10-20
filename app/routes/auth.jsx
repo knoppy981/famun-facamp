@@ -1,52 +1,54 @@
 import { useState, useEffect } from "react";
-import { json } from "@remix-run/node";
-import { useLoaderData, Link, Outlet, NavLink } from "@remix-run/react";
+import { json, redirect } from "@remix-run/node";
+import { useLoaderData, Link, Outlet, NavLink, useSearchParams } from "@remix-run/react";
 
-import { requireUserId } from "~/session.server";
+import { getUserId } from "~/session.server";
 import { useOptionalUser } from "~/utils";
 
-import * as S from '~/styled-components/dashboard'
+import * as S from '~/styled-components/auth'
 import * as N from '~/styled-components/navbar'
 import * as D from '~/styled-components/components/drop-down-menu/dropdownmenu'
+import { BsGlobe2 } from "react-icons/bs";
 
 export const loader = async ({ request, params }) => {
-	const userId = await requireUserId(request);
-	if (!userId) {
-		throw new Response("User not found", { status: 404 });
-	}
-	return json({ userId });
+	const userId = await getUserId(request);
+  if (userId) return redirect("/");
+  return json({});
 };
 
-const Dashboard = () => {
+const AuthMenu = () => {
 
-	const [menuOpen, setMenuOpen] = useState(false)
+  const [searchParams] = useSearchParams();
 	const data = useLoaderData()
 	const user = useOptionalUser()
+  
+	const [menuOpen, setMenuOpen] = useState(false)
 
 	return (
 		<>
 			<N.Nav>
 				<N.NavContainer>
-
 					<N.NavLogo to="https://famun.com.br/">
 						<N.NavLogoImage src="https://famun.com.br/wp-content/uploads/2022/05/famun-logo-maior.png" />
 					</N.NavLogo>
 
 					<N.NavMenu>
 						<N.NavItem
-							to="/dashboard"
+							to={{
+                pathname: "/auth/login",
+                /* search: searchParams.toString(), */
+              }}
 						>
-							Início
+							Entrar
 						</N.NavItem>
+
 						<N.NavItem
-							to="/dashboard/info"
+							to={{
+                pathname: "/auth/join",
+                /* search: searchParams.toString(), */
+              }}
 						>
-							Informações
-						</N.NavItem>
-						<N.NavItem
-							to="/dashboard/payment"
-						>
-							Pagamento
+							Cadastrar
 						</N.NavItem>
 					</N.NavMenu>
 
@@ -62,17 +64,18 @@ const Dashboard = () => {
 							onMouseLeave={() => setMenuOpen(false)}
 						>
 							<N.NavItem
-								to={user ? `/dashboard/${user.userId}` : '/dashboard/login'}
+								to={'/'}
 							>
 								<N.UserButton>
-									{user ? user.name : 'login'}
+									<BsGlobe2 />
+                  PT - BR
 								</N.UserButton>
 							</N.NavItem>
 
 							{menuOpen &&
 								<D.Container>
 									<D.Item>
-										Perfil
+										Mudar Idioma
 									</D.Item>
 									<D.Item>
 										Configuração
@@ -84,12 +87,13 @@ const Dashboard = () => {
 											Logout
 										</D.Item>
 									</NavLink>
-								</D.Container>}
+								</D.Container>
+              }
 						</div>
 					</N.UserNavMenu>
-
 				</N.NavContainer>
 			</N.Nav>
+
 			<S.Wrapper>
 
 				<Outlet />
@@ -99,4 +103,4 @@ const Dashboard = () => {
 	);
 }
 
-export default Dashboard
+export default AuthMenu

@@ -31,7 +31,7 @@ export const meta = () => ({
 
 export const loader = async ({ request }) => {
 	return json({
-			user: await getUser(request),
+		user: await getUser(request),
 	});
 };
 

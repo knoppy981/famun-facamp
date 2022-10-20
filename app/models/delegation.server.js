@@ -1,4 +1,5 @@
 import { prisma } from "~/db.server";
+import jwt from "jsonwebtoken";
 
 export async function getDelegationById(id) {
 	return prisma.delegation.findUnique({
@@ -16,14 +17,11 @@ export async function findDelegationCode(code) {
 		where: {
 			code: code
 		},
-		select: {
-			id: true
-		}
 	})
 }
 
 export async function joinDelegation(userId, delegationId) {
-  return prisma.user.update({
+	return prisma.user.update({
 		where: {
 			id: userId
 		},
@@ -31,6 +29,21 @@ export async function joinDelegation(userId, delegationId) {
 			delegation: {
 				connect: {
 					id: delegationId
+				}
+			}
+		}
+	})
+}
+
+export async function joinDelegationWithCode(userId, delegationCode) {
+	return prisma.user.update({
+		where: {
+			id: userId
+		},
+		data: {
+			delegation: {
+				connect: {
+					code: delegationCode
 				}
 			}
 		}
@@ -49,5 +62,18 @@ export async function updateDelegationCode(delegationId, code) {
 }
 
 export async function createDelegation() {
-	
+
+}
+
+export async function generateDelegationInviteLink(delegationCode) {
+	const { JSON_WEB_TOKEN_SECRET } = process.env;
+
+	const token = jwt.sign(
+		{ delegationCode: delegationCode },
+		JSON_WEB_TOKEN_SECRET,
+		{ expiresIn: 60 }
+	);
+
+	return `http://localhost:3000/auth/${token}`
+
 }

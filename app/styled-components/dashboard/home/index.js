@@ -7,7 +7,7 @@ export const Wrapper = styled.div`
   flex-direction: column;
   margin: 80px;
   color: #fff;
-  grid-gap: 100px;
+  grid-gap: ${ props => props.gap ? props.gap : "100px"};
 `
 export const Title = styled.div`
   width: 100%;
@@ -21,7 +21,7 @@ export const Container = styled.div`
   justify-items: center;
 `
 export const Image = styled.img`
-  width: 80%;
+  width: ${props => props.width ? props.width : '80%'};
   height: auto;
 `
 export const Info = styled.div`
@@ -33,7 +33,6 @@ export const Info = styled.div`
 export const InfoTitle = styled.div`
   font-size: 24px;
   color: #E2D650;
-
 `
 export const InfoSubtitle = styled.div`
   font-size: 16px;

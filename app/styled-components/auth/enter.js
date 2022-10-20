@@ -7,18 +7,16 @@ export const Wrapper = styled.div`
   width: 100%;
   align-items: center;
   flex-direction: column;
-  margin: 80px;
   grid-gap: 15px;
 `
 export const Title = styled.div`
-  font-size: 40px;
+  font-size: 35px;
   font-weight: 500;
-  color: #fff;
+  color: #183567;
 `
 export const Subtitle = styled.div`
-  font-size: 24px;
-  opacity: .8;
-  color: #fff;
+  font-size: 16px;
+  color: #666666;
 `
 export const AuthForm = styled(Form)`
   margin: 30px 0 0 0;
@@ -32,15 +30,15 @@ export const Label = styled.label`
   align-items: center;
   padding: 0 10px; 
   transition: .4s ease-in-out;
-  color: ${props => props.focus ? '#E2D650' : 'rgba(226, 214, 80, .6)'};
+  color: ${props => props.focus ? '#2B5EB6' : '#666666'};
 `
 export const InputContainer = styled.div`
   position: relative;
   width: 130px;
 
   --s: 2px;   
-  --c: #E2D650;
-  --a: rgba(226, 214, 80, .6);
+  --c: #2B5EB6;
+  --a: #666666;
 
   padding-bottom: var(--s);
   // color postion // size
@@ -61,9 +59,9 @@ export const Input = styled.input`
   font-weight: 400;
   transition: 0.2s all ease;
   background: transparent;
-  color: #fff;
+  color: #000;
 
-  -webkit-text-fill-color: #fff !important;
+  -webkit-text-fill-color: #000 !important;
 
 	&:focus {
     display: inline-block;
@@ -91,15 +89,15 @@ export const Error = styled.div`
 `
 export const Button = styled.button`
   width: 180px;
-  height: 100%;
+  height: 40px;
   border-radius: 25px;
   margin-left: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: 0.4s all ease;
-  color: ${props => props.disabled ? "rgba(226, 214, 80, .6)" : "#E2D650"};
-  border: ${props => props.disabled ? "2px solid rgba(226, 214, 80, .6)" : "2px solid #E2D650"};
+  color: ${props => props.disabled ? "#666666" : "#2B5EB6"};
+  border: ${props => props.disabled ? "2px solid #666666" : "2px solid #2B5EB6"};
 `
 export const Image = styled.img`
   width: 500px;

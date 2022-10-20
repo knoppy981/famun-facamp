@@ -4,12 +4,16 @@ import { json } from '@remix-run/node';
 
 import { requireUserId, getDelegation } from '~/session.server';
 
-import * as S from '~/styled-components/dashboard/sidebar'
+import * as S from '~/styled-components/components/sidebar'
 import { BsPeople, BsCheck2Square, BsCurrencyDollar } from "react-icons/bs";
 
-/* export const loader = async ({ request }) => {
-	
-}; */
+export const loader = async ({ request }) => {
+	const userId = await requireUserId(request);
+	if (!userId) {
+		throw new Response("User not found", { status: 404 });
+	}
+	return json({})
+};
 const menu = () => {
 
 	const sidebarData = [

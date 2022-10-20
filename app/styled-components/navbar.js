@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
-import { NavLink } from "@remix-run/react";
+import { NavLink, Link } from "@remix-run/react";
 
 export const Nav = styled.nav`
-	height: 11vh;
+	height: 84px;
 	width: 100vw;
 	display: flex;
 	justify-content: center;
@@ -11,23 +11,27 @@ export const Nav = styled.nav`
 	position: sticky;
 	top: 0;
 	z-index: 10;
-	-webkit-box-shadow: 0px 3px 24px -1px rgba(0,0,0,0.69); 
-	box-shadow: 0px 3px 24px -1px rgba(0,0,0,0.69);
+/* 	-webkit-box-shadow: 0px 3px 24px -1px rgba(0,0,0,0.69); 
+	box-shadow: 0px 3px 24px -1px rgba(0,0,0,0.69); */
+	background: #183567;
+	color: #fff;
 `
 export const NavContainer = styled.div`
 	display: flex;
 	height: 100%;
-	width: 100%;
-	padding: 0 50px;
+	width: 75%;
 	grid-gap: 50px;
 `
-export const NavLogo = styled.div`
-	color: #000;
+export const NavLogo = styled(Link)`
 	justify-self: flex-start;
 	font-size: 34px;
 	display: flex;
 	align-items: center;
 	font-weight: 500;
+`
+export const NavLogoImage = styled.img`
+	width: 200px;
+
 `
 export const NavMenu = styled.ul`
 	display: flex;
@@ -60,11 +64,10 @@ export const UserButton = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 1px solid #EBEBEB;
 
 	svg{
 		height: 20px;
 		width: 20px;
-		margin-right: 15px;
+		margin-right: 10px;
 	}
 `

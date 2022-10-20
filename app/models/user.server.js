@@ -10,13 +10,24 @@ export async function getUserByEmail(email) {
 	return prisma.user.findUnique({ where: { email } });
 }
 
+export async function getExistingUser(cpf, rg) {
+	return prisma.user.findFirst({
+		where: {
+			OR: [
+				{cpf: parseInt(cpf)},
+				{rg: parseInt(rg)}
+			]
+		}
+	})
+}
+
 export async function createUser(info) {
-	const hashedPassword = await bcrypt.hash(info.userPassword, 10);
+	const hashedPassword = await bcrypt.hash(info.password, 10);
 
 	return prisma.user.create({
 		data: {
-			email: info.userEmail,
-			name: info.userName,
+			email: info.email,
+			name: info.name,
 			password: {
 				create: {
 					hash: hashedPassword,

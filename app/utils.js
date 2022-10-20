@@ -90,10 +90,9 @@ export function validatePhoneNumber(phoneNumber) {
 	return true;
 }
 
-
 export function generateString(length) {
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	
+
 	let result = ' ';
 	const charactersLength = characters.length;
 
@@ -103,3 +102,4 @@ export function generateString(length) {
 
 	return result;
 }
+

@@ -6,7 +6,7 @@ import { findDelegationCode, joinDelegation } from '~/models/delegation.server'
 import { getDelegationId, createUserSession, getUserId } from '~/session.server'
 import { safeRedirect } from '~/utils'
 
-import * as S from '~/styled-components/dashboard/home/delegation/join'
+import * as S from '~/styled-components/auth/enter'
 import img from '~/images/createteam.svg'
 
 export async function action({ request }) {
@@ -14,7 +14,6 @@ export async function action({ request }) {
   const formData = await request.formData()
   const code = formData.get("code")
   const button = formData.get("button")
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
 
   if (typeof code !== "string" || code.length !== 6) {
     return json(
@@ -29,28 +28,11 @@ export async function action({ request }) {
         { status: 400 }
       );
     } else if (button === "button") {
-
-      await joinDelegation(userId, delegation.id).catch((err) => {
-        return json(
-          { erros: { delegation: "unable to join delegation" } },
-          { status: 400 }
-        )
-      })
-
-      return createUserSession({
-        request,
-        delegationId: delegation.id,
-        redirectTo,
-      });
+      const params = new URLSearchParams([["delegationCode", code]]);
+      return redirect(`/auth/signup?${params}`);
     }
     return json({ delegation });
   }
-}
-
-export async function loader({ request }) {
-  const delegationId = await getDelegationId(request)
-  if (delegationId !== undefined) return redirect("/dashboard/home/delegation")
-  return json({})
 }
 
 const join = () => {
@@ -62,7 +44,7 @@ const join = () => {
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get("redirectTo") ?? undefined
 
-  const [inputFocus, setinputFocus] = useState(false)
+  const [inputFocus, setInputFocus] = useState(true)
   const inputRef = useRef(null)
   const [inputValue, setInputValue] = useState("")
 
@@ -72,8 +54,8 @@ const join = () => {
     setTransitionState(
       transition.state === "submitting" ?
         "Procurando..." : transition.state === "loading" ?
-          "Waiting" : actionData?.delegation && inputRef.current.value.length === 6 ?
-            "Found!" : "Not Found"
+          "Procurando..." : actionData?.delegation && inputRef.current.value.length === 6 ?
+            "Entrar!" : "Não encontrado"
     )
   }, [transition, inputValue])
 
@@ -110,9 +92,10 @@ const join = () => {
             id="code"
             name="code"
             type="string"
-            onFocus={() => setinputFocus(true)}
+            autoFocus={true}
+            onFocus={() => setInputFocus(true)}
             onBlur={() => {
-              inputRef.current.value === '' || null ? setinputFocus(false) : null
+              inputRef.current.value === '' || null ? setInputFocus(false) : null
             }}
           >
           </S.Input>
@@ -126,7 +109,7 @@ const join = () => {
         <input type="hidden" name="redirectTo" value={redirectTo} />
 
         <S.Button
-          disabled={transitionState !== "Found!"}
+          disabled={transitionState !== "Entrar!"}
           type="submit"
           name="button"
           value="button"

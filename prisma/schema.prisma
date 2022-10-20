@@ -8,21 +8,22 @@ datasource db {
 }
 
 model User {
-  id              String           @id @default(auto()) @map("_id") @db.ObjectId
-  email           String           @unique
-  name            String
-  password        Password?
-  cpf             Int              @unique
-  rg              Int              @unique
-  phoneNumber     String
-  dateOfBirth     String
-  country         String
-  role            Role             @default(DELEGADO)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  delegation      Delegation?      @relation(fields: [delegationId], references: [id])
-  delegationId    String?          @db.ObjectId
-  userPreferences UserPreferences?
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  email            String            @unique
+  name             String
+  password         Password?
+  cpf              Int               @unique
+  rg               Int               @unique
+  phoneNumber      String
+  dateOfBirth      String
+  country          String
+  role             Role              @default(DELEGADO)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  delegation       Delegation?       @relation(fields: [delegationId], references: [id])
+  delegationId     String?           @db.ObjectId
+  userPreferences  UserPreferences?
+  userPersonalInfo UserPersonalInfo?
 }
 
 model Delegation {
@@ -32,11 +33,23 @@ model Delegation {
   users User[]
 }
 
+model UserPersonalInfo {
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+  user                User?               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId              String              @unique @db.ObjectId
+  languagesSimulates  Language[]
+  currentCourse       String
+  schoolarYear        Int
+  councilPreference   Council
+  participationMethod ParticipationMethod
+}
+
 model UserPreferences {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId       String   @unique @db.ObjectId
   emailUpdates Boolean
-  user         User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId       String  @unique @db.ObjectId
+  language     Language @default(Portuguese)
 }
 
 model Password {
@@ -51,4 +64,21 @@ enum Role {
   DELEGADO_CHEFE
   PROFESSOR
   ADMIN
+}
+
+enum Council {
+  ConselhoJuventudeOnu
+  AssembleiaGeralOnu
+  ConselhoSegurancaOnu
+}
+
+enum ParticipationMethod {
+  Online
+  Presential
+}
+
+enum Language {
+  Portuguese
+  English
+  Spanish
 }
