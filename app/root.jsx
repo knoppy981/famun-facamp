@@ -6,33 +6,33 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-
-import styles from './styles.css'
-
 import { json } from "@remix-run/node";
 
 import { getUser } from "./session.server";
 
+import styles from './styles.css'
+import Navbar from '~/styled-components/components/navbar'
+
 export function links() {
-	return [
-		{
-			as: "style",
-			rel: "stylesheet preload prefetch",
-			href: styles,
-		},
-	];
+  return [
+    {
+      as: "style",
+      rel: "stylesheet preload prefetch",
+      href: styles,
+    },
+  ];
 }
 
 export const meta = () => ({
-	charset: "utf-8",
-	title: "Famun Dashboard",
-	viewport: "width=device-width,initial-scale=1",
+  charset: "utf-8",
+  title: "Famun Dashboard",
+  viewport: "width=device-width,initial-scale=1",
 });
 
 export const loader = async ({ request }) => {
-	return json({
-		user: await getUser(request),
-	});
+  return json({
+    user: await getUser(request),
+  });
 };
 
 
@@ -44,7 +44,7 @@ export default function App() {
 
         <Links />
 
-				{typeof document === "undefined" ? "__STYLES__" : null}
+        {typeof document === "undefined" ? "__STYLES__" : null}
       </head>
 
       <body>

@@ -8,7 +8,7 @@ import { findDelegationCode, joinDelegationWithCode } from '~/models/delegation.
 import { createUserSession } from '~/session.server';
 
 import * as S from '~/styled-components/auth/signup'
-import AuthInputBox from '~/styled-components/components/auth-input-box';
+import AuthInputBox from '~/styled-components/components/inputs/authInput';
 
 
 export const action = async ({ request }) => {

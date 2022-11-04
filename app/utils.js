@@ -103,3 +103,6 @@ export function generateString(length) {
 	return result;
 }
 
+export function checkString(str) {
+	return /[^A-Za-z0-9 ]+/.test(str)
+}

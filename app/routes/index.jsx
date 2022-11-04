@@ -1,7 +1,8 @@
-import { redirect } from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
 
-import { requireUserId } from "~/session.server";
+import { getUserId } from "~/session.server";
 
-export const loader = async ({ request, params }) => {
-	return redirect("/dashboard");
+export const loader = async ({ request }) => {
+  const userId = await getUserId(request)
+  return userId ? redirect('/dashboard/home') : redirect('/login')
 };

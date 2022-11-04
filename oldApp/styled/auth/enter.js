@@ -37,7 +37,7 @@ export const InputContainer = styled.div`
   width: 130px;
 
   --s: 2px;   
-  --c: #2B5EB6;
+  --c: #000;
   --a: #666666;
 
   padding-bottom: var(--s);

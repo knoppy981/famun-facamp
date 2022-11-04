@@ -7,7 +7,7 @@ import { verifyLogin } from "~/models/user.server";
 import { safeRedirect, validateEmail } from "~/utils";
 
 import * as S from '~/styled-components/auth/login'
-import InputBox from '~/styled-components/components/auth-input-box'
+import InputBox from '~/styled-components/components/inputs/authInput'
 import img from '~/images/team.svg'
 
 export const action = async ({ request }) => {

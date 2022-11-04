@@ -6,8 +6,40 @@ export async function getDelegationById(id) {
 		where: {
 			id: id,
 		},
-		include: {
-			users: true,
+		select: {
+			school: true,
+			code: true,
+			participationMethod: true,
+			createdAt: true,
+			delegate: {
+				select: {
+					createdAt: true,
+					user: {
+						select: {
+							id: true,
+							name: true,
+						}
+					}
+				}
+			},
+			delegationAdvisor: {
+				select: {
+					createdAt: true,
+					advisorRole: true,
+					user: {
+						select: {
+							id: true,
+							name: true,
+						}
+					}
+				}
+			},
+			delegationLeader: {
+				select: {
+					id: true,
+					name: true
+				}
+			}
 		}
 	})
 }
@@ -67,13 +99,29 @@ export async function createDelegation() {
 
 export async function generateDelegationInviteLink(delegationCode) {
 	const { JSON_WEB_TOKEN_SECRET } = process.env;
+	const delegation = findDelegationCode(delegationCode)
+
+	/* achar lider da delegacao e mandar no link tambem */
+	/* checar se ja estorou maximo de participantes */
+
+	/* const delegation = await findDelegationCode(delegationCode) */
+	/* console.log(delegation) */
 
 	const token = jwt.sign(
 		{ delegationCode: delegationCode },
 		JSON_WEB_TOKEN_SECRET,
-		{ expiresIn: 60 }
+		{ expiresIn: 60 * 60 }
 	);
 
-	return `http://localhost:3000/auth/${token}`
+	return `http://localhost:3000/linkInvitation/${token}`
+}
 
+export async function decodeInviteLink(token) {
+	const { JSON_WEB_TOKEN_SECRET } = process.env;
+
+	try {
+		return jwt.verify(token, JSON_WEB_TOKEN_SECRET, { complete: true })
+	} catch (err) {
+		return {err}
+	}
 }

@@ -10,18 +10,28 @@ export async function getUserByEmail(email) {
 	return prisma.user.findUnique({ where: { email } });
 }
 
-export async function getExistingUser(cpf, rg) {
+export async function getExistingUser(values) {
+	const checkableValues = Object.entries(values).map(entry => {
+    return {[entry[0]]: entry[1]};
+  })
+	
 	return prisma.user.findFirst({
 		where: {
-			OR: [
-				{cpf: parseInt(cpf)},
-				{rg: parseInt(rg)}
-			]
+			OR: checkableValues
 		}
 	})
 }
 
-export async function createUser(info) {
+export async function updateUser({userId, values}) {
+	return prisma.user.update({
+		where: {
+			id: userId
+		},
+		data: values
+	})
+}
+
+/* export async function createUser(info) {
 	const hashedPassword = await bcrypt.hash(info.password, 10);
 
 	return prisma.user.create({
@@ -40,7 +50,7 @@ export async function createUser(info) {
 			dateOfBirth: info.birthDate,
 		},
 	});
-}
+} */
 
 export async function deleteUserByEmail(email) {
 	return prisma.user.delete({ where: { email } });
@@ -54,6 +64,16 @@ export async function verifyLogin(
 		where: { email },
 		include: {
 			password: true,
+			delegate: {
+				select: {
+					delegationId: true
+				}
+			},
+			delegationAdvisor: {
+				select: {
+					delegationId: true
+				}
+			},
 		},
 	});
 

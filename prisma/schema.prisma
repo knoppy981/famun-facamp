@@ -8,40 +8,29 @@ datasource db {
 }
 
 model User {
-  id               String            @id @default(auto()) @map("_id") @db.ObjectId
-  email            String            @unique
-  name             String
-  password         Password?
-  cpf              Int               @unique
-  rg               Int               @unique
-  phoneNumber      String
-  dateOfBirth      String
-  country          String
-  role             Role              @default(DELEGADO)
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  delegation       Delegation?       @relation(fields: [delegationId], references: [id])
-  delegationId     String?           @db.ObjectId
-  userPreferences  UserPreferences?
-  userPersonalInfo UserPersonalInfo?
+  id                String             @id @default(auto()) @map("_id") @db.ObjectId
+  email             String             @unique
+  name              String
+  password          Password?
+  cpf               String                @unique
+  rg                String                @unique
+  phoneNumber       String
+  birthDate         String
+  //
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  userPreferences   UserPreferences?
+  //
+  delegate          Delegate?
+  delegationLeader  Delegation?
+  delegationAdvisor DelegationAdvisor?
 }
 
-model Delegation {
-  id    String  @id @default(auto()) @map("_id") @db.ObjectId
-  name  String  @unique
-  code  String? @unique
-  users User[]
-}
-
-model UserPersonalInfo {
-  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
-  user                User?               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId              String              @unique @db.ObjectId
-  languagesSimulates  Language[]
-  currentCourse       String
-  schoolarYear        Int
-  councilPreference   Council
-  participationMethod ParticipationMethod
+model Password {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  hash   String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
 }
 
 model UserPreferences {
@@ -52,18 +41,83 @@ model UserPreferences {
   language     Language @default(Portuguese)
 }
 
-model Password {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  hash   String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @unique
+model Delegate {
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  user               User               @relation(fields: [userId], references: [id])
+  userId             String             @unique @db.ObjectId
+  createdAt          DateTime           @default(now())
+  EmergencyContact   EmergencyContact[]
+  councilPreference  Council
+  languagesSimulates Language[]
+  delegation         Delegation         @relation(fields: [delegationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  delegationId       String             @db.ObjectId
 }
 
-enum Role {
-  DELEGADO
-  DELEGADO_CHEFE
-  PROFESSOR
-  ADMIN
+model EmergencyContact {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  delegate    Delegate @relation(fields: [delegateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  delegateId  String   @unique @db.ObjectId
+  name        String
+  phoneNumber String
+}
+
+model DelegationAdvisor {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  user         User           @relation(fields: [userId], references: [id])
+  userId       String         @unique @db.ObjectId
+  createdAt    DateTime       @default(now())
+  advisorRole  AdvisorRole    @default(Professor)
+  socialMedia  SocialMedias[]
+  delegation   Delegation     @relation(fields: [delegationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  delegationId String         @db.ObjectId
+}
+
+model Delegation {
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+  code                String              @unique
+  school              String              @unique
+  schoolPhoneNumber   String
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  participationMethod ParticipationMethod
+  address             Address?
+  delegationLeader    User                @relation(fields: [delegationLeaderId], references: [id])
+  delegationLeaderId  String              @unique @db.ObjectId
+  delegate            Delegate[]
+  delegationAdvisor   DelegationAdvisor[]
+}
+
+model Address {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  delegation   Delegation @relation(fields: [delegationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  delegationId String     @unique @db.ObjectId
+  neighborhood String
+  city         String
+  State        String
+  cep          String
+  country      String
+}
+
+model SocialMedias {
+  id                  String            @id @default(auto()) @map("_id") @db.ObjectId
+  delegationAdvisor   DelegationAdvisor @relation(fields: [delegationAdvisorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  delegationAdvisorId String            @db.ObjectId
+  username            String
+  socialMedia         SocialMedia
+}
+
+enum SocialMedia {
+  Facebook
+  Instagram
+  Twitter
+  Linkedin
+}
+
+enum AdvisorRole {
+  Professor
+  Coordenador
+  Diretor
+  Outro
 }
 
 enum Council {
@@ -75,6 +129,7 @@ enum Council {
 enum ParticipationMethod {
   Online
   Presential
+  Both
 }
 
 enum Language {

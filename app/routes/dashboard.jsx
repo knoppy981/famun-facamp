@@ -1,102 +1,144 @@
-import { useState, useEffect } from "react";
-import { json } from "@remix-run/node";
-import { useLoaderData, Link, Outlet, NavLink } from "@remix-run/react";
+import { redirect, json } from "@remix-run/node";
+import { NavLink, Outlet } from "@remix-run/react";
 
 import { requireUserId } from "~/session.server";
-import { useOptionalUser } from "~/utils";
+import { useUser } from "~/utils";
 
 import * as S from '~/styled-components/dashboard'
-import * as N from '~/styled-components/navbar'
-import * as D from '~/styled-components/components/drop-down-menu/dropdownmenu'
+import {
+  FiMenu,
+  FiShoppingBag,
+  FiTag,
+  FiUser,
+  FiCreditCard,
+  FiBookmark,
+  FiSettings,
+  FiArchive,
+  FiEdit,
+  FiFlag,
+  FiHome,
+  FiHelpCircle,
+  FiFile,
+} from "react-icons/fi";
 
-export const loader = async ({ request, params }) => {
-	const userId = await requireUserId(request);
-	if (!userId) {
-		throw new Response("User not found", { status: 404 });
-	}
-	return json({ userId });
+export const loader = async ({ request }) => {
+  const userId = await requireUserId(request)
+  return json({ userId })
 };
 
 const Dashboard = () => {
 
-	const [menuOpen, setMenuOpen] = useState(false)
-	const data = useLoaderData()
-	const user = useOptionalUser()
+  const user = useUser()
 
-	return (
-		<>
-			<N.Nav>
-				<N.NavContainer>
+  return (
+    <S.Wrapper>
+      <S.Container>
+        <S.TitleBox>
+          <S.Title>
+            FAMUN 2023
+          </S.Title>
 
-					<N.NavLogo to="https://famun.com.br/">
-						<N.NavLogoImage src="https://famun.com.br/wp-content/uploads/2022/05/famun-logo-maior.png" />
-					</N.NavLogo>
+          <S.ArrowIconBox />
 
-					<N.NavMenu>
-						<N.NavItem
-							to="/dashboard"
-						>
-							Início
-						</N.NavItem>
-						<N.NavItem
-							to="/dashboard/info"
-						>
-							Informações
-						</N.NavItem>
-						<N.NavItem
-							to="/dashboard/payment"
-						>
-							Pagamento
-						</N.NavItem>
-					</N.NavMenu>
+          <S.SubTitle>
+            Dashboard
+          </S.SubTitle>
+        </S.TitleBox>
 
-					<N.UserNavMenu>
-						<N.NavItem
-							to="/dashboard/help"
-						>
-							Ajuda
-						</N.NavItem>
-						<div
-							style={{ height: "100%" }}
-							onMouseEnter={() => setMenuOpen(true)}
-							onMouseLeave={() => setMenuOpen(false)}
-						>
-							<N.NavItem
-								to={user ? `/dashboard/${user.userId}` : '/dashboard/login'}
-							>
-								<N.UserButton>
-									{user ? user.name : 'login'}
-								</N.UserButton>
-							</N.NavItem>
+        <S.DashboardContainer>
+          <S.Navbar>
+            <S.NavItem>
+              <FiUser />
+              <p>{user.name}</p>
+            </S.NavItem>
 
-							{menuOpen &&
-								<D.Container>
-									<D.Item>
-										Perfil
-									</D.Item>
-									<D.Item>
-										Configuração
-									</D.Item>
-									<NavLink
-										to="/logout"
-									>
-										<D.Item>
-											Logout
-										</D.Item>
-									</NavLink>
-								</D.Container>}
-						</div>
-					</N.UserNavMenu>
+            <S.NavMenu>
+              <S.NavItem>
+                <FiHelpCircle />
+                <p>Ajuda</p>
+              </S.NavItem>
 
-				</N.NavContainer>
-			</N.Nav>
-			<S.Wrapper>
+              <S.NavItem>
+                <FiSettings />
+              </S.NavItem>
+            </S.NavMenu>
+          </S.Navbar>
 
-				<Outlet />
+          <S.Sidebar>
+            <NavLink to="home">
+              {({ isActive }) => (
+                <S.SidebarItem active={isActive ? true : false}>
+                  <S.ItemIcon>
+                    <FiHome />
+                  </S.ItemIcon>
+                  <S.ItemTitle>
+                    Início
+                  </S.ItemTitle>
+                </S.SidebarItem>
+              )}
+            </NavLink>
 
-			</S.Wrapper>
-		</>
-	);
+            <NavLink to="data">
+              {({ isActive }) => (
+                <S.SidebarItem active={isActive ? true : false}>
+                  <S.ItemIcon>
+                    <FiEdit />
+                  </S.ItemIcon>
+                  <S.ItemTitle>
+                    Dados Inscrição
+                  </S.ItemTitle>
+                </S.SidebarItem>
+              )}
+            </NavLink>
+
+            <NavLink to="delegation">
+              {({ isActive }) => (
+                <S.SidebarItem active={isActive ? true : false}>
+                  <S.ItemIcon>
+                    <FiFlag />
+                  </S.ItemIcon>
+                  <S.ItemTitle>
+                    Delegação
+                  </S.ItemTitle>
+                </S.SidebarItem>
+              )}
+            </NavLink>
+
+
+            <NavLink to="payment">
+              {({ isActive }) => (
+                <S.SidebarItem active={isActive ? true : false}>
+                  <S.ItemIcon>
+                    <FiCreditCard />
+                  </S.ItemIcon>
+                  <S.ItemTitle>
+                    Pagamento
+                  </S.ItemTitle>
+                </S.SidebarItem>
+              )}
+            </NavLink>
+
+            <NavLink to="documents">
+              {({ isActive }) => (
+                <S.SidebarItem active={isActive ? true : false}>
+                  <S.ItemIcon>
+                    <FiFile />
+                  </S.ItemIcon>
+                  <S.ItemTitle>
+                    Documentos
+                  </S.ItemTitle>
+                </S.SidebarItem>
+              )}
+            </NavLink>
+          </S.Sidebar>
+
+          <S.OutletWrapper>
+            <Outlet context={{ user }} />
+          </S.OutletWrapper>
+        </S.DashboardContainer>
+      </S.Container>
+    </S.Wrapper >
+  )
 }
 
 export default Dashboard

@@ -1,6 +1,6 @@
 import { json, redirect } from '@remix-run/node'
 import { useOutletContext } from '@remix-run/react'
-import { NavLink, useSearchParams } from '@remix-run/react'
+import { Link, useSearchParams } from '@remix-run/react'
 
 import { useUser } from '~/utils'
 import { getDelegationId } from '~/session.server'
@@ -25,7 +25,7 @@ const join = () => {
             Crie uma delegação ou entre na delegação do seu grupo!
           </S.Subtitle>
           <S.ButtonsContainer>
-            <NavLink
+            <Link
               to={{
                 pathname: "/auth/enter",
                 /* search: searchParams.toString(), */
@@ -34,8 +34,8 @@ const join = () => {
               <S.Button>
                 <p>Entre em uma delegação</p>
               </S.Button>
-            </NavLink>
-            <NavLink
+            </Link>
+            <Link
               to={{
                 pathname: "/auth/create",
                 /* search: searchParams.toString(), */
@@ -44,7 +44,7 @@ const join = () => {
               <S.Button>
                 <p>Crie uma nova delegação</p>
               </S.Button>
-            </NavLink>
+            </Link>
           </S.ButtonsContainer>
         </S.Info>
         <S.ImageLinkWrapper>
