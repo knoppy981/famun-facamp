@@ -1,20 +1,25 @@
+import { useState, useEffect } from 'react';
 import { json } from '@remix-run/node';
-import { useOutletContext, useActionData, useLoaderData } from '@remix-run/react';
+import { Form, useOutletContext, useActionData, useLoaderData, useTransition } from '@remix-run/react';
 
 import { requireDelegation } from '~/session.server';
 import { generateDelegationInviteLink } from '~/models/delegation.server';
 
 import * as S from '~/styled-components/dashboard/delegation'
-import { BsPerson } from 'react-icons/bs';
+import { FiMail, FiX } from 'react-icons/fi';
 
 export const action = async ({ request }) => {
   const formData = await request.formData()
   const delegationCode = formData.get("delegationCode")
+  if (delegationCode === undefined || null || "" || delegationCode?.length !== 6 ) 
+    return json({
+      error: {delegationCode: "Invalid delegation code"},
+      status: 404
+    })
+  
+  const inviteLink = await generateDelegationInviteLink(delegationCode)
 
-  const link = await generateDelegationInviteLink(delegationCode)
-  console.log(link)
-
-  return json({ link })
+  return json({ inviteLink })
 }
 
 export const loader = async ({ request }) => {
@@ -27,15 +32,60 @@ const Delegation = () => {
   const { delegation } = useLoaderData()
   const actionData = useActionData()
   const { user } = useOutletContext()
+  const transition = useTransition()
+
+  const [shadowBackground, setShadowBackground] = useState(false)
+
+  useEffect(() => {
+    if (actionData?.inviteLink) {
+      setShadowBackground(true)
+    }
+  }, [actionData])
 
   return (
     <S.Wrapper>
-      <S.SubTitle>
-        Delegação do
-      </S.SubTitle>
-      <S.Title>
-        {delegation.school}
-      </S.Title>
+      <S.ShadowBackground show={shadowBackground}>
+        <S.ClickableBackground onClick={() => setShadowBackground(false)} />
+        <S.BackgroundContainer>
+          <S.BackgroundCloseButton onClick={() => setShadowBackground(false)}>
+            <FiX />
+          </S.BackgroundCloseButton>
+
+          <S.BackgroundTitle>
+            Compartilhe esse link para convidar outros integrantes
+          </S.BackgroundTitle>
+          <S.LinkBox 
+            value={actionData?.inviteLink}
+          />
+
+          <S.BackgroundTitle>
+            Ou compartilhe o código para ser usado na inscrição
+          </S.BackgroundTitle>
+          <S.BackgroundData>
+            A1B2C3
+          </S.BackgroundData>
+        </S.BackgroundContainer>
+      </S.ShadowBackground>
+
+      <S.Nav>
+        <S.TitleBox>
+          <S.SubTitle>
+            Delegação do
+          </S.SubTitle>
+          <S.Title>
+            {delegation.school}
+          </S.Title>
+        </S.TitleBox>
+        <S.NavMenu>
+          <Form method="post">
+            <input type="hidden" name="delegationCode" value={delegation.code}/>
+            <S.NavItem>
+              <FiMail />
+              <p> Convidar </p>
+            </S.NavItem>
+          </Form>
+        </S.NavMenu>
+      </S.Nav>
 
       <S.DelegationContainer>
         <S.DelegatesListWrapper>

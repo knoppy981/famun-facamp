@@ -18,7 +18,7 @@ export const AuthInputBox = (props) => {
 		<S.InputWrapper>
 			<S.Label
 				htmlFor={name}
-				err={err ? true : false}
+				err={err}
 			>
 				{err ? props.err : props.text}
 			</S.Label>
@@ -31,6 +31,7 @@ export const AuthInputBox = (props) => {
 					name={name}
 					type={props.type}
 					autoComplete={name}
+					defaultValue={props.value}
 					autoFocus={props.autoFocus}
 					aria-invalid={err ? true : undefined}
 					aria-describedby={`${name}-error`}

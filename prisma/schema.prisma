@@ -12,8 +12,8 @@ model User {
   email             String             @unique
   name              String
   password          Password?
-  cpf               String                @unique
-  rg                String                @unique
+  cpf               String             @unique
+  rg                String             @unique
   phoneNumber       String
   birthDate         String
   //
@@ -34,23 +34,22 @@ model Password {
 }
 
 model UserPreferences {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId       String   @unique @db.ObjectId
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  user         User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId       String  @unique @db.ObjectId
   emailUpdates Boolean
-  language     Language @default(Portuguese)
 }
 
 model Delegate {
   id                 String             @id @default(auto()) @map("_id") @db.ObjectId
-  user               User               @relation(fields: [userId], references: [id])
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId             String             @unique @db.ObjectId
   createdAt          DateTime           @default(now())
   EmergencyContact   EmergencyContact[]
   councilPreference  Council
   languagesSimulates Language[]
-  delegation         Delegation         @relation(fields: [delegationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  delegationId       String             @db.ObjectId
+  delegation         Delegation?        @relation(fields: [delegationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  delegationId       String?            @db.ObjectId
 }
 
 model EmergencyContact {
@@ -62,14 +61,14 @@ model EmergencyContact {
 }
 
 model DelegationAdvisor {
-  id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  user         User           @relation(fields: [userId], references: [id])
-  userId       String         @unique @db.ObjectId
-  createdAt    DateTime       @default(now())
-  advisorRole  AdvisorRole    @default(Professor)
-  socialMedia  SocialMedias[]
-  delegation   Delegation     @relation(fields: [delegationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  delegationId String         @db.ObjectId
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId       String        @unique @db.ObjectId
+  createdAt    DateTime      @default(now())
+  advisorRole  AdvisorRole   @default(Professor)
+  socialMedia  SocialMedia[]
+  delegation   Delegation?   @relation(fields: [delegationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  delegationId String?       @db.ObjectId
 }
 
 model Delegation {
@@ -92,21 +91,22 @@ model Address {
   delegation   Delegation @relation(fields: [delegationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   delegationId String     @unique @db.ObjectId
   neighborhood String
+  address      String
   city         String
-  State        String
+  state        String
   cep          String
   country      String
 }
 
-model SocialMedias {
+model SocialMedia {
   id                  String            @id @default(auto()) @map("_id") @db.ObjectId
   delegationAdvisor   DelegationAdvisor @relation(fields: [delegationAdvisorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   delegationAdvisorId String            @db.ObjectId
   username            String
-  socialMedia         SocialMedia
+  socialMediaName     SocialMedias
 }
 
-enum SocialMedia {
+enum SocialMedias {
   Facebook
   Instagram
   Twitter
@@ -121,9 +121,10 @@ enum AdvisorRole {
 }
 
 enum Council {
-  ConselhoJuventudeOnu
-  AssembleiaGeralOnu
-  ConselhoSegurancaOnu
+  Assembleia_Geral_da_ONU
+  Rio_92
+  Conselho_de_Juventude_da_ONU
+  Conselho_de_Seguranca_da_ONU
 }
 
 enum ParticipationMethod {
@@ -132,8 +133,15 @@ enum ParticipationMethod {
   Both
 }
 
-enum Language {
-  Portuguese
-  English
-  Spanish
+model Language {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  language   Languages
+  delegate   Delegate  @relation(fields: [delegateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  delegateId String    @db.ObjectId
+}
+
+enum Languages {
+  portuguese
+  english
+  spanish
 }

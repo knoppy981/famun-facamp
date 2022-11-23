@@ -1,6 +1,6 @@
 {
-  "include": ["**/*.js", "**/*.jsx", "prisma/script.js"],
-  "exclude": ["**/node_modules/*"],
+  "include": ["**/*.js", "**/*.jsx", "prisma/script.js", "app/**/*"],
+  "exclude": ["node_modules", "**/node_modules/*", "cache/*", "build/*", "public/build/*"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2019"],
     "isolatedModules": true,

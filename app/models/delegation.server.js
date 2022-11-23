@@ -52,32 +52,32 @@ export async function findDelegationCode(code) {
 	})
 }
 
-export async function joinDelegation(userId, delegationId) {
-	return prisma.user.update({
+export async function joinDelegation(data) {
+	const user  = await prisma.user.findUnique({
 		where: {
-			id: userId
+			id: data.userId
 		},
-		data: {
-			delegation: {
-				connect: {
-					id: delegationId
-				}
-			}
+		include: {
+			delegate: true,
+			delegationAdvisor: true
 		}
 	})
-}
 
-export async function joinDelegationWithCode(userId, delegationCode) {
-	return prisma.user.update({
+	return prisma.delegation.update({
 		where: {
-			id: userId
+			code: data.code
 		},
 		data: {
-			delegation: {
+			delegate: user.delegate ? {
 				connect: {
-					code: delegationCode
+					userId: data.userId
 				}
-			}
+			} : undefined,
+			delegationAdvisor: user.delegationAdvisor ? {
+				connect: {
+					userId: data.userId
+				}
+			} : undefined,
 		}
 	})
 }
@@ -122,6 +122,6 @@ export async function decodeInviteLink(token) {
 	try {
 		return jwt.verify(token, JSON_WEB_TOKEN_SECRET, { complete: true })
 	} catch (err) {
-		return {err}
+		return { err }
 	}
 }

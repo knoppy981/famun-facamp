@@ -11,7 +11,6 @@ import { json } from "@remix-run/node";
 import { getUser } from "./session.server";
 
 import styles from './styles.css'
-import Navbar from '~/styled-components/components/navbar'
 
 export function links() {
   return [

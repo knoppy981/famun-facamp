@@ -88,17 +88,108 @@ async function seed() {
 		}
 	}) */
 
-	const obj = { name: 'Andre Knopp Guimaraess', birthDate: '23/06/2001' }
+	/* const name = "Roger Roger"
+	const email = "roger@gmail.com"
+	const password = "teste123"
+	const cpf = "12312312312"
+	const rg = "121231231"
+	const birthDate = "23/06/2003"
+	const phoneNumber = "1997154-7424"
+	const userType = "delegate"
 
-	await prisma.user.findFirst({
+	const data = {
+		Facebook: "asdasdasd",
+		Instagram: "123123123",
+		Linkedin: "lkjlkjlkj"
+	}
+
+	await prisma.user.delete({
 		where: {
-			OR: [
-				{
-					
+			email: email
+		}
+	}).catch(() => { })
+
+
+	const asdasd = {
+		create: {
+			councilPreference: "Assembleia_Geral_da_ONU",
+			languagesSimulates: {
+				createMany: {
+					data: [
+						{ language: "portuguese" },
+						{ language: "english" }
+					]
 				}
-			]
+			}
+		}
+	}
+
+	let auxArray1 = []
+	const sasdasd = {
+		create: {
+			advisorRole: "Professor",
+			socialMedia: {
+				createMany: {
+					data: [
+						data.Facebook ? { socialMediaName: "Facebook", username: data.Facebook } : undefined,
+						data.Instagram ? { socialMediaName: "Instagram", username: data.Instagram } : undefined,
+						data.Linkedin ? { socialMediaName: "Linkedin", username: data.Linkedin } : undefined,
+					]
+				}
+			}
+		}
+	}
+
+	const user = await prisma.user.create({
+		data: {
+			name: name,
+			email: email,
+			password: {
+				create: {
+					hash: await bcrypt.hash(password, 10)
+				}
+			},
+			cpf: cpf,
+			rg: rg,
+			birthDate: birthDate,
+			phoneNumber: phoneNumber,
+			delegate: userType === "delegate" ? asdasd : undefined,
+			delegationAdvisor: userType === "advisor" ? sasdasd : undefined,
 		}
 	})
+
+	const delegation = await prisma.delegation.update({
+		where: {
+			code: "123456"
+		},
+		data: {
+			delegate: userType === "delegate" ? {
+				connect: {
+					userId: user.id
+				}
+			} : undefined,
+			delegationAdvisor: userType === "delegate" ? {
+				connect: {
+					userId: user.id
+				}
+			} : undefined,
+		}
+	})
+
+	console.log(user) */
+
+	const user  = await prisma.user.findUnique({
+		where: {
+			email: "roger@gmail.com"
+		},
+		include: {
+			delegate: true,
+			delegationAdvisor: true
+		}
+	})
+
+	console.log(user?.delegate)
+	console.log(user?.delegationAdvisor)
 
 	console.log(`Database has been seeded. 🌱`);
 }

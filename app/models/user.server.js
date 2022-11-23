@@ -12,9 +12,9 @@ export async function getUserByEmail(email) {
 
 export async function getExistingUser(values) {
 	const checkableValues = Object.entries(values).map(entry => {
-    return {[entry[0]]: entry[1]};
-  })
-	
+		return { [entry[0]]: entry[1] };
+	})
+
 	return prisma.user.findFirst({
 		where: {
 			OR: checkableValues
@@ -22,7 +22,7 @@ export async function getExistingUser(values) {
 	})
 }
 
-export async function updateUser({userId, values}) {
+export async function updateUser({ userId, values }) {
 	return prisma.user.update({
 		where: {
 			id: userId
@@ -31,26 +31,67 @@ export async function updateUser({userId, values}) {
 	})
 }
 
-/* export async function createUser(info) {
-	const hashedPassword = await bcrypt.hash(info.password, 10);
+export async function createUser(data) {
+	console.log(data)
+
+	const council = data?.council?.replace(/ /g, "_")
+
+	let language
+	if (Array.isArray(data?.language)) {
+		const auxArray = []
+		data?.language.forEach(element => {
+			auxArray.push({ language: element })
+		})
+		language = auxArray
+	} else {
+		language = [{ language: data?.language }]
+	}
+
+	const delegate = {
+		create: {
+			councilPreference: council,
+			languagesSimulates: {
+				createMany: {
+					data: language
+				}
+			}
+		}
+	}
+
+	const delegationAdvisor = {
+		create: {
+			advisorRole: data?.role,
+			socialMedia: {
+				createMany: {
+					data: [
+						data.Facebook ? { socialMediaName: "Facebook", username: data.Facebook } : undefined,
+						data.Instagram ? { socialMediaName: "Instagram", username: data.Instagram } : undefined,
+						data.Linkedin ? { socialMediaName: "Linkedin", username: data.Linkedin } : undefined,
+					]
+				}
+			}
+		}
+	}
 
 	return prisma.user.create({
 		data: {
-			email: info.email,
-			name: info.name,
+			name: data.name,
+			email: data.email,
 			password: {
 				create: {
-					hash: hashedPassword,
-				},
+					hash: await bcrypt.hash(data.password, 10)
+				}
 			},
-			cpf: parseInt(info.cpf),
-			rg: parseInt(info.rg),
-			country: info.country,
-			phoneNumber: info.phoneNumber,
-			dateOfBirth: info.birthDate,
-		},
-	});
-} */
+			cpf: data.cpf,
+			rg: data.rg,
+			birthDate: data.birthDate,
+			phoneNumber: data.phoneNumber,
+			delegate: data.userType === "delegate" ? delegate : undefined,
+			delegationAdvisor: data.userType === "advisor" ? delegationAdvisor : undefined,
+		}
+	})
+
+}
 
 export async function deleteUserByEmail(email) {
 	return prisma.user.delete({ where: { email } });

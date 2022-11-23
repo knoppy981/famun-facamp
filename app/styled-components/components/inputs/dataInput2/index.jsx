@@ -10,9 +10,9 @@ export const DataInput2 = (props) => {
   const err = props.err
 	const name = props.name
 
-  useEffect(() => {
+/*   useEffect(() => {
     inputRef.current.value = props.value
-  }, [])
+  }, []) */
 
   return (
     <S.InputWrapper>
@@ -33,6 +33,7 @@ export const DataInput2 = (props) => {
 					type={props.type}
 					autoComplete={name}
 					autoFocus={props.autoFocus}
+					defaultValue={props.value}
 					aria-invalid={err ? true : undefined}
 					aria-describedby={`${name}-error`}
 					disabled={props.disabled}

@@ -107,7 +107,7 @@ export async function requireDelegationId(
   const delegationId = await getDelegationId(request);
   if (!delegationId) {
     const searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
-    throw redirect(`/logout`);
+    throw redirect(`/join/delegation?${searchParams}`);
   }
   return delegationId
 }

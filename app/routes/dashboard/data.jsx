@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useOutletContext, useActionData } from '@remix-run/react'
+import { useOutletContext, useActionData, useTransition } from '@remix-run/react'
 import { json } from '@remix-run/node'
 
 import { requireUserId } from '~/session.server'
@@ -8,6 +8,7 @@ import { validatePhoneNumber, checkString } from "~/utils";
 
 import DataInput2 from '~/styled-components/components/inputs/dataInput2'
 import * as S from '~/styled-components/dashboard/data'
+import { FiX } from 'react-icons/fi'
 
 export const action = async ({ request }) => {
   const userId = await requireUserId(request)
@@ -36,7 +37,7 @@ export const action = async ({ request }) => {
         { errors: { name: "Name taken" } },
         { status: 400 }
       );
-    if (typeof values["name"] !== "string" || !checkString(values["name"]))
+    if (typeof values["name"] !== "string" || checkString(values["name"]))
       return json(
         { errors: { name: "Invalid Name" } },
         { status: 400 }
@@ -49,7 +50,7 @@ export const action = async ({ request }) => {
         { errors: { cpf: "Cpf taken" } },
         { status: 400 }
       );
-    if (typeof values["cpf"] !== "string" || values["cpf"] !== 11)
+    if (typeof values["cpf"] !== "string" || values["cpf"].length !== 11)
       return json(
         { errors: { cpf: "Invalid Cpf" } },
         { status: 400 }
@@ -62,7 +63,7 @@ export const action = async ({ request }) => {
         { errors: { rg: "Rg taken" } },
         { status: 400 }
       );
-    if (typeof values["rg"] !== "string" || values["cpf"] !== 9)
+    if (typeof values["rg"] !== "string" || values["rg"].length !== 9)
       return json(
         { errors: { rg: "Invalid Rg" } },
         { status: 400 }
@@ -78,14 +79,16 @@ export const action = async ({ request }) => {
   }
 
   if (values["birthDate"]) {
-    if (typeof values["birthDate"] !== "string" || values["birthDate"] !== 9)
+    if (typeof values["birthDate"] !== "string" || values["birthDate"].length !== 9)
       return json(
         { errors: { birthDate: "Invalid Birthdate" } },
         { status: 400 }
       );
   }
 
-  return updateUser({ userId, values })
+  await updateUser({ userId, values })
+
+  return json({ values })
 }
 
 const data = () => {
@@ -119,12 +122,47 @@ const data = () => {
     }
   }, [values])
 
+  const [shadowBackground, setShadowBackground] = useState(false)
+  const transition = useTransition()
+
+  useEffect(() => {
+    if (transition.state === "loading" && actionData?.values) setShadowBackground(true)
+  }, [actionData, transition])
+
   return (
     <S.FormContainer method="post">
-      {/* <S.ShadowBackground /> */}
+      <S.ShadowBackground show={shadowBackground}>
+        <S.ClickableBackground onClick={() => setShadowBackground(false)} />
+
+        <S.BackgroundContainer>
+          <S.BackgroundCloseButton onClick={() => setShadowBackground(false)}>
+            <FiX />
+          </S.BackgroundCloseButton>
+
+          <S.BackgroundDataContainer>
+            {actionData?.values && Object.entries(actionData.values).map((item, index) => (
+              <>
+                <S.BackgroundTitle>
+                  {item[0]} has changed to : 
+                </S.BackgroundTitle>
+
+                <S.BackgroundData>
+                  {item[1]}
+                </S.BackgroundData>
+              </>
+            ))}
+          </S.BackgroundDataContainer>
+
+          <S.BackgroundButton onClick={() => setShadowBackground(false)}>
+            Voltar
+          </S.BackgroundButton>
+        </S.BackgroundContainer>
+      </S.ShadowBackground>
+
       <S.Title>
         Dados Cadastrais
       </S.Title>
+
       <S.Grid columns={"1fr 1fr"}>
         <DataInput2
           text="E-mail"

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { useActionData, useSearchParams } from '@remix-run/react'
-import { json } from '@remix-run/node';
+import { useActionData, useSearchParams, useTransition } from '@remix-run/react'
+import { json, redirect } from '@remix-run/node';
 
 import { getUserId, createUserSession } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
@@ -42,8 +42,6 @@ export const action = async ({ request }) => {
       user.delegationAdvisor ?
         user.delegationAdvisor.delegationId : undefined
 
-  console.log(delegationId)
-
   return createUserSession({
     request,
     userId: user.id,
@@ -62,7 +60,12 @@ const LoginPage = () => {
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/dashboard/home";
+  const transition = useTransition()
   const actionData = useActionData()
+
+  useEffect(() => {
+    console.log(transition.state)
+  }, [transition])
 
   return (
     <S.Wrapper>
@@ -85,11 +88,11 @@ const LoginPage = () => {
           <InputBox name="password" text="Senha" type="password" err={actionData?.errors?.password} />
 
           <S.ForgotLinkBox>
-            <S.ForgotLink
+            <S.StyledLink
               to="/resetPassword"
             >
               Esqueceu a Senha?
-            </S.ForgotLink>
+            </S.StyledLink>
           </S.ForgotLinkBox>
 
           <input type="hidden" name="redirectTo" value={redirectTo} />
@@ -99,6 +102,7 @@ const LoginPage = () => {
               type="submit"
               name="button"
               value="firstButton"
+              disabled={transition.state !== "idle"}
             >
               <p>Entrar</p>
             </S.SubmitButton>
@@ -107,11 +111,11 @@ const LoginPage = () => {
 
         <S.JoinLinkBox>
           Ainda não tem uma conta?
-          <S.JoinLink
-            to="/join"
+          <S.StyledLink
+            to="/join/user"
           >
             Cadastrar
-          </S.JoinLink>
+          </S.StyledLink>
         </S.JoinLinkBox>
       </S.FormContainer>
     </S.Wrapper>

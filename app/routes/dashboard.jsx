@@ -8,8 +8,10 @@ import * as S from '~/styled-components/dashboard'
 import {
   FiMenu,
   FiShoppingBag,
-  FiTag,
+  FiGlobe,
+  FiLogOut,
   FiUser,
+  FiUsers,
   FiCreditCard,
   FiBookmark,
   FiSettings,
@@ -45,25 +47,45 @@ const Dashboard = () => {
           </S.SubTitle>
         </S.TitleBox>
 
-        <S.DashboardContainer>
-          <S.Navbar>
+        <S.Navbar>
+          <S.NavItem>
+            <FiUser />
+            <p>{user.name}</p>
+          </S.NavItem>
+
+          <S.NavMenu>
             <S.NavItem>
-              <FiUser />
-              <p>{user.name}</p>
+              <FiHelpCircle />
+              <p>Ajuda</p>
             </S.NavItem>
 
-            <S.NavMenu>
-              <S.NavItem>
-                <FiHelpCircle />
-                <p>Ajuda</p>
-              </S.NavItem>
+            <S.NavItem>
+              <FiSettings />
 
-              <S.NavItem>
-                <FiSettings />
-              </S.NavItem>
-            </S.NavMenu>
-          </S.Navbar>
+              {/* <S.DropDownContainer>
+                <S.DropDownMenu>
+                  <S.DropDownTitleBox>
 
+                  </S.DropDownTitleBox>
+
+                  <S.DropDownItem>
+                    <FiGlobe /> Pt - Br
+                  </S.DropDownItem>
+
+                  <S.DropDownItem>
+                    <FiUsers /> Preferencias de Usuario
+                  </S.DropDownItem>
+
+                  <S.DropDownItem last>
+                    <FiLogOut /> Logout
+                  </S.DropDownItem>
+                </S.DropDownMenu>
+              </S.DropDownContainer> */}
+            </S.NavItem>
+          </S.NavMenu>
+        </S.Navbar>
+
+        <S.DashboardContainer>
           <S.Sidebar>
             <NavLink to="home">
               {({ isActive }) => (
@@ -78,7 +100,7 @@ const Dashboard = () => {
               )}
             </NavLink>
 
-            <NavLink to="data">
+            <NavLink to="data" prefetch="render">
               {({ isActive }) => (
                 <S.SidebarItem active={isActive ? true : false}>
                   <S.ItemIcon>
@@ -91,7 +113,7 @@ const Dashboard = () => {
               )}
             </NavLink>
 
-            <NavLink to="delegation">
+            <NavLink to="delegation" prefetch="intent">
               {({ isActive }) => (
                 <S.SidebarItem active={isActive ? true : false}>
                   <S.ItemIcon>

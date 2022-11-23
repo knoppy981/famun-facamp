@@ -2,6 +2,13 @@ import styled from "styled-components";
 import { Link, Form } from '@remix-run/react'
 import { FiChevronRight } from "react-icons/fi";
 
+const azulClaro = '#BDE8F5'
+const azul = '#01558A'
+const azulCeu = '#14A7D8'
+const azulEscuro = '#183567'
+const verde = '#3FA534'
+const vermelho = '#C01627'
+
 export const Wrapper = styled.div`
   width: 100%;
   height: 100vh;
@@ -63,16 +70,27 @@ export const ButtonContainer = styled.div`
 	}
 `
 export const SubmitButton = styled.button`
-  background: #183567;
 	border-radius: 5px;
 	width: 300px;
+  height: 45px;
+  background: ${azulClaro};
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px -2px #000000;
 	height: 100%;
 	cursor: pointer;
   transition: 0.4s all ease;
+  color: #000;
+
+  &:disabled {
+    color: #666666;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+  }
 
   p {
     font-weight: 500;
-	  color: #fff;
   }
 `
 export const ForgotLinkBox = styled.div`
@@ -80,49 +98,16 @@ export const ForgotLinkBox = styled.div`
   width: 100%;
   display: flex;
 `
-export const ForgotLink = styled(Link)`
-	text-decoration: none;
-  font-size: 14px;
-  margin-left: 5px;
-  height: 19px;
-  --s: 1px;
-  --c: #666666;
-  --a: #000;
-  color: transparent;
-  padding-bottom: var(--s);
-  background: linear-gradient(90deg,var(--a) 50%,var(--a) 0) calc(100% - var(--_p,0%))/200% 100%,
-    linear-gradient(var(--c) 0 0) 50% 100%/var(--_p,0%) var(--s) no-repeat;
-  transition: .3s ease-in-out;
-  background-clip: text, padding-box;
-  -webkit-background-clip: text, padding-box;
-
-  &:hover{
-    --_p: 100%;
-  }
-`
 export const JoinLinkBox = styled.div`
 	font-size: 14px;
   color: #000;
   width: 100%;
   display: flex;
   justify-content: center;
-  gap: 6px;
 `
-export const JoinLink = styled(Link)`
-  color: transparent;
+export const StyledLink = styled(Link)`
+  font-size: 14px;
   height: 19px;
-  --s: 1px;
-  --c: #666666;
-  --a: #000;
-  color: transparent;
-  padding-bottom: var(--s);
-  background: linear-gradient(90deg,var(--a) 50%,var(--a) 0) calc(100% - var(--_p,0%))/200% 100%,
-    linear-gradient(var(--c) 0 0) 50% 100%/var(--_p,0%) var(--s) no-repeat;
-  transition: .3s ease-in-out;
-  background-clip: text, padding-box;
-  -webkit-background-clip: text, padding-box;
-
-  &:hover{
-    --_p: 100%;
-  }
+  margin-left: 5px;
+  text-decoration: underline;
 `
