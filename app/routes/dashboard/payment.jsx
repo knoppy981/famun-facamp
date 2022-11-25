@@ -4,23 +4,45 @@ import { useLoaderData } from '@remix-run/react'
 
 import { getAllTransacoes } from '~/models/payments'
 
-export const loader = async ({request}) => {
+import * as S from '~/styled-components/dashboard/payment'
+
+export const loader = async ({ request }) => {
 
   const transactions = await getAllTransacoes()
   console.log(transactions)
-  return json({transactions})
-} 
+  return json({ transactions })
+}
 
 const payment = () => {
 
   const data = useLoaderData()
 
   return (
-    <div>
-      <pre>
-        {JSON.stringify(data.transactions, null, 2)}
-      </pre>
-    </div>
+    <S.Wrapper>
+      <S.Title>
+        Pagamentos
+      </S.Title>
+
+      <S.Container>
+        <S.SubTitle>
+          Pendentes
+        </S.SubTitle>
+
+        <S.PaymentsList>
+          <S.PaymentContainer>
+            <S.Payment></S.Payment>
+          </S.PaymentContainer>
+
+          <S.PaymentContainer>
+            <S.Payment></S.Payment>
+          </S.PaymentContainer>
+
+          <S.PaymentContainer>
+            <S.Payment></S.Payment>
+          </S.PaymentContainer>
+        </S.PaymentsList>
+      </S.Container>
+    </S.Wrapper>
   )
 }
 
