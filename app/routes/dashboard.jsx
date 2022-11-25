@@ -127,7 +127,7 @@ const Dashboard = () => {
             </NavLink>
 
 
-            <NavLink to="payment">
+            <NavLink to="payment" prefetch="render">
               {({ isActive }) => (
                 <S.SidebarItem active={isActive ? true : false}>
                   <S.ItemIcon>

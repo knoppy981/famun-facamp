@@ -2,11 +2,15 @@
 /* ---------------------------------------> npm add stripe @stripe/stripe-js @stripe/react-stripe-js  <---------------------------------*/
 
 import Stripe from 'stripe'
-import {UtilDin,utilJSON, utilSelectPgto} from  'app/models/util.js'
+import { UtilDin, utilJSON, utilSelectPgto } from 'app/models/util.js'
 
 const stripe = new Stripe("sk_test_51L58wIJJYWRor6C3AH8lSuAqAu01n6ey6AouMnQI2FYCYfujyAR1buA7qx9j5dROp0DxwCjFXRoCgM4N8U4Z5lX300sxFhU8GW")
 
+<<<<<<< HEAD
 export async function getAllTrancoes(){
+=======
+export async function getAllTransacoes() {
+>>>>>>> 71aec5ca455c90dc2d4d7b19821000b288cc126f
     const paymentsIntents = await stripe.paymentIntents.search({ query: 'status:\'succeeded\'' })
     let dados = "";
   
@@ -29,6 +33,7 @@ export async function getAllTrancoes(){
     const _data = utilJSON("pgto",dados)?.pgto
   
     return (_data)
+<<<<<<< HEAD
 }
 
 export async function novaTransacao(data){
@@ -52,4 +57,6 @@ export async function novaTransacao(data){
                 })
             }
         })
+=======
+>>>>>>> 71aec5ca455c90dc2d4d7b19821000b288cc126f
 }
