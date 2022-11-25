@@ -178,5 +178,5 @@ export const ItemTitle = styled.div`
 export const OutletWrapper = styled.div`
   height: 100%;
   width: 100%;
-  padding-left: 40px;
+  padding: 0 40px;
 `

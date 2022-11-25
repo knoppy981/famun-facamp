@@ -178,19 +178,6 @@ async function seed() {
 
 	console.log(user) */
 
-	const user  = await prisma.user.findUnique({
-		where: {
-			email: "roger@gmail.com"
-		},
-		include: {
-			delegate: true,
-			delegationAdvisor: true
-		}
-	})
-
-	console.log(user?.delegate)
-	console.log(user?.delegationAdvisor)
-
 	console.log(`Database has been seeded. 🌱`);
 }
 

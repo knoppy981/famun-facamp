@@ -24,6 +24,7 @@ model User {
   delegate          Delegate?
   delegationLeader  Delegation?
   delegationAdvisor DelegationAdvisor?
+  payments          Payment[]
 }
 
 model Password {
@@ -84,6 +85,15 @@ model Delegation {
   delegationLeaderId  String              @unique @db.ObjectId
   delegate            Delegate[]
   delegationAdvisor   DelegationAdvisor[]
+}
+
+model Payment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  paymentId String
+  succeed   Boolean
+  createdAt DateTime @default(now())
+  client    User     @relation(fields: [clientId], references: [id])
+  clientId  String   @unique @db.ObjectId
 }
 
 model Address {
