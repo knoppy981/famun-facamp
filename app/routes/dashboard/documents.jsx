@@ -1,8 +1,18 @@
 import React from 'react'
 
+import * as S from '~/styled-components/dashboard/documents'
+
 const documents = () => {
   return (
-    <div>documents</div>
+    <S.Wrapper>
+      <S.Title>
+        Documentos
+      </S.Title>
+
+      <S.Container>
+        
+      </S.Container>
+    </S.Wrapper>
   )
 }
 

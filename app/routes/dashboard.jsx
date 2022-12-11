@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { redirect, json } from "@remix-run/node";
 import { NavLink, Outlet } from "@remix-run/react";
 
@@ -5,6 +6,7 @@ import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
 
 import * as S from '~/styled-components/dashboard'
+import * as D from '~/styled-components/components/dropdown'
 import {
   FiMenu,
   FiShoppingBag,
@@ -22,6 +24,7 @@ import {
   FiHelpCircle,
   FiFile,
 } from "react-icons/fi";
+import { useClickOutside } from "~/hooks/useClickOutside";
 
 export const loader = async ({ request }) => {
   const userId = await requireUserId(request)
@@ -31,6 +34,10 @@ export const loader = async ({ request }) => {
 const Dashboard = () => {
 
   const user = useUser()
+
+  const menuRef = useRef(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  useClickOutside(menuRef, () => setMenuOpen(false))
 
   return (
     <S.Wrapper>
@@ -50,37 +57,42 @@ const Dashboard = () => {
         <S.Navbar>
           <S.NavItem>
             <FiUser />
-            <p>{user.name}</p>
+            {user.name}
           </S.NavItem>
 
           <S.NavMenu>
             <S.NavItem>
-              <FiHelpCircle />
-              <p>Ajuda</p>
+              <S.NavIcon>
+                <FiHelpCircle />
+              </S.NavIcon>
+              Ajuda
             </S.NavItem>
 
-            <S.NavItem>
-              <FiSettings />
+            <S.NavItem ref={menuRef} border>
+              <S.NavIcon onClick={() => setMenuOpen(!menuOpen)} >
+                <FiSettings />
+              </S.NavIcon>
 
-              {/* <S.DropDownContainer>
-                <S.DropDownMenu>
-                  <S.DropDownTitleBox>
-
-                  </S.DropDownTitleBox>
-
-                  <S.DropDownItem>
+              <D.Reference open={menuOpen}/>
+              <D.Container open={menuOpen}>
+                <D.Menu>
+                  <D.Item>
                     <FiGlobe /> Pt - Br
-                  </S.DropDownItem>
+                  </D.Item>
 
-                  <S.DropDownItem>
+                  <D.Item>
                     <FiUsers /> Preferencias de Usuario
-                  </S.DropDownItem>
+                  </D.Item>
 
-                  <S.DropDownItem last>
-                    <FiLogOut /> Logout
-                  </S.DropDownItem>
-                </S.DropDownMenu>
-              </S.DropDownContainer> */}
+                  <D.DForm action="/logout" method="post">
+                    <D.Item>
+                      <D.Button type='submit'>
+                        <FiLogOut /> Logout
+                      </D.Button>
+                    </D.Item>
+                  </D.DForm>
+                </D.Menu>
+              </D.Container>
             </S.NavItem>
           </S.NavMenu>
         </S.Navbar>
@@ -113,7 +125,7 @@ const Dashboard = () => {
               )}
             </NavLink>
 
-            <NavLink to="delegation" prefetch="intent">
+            <NavLink to="delegation" prefetch="render">
               {({ isActive }) => (
                 <S.SidebarItem active={isActive ? true : false}>
                   <S.ItemIcon>

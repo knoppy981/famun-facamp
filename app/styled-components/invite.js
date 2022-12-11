@@ -34,7 +34,7 @@ export const Title = styled.div`
   color: ${azulEscuro};
   margin-right: 5px;
 `
-export const SubTitle = styled.div`
+export const Subtitle = styled.div`
   font-size: 2.4rem;
   font-weight: 500;
   color: #000;
@@ -66,9 +66,32 @@ export const NavItem = styled.div`
   padding: 0 15px;
   border-left: ${p => p.border ? '1px solid #E6E6E6' : undefined};
 `
-export const StepsWrapper = styled.div`
+export const StepsForm = styled(Form)`
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   padding: 10px;
-  margin-top: -20px;
+  padding-left: 5px;
+`
+export const FormTitle = styled.h3`
+  font-size: 2rem;
+  font-weight: 500;
+  color: #000;
+`
+export const FormSubtitle = styled.p`
+  font-size: 1.8rem;
+  color: #000;
+`
+export const Button = styled.button`
+  height: 45px;
+  width: 200px;
+  margin-top: 40px;
+  background: ${azulClaro};
+  box-shadow: 0px 2px 5px -2px #000000;
+  color: #000;
+  border-radius: 5px;
+	font-size: 1.5rem;
+  transition: .4s all ease;
 `

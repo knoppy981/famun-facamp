@@ -29,13 +29,13 @@ export const TitleBox = styled.div`
   height: 40px;
 `
 export const Title = styled.div`
-  font-size: 36px;
+  font-size: 3.6rem;
   font-weight: 900;
   color: #183567;
   margin-right: 5px;
 `
 export const SubTitle = styled.div`
-  font-size: 24px;
+  font-size: 2.4rem;
   font-weight: 500;
   color: #000;
   transform: translate(0, 1px);
@@ -80,6 +80,8 @@ export const SubmitButton = styled.button`
 	cursor: pointer;
   transition: 0.4s all ease;
   color: #000;
+  font-weight: 400;
+	font-size: 1.5rem;
 
   &:disabled {
     color: #666666;
@@ -89,9 +91,6 @@ export const SubmitButton = styled.button`
     transform: translateY(-2px);
   }
 
-  p {
-    font-weight: 500;
-  }
 `
 export const ForgotLinkBox = styled.div`
   color: #000;
@@ -99,14 +98,14 @@ export const ForgotLinkBox = styled.div`
   display: flex;
 `
 export const JoinLinkBox = styled.div`
-	font-size: 14px;
+	font-size: 1.4rem;
   color: #000;
   width: 100%;
   display: flex;
   justify-content: center;
 `
 export const StyledLink = styled(Link)`
-  font-size: 14px;
+  font-size: 1.4rem;
   height: 19px;
   margin-left: 5px;
   text-decoration: underline;

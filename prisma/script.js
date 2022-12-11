@@ -1,11 +1,17 @@
 const { PrismaClient } = require("@prisma/client")
 const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken");
 
 const prisma = new PrismaClient();
 
 async function seed() {
 
-	/* const user1 = await prisma.user.create({
+	/* await prisma.user.delete({ where: { email: "andre.knopp8@gmail.com" } }).catch(err => { console.log('no user found') })
+	await prisma.user.delete({ where: { email: "teste@gmail.com" } }).catch(err => { console.log('no user found') })
+
+	await prisma.delegation.delete({ where: { code: "123456" } }).catch(err => { console.log('no delegation found') })
+
+	const user1 = await prisma.user.create({
 		data: {
 			name: "Andre Knopp Guimaraes",
 			birthDate: "23/06/2003",
@@ -17,7 +23,22 @@ async function seed() {
 				create: {
 					hash: await bcrypt.hash("dede5562", 10)
 				}
-			}
+			},
+			nacionality: "Brasil",
+			delegate: {
+				create: {
+					councilPreference: "Assembleia_Geral_da_ONU",
+					languagesSimulates: {
+						createMany: {
+							data: [
+								{ language: "Portugues" },
+								{ language: "Espanhol" },
+								{ language: "Ingles" },
+							]
+						}
+					}
+				}
+			},
 		}
 	})
 
@@ -33,150 +54,71 @@ async function seed() {
 				create: {
 					hash: await bcrypt.hash("teste123", 10)
 				}
+			},
+			nacionality: "Brasil",
+			delegationAdvisor: {
+				create: {
+					advisorRole: "Professor",
+					socialMedia: {
+						createMany: {
+							data: [
+								{ socialMediaName: "Facebook", username: "ciclano99" },
+								{ socialMediaName: "Instagram", username: "ciclano99" },
+							]
+						}
+					}
+				}
 			}
 		}
 	})
+
+	const asd = await prisma.delegation.findUnique({where: {code: "123456"}})
+	console.log(asd)
+
+	const { JSON_WEB_TOKEN_SECRET } = process.env;
+
+	const token = jwt.sign(
+		{ delegationCode: "123456" },
+		JSON_WEB_TOKEN_SECRET,
+		{ expiresIn: 60 * 60 }
+	);
+
 
 	const delegation = await prisma.delegation.create({
 		data: {
 			code: "123456",
+			inviteLink: `http://localhost:3000/i/${token}`,
 			school: "Colégio Notre Dame Campinas",
 			schoolPhoneNumber: "+55 (19) 97866-7676",
-			participationMethod: "Presential",
+			participationMethod: "Presencial",
 			address: {
 				create: {
 					neighborhood: "Cambuí",
 					city: "Campinas",
-					State: "SP",
+					state: "SP",
+					address: "Rua Elviro",
 					cep: "12099522",
 					country: "Brasil",
 				}
 			},
-			delegationLeader: {
-				connect: {
-					id: user2.id
-				}
-			}
-		}
-	})
-
-	await prisma.delegation.update({
-		where: {
-			id: delegation.id
-		},
-		data: {
-			delegate: {
-				create: {
-					councilPreference: "AssembleiaGeralOnu",
-					user: {
-						connect: {
-							id: user1.id
-						}
-					}
-				}
-			},
-			delegationAdvisor: {
-				create: {
-					advisorRole: "Professor",
-					user: {
-						connect: {
-							id: user2.id
-						}
-					}
-				}
+			participants: {
+				connect: [
+					{ id: user1.id },
+					{ id: user2.id },
+				]
 			}
 		}
 	}) */
 
-	/* const name = "Roger Roger"
-	const email = "roger@gmail.com"
-	const password = "teste123"
-	const cpf = "12312312312"
-	const rg = "121231231"
-	const birthDate = "23/06/2003"
-	const phoneNumber = "1997154-7424"
-	const userType = "delegate"
-
-	const data = {
-		Facebook: "asdasdasd",
-		Instagram: "123123123",
-		Linkedin: "lkjlkjlkj"
-	}
-
-	await prisma.user.delete({
+	return prisma.delegation.update({
 		where: {
-			email: email
-		}
-	}).catch(() => { })
-
-
-	const asdasd = {
-		create: {
-			councilPreference: "Assembleia_Geral_da_ONU",
-			languagesSimulates: {
-				createMany: {
-					data: [
-						{ language: "portuguese" },
-						{ language: "english" }
-					]
-				}
-			}
-		}
-	}
-
-	let auxArray1 = []
-	const sasdasd = {
-		create: {
-			advisorRole: "Professor",
-			socialMedia: {
-				createMany: {
-					data: [
-						data.Facebook ? { socialMediaName: "Facebook", username: data.Facebook } : undefined,
-						data.Instagram ? { socialMediaName: "Instagram", username: data.Instagram } : undefined,
-						data.Linkedin ? { socialMediaName: "Linkedin", username: data.Linkedin } : undefined,
-					]
-				}
-			}
-		}
-	}
-
-	const user = await prisma.user.create({
-		data: {
-			name: name,
-			email: email,
-			password: {
-				create: {
-					hash: await bcrypt.hash(password, 10)
-				}
-			},
-			cpf: cpf,
-			rg: rg,
-			birthDate: birthDate,
-			phoneNumber: phoneNumber,
-			delegate: userType === "delegate" ? asdasd : undefined,
-			delegationAdvisor: userType === "advisor" ? sasdasd : undefined,
-		}
-	})
-
-	const delegation = await prisma.delegation.update({
-		where: {
-			code: "123456"
+			code: code
 		},
 		data: {
-			delegate: userType === "delegate" ? {
-				connect: {
-					userId: user.id
-				}
-			} : undefined,
-			delegationAdvisor: userType === "delegate" ? {
-				connect: {
-					userId: user.id
-				}
-			} : undefined,
+			inviteLink: ""
 		}
 	})
 
-	console.log(user) */
 
 	console.log(`Database has been seeded. 🌱`);
 }

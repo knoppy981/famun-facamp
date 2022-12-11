@@ -1,4 +1,5 @@
 import { prisma } from "~/db.server";
+import { Prisma } from '@prisma/client'
 import jwt from "jsonwebtoken";
 
 export async function getDelegationById(id) {
@@ -8,43 +9,21 @@ export async function getDelegationById(id) {
 		},
 		select: {
 			school: true,
+			inviteLink: true,
 			code: true,
 			participationMethod: true,
 			createdAt: true,
-			delegate: {
-				select: {
-					createdAt: true,
-					user: {
-						select: {
-							id: true,
-							name: true,
-						}
-					}
-				}
-			},
-			delegationAdvisor: {
-				select: {
-					createdAt: true,
-					advisorRole: true,
-					user: {
-						select: {
-							id: true,
-							name: true,
-						}
-					}
-				}
-			},
-			delegationLeader: {
-				select: {
-					id: true,
-					name: true
+			participants: {
+				include: {
+					delegate: true,
+					delegationAdvisor: true,
 				}
 			}
 		}
 	})
 }
 
-export async function findDelegationCode(code) {
+export async function getDelegationByCode(code) {
 	return prisma.delegation.findFirst({
 		where: {
 			code: code
@@ -53,31 +32,16 @@ export async function findDelegationCode(code) {
 }
 
 export async function joinDelegation(data) {
-	const user  = await prisma.user.findUnique({
-		where: {
-			id: data.userId
-		},
-		include: {
-			delegate: true,
-			delegationAdvisor: true
-		}
-	})
-
 	return prisma.delegation.update({
 		where: {
 			code: data.code
 		},
 		data: {
-			delegate: user.delegate ? {
-				connect: {
-					userId: data.userId
-				}
-			} : undefined,
-			delegationAdvisor: user.delegationAdvisor ? {
-				connect: {
-					userId: data.userId
-				}
-			} : undefined,
+			participants: {
+				connect: [
+					{ id: data.userId }
+				]
+			}
 		}
 	})
 }
@@ -90,6 +54,8 @@ export async function updateDelegationCode(delegationId, code) {
 		data: {
 			code: code
 		}
+	}).catch(async (err) => {
+		if (err instanceof Prisma.PrismaClientKnownRequestError) throw (err)
 	})
 }
 
@@ -99,7 +65,6 @@ export async function createDelegation() {
 
 export async function generateDelegationInviteLink(delegationCode) {
 	const { JSON_WEB_TOKEN_SECRET } = process.env;
-	const delegation = findDelegationCode(delegationCode)
 
 	/* achar lider da delegacao e mandar no link tambem */
 	/* checar se ja estorou maximo de participantes */
@@ -110,10 +75,10 @@ export async function generateDelegationInviteLink(delegationCode) {
 	const token = jwt.sign(
 		{ delegationCode: delegationCode },
 		JSON_WEB_TOKEN_SECRET,
-		{ expiresIn: 60 * 60 }
+		{ expiresIn: 60 * 60 * 24 * 30 }
 	);
 
-	return `http://localhost:3000/linkInvitation/${token}`
+	return `http://localhost:3000/i/${token}`
 }
 
 export async function decodeInviteLink(token) {
@@ -124,4 +89,17 @@ export async function decodeInviteLink(token) {
 	} catch (err) {
 		return { err }
 	}
+}
+
+export async function updateInviteLink(delegationCode) {
+	const link = await generateDelegationInviteLink(delegationCode)
+
+	return prisma.delegation.update({
+		where: {
+			code: delegationCode
+		},
+		data: {
+			inviteLink: link
+		}
+	})
 }

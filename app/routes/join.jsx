@@ -1,4 +1,4 @@
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Link, Outlet, useSearchParams } from "@remix-run/react";
 import { json } from "@remix-run/node";
 
 import { getUserId } from "~/session.server";
@@ -7,6 +7,9 @@ import * as S from '~/styled-components/join'
 import { FiSettings, FiHelpCircle, FiArrowLeft, } from "react-icons/fi";
 
 const join = () => {
+
+  const [searchParams] = useSearchParams();
+
   return (
     <S.Wrapper>
       <S.Container>
@@ -24,21 +27,26 @@ const join = () => {
 
         <S.Navbar>
           <S.NavMenu>
-            <Link to="/login">
-              <S.NavItem active first>
+            <Link
+              to={{
+                pathname: "/login",
+                search: searchParams.toString(),
+              }}
+            >
+              <S.NavItem>
                 <FiArrowLeft />
-                <p>Voltar</p>
+                Início
               </S.NavItem>
             </Link>
           </S.NavMenu>
 
           <S.NavMenu>
-            <S.NavItem first active>
+            <S.NavItem>
               <FiHelpCircle />
-              <p>Ajuda</p>
+              Ajuda
             </S.NavItem>
 
-            <S.NavItem active>
+            <S.NavItem border>
               <FiSettings />
             </S.NavItem>
           </S.NavMenu>

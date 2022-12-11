@@ -11,13 +11,19 @@ import * as S from '~/styled-components/join/user'
 import AuthInputBox from '~/styled-components/components/inputs/authInput'
 import { FiTrash2, FiAlertTriangle } from 'react-icons/fi'
 
+import br from '~/images/flag-icons/br.svg'
+import de from '~/images/flag-icons/de.svg'
+import es from '~/images/flag-icons/es.svg'
+import fr from '~/images/flag-icons/fr.svg'
+import mx from '~/images/flag-icons/mx.svg'
+import pt from '~/images/flag-icons/pt.svg'
+import us from '~/images/flag-icons/us.svg'
 
 export const action = async ({ request }) => {
   const text = await request.text()
   const session = await getSession(request)
   const { redirectTo, step, action, userType, ...data } = qs.parse(text)
-
-  //test
+  const searchParams = redirectTo === "" ? "" : new URLSearchParams([["redirectTo", safeRedirect(redirectTo)]])
 
   if (action === 'next') {
 
@@ -163,14 +169,14 @@ export const action = async ({ request }) => {
       }
     }
 
-    if (step == 5) {
+    if (step == 6) {
       const userData = {
         ...session.get("user-data-1"),
         ...session.get("user-data-2"),
-        ...session.get("user-data-4"),
+        ...session.get("user-data-3"),
+        ...session.get("user-data-5"),
         ...session.get("user-type"),
       }
-
       const user = await createUser(userData)
 
       console.log(user)
@@ -178,23 +184,17 @@ export const action = async ({ request }) => {
       return createUserSession({
         request,
         userId: user.id,
-        redirectTo: safeRedirect(`/join/delegation?${redirectTo}`),
+        redirectTo: redirectTo ? safeRedirect(redirectTo) : `/join/delegation?${searchParams}`,
       });
     }
   }
 
-  //test
-
-  const nextStep = userType ? 4 : Number(step) + (action === 'next' ? 1 : -1)
+  const nextStep = userType ? 5 : Number(step) + (action === 'next' ? 1 : -1)
   session.set(`user-data-${step}`, data)
   if (userType) session.set('user-type', { userType: userType })
   session.set('current-step', { step: nextStep })
 
-  /*   console.log("action data")
-    console.log(`user-data-${step}`)
-    console.log(data) */
-
-  return redirect(`/join/user?${safeRedirect(redirectTo)}`, {
+  return redirect(`/join/user?${searchParams}`, {
     headers: {
       'set-cookie': await sessionStorage.commitSession(session),
     },
@@ -203,7 +203,6 @@ export const action = async ({ request }) => {
 
 export const loader = async ({ request }) => {
   const userId = await getUserId(request)
-  console.log(userId)
   if (userId) return redirect("/")
 
   const session = await getSession(request)
@@ -212,11 +211,13 @@ export const loader = async ({ request }) => {
     ...session.get("current-step"),
     ...session.get("user-type"),
   }
-  if (step === 5) {
+  console.log(step)
+  if (step === 6) {
     const data = {
       ...session.get("user-data-1"),
       ...session.get("user-data-2"),
-      ...session.get("user-data-4"),
+      ...session.get("user-data-3"),
+      ...session.get("user-data-5"),
     }
     /* console.log("loader data")
     console.log(data) */
@@ -225,6 +226,61 @@ export const loader = async ({ request }) => {
     const data = session.get(`user-data-${step}`) ?? {}
     return json({ data, step, userType })
   }
+}
+
+const Nacionality = ({ data }) => {
+
+  const flagIcons = {
+    Brasil: br,
+    Alemanha: de,
+    Espanha: es,
+    Franca: fr,
+    Mexico: mx,
+    Portugal: pt,
+    Estados_Unidos: us,
+  }
+
+  const [flag, setFlag] = useState(data.nacionality ?? "Brasil")
+  const [focus, setFocus] = useState(false)
+
+  return (
+    <>
+      <S.StepTitle style={{ marginTop: '40px' }}>
+        Nacionalidade
+      </S.StepTitle>
+
+      <S.StepSubtitle>
+        Escolha seu país de nascimento
+      </S.StepSubtitle>
+
+      <S.NacionalityContainer
+        onClick={() => setFocus(true)}
+        focused={focus}
+      >
+        <S.NacionalityFlag
+          style={{
+            backgroundImage: `url(${flagIcons[flag]})`,
+          }}
+        />
+
+        <S.NacionalitySelect
+          value={flag}
+          onChange={e => { setFlag(e.target.value); setFocus(false) }}
+          name="nacionality"
+          onBlur={() => setFocus(false)}
+        >
+
+          <S.Option value={"Brasil"}>Brasil</S.Option>
+          <S.Option value={"Portugal"}>Portugal</S.Option>
+          <S.Option value={"Franca"}>França</S.Option>
+          <S.Option value={"Estados_Unidos"}>Estados Unidos</S.Option>
+          <S.Option value={"Espanha"}>Espanha</S.Option>
+          <S.Option value={"Alemanha"}>Alemanha</S.Option>
+          <S.Option value={"México"}>México</S.Option>
+        </S.NacionalitySelect>
+      </S.NacionalityContainer>
+    </>
+  )
 }
 
 const CreateUser = ({ data, actionData }) => {
@@ -394,7 +450,7 @@ const DelegateData = ({ data, actionData }) => {
 
           {console.log(data.language)}
 
-          {["portuguese", "english", "spanish"].map((item, index) => (
+          {["Portugues", "Ingles", "Espanhol"].map((item, index) => (
             <S.CheckBoxContainer>
               <S.CheckBox
                 id={item}
@@ -539,6 +595,7 @@ const ConfirmData = ({ data, userType }) => {
       <S.ConfirmList>
         <S.ConfirmColumn>
           {[
+            ["Nacionalidade", "nacionality"],
             ["Nome", "name"],
             ["E-mail", "email"],
             ["Telefone", "phoneNumber"],
@@ -586,13 +643,11 @@ const ConfirmData = ({ data, userType }) => {
               </S.ConfirmLabel>
               {Array.isArray(data.language) ?
                 data.language.map((item, index) => (
-                  <div>
+                  <p>
                     {item}
-                  </div>
+                  </p>
                 )) :
-                <div>
-                  {data.language}
-                </div>
+                data.language
               }
             </S.ConfirmItem>
           }
@@ -625,26 +680,28 @@ const ConfirmData = ({ data, userType }) => {
 const user = () => {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "";
+  console.log(redirectTo)
 
   const actionData = useActionData()
   let { userType, step, data } = useLoaderData()
   if (!step) step = 1
 
   return (
-    <S.StepsForm type="submit" noValidate method='post'>
+    <S.StepsForm noValidate method='post'>
       <input type="hidden" name="step" value={step} />
       <input type="hidden" name="redirectTo" value={redirectTo} />
 
-      {step === 1 && <CreateUser data={data} actionData={actionData} />}
-      {step === 2 && <UserData data={data} actionData={actionData} />}
-      {step === 3 && <UserType data={data} actionData={actionData} />}
-      {step === 4 && (userType === "advisor" ? <AdvisorData data={data} actionData={actionData} /> : <DelegateData data={data} actionData={actionData} />)}
-      {step === 5 && <ConfirmData data={data} userType={userType} />}
+      {step === 1 && <Nacionality data={data} />}
+      {step === 2 && <CreateUser data={data} actionData={actionData} />}
+      {step === 3 && <UserData data={data} actionData={actionData} />}
+      {step === 4 && <UserType data={data} actionData={actionData} />}
+      {step === 5 && (userType === "advisor" ? <AdvisorData data={data} actionData={actionData} /> : <DelegateData data={data} actionData={actionData} />)}
+      {step === 6 && <ConfirmData data={data} userType={userType} />}
 
       <S.ControlButtonsContainer>
         {step !== 1 && <S.ControlButton name="action" value="previous" type="submit" prev> Voltar </S.ControlButton>}
 
-        {step !== 3 && <S.ControlButton name="action" value="next" type="submit"> {step === 5 ? 'Finalizar' : 'Próximo'} </S.ControlButton>}
+        {step !== 4 && <S.ControlButton name="action" value="next" type="submit"> {step === 6 ? 'Finalizar' : 'Próximo'} </S.ControlButton>}
       </S.ControlButtonsContainer>
     </S.StepsForm>
   )

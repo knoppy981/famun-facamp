@@ -1,18 +1,20 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import * as S from './elements'
 
 export const AuthInputBox = (props) => {
 
+	/* const [err, setErr] = useState(false) */
 	const err = props.err
 	const name = props.name
 	const inputRef = useRef(null)
 
 	useEffect(() => {
-    if (err) {
+		if (props.err) {
+			/* setErr(true) */
 			inputRef.current?.focus()
-		}
-  }, [err, props]);
+		} /* else { setErr(false) } */
+	}, [props]);
 
 	return (
 		<S.InputWrapper>
@@ -20,7 +22,7 @@ export const AuthInputBox = (props) => {
 				htmlFor={name}
 				err={err}
 			>
-				{err ? props.err : props.text}
+				{err ?? props.text}
 			</S.Label>
 
 			<S.InputContainer>
@@ -34,7 +36,9 @@ export const AuthInputBox = (props) => {
 					defaultValue={props.value}
 					autoFocus={props.autoFocus}
 					aria-invalid={err ? true : undefined}
+					/* onFocus={() => setErr(false)} */
 					aria-describedby={`${name}-error`}
+					err={err}
 				/>
 			</S.InputContainer>
 		</S.InputWrapper>

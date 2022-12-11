@@ -29,13 +29,13 @@ export const TitleBox = styled.div`
   height: 40px;
 `
 export const Title = styled.div`
-  font-size: 36px;
+  font-size: 3.6rem;
   font-weight: 900;
   color: ${azulEscuro};
   margin-right: 5px;
 `
 export const SubTitle = styled.div`
-  font-size: 24px;
+  font-size: 2.4rem;
   font-weight: 500;
   color: #000;
   transform: translate(0, 1px);
@@ -62,7 +62,7 @@ export const NavItem = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 18px;
+  font-size: 1.8rem;
   padding: 0 15px;
   border-left: ${p => p.first ? undefined : '1px solid #E6E6E6'};
 
@@ -108,17 +108,17 @@ export const ControlButton = styled.button`
   border: 1px solid ${p => !p.prev ? 'transparent' : '#E6E6E6'};
   color: #000;
   border-radius: 5px;
-	font-size: 15px;
+	font-size: 1.5rem;
   transition: .4s all ease;
 `
 export const StepTitle = styled.h3`
-  font-size: 22px;
+  font-size: 2.2rem;
   font-weight: 500;
   color: #000;
   padding-left: 5px;
 `
 export const StepSubtitle = styled.p`
-  font-size: 14px;
+  font-size: 1.4rem;
   color: #000;
 `
 export const InputContainer = styled.div`
@@ -142,7 +142,7 @@ export const JoinDelegationContainer = styled.div`
 	grid-gap: 5px;
 `
 export const JoinDelegationLabel = styled.label`
-	font-size: 18px;
+	font-size: 1.8rem;
   display: flex;
   align-items: center;
   padding: 0 10px; 
@@ -176,7 +176,7 @@ export const JoinDelegationInput = styled.input`
   height: 45px;
   outline: none;
   border: none;
-  font-size: 18px;
+  font-size: 1.8rem;
   font-weight: 400;
   background: transparent;
   color: #000;
@@ -188,7 +188,7 @@ export const JoinDelegationButton = styled.button`
   width: 150px;
   background: ${azulClaro};
   border-radius: 5px;
-	font-size: 15px;
+	font-size: 1.5rem;
   transition: .4s all ease;
   box-shadow: 0px 1px 5px -2px #000000;
   margin-left: 25px;
@@ -204,7 +204,7 @@ export const JoinDelegationButton = styled.button`
 export const joinDelegationStatus = styled.div`
   margin-top: 5px;
   padding-left: 10px;
-  font-size: 16px;
+  font-size: 1.6rem;
   color: #666666;
 `
 // confirm
@@ -223,10 +223,10 @@ export const ConfirmColumn = styled.ul`
   overflow-x: hidden;
 `
 export const ConfirmItem = styled.li`
-  font-size: 15px;
+  font-size: 1.5rem;
 `
 export const ConfirmLabel = styled.div`
-  font-size: 12px;
+  font-size: 1.2rem;
   color: #666666;
 `
 
@@ -240,7 +240,7 @@ export const StepButton = styled.button`
   width: 250px;
   background: ${azulClaro};
   border-radius: 5px;
-	font-size: 15px;
+	font-size: 1.5rem;
   transition: .4s all ease;
   box-shadow: 0px 2px 5px -2px #000000;
 

@@ -91,7 +91,7 @@ export const BackgroundDataContainer = styled.div`
   }
 `
 export const BackgroundTitle = styled.div`
-  font-size: 14px;
+  font-size: 1.4rem;
   font-weight: 500;
   color: #000;
   margin-bottom: 5px;
@@ -106,7 +106,7 @@ export const BackgroundData = styled.div`
   align-items: center;
   border-radius: 5px;
   border: 1px solid #E6E6E6;
-  font-size: 16px;
+  font-size: 1.6rem;
   font-weight: 500;
 `
 export const BackgroundButton = styled.div`
@@ -116,7 +116,7 @@ export const BackgroundButton = styled.div`
   width: 100%;
   background: ${azulClaro};
   border-radius: 5px;
-	font-size: 16px;
+	font-size: 1.6rem;
   transition: .4s all ease;
   box-shadow: 0px 2px 5px -2px #000000;
   cursor: pointer;
@@ -124,7 +124,7 @@ export const BackgroundButton = styled.div`
   place-content: center;
 `
 export const Title = styled.div`
-  font-size: 18px;
+  font-size: 1.8rem;
   font-weight: 500;
   color: #000;
 `
@@ -144,12 +144,13 @@ export const SubmitButton = styled.button`
   width: 200px;
   background: ${azulClaro};
   border-radius: 5px;
-	font-size: 15px;
+	font-size: 1.5rem;
   transition: .4s all ease;
-  box-shadow: 0px 2px 5px -2px #000000;
+  box-shadow: 0px 1px 5px -1px #000000;
 
   &:disabled {
     transform: translateY(4px);
     color: #666666;
+    background: transparent;
   }
 `

@@ -1,6 +1,6 @@
 import { json, redirect } from "@remix-run/node"
 
-import { findDelegationCode } from "~/models/delegation.server"
+import { getDelegationByCode } from "~/models/delegation.server"
 
 export const action = async ({ request }) => {
   const formData = await request.formData()
@@ -12,7 +12,7 @@ export const action = async ({ request }) => {
       { status: 400 }
     );
   } else {
-    const delegation = await findDelegationCode(delegationCode);
+    const delegation = await getDelegationByCode(delegationCode);
     if (!delegation) {
       return json(
         { errors: { delegation: "Não encontramos sua delegação" } },

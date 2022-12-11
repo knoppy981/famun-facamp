@@ -1,5 +1,14 @@
+import { redirect } from "@remix-run/node";
+
 import { logout } from "~/session.server";
 
-export const loader = async ({ request }) => {
-  return logout({request})
-}
+export const action = async ({ request }) => {
+  const formData = await request.formData()
+  const redirectTo = formData.get("redirectTo") ?? ""
+  console.log("HAHHAHA" + redirectTo)
+  return logout({request, redirectTo});
+};
+
+export const loader = async () => {
+  return redirect("/");
+};

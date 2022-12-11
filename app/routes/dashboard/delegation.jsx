@@ -1,22 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { json } from '@remix-run/node';
-import { Form, useOutletContext, useActionData, useLoaderData, useTransition } from '@remix-run/react';
+import { Form, useOutletContext, useActionData, useLoaderData, useFetcher } from '@remix-run/react';
 
 import { requireDelegation } from '~/session.server';
 import { generateDelegationInviteLink } from '~/models/delegation.server';
 
 import * as S from '~/styled-components/dashboard/delegation'
-import { FiMail, FiX } from 'react-icons/fi';
+import * as D from '~/styled-components/components/dropdown'
+import { FiMail, FiExternalLink, FiCheck } from 'react-icons/fi';
+import { useClickOutside } from "~/hooks/useClickOutside";
 
 export const action = async ({ request }) => {
   const formData = await request.formData()
   const delegationCode = formData.get("delegationCode")
-  if (delegationCode === undefined || null || "" || delegationCode?.length !== 6 ) 
+  if (delegationCode === undefined || null || "" || delegationCode?.length !== 6)
     return json({
-      error: {delegationCode: "Invalid delegation code"},
+      error: { delegationCode: "Invalid delegation code" },
       status: 404
     })
-  
+
   const inviteLink = await generateDelegationInviteLink(delegationCode)
 
   return json({ inviteLink })
@@ -32,41 +34,23 @@ const Delegation = () => {
   const { delegation } = useLoaderData()
   const actionData = useActionData()
   const { user } = useOutletContext()
-  const transition = useTransition()
 
-  const [shadowBackground, setShadowBackground] = useState(false)
+  const [inviteMenuOpen, setInviteMenuOpen] = useState(false)
+  const inviteMenuRef = useRef(null)
+  useClickOutside(inviteMenuRef, () => setInviteMenuOpen(false))
 
-  useEffect(() => {
-    if (actionData?.inviteLink) {
-      setShadowBackground(true)
-    }
-  }, [actionData])
+  /* useEffect(() => {
+    console.log(inviteMenuRef.current?.offsetHeight)
+  }, [inviteMenuRef]) */
+
+  const updateInviteLink = useFetcher()
+  const handleUpdateInviteLink = async (e) => {
+    e.preventDefault();
+    updateInviteLink.submit(e.currentTarget, { replace: true })
+  }
 
   return (
     <S.Wrapper>
-      <S.ShadowBackground show={shadowBackground}>
-        <S.ClickableBackground onClick={() => setShadowBackground(false)} />
-        <S.BackgroundContainer>
-          <S.BackgroundCloseButton onClick={() => setShadowBackground(false)}>
-            <FiX />
-          </S.BackgroundCloseButton>
-
-          <S.BackgroundTitle>
-            Compartilhe esse link para convidar outros integrantes
-          </S.BackgroundTitle>
-          <S.LinkBox 
-            value={actionData?.inviteLink}
-          />
-
-          <S.BackgroundTitle>
-            Ou compartilhe o código para ser usado na inscrição
-          </S.BackgroundTitle>
-          <S.BackgroundData>
-            A1B2C3
-          </S.BackgroundData>
-        </S.BackgroundContainer>
-      </S.ShadowBackground>
-
       <S.Nav>
         <S.TitleBox>
           <S.SubTitle>
@@ -77,88 +61,82 @@ const Delegation = () => {
           </S.Title>
         </S.TitleBox>
         <S.NavMenu>
-          <Form method="post">
-            <input type="hidden" name="delegationCode" value={delegation.code}/>
-            <S.NavItem>
+          <S.NavItem ref={inviteMenuRef}>
+            <S.NavIcon onClick={() => setInviteMenuOpen(!inviteMenuOpen)}>
               <FiMail />
               <p> Convidar </p>
-            </S.NavItem>
-          </Form>
+            </S.NavIcon>
+
+            <D.Reference open={inviteMenuOpen} />
+            <D.Container open={inviteMenuOpen} xPosition={inviteMenuRef.current?.offsetHeight}>
+              <D.Menu>
+                <D.Title>
+                  Compartilhe o link abaixo <FiExternalLink />
+                </D.Title>
+
+                <D.Link
+                  readOnly
+                  value={delegation.inviteLink}
+                />
+
+                <D.DForm style={{ padding: '10px 0 0 10px' }} action="/api/updateInviteLink" method="post">
+                  <input type="hidden" name="delegationCode" value={delegation.code} />
+
+                  <D.ColorItem color={updateInviteLink.data ? 'green' : 'blue'} type="submit" onClick={handleUpdateInviteLink} disabled={updateInviteLink.state !== "idle"}>
+                    {updateInviteLink.state === "idle" ? 'Gerar novo link' : 'Alterando'} {updateInviteLink.data && <FiCheck />}
+                  </D.ColorItem>
+                </D.DForm>
+
+                <D.Title>
+                  ou utilize este código na inscrição
+                </D.Title>
+
+                <D.Data>
+                  {delegation.code}
+                </D.Data>
+              </D.Menu>
+            </D.Container>
+          </S.NavItem>
         </S.NavMenu>
       </S.Nav>
 
       <S.DelegationContainer>
         <S.DelegatesListWrapper>
-          <S.Delegate example={true}>
-            <S.DelegateName>
-              Nome
-            </S.DelegateName>
-            <S.DelegateEmail>
-              Posição
-            </S.DelegateEmail>
-            <S.DelegateJoinDate>
-              Entrou em
-            </S.DelegateJoinDate>
-            <S.DelegateSubscription>
-              Inscrição
-            </S.DelegateSubscription>
-          </S.Delegate>
+          <S.DelegateContainer example>
+            <S.Delegate>
+              <S.Name>
+                Nome
+              </S.Name>
+              <S.Role example>
+                Posição
+              </S.Role>
+              <S.JoinDate>
+                Entrou em
+              </S.JoinDate>
+            </S.Delegate>
+          </S.DelegateContainer>
 
           <S.DelegatesList>
-            <S.Delegate user={delegation.delegationLeader.id === user.id}>
-              <S.DelegateName>
-                {delegation.delegationLeader.name}
-              </S.DelegateName>
-              <S.DelegateEmail>
-                Chefe
-              </S.DelegateEmail>
-              <S.DelegateJoinDate>
-                {delegation.createdAt.split("T")[0]}
-              </S.DelegateJoinDate>
-              <S.DelegateSubscription>
 
-              </S.DelegateSubscription>
-            </S.Delegate>
-
-            {delegation.delegationAdvisor.map((item, index) => {
-              if (item.user.id === delegation.delegationLeader.id) return undefined
-
+            {delegation.participants.map((item, index) => {
+              const leader = item.leader
               return (
-                <S.Delegate key={index} user={item.user.id === user.id}>
-                  <S.DelegateName>
-                    {item.user.name}
-                  </S.DelegateName>
-                  <S.DelegateEmail>
-                    {item.advisorRole}
-                  </S.DelegateEmail>
-                  <S.DelegateJoinDate>
-                    {item.createdAt.split("T")[0]}
-                  </S.DelegateJoinDate>
-                  <S.DelegateSubscription>
-
-                  </S.DelegateSubscription>
-                </S.Delegate>
-              )
-            })}
-
-            {delegation.delegate.map((item, index) => {
-              if (item.user.id === delegation.delegationLeader.id) return undefined
-
-              return (
-                <S.Delegate key={index} user={item.user.id === user.id}>
-                  <S.DelegateName>
-                    {item.user.name}
-                  </S.DelegateName>
-                  <S.DelegateEmail>
-                    Delegado
-                  </S.DelegateEmail>
-                  <S.DelegateJoinDate>
-                    {item.createdAt.split("T")[0]}
-                  </S.DelegateJoinDate>
-                  <S.DelegateSubscription>
-
-                  </S.DelegateSubscription>
-                </S.Delegate>
+                <S.DelegateContainer key={`delegation-user-${index}`}>
+                  <S.Delegate key={index} user={item.id === user.id}>
+                    <S.Name>
+                      {item.name}
+                      {leader && <S.Item color="red"> Líder da Delegação </S.Item>}
+                    </S.Name>
+                    <S.Role>
+                      <S.Item color={item.delegate ? 'blue' : 'green'}>
+                        {item.delegate ? "Delegado" : item.delegationAdvisor.advisorRole}
+                      </S.Item>
+                    </S.Role>
+                    <S.JoinDate>
+                      {item.createdAt.split("T")[0]}
+                    </S.JoinDate>
+                  </S.Delegate>
+                </S.DelegateContainer>
               )
             })}
           </S.DelegatesList>

@@ -1,10 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@250;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@250;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap');
 @import url('http://fonts.cdnfonts.com/css/panton');
 
 * {
 	font-family: 'Montserrat', 'Panton', 'Sora', sans-serif;
 	box-sizing: border-box;
+  font-size: 10px;
 	margin: 0;
 	padding: 0;
 }
@@ -13,6 +14,14 @@
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
 */
+
+svg{
+  font-size: 1.8rem;
+}
+
+.border {
+  border: 1px solid red;
+}
 
 *,
 ::before,

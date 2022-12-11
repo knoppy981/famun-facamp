@@ -2,7 +2,8 @@ import React from 'react'
 import { json } from '@remix-run/node'
 import { useLoaderData, Link, useSubmit, useFetcher } from '@remix-run/react'
 
-import { getAllTransacoes, getUserPayments } from '~/models/payments'
+import { getUserPayments } from '~/models/payments.server'
+import { getAllTransacoes } from '~/models/payments'
 import { requireUserId } from '~/session.server'
 import { useUser } from '~/utils'
 
@@ -11,7 +12,7 @@ import { FiCreditCard, FiExternalLink } from 'react-icons/fi'
 
 export const loader = async ({ request }) => {
   const userId = await requireUserId(request)
-  const { payments } = await getUserPayments(userId)
+  const payments = await getUserPayments(userId)
   const transactions = await getAllTransacoes()
 
   return json({ payments, transactions })
@@ -20,22 +21,8 @@ export const loader = async ({ request }) => {
 const payment = () => {
 
   const user = useUser()
-  const fetcher = useFetcher()
 
-  const handleForm = async (e) => {
-		e.preventDefault();
-		fetcher.submit(
-      {
-        paymentDescription: `Inscrição de ${user.name}`, 
-        paymentPrice: 4500,
-        paymentMethod: 'card',
-      },
-      { method: "post", action: "/api/pay" }
-    );
-	}
-
-  const { transactions } = useLoaderData()
-  const payments = [{ succeed: false }, { succeed: false }, { succeed: false }]
+  const { transactions, payments } = useLoaderData()
 
   return (
     <S.Wrapper>
@@ -43,7 +30,7 @@ const payment = () => {
         Pagamentos
       </S.Title>
 
-      {!(payments.find(el => el.succeed === true)) &&
+      {!(payments.find(payment => payment.succeed)) &&
         <S.Container>
           <S.SubTitle>
             Pendentes

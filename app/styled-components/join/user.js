@@ -29,17 +29,17 @@ export const ControlButton = styled.button`
   border: 1px solid ${p => !p.prev ? 'transparent' : '#E6E6E6'};
   color: #000;
   border-radius: 5px;
-	font-size: 15px;
+	font-size: 1.5rem;
   transition: .4s all ease;
 `
 export const StepTitle = styled.h3`
-  font-size: 22px;
+  font-size: 2.2rem;
   font-weight: 500;
   color: #000;
   padding-left: 5px;
 `
 export const StepSubtitle = styled.p`
-  font-size: 14px;
+  font-size: 1.4rem;
   color: #000;
 `
 export const InputContainer = styled.div`
@@ -54,6 +54,36 @@ export const SubInputContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+`
+//nacionality
+export const NacionalityContainer = styled.div`
+  width: 250px;
+  margin-top: 10px;
+  height: 45px;
+  display: flex;
+  gap: 10px;
+  padding: 0 10px;
+  border: 1px solid ${p => p.focused ? azulCeu : '#E6E6E6'};
+  border-radius: 5px;
+
+  &:hover {
+    border: 1px solid ${azulCeu};
+  }
+`
+export const NacionalityFlag = styled.div`
+  width: 30px;
+  background-size: contain;
+  background-position: 50%;
+  background-repeat: no-repeat;
+`
+export const NacionalitySelect = styled.select`
+  outline: none;
+  border: none;
+  flex-grow: 2;
+  font-size: 1.6rem;
+`
+export const Option = styled.option`
+
 `
 // checkbox
 export const CheckBoxGrid = styled.div`
@@ -73,7 +103,7 @@ export const CheckBoxWrapper = styled.div`
   margin-top: 0;
 `
 export const CheckBoxTitle = styled.div`
-  font-size: 14px;
+  font-size: 1.4rem;
   font-weight: 900;
   display: flex;
   gap: 5px;
@@ -99,7 +129,7 @@ export const CheckBoxLabelContainer = styled.div`
 
 `
 export const CheckBoxLabel = styled.label`
-  font-size: 14px;
+  font-size: 1.4rem;
 `
 // social media and role
 export const SMContainer = styled.div`
@@ -115,8 +145,8 @@ export const SMContainer = styled.div`
   margin-top: 10px;
 `
 export const SMLabel = styled.div`
-  font-size: 14px;
-  font-weight: 900;
+  font-size: 1.4rem;
+  font-weight: 600;
 `
 export const SMAddContainer = styled.div`
   height: 30px;
@@ -130,7 +160,7 @@ export const SMAdd = styled.select`
   outline: none;
   border-radius: 5px;
   padding: 5px;
-  font-size: 14px;
+  font-size: 1.4rem;
 `
 export const SMAddOption = styled.option`
 
@@ -141,7 +171,7 @@ export const SMInput = styled.input`
   background: transparent;
   outline: none;
   border: none;
-  font-size: 14px;
+  font-size: 1.4rem;
   transition: all .4 ease;
   color: #000;
   border-bottom: 1px solid #A7A7A7;
@@ -158,7 +188,7 @@ export const SMButton = styled.button`
   width: 80px;
   background: transparent;
   border-radius: 5px;
-	font-size: 14px;
+	font-size: 1.4rem;
   transition: .4s all ease;
   margin-left: auto;
   margin-right: 0;
@@ -182,12 +212,12 @@ export const SMValueItem = styled.li`
 `
 export const SMName = styled.div`
   width: 120px;
-  font-size: 14px;
+  font-size: 1.4rem;
   padding-left: 10px;
 `
 export const SMValue = styled.div`
   background: transparent;
-  font-size: 14px;
+  font-size: 1.4rem;
   flex-grow: 1;
   padding: 0 5px;
 `
@@ -228,7 +258,8 @@ export const AdvisorRoleSelect = styled.select`
   outline: none;
   border-radius: 5px;
   padding: 5px;
-  font-size: 14px;
+  font-size: 1.4rem;
+  cursor: pointer;
 `
 // confirm
 export const ConfirmList = styled.div`
@@ -246,10 +277,14 @@ export const ConfirmColumn = styled.ul`
   overflow-x: hidden;
 `
 export const ConfirmItem = styled.li`
-  font-size: 15px;
+  font-size: 1.5rem;
+  
+  p {
+    font-size: inherit;
+  }
 `
 export const ConfirmLabel = styled.div`
-  font-size: 12px;
+  font-size: 1.2rem;
   color: #666666;
 `
 // type buttons
@@ -263,7 +298,7 @@ export const StepButton = styled.button`
   width: 250px;
   background: ${azulClaro};
   border-radius: 5px;
-	font-size: 15px;
+	font-size: 1.5rem;
   transition: .4s all ease;
   box-shadow: 0px 2px 5px -2px #000000;
 

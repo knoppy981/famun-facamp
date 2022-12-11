@@ -1,5 +1,11 @@
 import styled from "styled-components"
 
+const azulClaro = '#BDE8F5'
+const azul = '#01558A'
+const azulCeu = '#14A7D8'
+const azulEscuro = '#183567'
+const azulBackground = "#EDF9FC"
+
 export const InputWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -22,7 +28,7 @@ export const Input = styled.input`
   width: 100%;
   height: 45px;
   border-radius: 5px;
-  border: 1px solid #E6E6E6;
+  border: 1px solid ${p => p.err ? '#d61f0a' : '#E6E6E6'};
   outline: none;
   padding: 0 10px;
   font-size: 16px;
@@ -30,4 +36,7 @@ export const Input = styled.input`
   color: #000;
 
   -webkit-text-fill-color: #000 !important;
+  &:focus, &:hover {
+    border: 1px solid ${p => p.err ? '#d61f0a' : azulCeu};
+  }
 `

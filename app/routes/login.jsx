@@ -37,15 +37,10 @@ export const action = async ({ request }) => {
     );
   }
 
-  const delegationId =
-    user.delegate ? user.delegate.delegationId :
-      user.delegationAdvisor ?
-        user.delegationAdvisor.delegationId : undefined
-
   return createUserSession({
     request,
     userId: user.id,
-    delegationId: delegationId,
+    delegationId: user?.delegation?.id,
     remember: false,
     redirectTo,
   });
@@ -104,7 +99,7 @@ const LoginPage = () => {
               value="firstButton"
               disabled={transition.state !== "idle"}
             >
-              <p>Entrar</p>
+              Entrar
             </S.SubmitButton>
           </S.ButtonContainer>
         </S.AuthForm>
@@ -112,7 +107,10 @@ const LoginPage = () => {
         <S.JoinLinkBox>
           Ainda não tem uma conta?
           <S.StyledLink
-            to="/join/user"
+            to={{
+              pathname: "/join/user",
+              search: searchParams.toString(),
+            }}
           >
             Cadastrar
           </S.StyledLink>

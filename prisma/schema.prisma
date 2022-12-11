@@ -10,20 +10,26 @@ datasource db {
 model User {
   id                String             @id @default(auto()) @map("_id") @db.ObjectId
   email             String             @unique
+  // personal info
   name              String
   password          Password?
   cpf               String             @unique
   rg                String             @unique
   phoneNumber       String
   birthDate         String
-  //
+  nacionality       String
+  // useful info
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   userPreferences   UserPreferences?
-  //
+  // delegation
+  delegation        Delegation?        @relation(fields: [delegationId], references: [id])
+  delegationId      String?            @db.ObjectId
+  leader            Boolean            @default(false)
+  // participation type
   delegate          Delegate?
-  delegationLeader  Delegation?
   delegationAdvisor DelegationAdvisor?
+  //
   payments          Payment[]
 }
 
@@ -42,15 +48,12 @@ model UserPreferences {
 }
 
 model Delegate {
-  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
-  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId             String             @unique @db.ObjectId
-  createdAt          DateTime           @default(now())
-  EmergencyContact   EmergencyContact[]
+  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId             String            @unique @db.ObjectId
+  EmergencyContact   EmergencyContact?
   councilPreference  Council
   languagesSimulates Language[]
-  delegation         Delegation?        @relation(fields: [delegationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  delegationId       String?            @db.ObjectId
 }
 
 model EmergencyContact {
@@ -62,29 +65,24 @@ model EmergencyContact {
 }
 
 model DelegationAdvisor {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId       String        @unique @db.ObjectId
-  createdAt    DateTime      @default(now())
-  advisorRole  AdvisorRole   @default(Professor)
-  socialMedia  SocialMedia[]
-  delegation   Delegation?   @relation(fields: [delegationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  delegationId String?       @db.ObjectId
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId      String        @unique @db.ObjectId
+  advisorRole AdvisorRole   @default(Professor)
+  socialMedia SocialMedia[]
 }
 
 model Delegation {
   id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   code                String              @unique
+  inviteLink          String
   school              String              @unique
   schoolPhoneNumber   String
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
   participationMethod ParticipationMethod
   address             Address?
-  delegationLeader    User                @relation(fields: [delegationLeaderId], references: [id])
-  delegationLeaderId  String              @unique @db.ObjectId
-  delegate            Delegate[]
-  delegationAdvisor   DelegationAdvisor[]
+  participants        User[]
 }
 
 model Payment {
@@ -113,10 +111,10 @@ model SocialMedia {
   delegationAdvisor   DelegationAdvisor @relation(fields: [delegationAdvisorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   delegationAdvisorId String            @db.ObjectId
   username            String
-  socialMediaName     SocialMedias
+  socialMediaName     SocialMediaTypes
 }
 
-enum SocialMedias {
+enum SocialMediaTypes {
   Facebook
   Instagram
   Twitter
@@ -139,8 +137,8 @@ enum Council {
 
 enum ParticipationMethod {
   Online
-  Presential
-  Both
+  Presencial
+  Ambos
 }
 
 model Language {
@@ -151,7 +149,7 @@ model Language {
 }
 
 enum Languages {
-  portuguese
-  english
-  spanish
+  Portugues
+  Ingles
+  Espanhol
 }

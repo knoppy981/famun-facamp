@@ -32,10 +32,6 @@ export async function updateUser({ userId, values }) {
 }
 
 export async function createUser(data) {
-	console.log(data)
-
-	const council = data?.council?.replace(/ /g, "_")
-
 	let language
 	if (Array.isArray(data?.language)) {
 		const auxArray = []
@@ -49,7 +45,7 @@ export async function createUser(data) {
 
 	const delegate = {
 		create: {
-			councilPreference: council,
+			councilPreference: data?.council?.replace(/ /g, "_"),
 			languagesSimulates: {
 				createMany: {
 					data: language
@@ -86,11 +82,11 @@ export async function createUser(data) {
 			rg: data.rg,
 			birthDate: data.birthDate,
 			phoneNumber: data.phoneNumber,
+			nacionality: data.nacionality,
 			delegate: data.userType === "delegate" ? delegate : undefined,
 			delegationAdvisor: data.userType === "advisor" ? delegationAdvisor : undefined,
 		}
 	})
-
 }
 
 export async function deleteUserByEmail(email) {
@@ -105,16 +101,11 @@ export async function verifyLogin(
 		where: { email },
 		include: {
 			password: true,
-			delegate: {
+			delegation: {
 				select: {
-					delegationId: true
+					id: true
 				}
-			},
-			delegationAdvisor: {
-				select: {
-					delegationId: true
-				}
-			},
+			}
 		},
 	});
 

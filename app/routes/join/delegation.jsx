@@ -24,13 +24,10 @@ export const action = async ({ request }) => {
     nextStep = 2
   }
 
-  if (session.get("join-type")?.joinType === "join" && step === 3) nextStep = 4
+  if (session.get("join-type")?.joinType === "join" && step > 2) nextStep = 1
 
   if (delegationCode) {
-    console.log(delegationCode)
-
     const userId = await requireUserId(request)
-    console.log(userId)
 
     const delegation = await joinDelegation({ code: delegationCode, userId: userId })
       .catch((err) => {
@@ -40,24 +37,20 @@ export const action = async ({ request }) => {
         )
       })
     
-    console.log(delegation)
-
     return createUserSession({
       request,
       userId: userId,
       delegationId: delegation.id,
-      redirectTo: safeRedirect(redirectTo),
+      redirectTo: safeRedirect(redirectTo ?? ""),
     });
   }
 
   session.set(`delegation-data-${step}`, data)
-  console.log(`delegation-data-${step}`)
-  console.log(data)
 
   session.set('delegation-current-step', { step: nextStep })
 
-  const searchParams = new URLSearchParams([["redirectTo", redirectTo]])
-  return redirect(`/join/delegation?${safeRedirect(searchParams)}`, {
+  const searchParams = redirectTo === "" ? "" : new URLSearchParams([["redirectTo", safeRedirect(redirectTo)]])
+  return redirect(`/join/delegation?${searchParams}`, {
     headers: {
       'set-cookie': await sessionStorage.commitSession(session),
     },
@@ -71,11 +64,10 @@ export const loader = async ({ request }) => {
     ...session.get("delegation-current-step"),
     ...session.get("join-type"),
   }
-  const data = session.get(`user-data-${step}`) ?? {}
+  const data = session.get(`delegation-data-${step}`) ?? {}
 
   console.log(joinType)
   console.log(step)
-  console.log(data)
 
   return json({ data, step, joinType })
 }
