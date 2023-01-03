@@ -4,18 +4,24 @@ import { useSearchParams, useFetcher, useLoaderData, useActionData } from "@remi
 import qs from "qs"
 
 import { createUserSession, sessionStorage, getSession, requireUserId } from "~/session.server";
-import { joinDelegation } from "~/models/delegation.server";
-import { safeRedirect } from "~/utils";
+import { joinDelegation, createDelegation, generateDelegationInviteLink } from "~/models/delegation.server";
+import { safeRedirect, checkStringWithNumbers, checkString, validatePhoneNumber, generateString } from "~/utils";
 
 import * as S from '~/styled-components/join/delegation'
-import { FiSettings, FiHelpCircle, FiArrowLeft, FiCheck, FiX } from "react-icons/fi";
-import AuthInputBox from "~/styled-components/components/inputs/authInput";
+
+import JoinMethod from "~/styled-components/join/delegation/joinmethod"
+import JoinDelegation from "~/styled-components/join/delegation/joindelegation"
+import CreateDelegation from "~/styled-components/join/delegation/createdelegation"
+import DelegationAddress from "~/styled-components/join/delegation/delegationaddress"
+import ConfirmDelegation from "~/styled-components/join/delegation/confirmdelegation"
 
 
 export const action = async ({ request }) => {
   const text = await request.text()
   const session = await getSession(request)
-  const { redirectTo, step, action, joinType, delegationCode, ...data } = qs.parse(text)
+  const { redirectTo, step, action, joinType, ...data } = qs.parse(text)
+
+  console.log(step)
 
   let nextStep = Number(step) + (action === 'next' ? 1 : -1)
 
@@ -26,33 +32,162 @@ export const action = async ({ request }) => {
 
   if (session.get("join-type")?.joinType === "join" && step > 2) nextStep = 1
 
-  if (delegationCode) {
-    const userId = await requireUserId(request)
+  if (action === "next") {
+    if (data.delegationCode) {
+      const userId = await requireUserId(request)
+      const delegation = await joinDelegation({ code: data.delegationCode, userId: userId })
+        .catch(() => {
+          return json(
+            { errors: { joinDelegation: "Não foi possível entrar na delegação" } },
+            { status: 400 }
+          )
+        })
 
-    const delegation = await joinDelegation({ code: delegationCode, userId: userId })
-      .catch((err) => {
+      return createUserSession({
+        request,
+        userId: userId,
+        delegationId: delegation.id,
+        redirectTo: safeRedirect(redirectTo ?? ""),
+      });
+    }
+
+    if (data.schoolName?.length === 0)
+      return json(
+        { errors: { schoolName: "Preencha com o nome da sua escola / universidade" } },
+        { status: 400 }
+      );
+    if (data.schoolName) {
+      if (typeof data.schoolName !== "string" || !checkStringWithNumbers(data.schoolName))
         return json(
-          { errors: { joinDelegation: "Não foi possível entrar na delegação" } },
+          { errors: { schoolName: "Nome de Escola / Universidade inválido" } },
           { status: 400 }
-        )
-      })
-    
-    return createUserSession({
-      request,
-      userId: userId,
-      delegationId: delegation.id,
-      redirectTo: safeRedirect(redirectTo ?? ""),
-    });
+        );
+    }
+
+    if (data.schoolPhoneNumber?.length === 0)
+      return json(
+        { errors: { schoolPhoneNumber: "Preencha o número de telefone" } },
+        { status: 400 }
+      );
+    if (data.schoolPhoneNumber) {
+      if (typeof data.schoolPhoneNumber !== "string" || !validatePhoneNumber(data.schoolPhoneNumber))
+        return json(
+          { errors: { schoolPhoneNumber: "Número de telefone da Escola / Universidade inválido" } },
+          { status: 400 }
+        );
+    }
+
+    if (data.address?.length === 0)
+      return json(
+        { errors: { address: "Digite o endereço" } },
+        { status: 400 }
+      );
+    if (data.address) {
+      if (typeof data.address !== "string" || !checkStringWithNumbers(data.address))
+        return json(
+          { errors: { address: "Endereço Inválido" } },
+          { status: 400 }
+        );
+    }
+
+    if (data.country?.length === 0)
+      return json(
+        { errors: { country: "Digite o país" } },
+        { status: 400 }
+      );
+    if (data.country) {
+      if (typeof data.country !== "string" || !checkString(data.country))
+        return json(
+          { errors: { country: "País Inválido" } },
+          { status: 400 }
+        );
+    }
+
+    if (data.cep?.length === 0)
+      return json(
+        { errors: { cep: "Digite o CEP" } },
+        { status: 400 }
+      );
+    if (data.cep) {
+      if (typeof data.cep !== "string")
+        return json(
+          { errors: { cep: "CEP Inválido" } },
+          { status: 400 }
+        );
+    }
+
+    if (data.state?.length === 0)
+      return json(
+        { errors: { state: "Digite o estado" } },
+        { status: 400 }
+      );
+    if (data.state) {
+      if (typeof data.state !== "string" || !checkString(data.state))
+        return json(
+          { errors: { state: "Estado inválido" } },
+          { status: 400 }
+        );
+    }
+
+    if (data.city?.length === 0)
+      return json(
+        { errors: { city: "Digite a cidade" } },
+        { status: 400 }
+      );
+    if (data.city) {
+      if (typeof data.city !== "string" || !checkString(data.city))
+        return json(
+          { errors: { city: "Cidade inválido" } },
+          { status: 400 }
+        );
+    }
+
+    if (data.neighborhood?.length === 0)
+      return json(
+        { errors: { neighborhood: "Digite o bairro" } },
+        { status: 400 }
+      );
+    if (data.neighborhood) {
+      if (typeof data.neighborhood !== "string" || !checkString(data.neighborhood))
+        return json(
+          { errors: { neighborhood: "Bairro inválido" } },
+          { status: 400 }
+        );
+    }
+
+    if (step == 4) {
+
+      const userId = await requireUserId(request)
+
+      const delegationData = {
+        ...session.get("delegation-data-2"),
+        ...session.get("delegation-data-3"),
+        code: generateString(6),
+        inviteLink: await generateDelegationInviteLink(),
+        userId: userId,
+      }
+
+      const delegation = await createDelegation(delegationData)
+
+      console.log(delegation)
+
+      return createUserSession({
+        request,
+        userId: userId,
+        delegationId: delegation.id,
+        remember: false,
+        redirectTo: redirectTo ? safeRedirect(redirectTo) : `/`,
+      });
+    }
   }
 
-  session.set(`delegation-data-${step}`, data)
-
+  if (session.get("join-type")?.joinType === "create") session.set(`delegation-data-${step}`, data)
   session.set('delegation-current-step', { step: nextStep })
 
   const searchParams = redirectTo === "" ? "" : new URLSearchParams([["redirectTo", safeRedirect(redirectTo)]])
   return redirect(`/join/delegation?${searchParams}`, {
     headers: {
-      'set-cookie': await sessionStorage.commitSession(session),
+      'Set-cookie': await sessionStorage.commitSession(session),
     },
   })
 }
@@ -64,267 +199,18 @@ export const loader = async ({ request }) => {
     ...session.get("delegation-current-step"),
     ...session.get("join-type"),
   }
-  const data = session.get(`delegation-data-${step}`) ?? {}
 
-  console.log(joinType)
-  console.log(step)
-
-  return json({ data, step, joinType })
-}
-
-const JoinMethod = () => {
-  return (
-    <>
-      <S.StepTitle>
-        Participe de uma delegação
-      </S.StepTitle>
-
-      <S.StepSubtitle>
-        Crie uma delegação ou entre na delegação do seu grupo!
-      </S.StepSubtitle>
-
-      <S.StepButtonsContainer>
-        <S.StepButton name="joinType" type="submit" value="create">
-          Criar nova delegação
-        </S.StepButton>
-
-        <S.StepButton name="joinType" type="submit" value="join">
-          Entrar em uma Delegação
-        </S.StepButton>
-      </S.StepButtonsContainer>
-    </>
-  )
-}
-
-const JoinDelegation = ({ data, actionData }) => {
-
-  const inputRef = useRef(null)
-  const [value, setValue] = useState("")
-  const [label, setLabel] = useState("")
-  const [valid, setValid] = useState(false)
-  const searchDelegation = useFetcher()
-
-  const handleChange = (event) => {
-    setValue(event.target.value)
-    if (inputRef.current.value.length === 6) {
-      searchDelegation.submit(
-        { delegationCode: event.target.value },
-        { method: "post", action: "/api/delegationCode" }
-      );
+  if (step === 4) {
+    const data = {
+      ...session.get("delegation-data-2"),
+      ...session.get("delegation-data-3"),
     }
+    return json({ data, step, joinType })
+  } else {
+    const data = session.get(`delegation-data-${step}`) ?? {}
+    return json({ data, step, joinType })
   }
 
-  useEffect(() => {
-    setLabel(
-      searchDelegation.state !== "idle" ?
-        "Procurando..." : searchDelegation?.data?.delegation && inputRef.current.value.length === 6 ?
-          "Delegação do " + searchDelegation?.data?.delegation.school : searchDelegation?.data?.errors ?
-            searchDelegation?.data?.errors["delegation" || "code"] : "Exemplo : A1B2C3"
-    )
-    setValid((searchDelegation?.data?.delegation && inputRef.current.value.length === 6) ? true : false)
-  }, [searchDelegation, value])
-
-  return (
-    <>
-      <S.StepTitle>
-        Entrar em uma delegação
-      </S.StepTitle>
-
-      <S.StepSubtitle>
-        Digite o código da sua delegação abaixo ou peça um convite para o chefe da sua delegação
-      </S.StepSubtitle>
-
-      <S.JoinDelegationContainer>
-        <S.JoinDelegationLabel>
-          Código :
-        </S.JoinDelegationLabel>
-
-        <S.JoinDelegationInputBox>
-          <S.JoinDelegationInput
-            ref={inputRef}
-            value={value}
-            id="delegationCode"
-            name="delegationCode"
-            type="string"
-            autoFocus={true}
-            onChange={handleChange}
-          />
-          <S.JoinDelegationIcon color={searchDelegation?.data?.errors ? "#A7A7A7" : "green"}>
-            {searchDelegation?.data?.errors ? <FiX /> : (searchDelegation?.data?.delegation && value.length === 6) ? <FiCheck /> : null}
-          </S.JoinDelegationIcon>
-        </S.JoinDelegationInputBox>
-
-        <S.JoinDelegationButton type="submit" disabled={!valid}>
-          Entrar
-        </S.JoinDelegationButton>
-      </S.JoinDelegationContainer>
-
-      <S.joinDelegationStatus>
-        {label}
-      </S.joinDelegationStatus>
-    </>
-  )
-}
-
-const CreateDelegation = ({ data, actionData }) => {
-  return (
-    <>
-      <S.StepTitle>
-        Criar uma delegação
-      </S.StepTitle>
-
-      <S.InputContainer>
-        <AuthInputBox
-          name="schoolName"
-          text="Nome da Escola / Universidade"
-          type="text"
-          value={data?.schoolName}
-          err={actionData?.errors?.schoolName}
-          autoFocus={true}
-        />
-
-        <AuthInputBox
-          name="schoolPhoneNumber"
-          text="Numero de Telefone da Escola / Universidade"
-          type="text"
-          value={data?.schoolPhoneNumber}
-          err={actionData?.errors?.email}
-        />
-
-        <AuthInputBox
-          name="participationMethod"
-          text="Metodo de Participação da Delegação"
-          type="text"
-          value={data?.participationMethod}
-          err={actionData?.errors?.participationMethod}
-        />
-      </S.InputContainer>
-    </>
-  )
-}
-
-const DelegationAddress = ({ data, actionData }) => {
-  return (
-    <>
-      <S.StepTitle>
-        Preencha o endereço da Escola / Universidade
-      </S.StepTitle>
-
-      <S.InputContainer>
-        <AuthInputBox
-          name="address"
-          text="Endereço"
-          type="text"
-          value={data?.address}
-          err={actionData?.errors?.address}
-          autoFocus={true}
-        />
-
-        <S.SubInputContainer>
-          <AuthInputBox
-            name="country"
-            text="País"
-            type="text"
-            value={data?.country}
-            err={actionData?.errors?.country}
-          />
-
-          <AuthInputBox
-            name="cep"
-            text="CEP"
-            type="text"
-            value={data?.cep}
-            err={actionData?.errors?.cep}
-          />
-        </S.SubInputContainer>
-
-        <S.SubInputContainer>
-          <AuthInputBox
-            name="state"
-            text="Estado"
-            type="text"
-            value={data?.state}
-            err={actionData?.errors?.state}
-          />
-
-          <AuthInputBox
-            name="city"
-            text="Cidade"
-            type="text"
-            value={data?.city}
-            err={actionData?.errors?.city}
-          />
-        </S.SubInputContainer>
-
-        <S.SubInputContainer>
-          <AuthInputBox
-            name="neighborhood"
-            text="Bairro"
-            type="text"
-            value={data?.neighborhood}
-            err={actionData?.errors?.neighborhood}
-          />
-        </S.SubInputContainer>
-
-      </S.InputContainer>
-    </>
-  )
-}
-
-const ConfirmDelegation = ({ data }) => {
-  const dataArray = Object.entries(data)
-  return (
-    <>
-      <S.StepTitle>
-        Estamos quase lá!
-      </S.StepTitle>
-
-      <S.StepSubtitle>
-        Confirme os dados abaixo para finalizar a inscrição da delegação da sua sua escola / universidade
-      </S.StepSubtitle>
-
-      <S.ConfirmList>
-        <S.ConfirmColumn>
-          {Array.from({ length: 3 }).map((item, index) => {
-            return (
-              <S.ConfirmItem>
-                <S.ConfirmLabel>
-                  {dataArray[index][0]}
-                </S.ConfirmLabel>
-                {dataArray[index][1]}
-              </S.ConfirmItem>
-            )
-          })}
-        </S.ConfirmColumn>
-
-        <S.ConfirmColumn>
-          {Array.from({ length: 3 }).map((item, index) => {
-            return (
-              <S.ConfirmItem>
-                <S.ConfirmLabel>
-                  {dataArray[index + 3][0]}
-                </S.ConfirmLabel>
-                {dataArray[index + 3][1]}
-              </S.ConfirmItem>
-            )
-          })}
-        </S.ConfirmColumn>
-
-        <S.ConfirmColumn>
-          {Array.from({ length: 3 }).map((item, index) => {
-            return (
-              <S.ConfirmItem>
-                <S.ConfirmLabel>
-                  {dataArray[index + 6][0]}
-                </S.ConfirmLabel>
-                {dataArray[index + 6][1]}
-              </S.ConfirmItem>
-            )
-          })}
-        </S.ConfirmColumn>
-      </S.ConfirmList>
-    </>
-  )
 }
 
 const delegation = () => {
@@ -332,6 +218,10 @@ const delegation = () => {
   const redirectTo = searchParams.get("redirectTo") || "";
 
   const actionData = useActionData()
+
+  useEffect(() => {
+    console.log(actionData)
+  }, [actionData])
   let { data, step, joinType } = useLoaderData()
   if (!step) step = 1
 
@@ -341,12 +231,19 @@ const delegation = () => {
       <input type="hidden" name="redirectTo" value={redirectTo} />
 
       {step === 1 && <JoinMethod />}
-      {step === 2 && (joinType === "create" ? <CreateDelegation /> : <JoinDelegation data={data} actionData={actionData}/>)}
+      {step === 2 && (joinType === "create" ?
+        <CreateDelegation data={data} actionData={actionData} /> : <JoinDelegation data={data} actionData={actionData} />)
+      }
+      {step === 3 && joinType === "create" && <DelegationAddress data={data} actionData={actionData} />}
+      {step === 4 && joinType === "create" && <ConfirmDelegation data={data} />}
 
       <S.ControlButtonsContainer>
         {step !== 1 && <S.ControlButton name="action" value="previous" type="submit" prev> Voltar </S.ControlButton>}
 
-        {step !== 1 && (step !== 2 && joinType !== "join") && <S.ControlButton name="action" value="next" type="submit"> Próximo </S.ControlButton>}
+        {step > 1 ?
+          joinType === "create" ?
+            <S.ControlButton name="action" value="next" type="submit"> Próximo </S.ControlButton> : null : null
+        }
       </S.ControlButtonsContainer>
     </S.StepsForm >
   )

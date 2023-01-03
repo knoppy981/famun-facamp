@@ -1,18 +1,15 @@
 import { prisma } from "~/db.server";
 import { Prisma } from '@prisma/client'
 import jwt from "jsonwebtoken";
+import { updateUser } from "./user.server";
 
 export async function getDelegationById(id) {
 	return prisma.delegation.findUnique({
 		where: {
 			id: id,
 		},
-		select: {
-			school: true,
-			inviteLink: true,
-			code: true,
-			participationMethod: true,
-			createdAt: true,
+		include: {
+			address: true,
 			participants: {
 				include: {
 					delegate: true,
@@ -59,8 +56,34 @@ export async function updateDelegationCode(delegationId, code) {
 	})
 }
 
-export async function createDelegation() {
+export async function createDelegation(data) {
 
+	await updateUser({ userId: data.userId, values: { leader: true } })
+
+	return prisma.delegation.create({
+		data: {
+			code: data.code,
+			inviteLink: data.inviteLink,
+			participationMethod: data.participationMethod,
+			school: data.schoolName,
+			schoolPhoneNumber: data.schoolPhoneNumber,
+			address: {
+				create: {
+					address: data.address,
+					cep: data.cep,
+					city: data.city,
+					country: data.country,
+					neighborhood: data.neighborhood,
+					state: data.state,
+				}
+			},
+			participants: {
+				connect: {
+					id: data.userId
+				}
+			}
+		}
+	})
 }
 
 export async function generateDelegationInviteLink(delegationCode) {

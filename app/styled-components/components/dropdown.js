@@ -23,6 +23,8 @@ export const Container = styled.div`
   background: ${color1};
   box-shadow: 0px 3px 5px -2px #000000;
   border-radius: 10px;
+
+  transition: all ease .3s;
 `
 export const Reference = styled.div`
   display: ${p => p.open ? 'block' : 'none'};
@@ -38,9 +40,9 @@ export const Reference = styled.div`
   transform: translateX(50%) rotate(45deg);
 `
 export const Menu = styled.ul`
+  display: ${p => p.active ? "flex" : "none"};
   width: 100%;
   height: 100%;
-  display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 10px;
@@ -92,8 +94,7 @@ export const Item = styled.li`
   transition: all .4s;
 
   &:hover {
-    --_p: #fff;
-    transform: translateX(10px);
+    ${p => !p.noHover && '--_p: #fff; transform: translateX(10px);'}
   }
 
   &::before {
@@ -129,6 +130,7 @@ export const ColorItem = styled.button`
   color: ${p => p.color === 'red' ? begeBackground : p.color === 'green' ? verdeBackground : azulBackground};
   background: ${p => p.color === 'red' ? begeClaro : p.color === 'green' ? verdeClaro : azulCeu};
   font-size: 1.4rem;
+  overflow-x: hidden;
 
   svg {
     transform: translateY(1px);
@@ -137,4 +139,11 @@ export const ColorItem = styled.button`
   &:disabled {
     opacity: .6;
   }
+`
+export const NacionalityFlag = styled.div`
+  height: 25px;
+  width: 25px;
+  background-size: contain;
+  background-position: 50%;
+  background-repeat: no-repeat;
 `

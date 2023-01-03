@@ -60,17 +60,17 @@ export const Navbar = styled.div`
   padding: 0 15px;
 `
 export const NavMenu = styled.div`
+  height: 50%;
   display: flex;
 `
 export const NavItem = styled.div`
+  height: 100%;
   position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 1.8rem;
   padding: 0 15px;
-
-  border-left: ${p => p.border ? '1px solid #E6E6E6' : undefined};
 `
 export const NavIcon = styled.div`
   height: 100%;
@@ -81,9 +81,9 @@ export const NavIcon = styled.div`
 `
 export const DashboardContainer = styled.div`
 	display: grid;
-	grid-template-columns: 1fr 3.5fr;
+	grid-template-columns: 1fr 4fr;
   padding: 40px 0;
-  grid-gap: 40px;
+  grid-gap: 20px;
 `
 export const Sidebar = styled.div`
 	display: flex;

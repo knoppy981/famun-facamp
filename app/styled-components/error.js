@@ -34,7 +34,6 @@ export const Message = styled.div`
   display: flex;
   gap: 15px;
   font-size: 1.8rem;
-  width: 70vw;
   flex-wrap: wrap;
   word-break: normal;
   overflow-wrap:break-word;

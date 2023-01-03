@@ -85,9 +85,7 @@ export async function createUserSession({
 }
 
 export async function logout({ request, redirectTo }) {
-  console.log(redirectTo)
   const _safeRedirect = safeRedirect(redirectTo)
-  console.log(_safeRedirect)
   const session = await getSession(request);
   return redirect(_safeRedirect, {
     headers: {

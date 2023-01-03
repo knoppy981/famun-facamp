@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
+import { stripe } from "~/stripe.server";
 
 export async function getUserById(id) {
 	return prisma.user.findUnique({ where: { id } });
@@ -54,10 +55,14 @@ export async function createUser(data) {
 		}
 	}
 
+	const createSocialMedia = data.Facebook || data.Instagram || data.Linkedin
+	console.log("HAHA")
+	console.log(createSocialMedia)
+
 	const delegationAdvisor = {
 		create: {
 			advisorRole: data?.role,
-			socialMedia: {
+			socialMedia: createSocialMedia ? {
 				createMany: {
 					data: [
 						data.Facebook ? { socialMediaName: "Facebook", username: data.Facebook } : undefined,
@@ -65,11 +70,11 @@ export async function createUser(data) {
 						data.Linkedin ? { socialMediaName: "Linkedin", username: data.Linkedin } : undefined,
 					]
 				}
-			}
+			} : undefined
 		}
 	}
 
-	return prisma.user.create({
+	const user = await prisma.user.create({
 		data: {
 			name: data.name,
 			email: data.email,
@@ -87,6 +92,8 @@ export async function createUser(data) {
 			delegationAdvisor: data.userType === "advisor" ? delegationAdvisor : undefined,
 		}
 	})
+
+	return user
 }
 
 export async function deleteUserByEmail(email) {
@@ -125,4 +132,49 @@ export async function verifyLogin(
 	const { password: _password, ...userWithoutPassword } = userWithPassword;
 
 	return userWithoutPassword;
+}
+
+export async function checkSubscription(user) {
+	if(!user.stripeCustomerId) return false
+	if(!user.stripeSubscriptionId) return false
+	if(user.stripeSubscriptionStatus != 'active' && user.stripeSubscriptionStatus != 'trialing') return false
+
+	return true
+}
+
+export async function ensureStripeCostumer(user) {
+	if (user.stripeCustomerId) {
+		return;
+	}
+
+	const customer = await stripe.customers.create({
+		email: user.email,
+		metadata: {
+			userId: user.id,
+		}
+	})
+
+	await prisma.user.update({
+		where: {
+			id: user.id
+		},
+		data: {
+			stripeCustomerId: customer.id
+		}
+	})
+}
+
+export async function getUserType(userId) {
+	if (!userId) return undefined
+
+	const user = await prisma.user.findUnique({ 
+		where: { id: userId },
+		select: {
+			leader: true,
+			delegate: true,
+			delegationAdvisor: true,
+		}
+	})
+	
+	return user.leader ? "leader" : user.delegate ? "delegate" : "delegateAdvisor"
 }

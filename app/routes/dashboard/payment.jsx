@@ -1,28 +1,46 @@
-import React from 'react'
+import { useState } from 'react'
 import { json } from '@remix-run/node'
-import { useLoaderData, Link, useSubmit, useFetcher } from '@remix-run/react'
+import { useLoaderData, useCatch, useMatches } from '@remix-run/react'
+import { AnimatePresence, motion } from 'framer-motion'
+import invariant from 'tiny-invariant';
+import qs from "qs"
 
-import { getUserPayments } from '~/models/payments.server'
-import { getAllTransacoes } from '~/models/payments'
-import { requireUserId } from '~/session.server'
-import { useUser } from '~/utils'
+import { getDelegationId, requireUserId } from '~/session.server'
+import { getRequiredPayments } from '~/models/payments.server'
+import { getTransactionsByUserId } from '~/stripe.server'
+import { safeRedirect, useUser, useUserType } from '~/utils'
 
 import * as S from '~/styled-components/dashboard/payment'
+import * as E from '~/styled-components/error'
 import { FiCreditCard, FiExternalLink } from 'react-icons/fi'
 
 export const loader = async ({ request }) => {
   const userId = await requireUserId(request)
-  const payments = await getUserPayments(userId)
-  const transactions = await getAllTransacoes()
+  const delegationId = await getDelegationId(request)
 
-  return json({ payments, transactions })
+  if (!delegationId) throw json({ errors: { delegationId: "You have to join a delegation in order to proceed to the payment" } }, { status: 404 });
+
+  const payments = await getRequiredPayments({ userId, delegationId })
+  const { data } = await getTransactionsByUserId(userId)
+  data.forEach((el, index) => {
+    const { amount, status, metadata, created, charges } = el
+    const { payment_method_details, receipt_url } = charges.data[0]
+    data[index] = { amount, status, metadata, created, receipt_url, type: payment_method_details.type }
+  })
+  console.log(data)
+
+  return json({ payments, userPaymentsIntents: data })
 }
 
 const payment = () => {
 
   const user = useUser()
+  const userType = useUserType()
 
-  const { transactions, payments } = useLoaderData()
+  const { payments, userPaymentsIntents } = useLoaderData()
+
+  const [menu, setMenu] = useState(payments.find(el => el.available) ? "pending" : "payments")
+
 
   return (
     <S.Wrapper>
@@ -30,79 +48,157 @@ const payment = () => {
         Pagamentos
       </S.Title>
 
-      {!(payments.find(payment => payment.succeed)) &&
-        <S.Container>
-          <S.SubTitle>
-            Pendentes
-          </S.SubTitle>
+      <S.Menu>
+        <S.MenuItem active={menu === "pending"} onClick={() => setMenu("pending")} >
+          {/* Pagamentos  */}Pendentes
+          {menu === "pending" ? <S.UnderLine layoutId="paymentPageUnderLine" /> : null}
+        </S.MenuItem>
 
-          <S.PaymentsList>
-            <S.PaymentContainer>
-              <S.Payment pending>
-                <S.PaymentInfo>
-                  Inscrição de {user.name}
+        <S.MenuItem active={menu === "payments"} onClick={() => setMenu("payments")} >
+          {/* Pagamentos  */}Realizados
+          {menu === "payments" ? <S.UnderLine layoutId="paymentPageUnderLine" /> : null}
+        </S.MenuItem>
+      </S.Menu>
 
-                  <S.PayContainer>
-                    <S.PayButton to="/pay">
-                      <FiExternalLink /> Pagar
-                    </S.PayButton>
-                  </S.PayContainer>
-                </S.PaymentInfo>
+      <AnimatePresence initial={false} mode="wait">
+        <motion.div
+          key={menu}
+          initial={{ x: menu === "pending" ? "-10%" : "10%", opacity: 0 }}
+          animate={{ x: "0", opacity: 1 }}
+          exit={{ x: menu === "pending" ? "-10%" : "10%", opacity: 0 }}
+          transition={{ duration: .4, ease: "easeInOut" }}
+        >
+          {menu === 'pending' ?
+            <S.Container>
+              {payments?.find(el => el.available) ?
+                <S.PaymentsList>
+                  {payments.map((item, index) => {
+                    if (!item.available) return null
+                    return (
+                      <S.PaymentContainer key={`paymentspage-payment${index}`}>
+                        <S.Payment pending>
+                          <S.PaymentInfo>
+                            {item.type === 'user' ? `Inscrição de ${item.name}` : 'Inscrição da Delegação'}
 
-                <S.PaymentAmountContainer>
-                  <S.PaymentAmount pending>
-                    {"$ " + 45 + ",00"}
-                  </S.PaymentAmount>
-                </S.PaymentAmountContainer>
+                            <S.PayContainer>
+                              <S.PayButton to="/pay">
+                                <FiExternalLink /> Pagar
+                              </S.PayButton>
+                            </S.PayContainer>
+                          </S.PaymentInfo>
 
-                <div />
+                          <S.PaymentAmountContainer>
+                            <S.PaymentAmount pending>
+                              {"$ " + item.price / 100 + ",00"}
+                            </S.PaymentAmount>
+                          </S.PaymentAmountContainer>
 
-                <S.PaymentDate>
-                  Até a data 30/8/2023
-                </S.PaymentDate>
-              </S.Payment>
-            </S.PaymentContainer>
-          </S.PaymentsList>
-        </S.Container>
-      }
+                          <div />
 
-      {transactions.length > 0 &&
-        <S.Container>
-          <S.SubTitle>
-            Pagamentos realizados
-          </S.SubTitle>
+                          <S.PaymentDate>
+                            Até a data 30/8/2023
+                          </S.PaymentDate>
+                        </S.Payment>
+                      </S.PaymentContainer>
+                    )
+                  })}
+                </S.PaymentsList> :
+                <S.NoPaymentsMessage>
+                  {userType === 'delegate' ?
+                    'Voce ja realizou todos os pagamentos necessários!' : 
+                    'Voce e sua delegação ja realizaram todos os pagamentos necessários!'
+                  }
+                </S.NoPaymentsMessage>
+              }
+            </S.Container>
+            :
+            <S.Container>
+              {userPaymentsIntents?.length > 0 ?
+                <S.PaymentsList>
+                  {userPaymentsIntents.map((item, index) => {
+                    return (
+                      <S.PaymentContainer key={`realized-payment-${index}`} first={index === 0}>
+                        <S.Payment status={item.status === "succeeded"}>
+                          <S.PaymentInfo>
+                            {item.type === 'card' && <FiCreditCard />}
+                            Inscrição d{item.metadata.delegationId ? "a sua delegação " : ""}
+                            {item.metadata.paidUsersIds ? `e ${Object.keys(qs.parse(item.metadata.paidUsersIds)).length}x participantes` : ''}
+                          </S.PaymentInfo>
 
-          <S.PaymentsList transactionList>
-            {transactions.map((item, index) => (
-              <S.PaymentContainer key={`payment-realized-${index}`} first={index === 0}>
-                <S.Payment status={item.status === "succeeded"}>
-                  <S.PaymentInfo>
-                    {item.metodoPgto === "cartão" && <FiCreditCard />} Inscrição de {user.name}
-                  </S.PaymentInfo>
+                          <S.PaymentAmountContainer>
+                            <S.PaymentAmount>
+                              R${" " + item.amount / 100},00
+                            </S.PaymentAmount>
+                          </S.PaymentAmountContainer>
 
-                  <S.PaymentAmountContainer>
-                    <S.PaymentAmount>
-                      {"$ " + item.amount.slice(0, item.amount.length - 2) + "," + item.amount.slice(item.amount.length - 2, item.amount.length)}
-                    </S.PaymentAmount>
-                  </S.PaymentAmountContainer>
+                          <S.PaymentLinkContainer>
+                            <S.PaymentLink href={item.receipt_url} target="_blank" rel="noopener noreferrer">
+                              <FiExternalLink />  Recibo
+                            </S.PaymentLink>
+                          </S.PaymentLinkContainer>
 
-                  <S.PaymentLinkContainer>
-                    <S.PaymentLink href={item.comprovantePgto} target="_blank" rel="noopener noreferrer">
-                      <FiExternalLink />  Recibo
-                    </S.PaymentLink>
-                  </S.PaymentLinkContainer>
-
-                  <S.PaymentDate>
-                    30/10/2022
-                  </S.PaymentDate>
-                </S.Payment>
-              </S.PaymentContainer>
-            ))}
-          </S.PaymentsList>
-        </S.Container>
-      }
+                          <S.PaymentDate>
+                            {new Date(item.created * 1000).toLocaleDateString("pt-BR")}
+                          </S.PaymentDate>
+                        </S.Payment>
+                      </S.PaymentContainer>
+                    )
+                  })}
+                </S.PaymentsList> :
+                <S.NoPaymentsMessage>
+                  Voce ainda não realizou nenhum pagamento
+                </S.NoPaymentsMessage>
+              }
+            </S.Container>
+          }
+        </motion.div>
+      </AnimatePresence>
     </S.Wrapper >
   )
 }
+
+export function CatchBoundary() {
+  const caught = useCatch();
+  const matches = useMatches()
+
+  if (caught.status === 404) {
+    return (
+      <S.Wrapper>
+        <S.Title>
+          Pagamentos
+        </S.Title>
+
+        <E.Message>
+
+          {caught.data.errors.delegationId}
+          <E.GoBacklink to={`/join/delegation?${new URLSearchParams([["redirectTo", safeRedirect(matches[1].pathname)]])}`}>
+            Join a Delegation
+          </E.GoBacklink>
+        </E.Message>
+
+      </S.Wrapper>
+    );
+  }
+
+  throw new Error(`Unsupported thrown response status code: ${caught.status}`);
+}
+
+export function ErrorBoundary({ error }) {
+  if (error instanceof Error) {
+    return (
+      <S.Wrapper>
+        <S.Title>
+          Unknown error
+        </S.Title>
+
+        <E.Message>
+          {error.message} <E.GoBacklink to='/'>Voltar para página inicial</E.GoBacklink>
+        </E.Message>
+      </S.Wrapper>
+    );
+  }
+  return <E.Message>Oops, algo deu errado!</E.Message>;
+}
+
 
 export default payment

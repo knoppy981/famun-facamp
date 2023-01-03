@@ -124,9 +124,9 @@ export function CatchBoundary() {
         </E.TitleBox>
 
         <E.Message>
-          Voce ja está em uma delegação, deseja entrar com outra conta? 
+          Voce ja está em uma delegação, deseja entrar com outra conta?
           <Form method='post' action='/logout'>
-            <input type="hidden" name="redirectTo" value={`/login?${new URLSearchParams([["redirectTo", safeRedirect(matches[1].pathname)]])}`}/>
+            <input type="hidden" name="redirectTo" value={`/login?${new URLSearchParams([["redirectTo", safeRedirect(matches[1].pathname)]])}`} />
             <E.GoBackButton type='submit'>
               Entrar com outra conta
             </E.GoBackButton>

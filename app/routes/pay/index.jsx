@@ -1,10 +1,12 @@
-import { Form } from "@remix-run/react"
+import { Form, useOutletContext } from "@remix-run/react"
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 
-import * as S from '~/styled-components/pay'
+import * as S from '~/styled-components/pay/index'
 import { useUser } from "~/utils"
 
 const index = () => {
+
+  const { payments, price } = useOutletContext()
 
   const user = useUser()
   const stripe = useStripe()
@@ -23,25 +25,36 @@ const index = () => {
   }
 
   return (
-    <S.FormContainer onSubmit={handleSubmit}>
-      <S.PaymentDescBox>
-        <S.PaymentDesc>
-          Taxa de inscrição do {user.name}
-        </S.PaymentDesc>
+    <S.Wrapper>
+      <PaymentElement />
 
-        <S.PaymentPrice>
-          RS 45,00
-        </S.PaymentPrice>
-      </S.PaymentDescBox>
+      <S.Container>
+        <S.PaymentListTitle>
+          Pagamentos
+        </S.PaymentListTitle>
 
-      <S.PaymentElementContainer>
-        <PaymentElement />
-      </S.PaymentElementContainer>
+        <S.PaymentList>
 
-      <S.ConfirmPaymentButton>
-        Pay
-      </S.ConfirmPaymentButton>
-    </S.FormContainer>
+          {payments?.map((item, index) => (
+            <S.Payment key={`confirm-payment-${index}`}>
+              <S.PaymentName>{item.type === 'user' ? `Taxa de inscrição do ${item.name}` : `Taxa de inscrição da Delegação`}</S.PaymentName>
+              <S.PaymentPrice color="green">R$ {" "} {item.price / 100},00</S.PaymentPrice>
+            </S.Payment>
+          ))}
+
+        </S.PaymentList>
+
+        <S.CheckoutLine>
+          <S.PayButton onClick={handleSubmit}>
+            Pagar
+          </S.PayButton>
+
+          <S.TotalPrice>
+            R$ {" "} {price / 100},00
+          </S.TotalPrice>
+        </S.CheckoutLine>
+      </S.Container>
+    </S.Wrapper>
   )
 }
 

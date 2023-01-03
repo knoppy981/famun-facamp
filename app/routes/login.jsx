@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
-import { useActionData, useSearchParams, useTransition } from '@remix-run/react'
+import { useActionData, useSearchParams, useTransition, Link, useLoaderData } from '@remix-run/react'
 import { json, redirect } from '@remix-run/node';
+import { useTranslation } from 'react-i18next'
 
 import { getUserId, createUserSession } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
 import { safeRedirect, validateEmail } from "~/utils";
+import { i18nCookie } from '~/cookies';
 
 import * as S from '~/styled-components/login'
 import InputBox from '~/styled-components/components/inputs/authInput'
@@ -51,16 +53,19 @@ export const loader = async ({ request }) => {
   return userId ? redirect('/') : json({})
 }
 
+export const handle = {
+  //handle the file it pulls to translate
+  i18n: "login"
+};
+
 const LoginPage = () => {
+
+  const { t, i18n } = useTranslation("login")
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/dashboard/home";
   const transition = useTransition()
   const actionData = useActionData()
-
-  useEffect(() => {
-    console.log(transition.state)
-  }, [transition])
 
   return (
     <S.Wrapper>
@@ -73,20 +78,20 @@ const LoginPage = () => {
           <S.ArrowIconBox />
 
           <S.SubTitle>
-            Login
+            {t('title')}
           </S.SubTitle>
         </S.TitleBox>
 
         <S.AuthForm method="post" noValidate>
-          <InputBox name="email" text="Email" type="email" err={actionData?.errors?.email} autoFocus={true} />
+          <InputBox name="email" text={t("email")} type="email" err={actionData?.errors?.email} autoFocus={true} />
 
-          <InputBox name="password" text="Senha" type="password" err={actionData?.errors?.password} />
+          <InputBox name="password" text={t("password")} type="password" err={actionData?.errors?.password} />
 
           <S.ForgotLinkBox>
             <S.StyledLink
               to="/resetPassword"
             >
-              Esqueceu a Senha?
+              {t("forgotPassword")}
             </S.StyledLink>
           </S.ForgotLinkBox>
 
@@ -99,20 +104,20 @@ const LoginPage = () => {
               value="firstButton"
               disabled={transition.state !== "idle"}
             >
-              Entrar
+              {t("login")}
             </S.SubmitButton>
           </S.ButtonContainer>
         </S.AuthForm>
 
         <S.JoinLinkBox>
-          Ainda não tem uma conta?
+          {t("acc")}
           <S.StyledLink
             to={{
               pathname: "/join/user",
               search: searchParams.toString(),
             }}
           >
-            Cadastrar
+            {t("join")}
           </S.StyledLink>
         </S.JoinLinkBox>
       </S.FormContainer>

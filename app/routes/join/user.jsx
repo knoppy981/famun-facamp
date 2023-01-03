@@ -9,15 +9,14 @@ import { createUser, getExistingUser } from '~/models/user.server';
 
 import * as S from '~/styled-components/join/user'
 import AuthInputBox from '~/styled-components/components/inputs/authInput'
-import { FiTrash2, FiAlertTriangle } from 'react-icons/fi'
 
-import br from '~/images/flag-icons/br.svg'
-import de from '~/images/flag-icons/de.svg'
-import es from '~/images/flag-icons/es.svg'
-import fr from '~/images/flag-icons/fr.svg'
-import mx from '~/images/flag-icons/mx.svg'
-import pt from '~/images/flag-icons/pt.svg'
-import us from '~/images/flag-icons/us.svg'
+import AdvisorData from "~/styled-components/join/user/advisordata"
+import ConfirmData from "~/styled-components/join/user/confirmdata"
+import CreateUser from "~/styled-components/join/user/createuser"
+import DelegateData from "~/styled-components/join/user/delegatedata"
+import Nacionality from "~/styled-components/join/user/nacionality"
+import UserData from "~/styled-components/join/user/userdata"
+import UserType from "~/styled-components/join/user/usertype"
 
 export const action = async ({ request }) => {
   const text = await request.text()
@@ -83,7 +82,7 @@ export const action = async ({ request }) => {
           { errors: { name: "Nome já utilizado" } },
           { status: 400 }
         );
-      if (typeof data.name !== "string" || checkString(data.name) || data.name === "")
+      if (typeof data.name !== "string" || !checkString(data.name) || data.name === "")
         return json(
           { errors: { name: "Nome inválido" } },
           { status: 400 }
@@ -154,7 +153,7 @@ export const action = async ({ request }) => {
 
     const userType = session.get("user-type")?.userType
 
-    if (step == 4 && userType === "delegate") {
+    if (step == 5 && userType === "delegate") {
       if (data.council === undefined) {
         return json(
           { errors: { council: "Escolha uma opção" } },
@@ -179,8 +178,6 @@ export const action = async ({ request }) => {
       }
       const user = await createUser(userData)
 
-      console.log(user)
-
       return createUserSession({
         request,
         userId: user.id,
@@ -196,7 +193,7 @@ export const action = async ({ request }) => {
 
   return redirect(`/join/user?${searchParams}`, {
     headers: {
-      'set-cookie': await sessionStorage.commitSession(session),
+      'Set-cookie': await sessionStorage.commitSession(session),
     },
   })
 }
@@ -219,8 +216,6 @@ export const loader = async ({ request }) => {
       ...session.get("user-data-3"),
       ...session.get("user-data-5"),
     }
-    /* console.log("loader data")
-    console.log(data) */
     return json({ data, step, userType })
   } else {
     const data = session.get(`user-data-${step}`) ?? {}
@@ -228,459 +223,9 @@ export const loader = async ({ request }) => {
   }
 }
 
-const Nacionality = ({ data }) => {
-
-  const flagIcons = {
-    Brasil: br,
-    Alemanha: de,
-    Espanha: es,
-    Franca: fr,
-    Mexico: mx,
-    Portugal: pt,
-    Estados_Unidos: us,
-  }
-
-  const [flag, setFlag] = useState(data.nacionality ?? "Brasil")
-  const [focus, setFocus] = useState(false)
-
-  return (
-    <>
-      <S.StepTitle style={{ marginTop: '40px' }}>
-        Nacionalidade
-      </S.StepTitle>
-
-      <S.StepSubtitle>
-        Escolha seu país de nascimento
-      </S.StepSubtitle>
-
-      <S.NacionalityContainer
-        onClick={() => setFocus(true)}
-        focused={focus}
-      >
-        <S.NacionalityFlag
-          style={{
-            backgroundImage: `url(${flagIcons[flag]})`,
-          }}
-        />
-
-        <S.NacionalitySelect
-          value={flag}
-          onChange={e => { setFlag(e.target.value); setFocus(false) }}
-          name="nacionality"
-          onBlur={() => setFocus(false)}
-        >
-
-          <S.Option value={"Brasil"}>Brasil</S.Option>
-          <S.Option value={"Portugal"}>Portugal</S.Option>
-          <S.Option value={"Franca"}>França</S.Option>
-          <S.Option value={"Estados_Unidos"}>Estados Unidos</S.Option>
-          <S.Option value={"Espanha"}>Espanha</S.Option>
-          <S.Option value={"Alemanha"}>Alemanha</S.Option>
-          <S.Option value={"México"}>México</S.Option>
-        </S.NacionalitySelect>
-      </S.NacionalityContainer>
-    </>
-  )
-}
-
-const CreateUser = ({ data, actionData }) => {
-  return (
-    <>
-      <S.StepTitle>
-        Criar Conta
-      </S.StepTitle>
-
-      <S.InputContainer>
-        <AuthInputBox
-          name="email"
-          text="E-mail"
-          type="email"
-          value={data?.email}
-          err={actionData?.errors?.email}
-          autoFocus={true}
-        />
-
-        <div />
-
-        <S.SubInputContainer>
-          <AuthInputBox
-            name="password"
-            text="Senha"
-            type="password"
-            value={data?.password}
-            err={actionData?.errors?.password}
-          />
-
-          <AuthInputBox
-            name="confirmPassword"
-            text="Confirme a Senha"
-            type="password"
-            value={data?.confirmPassword}
-            err={actionData?.errors?.confirmPassword}
-          />
-        </S.SubInputContainer>
-
-      </S.InputContainer>
-    </>
-  )
-}
-
-const UserData = ({ data, actionData }) => {
-  return (
-    <>
-      <S.StepTitle>
-        Dados Pessoais
-      </S.StepTitle>
-
-      <S.InputContainer>
-        <AuthInputBox
-          name="name"
-          text="Nome"
-          type="text"
-          value={data?.name}
-          err={actionData?.errors?.name}
-          autoFocus={true}
-        />
-
-        <div />
-
-        <S.SubInputContainer>
-          <AuthInputBox
-            name="cpf"
-            text="Cpf"
-            type="text"
-            value={data?.cpf}
-            err={actionData?.errors?.cpf}
-          />
-
-          <AuthInputBox
-            name="rg"
-            text="Rg"
-            type="text"
-            value={data?.rg}
-            err={actionData?.errors?.rg}
-          />
-        </S.SubInputContainer>
-
-        <S.SubInputContainer>
-          <AuthInputBox
-            name="birthDate"
-            text="Data de Nascimento"
-            type="text"
-            value={data?.birthDate}
-            err={actionData?.errors?.birthDate}
-          />
-        </S.SubInputContainer>
-
-        <S.SubInputContainer>
-          <AuthInputBox
-            name="phoneNumber"
-            text="Telefone"
-            type="text"
-            value={data?.phoneNumber}
-            err={actionData?.errors?.phoneNumber}
-          />
-        </S.SubInputContainer>
-      </S.InputContainer>
-    </>
-  )
-}
-
-const UserType = () => {
-  return (
-    <>
-      <S.StepTitle>
-        Como voce deseja se inscrever?
-      </S.StepTitle>
-
-      <S.StepSubtitle>
-      </S.StepSubtitle>
-
-      <S.StepButtonsContainer>
-        <S.StepButton name="userType" type="submit" value="advisor">
-          Professor Orientador
-        </S.StepButton>
-
-        <S.StepButton name="userType" type="submit" value="delegate">
-          Delegado
-        </S.StepButton>
-      </S.StepButtonsContainer>
-    </>
-  )
-}
-
-const DelegateData = ({ data, actionData }) => {
-  return (
-    <>
-      <S.StepTitle>
-        Preferencias
-      </S.StepTitle>
-
-      <S.CheckBoxGrid>
-        <S.CheckBoxWrapper>
-          <S.CheckBoxTitle err={actionData?.errors.council}>
-            {actionData?.errors.council ? <><FiAlertTriangle /> {actionData?.errors.council} </> : 'Preferencias de Conselho :'}
-          </S.CheckBoxTitle>
-
-          {['Assembleia Geral da ONU', 'Rio 92', 'Conselho de Juventude da ONU', 'Conselho de Seguranca da ONU'].map((item, index) => (
-            <S.CheckBoxContainer>
-              <S.CheckBox
-                id={`council-${item}`}
-                name="council"
-                value={item}
-                defaultChecked={
-                  data?.council === `${item}`
-                }
-                type="radio"
-              />
-
-              <S.CheckBoxLabelContainer>
-                <S.CheckBoxLabel>
-                  {item}
-                </S.CheckBoxLabel>
-              </S.CheckBoxLabelContainer>
-            </S.CheckBoxContainer>
-          ))}
-        </S.CheckBoxWrapper>
-
-        <S.CheckBoxWrapper>
-          <S.CheckBoxTitle err={actionData?.errors.language}>
-            {actionData?.errors.language ? <><FiAlertTriangle /> {actionData?.errors.language} </> : 'Idiomas fluentes :'}
-          </S.CheckBoxTitle>
-
-          {console.log(data.language)}
-
-          {["Portugues", "Ingles", "Espanhol"].map((item, index) => (
-            <S.CheckBoxContainer>
-              <S.CheckBox
-                id={item}
-                name="language"
-                value={item}
-                defaultChecked={data?.language?.includes(
-                  `${item}`
-                )}
-                type="checkbox"
-              />
-
-              <S.CheckBoxLabelContainer>
-                <S.CheckBoxLabel>
-                  {item}
-                </S.CheckBoxLabel>
-              </S.CheckBoxLabelContainer>
-            </S.CheckBoxContainer>
-          ))}
-        </S.CheckBoxWrapper>
-      </S.CheckBoxGrid>
-    </>
-  )
-}
-
-const AdvisorData = ({ data }) => {
-
-  const { council, language, role, ..._data } = data
-  const [values, setValues] = useState(_data)
-  const valuesArray = Object.entries(values)
-
-  const inputRef = useRef(null)
-  const [selectValue, setSelectValue] = useState("Instagram")
-
-  const addSM = (e) => {
-    e.preventDefault();
-    if (inputRef?.current.value.length > 0) setValues({ ...values, [selectValue]: inputRef?.current.value })
-  }
-
-  const removeSM = (e, item) => {
-    e.preventDefault();
-    let copyOfValues = { ...values }
-    delete copyOfValues[item]
-    setValues(copyOfValues);
-  }
-
-  return (
-    <>
-      <S.StepTitle>
-        Dados do Orientador
-      </S.StepTitle>
-
-      <S.CheckBoxGrid>
-        <S.SMContainer padding={valuesArray.length > 0}>
-          <S.SMLabel>
-            Redes Sociais
-          </S.SMLabel>
-
-          <S.SMAddContainer>
-            <S.SMAdd
-              value={selectValue}
-              onChange={e => {
-                setSelectValue(e.target.value)
-                inputRef.current.value = values[e.target.value] ?? inputRef.current.value
-              }}
-            >
-              <S.SMAddOption>Instagram</S.SMAddOption>
-              <S.SMAddOption>Facebook</S.SMAddOption>
-              <S.SMAddOption>Linkedin</S.SMAddOption>
-              <S.SMAddOption>Twitter</S.SMAddOption>
-            </S.SMAdd>
-
-            <S.SMInput
-              type="string"
-              ref={inputRef}
-              placeholder="nome de usuario"
-            />
-
-            <S.SMButton onClick={addSM}>
-              {values.hasOwnProperty(selectValue) ? "Editar" : "Adicionar"}
-            </S.SMButton>
-
-          </S.SMAddContainer>
-
-          <S.SMValueList>
-            {valuesArray.map((item, index) => {
-              const active = selectValue === item[0]
-              return (
-                <S.SMValueItem
-                  first={index === 0}
-                  key={`sm-${item[0]}`}
-                  active={active}
-                  onClick={() => setSelectValue(item[0])}
-                >
-                  <input type="hidden" name={item[0]} value={item[1]} />
-                  <S.SMName>{item[0]}</S.SMName>
-                  <S.SMValue>
-                    {item[1]}
-                  </S.SMValue>
-                  <S.SMDeleteButton onClick={e => removeSM(e, item[0])}>
-                    <FiTrash2 />
-                  </S.SMDeleteButton>
-                </S.SMValueItem>
-              )
-            })}
-          </S.SMValueList>
-        </S.SMContainer>
-
-        <S.AdvidorRoleContainer>
-          <S.SMLabel>
-            Posição do orientador
-          </S.SMLabel>
-
-          <S.SMAddContainer>
-            <S.AdvisorRoleSelect
-              name="role"
-              defaultValue={role}
-            >
-              <S.SMAddOption>Professor</S.SMAddOption>
-              <S.SMAddOption>Coordenador</S.SMAddOption>
-              <S.SMAddOption>Diretor</S.SMAddOption>
-              <S.SMAddOption>Outro</S.SMAddOption>
-            </S.AdvisorRoleSelect>
-          </S.SMAddContainer>
-        </S.AdvidorRoleContainer>
-      </S.CheckBoxGrid>
-    </>
-  )
-}
-
-const ConfirmData = ({ data, userType }) => {
-  const { password, confirmPassword, ...dataWithoutPassword } = data
-  return (
-    <>
-      <S.StepTitle>
-        Confirmar os dados
-      </S.StepTitle>
-
-      <S.StepSubtitle>
-        É possível alterar os dados após a inscrição
-      </S.StepSubtitle>
-
-      <S.ConfirmList>
-        <S.ConfirmColumn>
-          {[
-            ["Nacionalidade", "nacionality"],
-            ["Nome", "name"],
-            ["E-mail", "email"],
-            ["Telefone", "phoneNumber"],
-          ].map((item, index) => {
-            return (
-              <S.ConfirmItem key={`1-delegation-${index}`}>
-                <S.ConfirmLabel>
-                  {item[0]}
-                </S.ConfirmLabel>
-                {data[item[1]]}
-              </S.ConfirmItem>
-            )
-          })}
-        </S.ConfirmColumn>
-
-        <S.ConfirmColumn>
-          {[
-            ["Cpf", "cpf"],
-            ["Rg", "rg"],
-            ["Data de aniversário", "birthDate"],
-          ].map((item, index) => {
-            return (
-              <S.ConfirmItem key={`2-delegation-${index}`}>
-                <S.ConfirmLabel>
-                  {item[0]}
-                </S.ConfirmLabel>
-                {data[item[1]]}
-              </S.ConfirmItem>
-            )
-          })}
-        </S.ConfirmColumn>
-
-        <S.ConfirmColumn>
-          <S.ConfirmItem>
-            <S.ConfirmLabel>
-              {data.role ? "Posição" : "Preferência de Conselho"}
-            </S.ConfirmLabel>
-            {data.role ?? data.council}
-          </S.ConfirmItem>
-
-          {data.language &&
-            <S.ConfirmItem>
-              <S.ConfirmLabel>
-                Idiomas Fluentes
-              </S.ConfirmLabel>
-              {Array.isArray(data.language) ?
-                data.language.map((item, index) => (
-                  <p>
-                    {item}
-                  </p>
-                )) :
-                data.language
-              }
-            </S.ConfirmItem>
-          }
-        </S.ConfirmColumn>
-
-        <S.ConfirmColumn>
-          {userType === "advisor" &&
-            [
-              ["Instagram", "Instagram"],
-              ["Facebook", "Facebook"],
-              ["Linkedin", "Linkedin"],
-              ["Twitter", "Twitter"]
-            ].map((item, index) => {
-              if (!data[item[1]]) return null
-              return (
-                <S.ConfirmItem key={`4-delegation-${index}`}>
-                  <S.ConfirmLabel>
-                    {item[0]}
-                  </S.ConfirmLabel>
-                  {data[item[1]]}
-                </S.ConfirmItem>
-              )
-            })}
-        </S.ConfirmColumn>
-      </S.ConfirmList>
-    </>
-  )
-}
-
 const user = () => {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "";
-  console.log(redirectTo)
 
   const actionData = useActionData()
   let { userType, step, data } = useLoaderData()
@@ -695,13 +240,15 @@ const user = () => {
       {step === 2 && <CreateUser data={data} actionData={actionData} />}
       {step === 3 && <UserData data={data} actionData={actionData} />}
       {step === 4 && <UserType data={data} actionData={actionData} />}
-      {step === 5 && (userType === "advisor" ? <AdvisorData data={data} actionData={actionData} /> : <DelegateData data={data} actionData={actionData} />)}
+      {step === 5 && (userType === "advisor" ? 
+        <AdvisorData data={data} actionData={actionData} /> : <DelegateData data={data} actionData={actionData} />)
+      }
       {step === 6 && <ConfirmData data={data} userType={userType} />}
 
       <S.ControlButtonsContainer>
         {step !== 1 && <S.ControlButton name="action" value="previous" type="submit" prev> Voltar </S.ControlButton>}
 
-        {step !== 4 && <S.ControlButton name="action" value="next" type="submit"> {step === 6 ? 'Finalizar' : 'Próximo'} </S.ControlButton>}
+        {step !== 4 && <S.ControlButton name="action" value="next" type="submit"> {step === 6 ? 'Criar Usuário' : 'Próximo'} </S.ControlButton>}
       </S.ControlButtonsContainer>
     </S.StepsForm>
   )

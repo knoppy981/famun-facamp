@@ -110,16 +110,6 @@ async function seed() {
 		}
 	}) */
 
-	return prisma.delegation.update({
-		where: {
-			code: code
-		},
-		data: {
-			inviteLink: ""
-		}
-	})
-
-
 	console.log(`Database has been seeded. 🌱`);
 }
 

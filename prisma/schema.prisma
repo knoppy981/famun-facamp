@@ -30,14 +30,15 @@ model User {
   delegate          Delegate?
   delegationAdvisor DelegationAdvisor?
   //
-  payments          Payment[]
+  stripeCustomerId  String?
+  stripePaymentId   String?
 }
 
 model Password {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
   hash   String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @unique
+  userId String @unique @db.ObjectId
 }
 
 model UserPreferences {
@@ -83,15 +84,7 @@ model Delegation {
   participationMethod ParticipationMethod
   address             Address?
   participants        User[]
-}
-
-model Payment {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  paymentId String
-  succeed   Boolean
-  createdAt DateTime @default(now())
-  client    User     @relation(fields: [clientId], references: [id])
-  clientId  String   @unique @db.ObjectId
+  stripePaymentId     String?
 }
 
 model Address {

@@ -60,6 +60,14 @@ export function useUser() {
 	return maybeUser;
 }
 
+export function useUserType() {
+	const data = useMatchesData("root");
+	if (!data || !data.userType) {
+		return undefined;
+	}
+	return data.userType;
+}
+
 export function validateEmail(email) {
 	return typeof email === "string" && email.length > 3 && email.includes("@");
 }
@@ -91,9 +99,9 @@ export function validatePhoneNumber(phoneNumber) {
 }
 
 export function generateString(length) {
-	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-	let result = ' ';
+	let result = '';
 	const charactersLength = characters.length;
 
 	for (let i = 0; i < length; i++) {
@@ -104,5 +112,9 @@ export function generateString(length) {
 }
 
 export function checkString(str) {
-	return /[^A-Za-zàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇ ]+/.test(str)
+	return !/[^A-Za-zàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇ ]+/.test(str)
+}
+
+export function checkStringWithNumbers(str) {
+	return !/[^A-Za-z0-9àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇ ]+/.test(str)
 }

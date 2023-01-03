@@ -21,11 +21,11 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 30px;
-  gap: 20px;
 `
 export const TitleBox = styled.div`
   display: flex;
   align-items: center;
+  margin-bottom: 40px;
   height: 40px;
 `
 export const Title = styled.div`
@@ -50,25 +50,35 @@ export const ArrowIconBox = styled(FiChevronRight)`
 export const Navbar = styled.div`
 	min-height: 70px;
   width: 100%;
+	display: flex;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
+  border-bottom: 1px solid #E6E6E6;
+  padding: 0 15px;
 `
 export const NavMenu = styled.div`
+  height: 50%;
   display: flex;
 `
 export const NavItem = styled.div`
+  height: 100%;
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 1.8rem;
   padding: 0 15px;
-  border-left: ${p => p.border ? '1px solid #E6E6E6' : undefined};
+`
+export const NavIcon = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 `
 export const StepsWrapper = styled.div`
   width: 100%;
   height: 100%;
   padding: 10px;
-  margin-top: -20px;
 `

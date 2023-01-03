@@ -3,15 +3,14 @@ import { json } from '@remix-run/node'
 
 import { useUser } from '~/utils'
 import { getDelegationId, requireUserId } from '~/session.server'
-import { getUserPayments } from '~/models/payments.server'
+import { getRequiredPayments, getUserPayments } from '~/models/payments.server'
 
 import * as S from '~/styled-components/dashboard/home'
 
 export const loader = async ({ request }) => {
   const userId = await requireUserId(request)
   const delegationId = await getDelegationId(request)
-
-  const payments = await getUserPayments(userId)
+  const payments = await getRequiredPayments({ userId, delegationId })
 
   return json({ delegationId, payments })
 }
@@ -20,14 +19,18 @@ const home = () => {
 
   const { delegationId, payments } = useLoaderData()
   const user = useUser()
+  const paymentSucceed = payments ? !payments.find(el => el.available) : false
+  const document = false
 
-  const paymentSucceed = payments.find(payment => payment.succeed)
+  const completed = () => {
+    return (delegationId && paymentSucceed && document) ? true : false
+  }
 
   return (
     <S.Wrapper>
 
       <S.SubTitle>
-        Inscrição <S.Item color='red'> Incompleta </S.Item>
+        Inscrição <S.Item color={completed() ? 'green' : 'red'}> {completed()? "Concluída" : "Incompleta"} </S.Item>
       </S.SubTitle>
 
       <S.Container>
@@ -43,7 +46,7 @@ const home = () => {
               </S.GridListItem>
 
               <S.GridListItem>
-                <Link to="/dashboard/delegation">
+                <Link to={delegationId ? '/dashboard/delegation' : "/join/delegation"}>
                   <S.Item color={delegationId ? 'green' : 'red'}>
                     {delegationId ? 'Concluído' : 'Entrar'}
                   </S.Item>
@@ -84,8 +87,8 @@ const home = () => {
 
               <S.GridListItem>
                 <Link to="/dashboard/documents">
-                  <S.Item color={'blue'}>
-                    {'Pendente'}
+                  <S.Item color={document ? 'green' : 'blue'}>
+                    {document ? 'Concluído' : 'Pendente'}
                   </S.Item>
                 </Link>
               </S.GridListItem>

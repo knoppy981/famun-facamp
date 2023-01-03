@@ -1,5 +1,7 @@
 import styled from 'styled-components'
 
+import { motion } from 'framer-motion'
+
 const azulClaro = '#BDE8F5'
 const azul = '#01558A'
 const azulCeu = '#14A7D8'
@@ -18,6 +20,7 @@ export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+  gap: 25px;
 `
 export const Nav = styled.div`
   height: 50px;
@@ -60,13 +63,31 @@ export const NavIcon = styled.div`
     transform: translateY(1px);
   }
 `
-export const DelegationContainer = styled.div`
-  display: grid;
-  width: 100%;
-  grid-gap: 25px;
-  margin-top: 25px;
+export const Menu = styled.div`
+  margin-left: 5px;
+  display: flex;
+  gap: 25px;
 `
-export const DelegationDataWrapper = styled.div`
+export const MenuItem = styled.div`
+  height: 3rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 1.4rem;
+  opacity: ${p => p.active ? 1 : 0.6};
+  padding: 0 15px;
+  transition: opacity .4s ease;
+  cursor: pointer;
+`
+export const UnderLine = styled(motion.div)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  height: 100%;
+  background: #e1e1e1;
+  border-radius: 25px;
 `
 export const DelegatesListWrapper = styled.div`
   width: 100%;
@@ -75,7 +96,7 @@ export const DelegatesListWrapper = styled.div`
 `
 export const DelegatesList = styled.ul`
   width: 100%;
-  height: 250px;
+  height: 220px;
   overflow-y: auto;
   overflow-x: hidden;
 `
@@ -134,4 +155,36 @@ export const Item = styled.div`
   svg {
     transform: translateY(-1px);
   }
+`
+export const DataPageWrapper = styled.div`
+`
+export const DataLine = styled.div`
+  display: flex;
+  gap: 40px;
+  margin-bottom: 20px;
+`
+export const DataContainer = styled.ul`
+  position: relative;
+  max-width: 400px;
+
+  &::before {
+    position: absolute;
+    content: '';
+    height: 60%;
+    width: 1px;
+    top: 50%;
+    left: 0;
+    transform: translate(-20px, -50%);
+    background: ${p => !p.first && '#e6e6e6'};
+  }
+`
+export const DataTitle = styled.li`
+  font-size: 1.4rem;
+  color: #666666;
+`
+export const Data = styled.li`
+  font-size: 1.6rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `

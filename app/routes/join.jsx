@@ -34,7 +34,9 @@ const join = () => {
               }}
             >
               <S.NavItem>
-                <FiArrowLeft />
+                <S.NavIcon>
+                  <FiArrowLeft />
+                </S.NavIcon>
                 Início
               </S.NavItem>
             </Link>
@@ -42,12 +44,16 @@ const join = () => {
 
           <S.NavMenu>
             <S.NavItem>
-              <FiHelpCircle />
+              <S.NavIcon>
+                <FiHelpCircle />
+              </S.NavIcon>
               Ajuda
             </S.NavItem>
 
-            <S.NavItem border>
-              <FiSettings />
+            <S.NavItem>
+              <S.NavIcon>
+                <FiSettings />
+              </S.NavIcon>
             </S.NavItem>
           </S.NavMenu>
         </S.Navbar>

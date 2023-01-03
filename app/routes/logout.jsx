@@ -5,7 +5,6 @@ import { logout } from "~/session.server";
 export const action = async ({ request }) => {
   const formData = await request.formData()
   const redirectTo = formData.get("redirectTo") ?? ""
-  console.log("HAHHAHA" + redirectTo)
   return logout({request, redirectTo});
 };
 

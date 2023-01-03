@@ -4,11 +4,10 @@ import { json } from '@remix-run/node'
 
 import { requireUserId } from '~/session.server'
 import { updateUser, getExistingUser } from '~/models/user.server'
-import { validatePhoneNumber, checkString } from "~/utils";
+import { validatePhoneNumber, checkString, useUser } from "~/utils";
 
 import InputBox from '~/styled-components/components/inputs/dataInput2'
 import * as S from '~/styled-components/dashboard/data'
-import { FiX } from 'react-icons/fi'
 
 export const action = async ({ request }) => {
   const userId = await requireUserId(request)
@@ -24,15 +23,13 @@ export const action = async ({ request }) => {
 
   const user = await getExistingUser(values)
 
-  /* console.log(user) */
-
   for (const [key, value] of Object.entries(values)) {
     if (value === '')
       delete values[key]
   }
 
   if (values["name"]) {
-    if (typeof values["name"] !== "string" || checkString(values["name"]) || data.name === "")
+    if (typeof values["name"] !== "string" || !checkString(values["name"]) || data.name === "")
       return json(
         { errors: { name: "Nome inválido" } },
         { status: 400 }
@@ -93,7 +90,8 @@ export const action = async ({ request }) => {
 
 const data = () => {
 
-  const { user } = useOutletContext()
+  const user = useUser()
+  console.log(user)
   const actionData = useActionData();
 
   const [showButton, setShowButton] = useState(false)
@@ -147,7 +145,7 @@ const data = () => {
   return (
     <S.FormContainer method="post">
       <S.Title>
-        Dados Cadastrais
+        Editar Dados
       </S.Title>
 
       <S.Grid columns={"1fr 1fr"}>
