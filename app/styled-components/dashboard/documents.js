@@ -22,15 +22,19 @@ export const Wrapper = styled.div`
   gap: 30px;
 `
 export const Title = styled.div`
-  font-size: 18px;
+  height: 3rem;
+  font-size: 1.8rem;
   font-weight: 500;
   color: #000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 `
 export const Container = styled.div`
   width: 100%;
 `
 export const SubTitle = styled.div`
-  font-size: 16px;
+  font-size: 1.6rem;
   font-weight: 400;
   color: #000;
   padding-left: 10px;

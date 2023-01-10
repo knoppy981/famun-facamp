@@ -23,10 +23,13 @@ export const Wrapper = styled.div`
   gap: 25px;
 `
 export const Title = styled.div`
-  font-size: 18px;
+  height: 3rem;
+  font-size: 1.8rem;
   font-weight: 500;
-  padding-left: 5px;
   color: #000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 `
 export const Menu = styled.div`
   display: flex;

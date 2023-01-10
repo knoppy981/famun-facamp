@@ -29,9 +29,9 @@ const home = () => {
   return (
     <S.Wrapper>
 
-      <S.SubTitle>
+      <S.Title>
         Inscrição <S.Item color={completed() ? 'green' : 'red'}> {completed()? "Concluída" : "Incompleta"} </S.Item>
-      </S.SubTitle>
+      </S.Title>
 
       <S.Container>
         <S.Grid>
@@ -97,9 +97,9 @@ const home = () => {
         </S.Grid>
       </S.Container>
 
-      <S.SubTitle>
+      <S.Title>
         Informações do evento
-      </S.SubTitle>
+      </S.Title>
 
     </S.Wrapper>
   )

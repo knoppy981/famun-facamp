@@ -27,7 +27,6 @@ export const loader = async ({ request }) => {
     const { payment_method_details, receipt_url } = charges.data[0]
     data[index] = { amount, status, metadata, created, receipt_url, type: payment_method_details.type }
   })
-  console.log(data)
 
   return json({ payments, userPaymentsIntents: data })
 }
@@ -38,8 +37,9 @@ const payment = () => {
   const userType = useUserType()
 
   const { payments, userPaymentsIntents } = useLoaderData()
+  console.log(userPaymentsIntents)
 
-  const [menu, setMenu] = useState(payments.find(el => el.available) ? "pending" : "payments")
+  const [menu, setMenu] = useState(userPaymentsIntents.length > 0 ? "payments" : "pending")
 
 
   return (
@@ -104,10 +104,7 @@ const payment = () => {
                   })}
                 </S.PaymentsList> :
                 <S.NoPaymentsMessage>
-                  {userType === 'delegate' ?
-                    'Voce ja realizou todos os pagamentos necessários!' : 
-                    'Voce e sua delegação ja realizaram todos os pagamentos necessários!'
-                  }
+                  Voce e sua delegação ja realizaram todos os pagamentos necessários!
                 </S.NoPaymentsMessage>
               }
             </S.Container>

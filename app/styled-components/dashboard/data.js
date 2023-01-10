@@ -16,9 +16,13 @@ export const FormContainer = styled(Form)`
   position: relative;
 `
 export const Title = styled.div`
+  height: 3rem;
   font-size: 1.8rem;
   font-weight: 500;
   color: #000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 `
 export const Grid = styled.div`
   display: grid;

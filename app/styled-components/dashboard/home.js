@@ -22,11 +22,7 @@ export const Wrapper = styled.div`
   gap: 30px;
 `
 export const Title = styled.div`
-  font-size: 1.8rem;
-  font-weight: 500;
-  color: #000;
-`
-export const SubTitle = styled.div`
+  height: 3rem;
   font-size: 1.8rem;
   font-weight: 500;
   color: #000;

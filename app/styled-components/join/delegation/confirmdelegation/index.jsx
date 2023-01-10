@@ -3,7 +3,6 @@ import React from 'react'
 import * as S from './elements'
 
 const index = ({ data }) => {
-  const dataArray = Object.entries(data)
   return (
     <>
       <S.Title>

@@ -110,6 +110,25 @@ async function seed() {
 		}
 	}) */
 
+	const user = await prisma.user.findUnique({
+		where: {
+			email: "andre.knopp8@gmail.com"
+		},
+		include: {
+			delegate: {
+				include: {
+					EmergencyContact: true,
+					languagesSimulates: true
+				}
+			},
+			delegationAdvisor: {
+				include: {
+					socialMedia: true
+				}
+			},
+		}
+	})
+
 	console.log(`Database has been seeded. 🌱`);
 }
 

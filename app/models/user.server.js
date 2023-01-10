@@ -4,11 +4,41 @@ import { prisma } from "~/db.server";
 import { stripe } from "~/stripe.server";
 
 export async function getUserById(id) {
-	return prisma.user.findUnique({ where: { id } });
+	return prisma.user.findUnique({
+		where: { id },
+		include: {
+			delegate: {
+				include: {
+					EmergencyContact: true,
+					languagesSimulates: true
+				}
+			},
+			delegationAdvisor: {
+				include: {
+					socialMedia: true
+				}
+			},
+		}
+	});
 }
 
 export async function getUserByEmail(email) {
-	return prisma.user.findUnique({ where: { email } });
+	return prisma.user.findUnique({ 
+		where: { email },
+		include: {
+			delegate: {
+				include: {
+					EmergencyContact: true,
+					languagesSimulates: true
+				}
+			},
+			delegationAdvisor: {
+				include: {
+					socialMedia: true
+				}
+			},
+		}
+	});
 }
 
 export async function getExistingUser(values) {
@@ -135,9 +165,9 @@ export async function verifyLogin(
 }
 
 export async function checkSubscription(user) {
-	if(!user.stripeCustomerId) return false
-	if(!user.stripeSubscriptionId) return false
-	if(user.stripeSubscriptionStatus != 'active' && user.stripeSubscriptionStatus != 'trialing') return false
+	if (!user.stripeCustomerId) return false
+	if (!user.stripeSubscriptionId) return false
+	if (user.stripeSubscriptionStatus != 'active' && user.stripeSubscriptionStatus != 'trialing') return false
 
 	return true
 }
@@ -167,7 +197,7 @@ export async function ensureStripeCostumer(user) {
 export async function getUserType(userId) {
 	if (!userId) return undefined
 
-	const user = await prisma.user.findUnique({ 
+	const user = await prisma.user.findUnique({
 		where: { id: userId },
 		select: {
 			leader: true,
@@ -175,6 +205,6 @@ export async function getUserType(userId) {
 			delegationAdvisor: true,
 		}
 	})
-	
-	return user.leader ? "leader" : user.delegate ? "delegate" : "delegateAdvisor"
+
+	return user.delegate ? "delegate" : "delegateAdvisor"
 }
