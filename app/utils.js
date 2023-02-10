@@ -118,3 +118,10 @@ export function checkString(str) {
 export function checkStringWithNumbers(str) {
 	return !/[^A-Za-z0-9àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇ ]+/.test(str)
 }
+
+export function createNestedObject(base, names) {
+	for (var i = 0; i < names.length; i++) {
+		base = base[names[i]] = base[names[i]] || {};
+		console.log(base)
+	}
+};

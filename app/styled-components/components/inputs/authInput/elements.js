@@ -13,7 +13,7 @@ export const InputWrapper = styled.div`
   grid-gap: 5px;
 `
 export const Label = styled.label`
-  font-size: 14px;
+  font-size: 1.4rem;
   margin-left: 5px;
   color: ${props => props.err ? '#d61f0a' : '#000'};
 
@@ -31,7 +31,7 @@ export const Input = styled.input`
   border: 1px solid ${p => p.err ? '#d61f0a' : '#E6E6E6'};
   outline: none;
   padding: 0 10px;
-  font-size: 16px;
+  font-size: 1.6rem;
   transition: all .4 ease;
   color: #000;
 

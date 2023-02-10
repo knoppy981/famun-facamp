@@ -8,7 +8,6 @@ import { validateEmail, checkString, validatePhoneNumber, safeRedirect } from "~
 import { createUser, getExistingUser } from '~/models/user.server';
 
 import * as S from '~/styled-components/join/user'
-import AuthInputBox from '~/styled-components/components/inputs/authInput'
 
 import AdvisorData from "~/styled-components/join/user/advisordata"
 import ConfirmData from "~/styled-components/join/user/confirmdata"

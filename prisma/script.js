@@ -110,22 +110,19 @@ async function seed() {
 		}
 	}) */
 
-	const user = await prisma.user.findUnique({
+	const user = await prisma.user.update({
 		where: {
 			email: "andre.knopp8@gmail.com"
 		},
-		include: {
-			delegate: {
-				include: {
-					EmergencyContact: true,
-					languagesSimulates: true
-				}
-			},
+		data: {
 			delegationAdvisor: {
-				include: {
-					socialMedia: true
+				update: {
+					advisorRole: "",
+					socialMedia: {
+						
+					}
 				}
-			},
+			}
 		}
 	})
 
