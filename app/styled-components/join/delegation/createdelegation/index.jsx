@@ -2,6 +2,7 @@ import React from 'react'
 
 import * as S from './elements'
 import AuthInputBox from "~/styled-components/components/inputs/authInput";
+import PhoneInputBox from '~/styled-components/components/inputs/authInput/phoneInput';
 
 const CreateDelegation = ({ data, actionData }) => {
   return (
@@ -10,8 +11,8 @@ const CreateDelegation = ({ data, actionData }) => {
         Criar uma delegação
       </S.Title>
 
-      <S.InputContainer>
-        <S.VerticalInputContainer>
+      <S.Wrapper>
+        <S.InputContainer>
           <AuthInputBox
             name="schoolName"
             text="Nome da Escola / Universidade"
@@ -21,29 +22,29 @@ const CreateDelegation = ({ data, actionData }) => {
             autoFocus={true}
           />
 
-          <AuthInputBox
+          <PhoneInputBox
             name="schoolPhoneNumber"
             text="Numero de Telefone da Escola / Universidade"
             type="text"
             value={data?.schoolPhoneNumber}
             err={actionData?.errors?.schoolPhoneNumber}
           />
-        </S.VerticalInputContainer>
 
-        <S.Container>
-          <S.SelectTitle>
-            Método de participação
-          </S.SelectTitle>
+          <S.SelectContainer>
+            <S.SelectTitle>
+              Método de participação
+            </S.SelectTitle>
 
-          <S.Select
-            name="participationMethod"
-          >
-            <S.Option value={"Presencial"}>Presencial</S.Option>
-            <S.Option value={"Online"}>Online</S.Option>
-            <S.Option value={"Ambos"}>Ambos</S.Option>
-          </S.Select>
-        </S.Container>
-      </S.InputContainer>
+            <S.Select
+              name="participationMethod"
+            >
+              <S.Option value={"Presencial"}>Presencial</S.Option>
+              <S.Option value={"Online"}>Online</S.Option>
+              <S.Option value={"Ambos"}>Ambos</S.Option>
+            </S.Select>
+          </S.SelectContainer>
+        </S.InputContainer>
+      </S.Wrapper>
     </>
   )
 }

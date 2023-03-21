@@ -6,14 +6,13 @@ export const Title = styled.h3`
   font-size: 2.2rem;
   font-weight: 500;
   color: #000;
-  padding-left: 5px;
 `
 export const SubTitle = styled.p`
   font-size: 1.4rem;
   color: #000;
 `
 export const Container = styled.div`
-  width: 250px;
+  width: 426px;
   margin-top: 10px;
   height: 45px;
   display: flex;

@@ -73,7 +73,11 @@ export const SubmitButton = styled.button`
 	border-radius: 5px;
 	width: 300px;
   height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: ${azulClaro};
+  gap: 15px;
   border-radius: 5px;
   box-shadow: 0px 2px 5px -2px #000000;
 	height: 100%;

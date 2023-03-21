@@ -47,6 +47,15 @@ export const Menu = styled.ul`
   gap: 10px;
   padding: 10px;
 `
+export const MaxHeightMenu = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+  max-height: 180px; 
+  overflow-y: auto; 
+  overflow-x: hidden;
+`
 export const Title = styled.li`
   margin-top: 10px;
   height: 30px;
@@ -80,7 +89,7 @@ export const Data = styled.div`
 `
 export const Item = styled.li`
   position: relative;
-  height: 40px;
+  height: ${p => p.height ?? '40px'};
   padding: 0 10px;
   background: transparent;
   display: flex;
@@ -146,4 +155,23 @@ export const NacionalityFlag = styled.div`
   background-size: contain;
   background-position: 50%;
   background-repeat: no-repeat;
+`
+export const LangauegButtonWrapper = styled.div`
+  position: absolute;
+  right: 5%;
+  top: 5%;
+  height: 40px;
+`
+export const LanguageButton = styled.button`
+  border: 0;
+  outline: none;
+  display: flex;
+  gap: 10px;
+  font-size: 1.6rem;
+  cursor: pointer;
+
+  svg {
+    font-size: 2rem;
+    transform: translateY(1px);
+  }
 `

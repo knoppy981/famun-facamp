@@ -3,6 +3,7 @@ import { useFetcher } from '@remix-run/react'
 
 import * as S from './elements'
 import { FiCheck, FiX } from 'react-icons/fi'
+import Spinner from '~/styled-components/components/spinner'
 
 const JoinDelegation = ({ data, actionData }) => {
   const inputRef = useRef(null)
@@ -41,34 +42,36 @@ const JoinDelegation = ({ data, actionData }) => {
         Digite o código da sua delegação abaixo ou peça um convite para o chefe da sua delegação
       </S.SubTitle>
 
-      <S.Container>
-        <S.Label>
-          Código :
-        </S.Label>
+      <S.Wrapper>
+        <S.Container>
+          <S.Label>
+            Código :
+          </S.Label>
 
-        <S.InputBox>
-          <S.Input
-            ref={inputRef}
-            value={value}
-            id="delegationCode"
-            name="delegationCode"
-            type="string"
-            autoFocus={true}
-            onChange={handleChange}
-          />
-          <S.StatusIcon color={searchDelegation?.data?.errors ? "#A7A7A7" : "green"}>
-            {searchDelegation?.data?.errors ? <FiX /> : (searchDelegation?.data?.delegation && value.length === 6) ? <FiCheck /> : null}
-          </S.StatusIcon>
-        </S.InputBox>
+          <S.InputBox>
+            <S.Input
+              ref={inputRef}
+              value={value}
+              id="delegationCode"
+              name="delegationCode"
+              type="string"
+              autoFocus={true}
+              onChange={handleChange}
+            />
+            <S.StatusIcon color={searchDelegation?.data?.errors ? "#A7A7A7" : "green"}>
+              {searchDelegation?.data?.errors ? <FiX /> : (searchDelegation?.data?.delegation && value.length === 6) ? <FiCheck /> : null}
+            </S.StatusIcon>
+          </S.InputBox>
 
-        <S.Button name="action" value="next" type="submit" disabled={!valid}>
-          Entrar
-        </S.Button>
-      </S.Container>
+          <S.Button name="action" value="next" type="submit" disabled={!valid}>
+            Entrar {valid && searchDelegation.state !== 'idle' && <Spinner dim={18} />}
+          </S.Button>
+        </S.Container>
 
-      <S.Status>
-        {actionData?.errors?.joinDelegation ?? label}
-      </S.Status>
+        <S.Status>
+          {actionData?.errors?.joinDelegation ?? label}
+        </S.Status>
+      </S.Wrapper>
     </>
   )
 }

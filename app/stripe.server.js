@@ -1,11 +1,19 @@
 import Stripe from "stripe";
-import { updateDelegationPaymentStatus, updateUsersPaymentStatus } from "./models/payments.server";
+import { updateUsersPaymentStatus, updateUserPayments, getUserPaymentsIds } from "./models/payments.server";
 import qs from "qs"
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
-export async function getAllTransactions() {
-  return stripe.paymentIntents.search({ query: 'status:\'succeeded\'' })
+export async function getUserPayments(userId) {
+  const { stripePaymentsId } = await getUserPaymentsIds(userId)
+
+  return Promise.all(stripePaymentsId.map((id) => stripe.paymentIntents.retrieve(id)))
+    .then((paymentIntents) => {
+      return paymentIntents
+    })
+    .catch((error) => {
+      return error
+    });
 }
 
 export async function getTransactionsByUserId(userId) {
@@ -18,7 +26,6 @@ export async function createPaymentIntent({
   price,
   userId,
   stripeCustomerId,
-  delegationId,
   paidUsersIds
 }) {
   return stripe.paymentIntents.create({
@@ -29,7 +36,6 @@ export async function createPaymentIntent({
     metadata: {
       payerId: userId,
       paidUsersIds: qs.stringify(paidUsersIds),
-      delegationId: delegationId ?? ""
     },
   });
 }
@@ -54,22 +60,18 @@ export async function handleWebHook(request) {
   }
 
   if (event.type == 'charge.succeeded') {
+  }
+
+  if (event.type === 'payment_intent.succeeded') {
     const { id, metadata } = event.data.object
+
+    console.log(metadata)
+
     const parsed = qs.parse(metadata.paidUsersIds)
     const paidUsersIds = Object.values(parsed)
-    console.log(id)
 
-    if (paidUsersIds.length > 0) 
-      await updateUsersPaymentStatus({ 
-        paidUsersIds: paidUsersIds, 
-        stripePaymentId: id 
-      })
-
-    if (metadata.delegationId) 
-      await updateDelegationPaymentStatus({ 
-        delegationId: metadata.delegationId, 
-        stripePaymentId: id 
-      })
+    await updateUsersPaymentStatus({ paidUsersIds, stripePaymentId: id })
+    await updateUserPayments({ userId: metadata.payerId, stripePaymentId: id })
   }
 
   console.log('\n')

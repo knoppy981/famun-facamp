@@ -1,0 +1,9 @@
+{
+  "title": "Login",
+  "email": "Email",
+  "password": "Contraseña",
+  "forgotPassword": "Olvido la contraseña?",
+  "login": "Acceso",
+  "acc": "No estas registrado?",
+  "join": "Unirse"
+}

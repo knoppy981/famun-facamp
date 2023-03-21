@@ -14,7 +14,8 @@ const begeClaro = "#d57748"
 const begeBackground = "#FFEFE1"
 
 export const DataForm = styled(Form)`
-
+  
+  
 `
 export const Title = styled.div`
   height: 3rem;
@@ -27,12 +28,34 @@ export const Title = styled.div`
 `
 export const DataWrapper = styled.div`
   width: 100%;
-  height: 350px;
+  max-height: calc(70vh - 200px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  grid-gap: 8px;
+  /* display: grid;
+  grid-template-columns: auto auto; */
+
+  background: /* Shadow covers */
+  linear-gradient(white 30%, rgba(255, 255, 255, 0)), linear-gradient(rgba(255, 255, 255, 0), white 70%) 0 100%, /* Shadows */
+  radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, .2), rgba(0, 0, 0, 0)), radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, .2), rgba(0, 0, 0, 0)) 0 100%;
+  background-repeat: no-repeat;
+  background-color: white;
+  background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+  /* Opera doesn't support this in the shorthand */
+  background-attachment: local, local, scroll, scroll;
+
+  @media screen and (max-width: 1200px) {
+    flex-direction: column;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+	}
+`
+export const DataColumn = styled.div`
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
-  border-radius: 15px;
-  transition: all .4s ease;
+  gap: 8px;
 `
 export const DataTitle = styled.div`
   display: flex;
@@ -61,25 +84,41 @@ export const ColorItem = styled.button`
   }
 `
 export const DataContainer = styled.div`
+  grid-row-start: 1;
+  grid-row-end: 3;
   width: 400px;
+  display: grid;
+  grid-gap: 8px;
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid #E6E6E6;
+`
+export const DelegationDataContainer = styled.div`
+  max-width: ${p => p.width ?? '400px'};
   display: grid;
   margin-bottom: 10px;
   grid-gap: 8px;
   padding: 15px;
   border-radius: 5px;
   border: 1px solid #E6E6E6;
-
 `
 export const ColumnDataContainer = styled.div`
   width: 400px;
   padding: 15px;
   border-radius: 5px;
   border: 1px solid #E6E6E6;
-  margin-bottom: 15px;
 
   div {
     margin-bottom: 6px;
   }
+
+  @media screen and (max-width: 1350px) {
+    width: auto;
+	}
+
+  @media screen and (max-width: 1090px) {
+    width: 400px;
+	}
 `
 export const ItemContainer = styled.div`
   display: grid;
@@ -99,6 +138,7 @@ export const Item = styled.input`
   border-radius: 5px;
   border: 1px solid ${p => p.err ? '#d61f0a' : '#E6E6E6'};
   outline: none;
+  background: transparent;
 
   -webkit-text-fill-color: #000 !important;
   &:focus, &:hover {
@@ -146,7 +186,7 @@ export const CheckboxButton = styled.button`
   align-items: center;
   border: none;
   outline: none;
-  ${p => !p.disabled && 
+  ${p => !p.disabled &&
     'cursor: pointer; &:hover {color: red;}'
   };
 `
@@ -222,6 +262,7 @@ export const SMInput = styled.input`
   border: 1px solid ${p => p.err ? '#d61f0a' : '#E6E6E6'};
   outline: none;
   -webkit-text-fill-color: #000 !important;
+  background: transparent;
 
   &:focus, &:hover {
     border: 1px solid ${p => p.err ? '#d61f0a' : azulCeu};
@@ -234,4 +275,35 @@ export const SMInput = styled.input`
     opacity: .6;
     font-style: italic;
   }
+`
+export const DragDropContainer = styled.div`
+  display: flex;
+  gap: 10px;
+`
+export const DragDropIndexes = styled.div`
+  display: grid;
+
+  div {
+    display: grid;
+    align-self: center;
+    font-size: 1.4rem;
+  }
+`
+export const ListItemContainer = styled.div`
+  height: 35px;
+  display: flex;
+  align-items: center;
+`
+export const ListItem = styled.div`
+  display: flex;
+  align-items: center;
+  height: 80%;
+  background: #fff;
+  border-radius: 5px;
+  padding: 0 5px;
+  background: ${p => p.first ? azulClaro : "#fff"};
+  box-shadow: 0px 2px 5px -2px #000000;
+  border: 1px solid ${p => p.first ? 'transparent' : '#E6E6E6'};
+  transition: .3s all ease;
+  font-size: 1.4rem;
 `

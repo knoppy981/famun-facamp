@@ -1,0 +1,13 @@
+{
+  "title": "Dashboard",
+  "help": "Ajuda",
+  "home": "Início",
+  "data": "Datos inscricion",
+  "delegation": "Delegación",
+  "payments": "Pagos",
+  "documents": "Documentos",
+  "changeLng": "Cambiar Idioma",
+  "preferences": "Preferencias del usuario",
+  "logOut": "Cerrar sesión",
+  "return": "Devolver"
+}

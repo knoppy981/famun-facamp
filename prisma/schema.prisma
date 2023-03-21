@@ -13,8 +13,7 @@ model User {
   // personal info
   name              String
   password          Password?
-  cpf               String             @unique
-  rg                String             @unique
+  document          Document
   phoneNumber       String
   birthDate         String
   nacionality       String
@@ -31,7 +30,13 @@ model User {
   delegationAdvisor DelegationAdvisor?
   //
   stripeCustomerId  String?
-  stripePaymentId   String?
+  stripePaydId      String?
+  stripePaymentsId  String[]
+}
+
+type Document {
+  documentName String
+  value        String
 }
 
 model Password {
@@ -53,14 +58,11 @@ model Delegate {
   user               User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId             String            @unique @db.ObjectId
   EmergencyContact   EmergencyContact?
-  councilPreference  Council
-  languagesSimulates Language[]
+  councilPreference  Council[]
+  languagesSimulates Languages[]
 }
 
-model EmergencyContact {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  delegate    Delegate @relation(fields: [delegateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  delegateId  String   @unique @db.ObjectId
+type EmergencyContact {
   name        String
   phoneNumber String
 }
@@ -84,7 +86,6 @@ model Delegation {
   participationMethod ParticipationMethod
   address             Address?
   participants        User[]
-  stripePaymentId     String?
 }
 
 model Address {
@@ -99,12 +100,9 @@ model Address {
   country      String
 }
 
-model SocialMedia {
-  id                  String            @id @default(auto()) @map("_id") @db.ObjectId
-  delegationAdvisor   DelegationAdvisor @relation(fields: [delegationAdvisorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  delegationAdvisorId String            @db.ObjectId
-  username            String
-  socialMediaName     SocialMediaTypes
+type SocialMedia {
+  username        String
+  socialMediaName SocialMediaTypes
 }
 
 enum SocialMediaTypes {
@@ -134,15 +132,10 @@ enum ParticipationMethod {
   Ambos
 }
 
-model Language {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  language   Languages
-  delegate   Delegate  @relation(fields: [delegateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  delegateId String    @db.ObjectId
-}
-
 enum Languages {
   Portugues
   Ingles
   Espanhol
+  Mandarin
+  Alemao
 }

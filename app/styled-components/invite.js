@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { FiChevronRight } from "react-icons/fi";
-import { Form } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
 
 const azulClaro = '#BDE8F5'
 const azul = '#01558A'
@@ -15,26 +15,46 @@ export const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
 `
+export const ExternalButtonWrapper = styled.div`
+  position: absolute;
+  left: 5%;
+  top: 5%;
+  height: 40px;
+`
+export const ExternalButton = styled(Link)`
+  border: 0;
+  outline: none;
+  display: flex;
+  gap: 10px;
+  font-size: 1.6rem;
+  cursor: pointer;
+
+  svg {
+    font-size: 2rem;
+    transform: translateY(1px);
+  }
+`
 export const Container = styled.div`
-  width: 70%;
-  height: 80vh;
+  min-width: 400px;
+  height: 70vh;
   display: flex;
   flex-direction: column;
-  padding: 30px;
-  gap: 20px;
+  align-items: center;
+  gap: 40px;
 `
 export const TitleBox = styled.div`
   display: flex;
   align-items: center;
+  min-width: 400px;
   height: 40px;
 `
 export const Title = styled.div`
   font-size: 3.6rem;
   font-weight: 900;
-  color: ${azulEscuro};
+  color: #183567;
   margin-right: 5px;
 `
-export const Subtitle = styled.div`
+export const SubTitle = styled.div`
   font-size: 2.4rem;
   font-weight: 500;
   color: #000;
@@ -47,25 +67,6 @@ export const ArrowIconBox = styled(FiChevronRight)`
   display: flex;
   align-items: bottom;
 `
-export const Navbar = styled.div`
-	min-height: 70px;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-`
-export const NavMenu = styled.div`
-  display: flex;
-`
-export const NavItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.8rem;
-  padding: 0 15px;
-  border-left: ${p => p.border ? '1px solid #E6E6E6' : undefined};
-`
 export const StepsForm = styled(Form)`
   width: 100%;
   height: 100%;
@@ -76,22 +77,53 @@ export const StepsForm = styled(Form)`
   padding-left: 5px;
 `
 export const FormTitle = styled.h3`
-  font-size: 2rem;
+  width: 426px;
+  font-size: 2.2rem;
   font-weight: 500;
   color: #000;
 `
-export const FormSubtitle = styled.p`
-  font-size: 1.8rem;
+export const FormSubTitle = styled.p`
+  width: 426px;
+  font-size: 1.4rem;
   color: #000;
+`
+export const ButtonsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 25px;
 `
 export const Button = styled.button`
   height: 45px;
-  width: 200px;
-  margin-top: 40px;
+  width: 205px;
   background: ${azulClaro};
-  box-shadow: 0px 2px 5px -2px #000000;
-  color: #000;
   border-radius: 5px;
 	font-size: 1.5rem;
   transition: .4s all ease;
+  box-shadow: 0px 2px 5px -2px #000000;
+
+  &:disabled {
+    color: #666666;
+  }
+  &:hover {
+    transform: translateY(-2px);
+  }
+`
+export const AccountLink = styled(Link)`
+  height: 45px;
+  width: 205px;
+  display: grid;
+  place-content: center;
+  background: ${azulClaro};
+  border-radius: 5px;
+	font-size: 1.5rem;
+  transition: .4s all ease;
+  box-shadow: 0px 2px 5px -2px #000000;
+
+  &:disabled {
+    color: #666666;
+  }
+  &:hover {
+    transform: translateY(-2px);
+  }
 `

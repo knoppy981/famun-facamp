@@ -8,37 +8,36 @@ const CreateUser = ({ data, actionData }) => {
         Criar Conta
       </S.Title>
 
-      <S.InputContainer>
-        <AuthInputBox
-          name="email"
-          text="E-mail"
-          type="email"
-          value={data?.email}
-          err={actionData?.errors?.email}
-          autoFocus={true}
-        />
-
-        <div />
-
-        <S.SubInputContainer>
+      <S.Wrapper>
+        <S.InputContainer>
           <AuthInputBox
-            name="password"
-            text="Senha"
-            type="password"
-            value={data?.password}
-            err={actionData?.errors?.password}
+            name="email"
+            text="E-mail"
+            type="email"
+            value={data?.email}
+            err={actionData?.errors?.email}
+            autoFocus={true}
           />
 
-          <AuthInputBox
-            name="confirmPassword"
-            text="Confirme a Senha"
-            type="password"
-            value={data?.confirmPassword}
-            err={actionData?.errors?.confirmPassword}
-          />
-        </S.SubInputContainer>
+          <S.SubInputContainer>
+            <AuthInputBox
+              name="password"
+              text="Senha"
+              type="password"
+              value={data?.password}
+              err={actionData?.errors?.password}
+            />
 
-      </S.InputContainer>
+            <AuthInputBox
+              name="confirmPassword"
+              text="Confirme a Senha"
+              type="password"
+              value={data?.confirmPassword}
+              err={actionData?.errors?.confirmPassword}
+            />
+          </S.SubInputContainer>
+        </S.InputContainer>
+      </S.Wrapper>
     </>
   )
 }

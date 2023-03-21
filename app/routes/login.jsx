@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { useActionData, useSearchParams, useTransition, Link, useLoaderData } from '@remix-run/react'
+import { useState, useRef } from 'react'
+import { useActionData, useSearchParams, useTransition, Link, useFetcher } from '@remix-run/react'
 import { json, redirect } from '@remix-run/node';
 import { useTranslation } from 'react-i18next'
 
@@ -9,8 +9,12 @@ import { safeRedirect, validateEmail } from "~/utils";
 import { i18nCookie } from '~/cookies';
 
 import * as S from '~/styled-components/login'
+import * as D from '~/styled-components/components/dropdown'
+import { useClickOutside } from "~/hooks/useClickOutside";
 import InputBox from '~/styled-components/components/inputs/authInput'
-import { FiChevronRight } from 'react-icons/fi';
+import { FiGlobe, FiX } from 'react-icons/fi';
+import LanguageMenu from '~/styled-components/components/dropdown/languageMenu';
+import Spinner from '~/styled-components/components/spinner';
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -69,6 +73,8 @@ const LoginPage = () => {
 
   return (
     <S.Wrapper>
+      <LanguageMenu i18n={i18n} />
+
       <S.FormContainer>
         <S.TitleBox>
           <S.Title>
@@ -89,7 +95,7 @@ const LoginPage = () => {
 
           <S.ForgotLinkBox>
             <S.StyledLink
-              to="/resetPassword"
+              to=/* "/resetPassword" */ "/"
             >
               {t("forgotPassword")}
             </S.StyledLink>
@@ -104,7 +110,7 @@ const LoginPage = () => {
               value="firstButton"
               disabled={transition.state !== "idle"}
             >
-              {t("login")}
+              {t("login")} {transition.state !== 'idle' && <Spinner dim={18} />}
             </S.SubmitButton>
           </S.ButtonContainer>
         </S.AuthForm>

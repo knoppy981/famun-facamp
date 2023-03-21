@@ -7,6 +7,7 @@ import Backend from 'i18next-fs-backend'
 import { resolve } from 'node:path'
 import i18nextOptions from './i18n/i18nextOptions'
 import i18n from './i18n/i18n.server'
+import { resetServerContext } from "react-beautiful-dnd";
 
 export default async function handleRequest(
 	request,
@@ -21,6 +22,8 @@ export default async function handleRequest(
 	const lng = await i18n.getLocale(request)
 	// And here we detect what namespaces the routes about to render want to use
 	const ns = i18n.getRouteNamespaces(remixContext)
+
+	resetServerContext()
 
 	// First, we create a new instance of i18next so every request will have a
 	// completely unique instance and not share any state.

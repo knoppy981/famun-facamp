@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 async function seed() {
 
-	/* await prisma.user.delete({ where: { email: "andre.knopp8@gmail.com" } }).catch(err => { console.log('no user found') })
+/* 	await prisma.user.delete({ where: { email: "andre.knopp8@gmail.com" } }).catch(err => { console.log('no user found') })
 	await prisma.user.delete({ where: { email: "teste@gmail.com" } }).catch(err => { console.log('no user found') })
 
 	await prisma.delegation.delete({ where: { code: "123456" } }).catch(err => { console.log('no delegation found') })
@@ -15,8 +15,10 @@ async function seed() {
 		data: {
 			name: "Andre Knopp Guimaraes",
 			birthDate: "23/06/2003",
-			cpf: "51207021806",
-			rg: "584609097",
+			document: {
+				documentName: "cpf",
+				value: "512.070.218-06"
+			},
 			email: "andre.knopp8@gmail.com",
 			phoneNumber: "+55 (19) 97154-7424",
 			password: {
@@ -27,15 +29,16 @@ async function seed() {
 			nacionality: "Brasil",
 			delegate: {
 				create: {
-					councilPreference: "Assembleia_Geral_da_ONU",
+					councilPreference: {
+						set: [
+							"Assembleia_Geral_da_ONU",
+							"Rio_92",
+							"Conselho_de_Seguranca_da_ONU",
+							"Conselho_de_Juventude_da_ONU",
+						]
+					},
 					languagesSimulates: {
-						createMany: {
-							data: [
-								{ language: "Portugues" },
-								{ language: "Espanhol" },
-								{ language: "Ingles" },
-							]
-						}
+						set: ["Alemao", "Mandarin"]
 					}
 				}
 			},
@@ -46,8 +49,10 @@ async function seed() {
 		data: {
 			name: "Ciclano de Fulano",
 			birthDate: "23/06/2003",
-			cpf: "11122233344",
-			rg: "112223334",
+			document: {
+				documentName: "cpf",
+				value: "123.123.123-23"
+			},
 			email: "teste@gmail.com",
 			phoneNumber: "+55 (19) 97154-7424",
 			password: {
@@ -59,21 +64,11 @@ async function seed() {
 			delegationAdvisor: {
 				create: {
 					advisorRole: "Professor",
-					socialMedia: {
-						createMany: {
-							data: [
-								{ socialMediaName: "Facebook", username: "ciclano99" },
-								{ socialMediaName: "Instagram", username: "ciclano99" },
-							]
-						}
-					}
+					socialMedia: []
 				}
 			}
 		}
 	})
-
-	const asd = await prisma.delegation.findUnique({where: {code: "123456"}})
-	console.log(asd)
 
 	const { JSON_WEB_TOKEN_SECRET } = process.env;
 
@@ -110,21 +105,16 @@ async function seed() {
 		}
 	}) */
 
-	const user = await prisma.user.update({
+	const yyy = await prisma.user.findUnique({
 		where: {
-			email: "andre.knopp8@gmail.com"
+			email: "teste@gmail.com"
 		},
-		data: {
-			delegationAdvisor: {
-				update: {
-					advisorRole: "",
-					socialMedia: {
-						
-					}
-				}
-			}
-		}
-	})
+		select: {
+			stripePaymentsId: true
+		}			
+	}) 
+
+	console.log(yyy)
 
 	console.log(`Database has been seeded. 🌱`);
 }

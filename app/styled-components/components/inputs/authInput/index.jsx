@@ -9,12 +9,11 @@ export const AuthInputBox = (props) => {
 	const name = props.name
 	const inputRef = useRef(null)
 
-	useEffect(() => {
+	/* useEffect(() => {
 		if (props.err) {
-			/* setErr(true) */
 			inputRef.current?.focus()
-		} /* else { setErr(false) } */
-	}, [props]);
+		}
+	}, [props]); */
 
 	return (
 		<S.InputWrapper>
@@ -39,6 +38,9 @@ export const AuthInputBox = (props) => {
 					/* onFocus={() => setErr(false)} */
 					aria-describedby={`${name}-error`}
 					err={err}
+					mask={props.mask ?? undefined}
+					formatChars={props.formatChars ?? undefined}
+					maskChar="_"
 				/>
 			</S.InputContainer>
 		</S.InputWrapper>

@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import qs from 'qs'
 
 import { prisma } from "~/db.server";
 import { stripe } from "~/stripe.server";
@@ -7,36 +8,18 @@ export async function getUserById(id) {
 	return prisma.user.findUnique({
 		where: { id },
 		include: {
-			delegate: {
-				include: {
-					EmergencyContact: true,
-					languagesSimulates: true
-				}
-			},
-			delegationAdvisor: {
-				include: {
-					socialMedia: true
-				}
-			},
+			delegate: true,
+			delegationAdvisor: true,
 		}
 	});
 }
 
 export async function getUserByEmail(email) {
-	return prisma.user.findUnique({ 
+	return prisma.user.findUnique({
 		where: { email },
 		include: {
-			delegate: {
-				include: {
-					EmergencyContact: true,
-					languagesSimulates: true
-				}
-			},
-			delegationAdvisor: {
-				include: {
-					socialMedia: true
-				}
-			},
+			delegate: true,
+			delegationAdvisor: true,
 		}
 	});
 }
@@ -58,49 +41,33 @@ export async function updateUser({ userId, values }) {
 		where: {
 			id: userId
 		},
-		data: values
+		data: values,
+		include: {
+			delegate: true,
+			delegationAdvisor: true,
+		}
 	})
 }
 
 export async function createUser(data) {
-	let language
-	if (Array.isArray(data?.language)) {
-		const auxArray = []
-		data?.language.forEach(element => {
-			auxArray.push({ language: element })
-		})
-		language = auxArray
-	} else {
-		language = [{ language: data?.language }]
-	}
 
 	const delegate = {
 		create: {
-			councilPreference: data?.council?.replace(/ /g, "_"),
-			languagesSimulates: {
-				createMany: {
-					data: language
-				}
-			}
+			councilPreference: Object.values(qs.parse(data?.council)).map(function (item) { return item.replace(/ /g, "_") }),
+			languagesSimulates: data?.language
 		}
 	}
 
 	const createSocialMedia = data.Facebook || data.Instagram || data.Linkedin
-	console.log("HAHA")
-	console.log(createSocialMedia)
 
 	const delegationAdvisor = {
 		create: {
-			advisorRole: data?.role,
-			socialMedia: createSocialMedia ? {
-				createMany: {
-					data: [
-						data.Facebook ? { socialMediaName: "Facebook", username: data.Facebook } : undefined,
-						data.Instagram ? { socialMediaName: "Instagram", username: data.Instagram } : undefined,
-						data.Linkedin ? { socialMediaName: "Linkedin", username: data.Linkedin } : undefined,
-					]
-				}
-			} : undefined
+			advisorRole: data?.role?.slice(data?.role.length-3) === "(a)" ? data?.role.slice(0, -3) : data?.role,
+			socialMedia: createSocialMedia ? [
+				data.Facebook ? { socialMediaName: "Facebook", username: data.Facebook } : undefined,
+				data.Instagram ? { socialMediaName: "Instagram", username: data.Instagram } : undefined,
+				data.Linkedin ? { socialMediaName: "Linkedin", username: data.Linkedin } : undefined,
+			] : undefined
 		}
 	}
 
@@ -113,8 +80,10 @@ export async function createUser(data) {
 					hash: await bcrypt.hash(data.password, 10)
 				}
 			},
-			cpf: data.cpf,
-			rg: data.rg,
+			document: {
+				documentName: data.cpf ? "cpf" : "passport",
+				value: data.cpf ?? data?.passport
+			},
 			birthDate: data.birthDate,
 			phoneNumber: data.phoneNumber,
 			nacionality: data.nacionality,
@@ -122,6 +91,8 @@ export async function createUser(data) {
 			delegationAdvisor: data.userType === "advisor" ? delegationAdvisor : undefined,
 		}
 	})
+
+	await ensureStripeCostumer(user)
 
 	return user
 }
@@ -206,5 +177,5 @@ export async function getUserType(userId) {
 		}
 	})
 
-	return user.delegate ? "delegate" : "delegateAdvisor"
+	return user.delegate ? "delegate" : "advisor"
 }

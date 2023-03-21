@@ -1,5 +1,6 @@
 import { prisma } from '~/db.server';
 import { getUserType } from '~/models/user.server';
+import { requireUser } from '~/session.server';
 
 export async function updateUsersPaymentStatus({ paidUsersIds, stripePaymentId }) {
   const arr = []
@@ -12,64 +13,69 @@ export async function updateUsersPaymentStatus({ paidUsersIds, stripePaymentId }
       OR: arr
     },
     data: {
-      stripePaymentId: stripePaymentId
+      stripePaydId: stripePaymentId
     }
   })
 }
 
-export async function updateDelegationPaymentStatus({ delegationId, stripePaymentId }) {
-  return prisma.delegation.update({
+export async function updateUserPayments({userId, stripePaymentId}) {
+  return prisma.user.update({
     where: {
-      id: delegationId
+      id: userId
     },
     data: {
-      stripePaymentId: stripePaymentId
+      stripePaymentsId: {
+        push: stripePaymentId
+      }
     }
   })
-
 }
 
-export async function getRequiredPayments({ userId, delegationId }) {
-  const userType = await getUserType(userId)
+export async function getUserPaymentsIds(userId) {
+  return prisma.user.findUnique({
+		where: {
+			id: userId
+		},
+		select: {
+			stripePaymentsId: true
+		}			
+	}) 
+}
 
-  if(!delegationId) return undefined
-  
+export async function getRequiredPayments({ user, delegationId }) {
+  const userType = await getUserType(user.id)
+
+  if (!delegationId) return undefined
+
   const delegation = await prisma.delegation.findUnique({
     where: {
       id: delegationId
     },
     select: {
-      stripePaymentId: true,
       participants: {
         where: {
-          stripePaymentId: {
+          stripePaydId: {
             isSet: false
           }
         },
         select: {
           id: true,
-          name: true
+          name: true,
+          nacionality: true,
+          delegate: true,
         }
       }
     }
   })
   const payments = []
 
-  if (!delegation.stripePaymentId) {
-    payments.push({ 
-      type: "delegation", 
-      id: delegationId, 
-      price: 6000, 
-      available: userType !== 'delegate' 
-    })
-  }
   delegation.participants?.forEach(participant => {
-    payments.push({ 
-      type: "user", 
-      id: participant.id, 
-      name: participant.name, 
-      price: 4500, 
-      available: userType === 'delegate' ? userId === participant.id : true 
+    payments.push({
+      type: "user",
+      id: participant.id,
+      name: participant.name,
+      price: participant.delegate ? 10000 : 3000,
+      available: user.leader || userType === 'advisor' ? true : user.id === participant.id
     })
   })
 

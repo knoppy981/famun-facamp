@@ -15,6 +15,11 @@ export function links() {
       rel: "stylesheet preload prefetch",
       href: styles,
     },
+    { 
+      as: "style",
+      rel: "stylesheet preload prefetch",
+      href: "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" 
+    }
   ];
 }
 
@@ -28,10 +33,10 @@ export const loader = async ({ request }) => {
   const t = await remixI18n.getFixedT(request, 'translation')
   const title = t('headTitle')
   const user = await getUser(request)
-  return json({ 
+  return json({
     user,
     userType: await getUserType(user?.id),
-    title 
+    title
   });
 };
 

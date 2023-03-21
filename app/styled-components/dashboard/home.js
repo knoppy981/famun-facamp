@@ -56,7 +56,7 @@ export const Grid = styled.div`
   display: flex;
   gap: 30px;
 `
-export const GridItem = styled.div`
+export const GridItem = styled(Link)`
   position: relative;
   min-width: 200px;
   padding: 20px;
@@ -68,7 +68,7 @@ export const GridItem = styled.div`
     top: 50%;
     left: -15px;
     transform: translateY(-50%);
-    border-left: ${p => !p.first ? '1px solid #E6E6E6' : undefined};
+    border-left: ${p => p.first !== 1 ? '1px solid #E6E6E6' : undefined};
   }
 `
 export const GridItemTitle = styled.div`

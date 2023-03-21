@@ -1,11 +1,17 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 import * as S from './elements'
 import { FiTrash2 } from 'react-icons/fi'
+import SelectInput from '~/styled-components/components/inputs/selectInput'
 
-const AdvisorData = ({ data }) => {
-  const { council, language, role, ..._data } = data
-  const [values, setValues] = useState(_data)
+const AdvisorData = ({ data, actionData }) => {
+
+  const [values, setValues] = useState({
+    Instagram: data?.Instagram,
+    Facebook: data?.Facebook,
+    Linkedin: data?.Linkedin,
+    Twiteer: data?.Twitter
+  })
   const valuesArray = Object.entries(values)
 
   const inputRef = useRef(null)
@@ -25,12 +31,23 @@ const AdvisorData = ({ data }) => {
 
   return (
     <>
-      <S.Title>
-        Dados do Orientador
-      </S.Title>
+      <S.TitleBox>
+        <S.Title>
+          Dados do(a) Professor(a) Orientador(a)
+        </S.Title>
+      </S.TitleBox>
+
 
       <S.Wrapper>
-        <S.Container padding={valuesArray.length > 0}>
+        <SelectInput
+          name="role"
+          text="Posição do(a) Professor(a) Orientador(a)"
+          value={data?.role}
+          selectList={["Professor(a)", "Coordenador(a)", "Diretor(a)", "Outro"]}
+          err={actionData?.errors?.name}
+        />
+
+        <S.Container>
           <S.Label>
             Redes Sociais
           </S.Label>
@@ -53,16 +70,18 @@ const AdvisorData = ({ data }) => {
               type="string"
               ref={inputRef}
               placeholder="nome de usuario"
+              defaultValue={values[selectValue]}
             />
 
             <S.Button onClick={addSM}>
-              {values.hasOwnProperty(selectValue) ? "Editar" : "Adicionar"}
+              {values[selectValue] !== undefined ? "Editar" : "Adicionar"}
             </S.Button>
           </S.SelectBox>
 
           <S.List>
             {valuesArray.map((item, index) => {
               const active = selectValue === item[0]
+              if (item[1] === undefined) return
               return (
                 <S.SocialMedias
                   first={index === 0}
@@ -82,24 +101,6 @@ const AdvisorData = ({ data }) => {
               )
             })}
           </S.List>
-        </S.Container>
-
-        <S.Container>
-          <S.Label>
-            Posição do orientador
-          </S.Label>
-
-          <S.SelectBox>
-            <S.AdvisorRoleSelect
-              name="role"
-              defaultValue={role}
-            >
-              <S.Option>Professor</S.Option>
-              <S.Option>Coordenador</S.Option>
-              <S.Option>Diretor</S.Option>
-              <S.Option>Outro</S.Option>
-            </S.AdvisorRoleSelect>
-          </S.SelectBox>
         </S.Container>
       </S.Wrapper>
     </>

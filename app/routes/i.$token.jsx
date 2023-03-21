@@ -1,5 +1,5 @@
 import React from 'react'
-import { useLoaderData, Link, useCatch, Form, useMatches } from '@remix-run/react'
+import { useLoaderData, Link, useCatch, Form, useMatches, useSearchParams } from '@remix-run/react'
 import invariant from 'tiny-invariant';
 import { json, redirect } from '@remix-run/node';
 
@@ -10,6 +10,8 @@ import { safeRedirect } from '~/utils';
 import * as S from '~/styled-components/invite'
 import * as E from '~/styled-components/error'
 import { FiHelpCircle, FiArrowLeft, } from "react-icons/fi";
+import LanguageMenu from '~/styled-components/components/dropdown/languageMenu';
+import { useTranslation } from 'react-i18next';
 
 export const action = async ({ request }) => {
   const userId = await requireUserId(request)
@@ -43,6 +45,7 @@ export const loader = async ({ request, params }) => {
 
   const { delegationCode } = decoded?.payload
   const delegation = await getDelegationByCode(delegationCode)
+  console.log(delegationCode)
 
   if (user?.delegationId) throw json({ err: { user: "User already joined a delegation" } }, { status: 404 })
 
@@ -50,15 +53,31 @@ export const loader = async ({ request, params }) => {
     throw json("Dleegation Not Found", { status: 404 });
   }
 
-  return json({ delegation })
+  return json({ delegation, user })
 }
+
+export const handle = {
+  i18n: "translation"
+};
 
 const invite = () => {
 
-  const { delegation } = useLoaderData()
+  const { t, i18n } = useTranslation("translation")
+  const matches = useMatches()
+  const { delegation, user } = useLoaderData()
 
   return (
     <S.Wrapper>
+      <S.ExternalButtonWrapper>
+        <S.ExternalButton to={{
+          pathname: '/login',
+        }}>
+          <FiArrowLeft /> Início
+        </S.ExternalButton>
+      </S.ExternalButtonWrapper>
+
+      <LanguageMenu i18n={i18n} />
+
       <S.Container>
         <S.TitleBox>
           <S.Title>
@@ -67,43 +86,49 @@ const invite = () => {
 
           <S.ArrowIconBox />
 
-          <S.Subtitle>
+          <S.SubTitle>
             Inscrição
-          </S.Subtitle>
+          </S.SubTitle>
         </S.TitleBox>
 
-        <S.Navbar>
-          <S.NavMenu>
-            <Link to="/">
-              <S.NavItem>
-                <FiArrowLeft />
-                Início
-              </S.NavItem>
-            </Link>
-          </S.NavMenu>
-
-          <S.NavMenu>
-            <S.NavItem>
-              <FiHelpCircle />
-              Ajuda
-            </S.NavItem>
-          </S.NavMenu>
-        </S.Navbar>
-
         <S.StepsForm method='post'>
-          <S.FormTitle style={{ marginTop: '40px' }}>
+          <S.FormTitle>
             Entre em sua delegação
           </S.FormTitle>
 
-          <S.FormSubtitle>
+          <S.FormSubTitle>
             O {delegation.school} está te convidando para participar de sua delegação
-          </S.FormSubtitle>
+          </S.FormSubTitle>
+
+          {!user &&
+            <S.FormSubTitle>
+              Cadastre-se ou entre na sua conta para participar
+            </S.FormSubTitle>
+          }
 
           <input type='hidden' name='delegationCode' value={delegation.code} />
 
-          <S.Button type='submit'>
-            Entrar
-          </S.Button>
+          <S.ButtonsContainer>
+            {user ?
+              <S.Button>
+                Entrar
+              </S.Button>
+              :
+              <>
+                <S.AccountLink to={{
+                  pathname: `/join/user?${new URLSearchParams([["redirectTo", safeRedirect(matches[1].pathname)]])}`,
+                }}>
+                  Cadastrar
+                </S.AccountLink>
+
+                <S.AccountLink to={{
+                  pathname: `/login?${new URLSearchParams([["redirectTo", safeRedirect(matches[1].pathname)]])}`,
+                }}>
+                  Login
+                </S.AccountLink>
+              </>
+            }
+          </S.ButtonsContainer>
         </S.StepsForm>
       </S.Container>
     </S.Wrapper >

@@ -5,42 +5,43 @@ import { AnimatePresence, motion } from 'framer-motion'
 import invariant from 'tiny-invariant';
 import qs from "qs"
 
-import { getDelegationId, requireUserId } from '~/session.server'
+import { getDelegationId, requireUser } from '~/session.server'
 import { getRequiredPayments } from '~/models/payments.server'
-import { getTransactionsByUserId } from '~/stripe.server'
+import { getTransactionsByUserId, getUserPayments } from '~/stripe.server'
 import { safeRedirect, useUser, useUserType } from '~/utils'
+
+import { ensureStripeCostumer } from '~/models/user.server';
 
 import * as S from '~/styled-components/dashboard/payment'
 import * as E from '~/styled-components/error'
 import { FiCreditCard, FiExternalLink } from 'react-icons/fi'
+import Spinner from '~/styled-components/components/spinner';
+
 
 export const loader = async ({ request }) => {
-  const userId = await requireUserId(request)
+  const user = await requireUser(request)
+  await ensureStripeCostumer(user)
+
   const delegationId = await getDelegationId(request)
+  if (!delegationId) throw json({ errors: { delegation: "No delegation found" } }, { status: 404 });
 
-  if (!delegationId) throw json({ errors: { delegationId: "You have to join a delegation in order to proceed to the payment" } }, { status: 404 });
+  const payments = await getRequiredPayments({ user, delegationId })
 
-  const payments = await getRequiredPayments({ userId, delegationId })
-  const { data } = await getTransactionsByUserId(userId)
-  data.forEach((el, index) => {
+  const paymentsIntents = await getUserPayments(user.id)
+  paymentsIntents.forEach((el, index) => {
     const { amount, status, metadata, created, charges } = el
     const { payment_method_details, receipt_url } = charges.data[0]
-    data[index] = { amount, status, metadata, created, receipt_url, type: payment_method_details.type }
+    paymentsIntents[index] = { amount, status, metadata, created, receipt_url, type: payment_method_details.type }
   })
 
-  return json({ payments, userPaymentsIntents: data })
+  return json({ payments, userPaymentsIntents: paymentsIntents })
 }
 
 const payment = () => {
 
-  const user = useUser()
-  const userType = useUserType()
-
   const { payments, userPaymentsIntents } = useLoaderData()
-  console.log(userPaymentsIntents)
 
   const [menu, setMenu] = useState(userPaymentsIntents.length > 0 ? "payments" : "pending")
-
 
   return (
     <S.Wrapper>
@@ -81,7 +82,7 @@ const payment = () => {
                             {item.type === 'user' ? `Inscrição de ${item.name}` : 'Inscrição da Delegação'}
 
                             <S.PayContainer>
-                              <S.PayButton to="/pay">
+                              <S.PayButton to={`/pay?${new URLSearchParams([["s", item.name]])}`}>
                                 <FiExternalLink /> Pagar
                               </S.PayButton>
                             </S.PayContainer>
@@ -89,7 +90,7 @@ const payment = () => {
 
                           <S.PaymentAmountContainer>
                             <S.PaymentAmount pending>
-                              {"$ " + item.price / 100 + ",00"}
+                              {"R$ " + item.price / 100 + ",00"}
                             </S.PaymentAmount>
                           </S.PaymentAmountContainer>
 
@@ -158,18 +159,18 @@ export function CatchBoundary() {
   const caught = useCatch();
   const matches = useMatches()
 
-  if (caught.status === 404) {
+  if (caught.data.errors.delegation === "No delegation found") {
     return (
       <S.Wrapper>
         <S.Title>
-          Pagamentos
+          Delegação
         </S.Title>
 
         <E.Message>
+          Para realizar os pagamentos é necessário entrar em uma delegação
 
-          {caught.data.errors.delegationId}
           <E.GoBacklink to={`/join/delegation?${new URLSearchParams([["redirectTo", safeRedirect(matches[1].pathname)]])}`}>
-            Join a Delegation
+            Entrar em uma delegação
           </E.GoBacklink>
         </E.Message>
 

@@ -12,51 +12,50 @@ const verdeBackground = "#EBFDEE"
 const begeClaro = "#d57748"
 const begeBackground = "#FFEFE1"
 
-export const Title = styled.h3`
-  font-size: 2.2rem;
-  font-weight: 500;
-  color: #000;
-  padding-left: 5px;
-`
 export const Wrapper = styled.div`
-  height: 100%;
+  min-width: 426px;
   display: grid;
-  grid-template-columns: 4fr 1fr;
+  gap: 20px;
+`
+export const Title = styled.h3`
+  font-size: 1.8rem;
+  color: #000;
+  width: 426px;
+`
+export const Error = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1.5rem;
+  color: #d61f0a;
+  svg {
+    transform: translateY(-1px);
+    width: 14px;
+    height: 14px;
+  }
+`
+export const Price = styled.div`
+  font-size: 3.6rem;
+  font-weight: 900;
+  margin-left: 10px;
+  color: ${azulEscuro};
+  min-width: 426px;
 `
 export const Container = styled.div`
   max-width: 600px;
-  margin-top: 20px;
-  padding: 0 5px;
-  max-height: 250px;
-  overflow-y: auto;
+  padding: 5px;
+  max-height: ${p => `calc(70vh - 259px -${p.height})`};
+  overflow-y: scroll;
   overflow-x: hidden;
-  transition: all .3s ease;
 
-  &:active::-webkit-scrollbar-thumb {
-    visibility: visible;
-    background: rgb(120, 120, 120);
-    opacity: 1;
-  }
-  &:focus::-webkit-scrollbar-thumb {
-    visibility: visible;
-    background: rgb(120, 120, 120);
-    opacity: 1;
-  }
-  &:hover::-webkit-scrollbar-thumb {
-    visibility: visible;
-    background: rgb(120, 120, 120);
-    opacity: 1;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: rgb(200, 200, 200);
-    transition: all .4s ease;
-    border-radius: 2px;
-    visibility: visible;
-  }
-  &::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
+  background: /* Shadow covers */
+  linear-gradient(white 30%, rgba(255, 255, 255, 0)), linear-gradient(rgba(255, 255, 255, 0), white 70%) 0 100%, /* Shadows */
+  radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, .2), rgba(0, 0, 0, 0)), radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, .2), rgba(0, 0, 0, 0)) 0 100%;
+  background-repeat: no-repeat;
+  background-color: white;
+  background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+  /* Opera doesn't support this in the shorthand */
+  background-attachment: local, local, scroll, scroll;
 `
 export const Line = styled.div`
   width: 100%;
@@ -97,7 +96,7 @@ export const Item = styled.div`
   }
 `
 export const PriceContainer = styled.div`
-  place-self: end;
+  place-self: start;
 `
 export const PriceList = styled.div`
   margin-right: 0;
@@ -111,9 +110,4 @@ export const PriceItem = styled.div`
   font-size: 1.6rem;
   padding: 0 10px;
   border-bottom: ${p => p.first && "1px solid #a7a7a7"};
-`
-export const Price = styled.h2`
-  font-size: 3.6rem;
-  font-weight: 900;
-  color: ${azulEscuro};
 `

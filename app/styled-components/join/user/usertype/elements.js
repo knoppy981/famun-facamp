@@ -6,16 +6,15 @@ export const Title = styled.h3`
   font-size: 2.2rem;
   font-weight: 500;
   color: #000;
-  padding-left: 5px;
 `
 export const ButtonsContainer = styled.div`
   display: flex;
-  gap: 15px;
+  gap: 16px;
   margin-top: 25px;
 `
 export const Button = styled.button`
   height: 45px;
-  width: 250px;
+  width: 205px;
   background: ${azulClaro};
   border-radius: 5px;
 	font-size: 1.5rem;

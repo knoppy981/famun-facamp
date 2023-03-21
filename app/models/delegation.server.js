@@ -87,7 +87,7 @@ export async function createDelegation(data) {
 }
 
 export async function generateDelegationInviteLink(delegationCode) {
-	const { JSON_WEB_TOKEN_SECRET } = process.env;
+	const { JSON_WEB_TOKEN_SECRET, WEBSITE_URL } = process.env;
 
 	/* achar lider da delegacao e mandar no link tambem */
 	/* checar se ja estorou maximo de participantes */
@@ -101,7 +101,7 @@ export async function generateDelegationInviteLink(delegationCode) {
 		{ expiresIn: 60 * 60 * 24 * 30 }
 	);
 
-	return `http://localhost:3000/i/${token}`
+	return `${WEBSITE_URL}/i/${token}`
 }
 
 export async function decodeInviteLink(token) {

@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { useActionData, useLoaderData, useSearchParams } from '@remix-run/react'
+import { useActionData, useLoaderData, useSearchParams, useTransition } from '@remix-run/react'
 import { json, redirect } from '@remix-run/node'
 import qs from 'qs'
 
 import { sessionStorage, getSession, createUserSession, getUserId, logout } from "~/session.server";
-import { validateEmail, checkString, validatePhoneNumber, safeRedirect } from "~/utils";
+import { validateEmail, checkString, validatePhoneNumber, validateCpf, safeRedirect } from "~/utils";
 import { createUser, getExistingUser } from '~/models/user.server';
 
 import * as S from '~/styled-components/join/user'
@@ -16,6 +16,9 @@ import DelegateData from "~/styled-components/join/user/delegatedata"
 import Nacionality from "~/styled-components/join/user/nacionality"
 import UserData from "~/styled-components/join/user/userdata"
 import UserType from "~/styled-components/join/user/usertype"
+import Spinner from '~/styled-components/components/spinner';
+
+
 
 export const action = async ({ request }) => {
   const text = await request.text()
@@ -25,7 +28,7 @@ export const action = async ({ request }) => {
 
   if (action === 'next') {
 
-    const userData = { name: data?.name, email: data?.email, cpf: data?.cpf, rg: data?.rg }
+    const userData = { name: data?.name, email: data?.email, document: { is: { value: data.cpf ?? data.passport } } }
     const user = await getExistingUser(userData)
 
     if (data.email?.length === 0)
@@ -94,32 +97,32 @@ export const action = async ({ request }) => {
         { status: 400 }
       );
     if (data.cpf) {
-      if (data.cpf === user?.cpf)
+      if (data.cpf === user?.document?.value && user?.document?.documentName === 'cpf')
         return json(
           { errors: { cpf: "Cpf já utilizado" } },
           { status: 400 }
         );
-      if (typeof data.cpf !== "string" || data.cpf.length !== 11)
+      if (typeof data.cpf !== "string" || data.cpf.length !== 14 || !validateCpf(data.cpf))
         return json(
           { errors: { cpf: "Cpf Inválido" } },
           { status: 400 }
         );
     }
 
-    if (data.rg?.length === 0)
+    if (data.passport?.length === 0)
       return json(
-        { errors: { rg: "Digite seu Rg" } },
+        { errors: { passport: "Digite seu Passaporte" } },
         { status: 400 }
       );
-    if (data.rg) {
-      if (data.rg === user?.rg)
+    if (data.passport) {
+      if (data.passport === user?.document?.value && user?.document?.documentName === 'passport')
         return json(
-          { errors: { rg: "Rg já utilizado" } },
+          { errors: { passport: "Passaporte já utilizado" } },
           { status: 400 }
         );
-      if (typeof data.rg !== "string" || data.rg.length !== 9)
+      if (typeof data.passport !== "string" || data.passport.length > 20)
         return json(
-          { errors: { rg: "Rg Inválido" } },
+          { errors: { passport: "Passaporte Inválido" } },
           { status: 400 }
         );
     }
@@ -153,17 +156,37 @@ export const action = async ({ request }) => {
     const userType = session.get("user-type")?.userType
 
     if (step == 5 && userType === "delegate") {
-      if (data.council === undefined) {
-        return json(
-          { errors: { council: "Escolha uma opção" } },
-          { status: 400 }
-        );
-      }
       if (data.language === undefined) {
         return json(
           { errors: { language: "Escolha no mínimo uma opção" } },
           { status: 400 }
         );
+      }
+
+      if (data.emergencyContactName?.length === 0)
+        return json(
+          { errors: { emergencyContactName: "Preencha com um nome" } },
+          { status: 400 }
+        );
+      if (data.emergencyContactName) {
+        if (typeof data.emergencyContactName !== "string" || !checkString(data.emergencyContactName) || data.emergencyContactName === "")
+          return json(
+            { errors: { emergencyContactName: "Nome inválido" } },
+            { status: 400 }
+          );
+      }
+
+      if (data.emergencyContactPhoneNumber?.length === 0)
+        return json(
+          { errors: { emergencyContactPhoneNumber: "Digite um númro de celular" } },
+          { status: 400 }
+        );
+      if (data.emergencyContactPhoneNumber) {
+        if (typeof data.emergencyContactPhoneNumber !== "string" || !validatePhoneNumber(data.emergencyContactPhoneNumber))
+          return json(
+            { errors: { emergencyContactPhoneNumber: "Número de celular inválido" } },
+            { status: 400 }
+          );
       }
     }
 
@@ -216,6 +239,12 @@ export const loader = async ({ request }) => {
       ...session.get("user-data-5"),
     }
     return json({ data, step, userType })
+  } else if (step === 3) {
+    const data = {
+      ...session.get(`user-data-${3}`),
+      ...session.get(`user-data-${1}`),
+    } ?? {}
+    return json({ data, step, userType })
   } else {
     const data = session.get(`user-data-${step}`) ?? {}
     return json({ data, step, userType })
@@ -225,6 +254,12 @@ export const loader = async ({ request }) => {
 const user = () => {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "";
+  const transition = useTransition()
+  const [isNextButtonClicked, setIsNextButtonClicked] = useState(false)
+
+  useEffect(() => {
+    transition.state === 'idle' && setIsNextButtonClicked(false)
+  }, [transition])
 
   const actionData = useActionData()
   let { userType, step, data } = useLoaderData()
@@ -235,19 +270,21 @@ const user = () => {
       <input type="hidden" name="step" value={step} />
       <input type="hidden" name="redirectTo" value={redirectTo} />
 
-      {step === 1 && <Nacionality data={data} />}
-      {step === 2 && <CreateUser data={data} actionData={actionData} />}
-      {step === 3 && <UserData data={data} actionData={actionData} />}
-      {step === 4 && <UserType data={data} actionData={actionData} />}
-      {step === 5 && (userType === "advisor" ? 
-        <AdvisorData data={data} actionData={actionData} /> : <DelegateData data={data} actionData={actionData} />)
-      }
-      {step === 6 && <ConfirmData data={data} userType={userType} />}
+      <S.Container>
+        {step === 1 && <Nacionality data={data} />}
+        {step === 2 && <CreateUser data={data} actionData={actionData} />}
+        {step === 3 && <UserData data={data} actionData={actionData} />}
+        {step === 4 && <UserType data={data} actionData={actionData} />}
+        {step === 5 && (userType === "advisor" ?
+          <AdvisorData data={data} actionData={actionData} /> : <DelegateData data={data} actionData={actionData} />)
+        }
+        {step === 6 && <ConfirmData data={data} userType={userType} />}
+      </S.Container>
 
       <S.ControlButtonsContainer>
-        {step !== 1 && <S.ControlButton name="action" value="previous" type="submit" prev> Voltar </S.ControlButton>}
+        {step !== 4 && <S.ControlButton name="action" value="next" type="submit" onClick={() => setIsNextButtonClicked(true)}> {step === 6 ? 'Cadastrar' : 'Próximo'} {transition.state !== 'idle' && isNextButtonClicked && <Spinner dim={18} />} </S.ControlButton>}
 
-        {step !== 4 && <S.ControlButton name="action" value="next" type="submit"> {step === 6 ? 'Criar Usuário' : 'Próximo'} </S.ControlButton>}
+        {step !== 1 && <S.ControlButton name="action" value="previous" type="submit" prev> Voltar </S.ControlButton>}
       </S.ControlButtonsContainer>
     </S.StepsForm>
   )

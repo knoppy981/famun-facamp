@@ -5,17 +5,21 @@ import * as S from './elements'
 const index = ({ data }) => {
   return (
     <>
-      <S.Title>
-        Estamos quase lá!
-      </S.Title>
+      <S.TitleBox>
+        <S.Title>
+          Confirmar os dados
+        </S.Title>
+      </S.TitleBox>
 
-      <S.SubTitle>
-        Confirme os dados abaixo para finalizar a inscrição da delegação da sua escola / universidade
-      </S.SubTitle>
+      <S.TitleBox>
+        <S.SubTitle>
+          É possível alterar os dados após a inscrição
+        </S.SubTitle>
+      </S.TitleBox>
 
       <S.List>
         <S.Column>
-        {[
+          {[
             ["Nome da Escola / Universidade", "schoolName"],
             ["Numero Telefone", "schoolPhoneNumber"],
             ["Metodo de Participação", "participationMethod"],
@@ -32,7 +36,7 @@ const index = ({ data }) => {
         </S.Column>
 
         <S.Column>
-        {[
+          {[
             ["País", "country"],
             ["Cidade", "state"],
             ["Estado", "city"],
@@ -49,7 +53,7 @@ const index = ({ data }) => {
         </S.Column>
 
         <S.Column>
-        {[
+          {[
             ["CEP", "cep"],
             ["Endereço", "address"],
             ["Bairro", "neighborhood"],

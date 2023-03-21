@@ -4,12 +4,12 @@ const UserType = () => {
   return (
     <>
       <S.Title>
-        Como voce deseja se inscrever?
+        Como você deseja se inscrever?
       </S.Title>
 
       <S.ButtonsContainer>
         <S.Button name="userType" type="submit" value="advisor">
-          Professor Orientador
+          Professor(a) Orientador(a)
         </S.Button>
 
         <S.Button name="userType" type="submit" value="delegate">
