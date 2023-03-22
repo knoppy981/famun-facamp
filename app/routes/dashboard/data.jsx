@@ -347,7 +347,7 @@ export const EditUserData = ({
           </S.ItemContainer>
         </S.DataContainer>
 
-        {userType === 'delegatex' ?
+        {userType === 'delegate' ?
           <S.ColumnDataContainer>
             <S.Key>
               Idiomas que pode simular

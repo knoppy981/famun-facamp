@@ -1,8 +1,10 @@
 import { useRef, useState } from "react";
 import { json } from "@remix-run/node";
-import { Form, NavLink, Outlet, useFetcher, useLocation } from "@remix-run/react";
+import { Form, NavLink, Outlet, useFetcher, useLoaderData, useLocation } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "framer-motion";
+import i18next from '~/i18n/i18n.server'
+
 
 import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
@@ -33,39 +35,29 @@ import LanguageMenu from "~/styled-components/components/dropdown/languageMenu";
 
 export const loader = async ({ request }) => {
   const userId = await requireUserId(request)
-  return json({ userId })
+  let t = await i18next.getFixedT(request);
+  console.log(title)
+
+  return json({ userId, title })
 };
 
-export const handle = {
+/* export const handle = {
   //handle the file it pulls to translate
   i18n: "dashboard"
-};
+}; */
 
 const Dashboard = () => {
 
   const user = useUser()
 
-  const { t, i18n } = useTranslation("dashboard")
-  const lngs = i18n.options.supportedLngs.slice(0, -1)
+  const { title } = useLoaderData()
 
-  const { pathname } = useLocation()
-  const updateI18n = useFetcher()
+  const { t, i18n } = useTranslation()
 
-  const handleLanguage = async (e) => {
-    e.preventDefault();
-    i18n.changeLanguage(e.target.value);
-    updateI18n.submit(
-      { locale: e.target.value, url: pathname },
-      { method: "post", action: "/api/updateI18n" }
-    );
-  }
+/*   console.log(t("title"))
+  console.log(title) */
+  console.log(/* t("title") */)
 
-  const menuRef = useRef(null)
-  const dropDownRef = useRef(null)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [menuHeight, setMenuHeight] = useState(dropDownRef.current?.firstChild.offsetHeight)
-  const [activeMenu, setActiveMenu] = useState("main")
-  useClickOutside(menuRef, () => setMenuOpen(false))
 
   return (
     <S.Wrapper>
@@ -81,7 +73,7 @@ const Dashboard = () => {
             <S.ArrowIconBox />
 
             <S.SubTitle>
-              {t("title")}
+              {/* t("title") */}
             </S.SubTitle>
           </S.AuxDiv>
         </S.TitleBox>
@@ -98,7 +90,7 @@ const Dashboard = () => {
                 <S.NavIcon>
                   <FiLogOut />
                 </S.NavIcon>
-                {t("logOut")}
+                {/* t("logOut") */}
               </S.NavItem>
             </Form>
           </S.NavMenu>
@@ -113,7 +105,7 @@ const Dashboard = () => {
                     <FiHome />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {t("home")}
+                    {/* t("home") */}
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}
@@ -126,7 +118,7 @@ const Dashboard = () => {
                     <FiEdit />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {t("data")}
+                    {/* t("data") */}
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}
@@ -139,7 +131,7 @@ const Dashboard = () => {
                     <FiFlag />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {t("delegation")}
+                    {/* t("delegation") */}
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}
@@ -153,7 +145,7 @@ const Dashboard = () => {
                     <FiCreditCard />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {t("payments")}
+                    {/* t("payments") */}
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}
@@ -166,7 +158,7 @@ const Dashboard = () => {
                     <FiFile />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {t("documents")}
+                    {/* t("documents") */}
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}

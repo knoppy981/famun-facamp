@@ -1,6 +1,7 @@
 export default {
   debug: /* process.env.NODE_ENV !== 'production' */ false,
-  fallbackLng: 'en',
-  supportedLngs: ['en-US', 'pt-BR', 'es-ES'],
+  fallbackLng: 'pt',
+  supportedLngs: ['pt', 'en'],
+  defaultNS: "translation",
   react: { useSuspense: false }
 }

@@ -1,7 +1,8 @@
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
-import remixI18n from '~/i18n/i18n.server'
+import i18next from '~/i18n/i18n.server'
 import { useTranslation } from 'react-i18next'
+import { useEffect } from "react";
 
 import { getUser } from "./session.server";
 import { getUserType } from "./models/user.server";
@@ -15,10 +16,10 @@ export function links() {
       rel: "stylesheet preload prefetch",
       href: styles,
     },
-    { 
+    {
       as: "style",
       rel: "stylesheet preload prefetch",
-      href: "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" 
+      href: "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css"
     }
   ];
 }
@@ -30,26 +31,22 @@ export const meta = () => ({
 });
 
 export const loader = async ({ request }) => {
-  const t = await remixI18n.getFixedT(request, 'translation')
-  const title = t('headTitle')
+  const locale = await i18next.getLocale(request)
+  console.log(i18next)
   const user = await getUser(request)
   return json({
     user,
     userType: await getUserType(user?.id),
-    title
+    locale
   });
-};
-
-export const handle = {
-  i18n: "translation"
 };
 
 export default function App() {
 
-  const { i18n } = useTranslation()
+  const { locale } = useLoaderData()
 
   return (
-    <html lang={i18n.language}>
+    <html lang={locale}>
       <head>
         <Meta />
 

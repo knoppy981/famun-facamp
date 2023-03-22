@@ -7,7 +7,7 @@ import * as S from "./index"
 
 const LanguageMenu = ({ i18n }) => {
 
-  const lngs = i18n.options.supportedLngs.slice(0, -1)
+  const lngs = i18n.options.supportedLngs.slice(0, -1) || []
   const updateI18n = useFetcher()
   const handleLanguage = async (e) => {
     e.preventDefault();
