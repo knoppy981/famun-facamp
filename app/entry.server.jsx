@@ -8,7 +8,7 @@ import { resolve } from "node:path";
 import isbot from "isbot";
 
 import i18next from './i18n/i18n.server'
-import i18n from './i18n/i18nextOptions'
+import i18nextOptions from './i18n/i18nextOptions'
 import { createInstance } from 'i18next'
 import { I18nextProvider, initReactI18next } from 'react-i18next'
 import Backend from 'i18next-fs-backend'
@@ -22,26 +22,28 @@ export default async function handleRequest(
 	remixContext
 ) {
 
-	let callbackName = isbot(request.headers.get("user-agent"))
-		? "onAllReady"
-		: "onShellReady";
+	const instance = createInstance()
 
-	let instance = createInstance();
-	let lng = await i18next.getLocale(request);
-	let ns = i18next.getRouteNamespaces(remixContext);
+	// Then we could detect locale from the request
+	const lng = await i18next.getLocale(request)
+	// And here we detect what namespaces the routes about to render want to use
+	const ns = i18next.getRouteNamespaces(remixContext)
 
-	console.log(ns)
+	resetServerContext()
 
+	// First, we create a new instance of i18next so every request will have a
+	// completely unique instance and not share any state.
 	await instance
 		.use(initReactI18next) // Tell our instance to use react-i18next
-		.use(Backend) // Setup our backend
+		.use(Backend) // Setup our backend.init({
 		.init({
-			...i18n, // spread the configuration
+			...i18nextOptions, // use the same configuration as in your client side.
 			lng, // The locale we detected above
-			ns, // The namespaces the routes about to render wants to use
-			backend: { loadPath: resolve("./public/locales/{{lng}}/{{ns}}.json") },
-		});
-
+			ns, // The namespaces the routes about to render want to use
+			backend: {
+				loadPath: resolve("./public/locales/{{lng}}/{{ns}}.json"),
+			}
+		})
 
 	const sheet = new ServerStyleSheet();
 
@@ -52,7 +54,6 @@ export default async function handleRequest(
 			</I18nextProvider>
 		)
 	);
-
 	const styles = sheet.getStyleTags();
 
 	markup = markup.replace("__STYLES__", styles);

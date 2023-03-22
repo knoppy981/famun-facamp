@@ -57,13 +57,14 @@ export const loader = async ({ request }) => {
   return userId ? redirect('/') : json({})
 }
 
-/* export const handle = {
+export const handle = {
+  //handle the file it pulls to translate
   i18n: "login"
-}; */
+};
 
 const LoginPage = () => {
 
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation("login")
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/dashboard/home";
@@ -83,7 +84,7 @@ const LoginPage = () => {
           <S.ArrowIconBox />
 
           <S.SubTitle>
-            {/* t('title') */}
+            {t('title')}
           </S.SubTitle>
         </S.TitleBox>
 
@@ -96,7 +97,7 @@ const LoginPage = () => {
             <S.StyledLink
               to=/* "/resetPassword" */ "/"
             >
-              {/* t("forgotPassword") */}
+              {t("forgotPassword")}
             </S.StyledLink>
           </S.ForgotLinkBox>
 
@@ -109,20 +110,20 @@ const LoginPage = () => {
               value="firstButton"
               disabled={transition.state !== "idle"}
             >
-              {/* t("login") */} {transition.state !== 'idle' && <Spinner dim={18} />}
+              {t("login")} {transition.state !== 'idle' && <Spinner dim={18} />}
             </S.SubmitButton>
           </S.ButtonContainer>
         </S.AuthForm>
 
         <S.JoinLinkBox>
-          {/* t("acc") */}
+          {t("acc")}
           <S.StyledLink
             to={{
               pathname: "/join/user",
               search: searchParams.toString(),
             }}
           >
-            {/* t("join") */}
+            {t("join")}
           </S.StyledLink>
         </S.JoinLinkBox>
       </S.FormContainer>

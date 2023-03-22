@@ -35,29 +35,19 @@ import LanguageMenu from "~/styled-components/components/dropdown/languageMenu";
 
 export const loader = async ({ request }) => {
   const userId = await requireUserId(request)
-  let t = await i18next.getFixedT(request);
-  console.log(title)
-
-  return json({ userId, title })
+  return json({ userId })
 };
 
-/* export const handle = {
+export const handle = {
   //handle the file it pulls to translate
   i18n: "dashboard"
-}; */
+};
 
 const Dashboard = () => {
 
   const user = useUser()
 
-  const { title } = useLoaderData()
-
-  const { t, i18n } = useTranslation()
-
-/*   console.log(t("title"))
-  console.log(title) */
-  console.log(/* t("title") */)
-
+  const { t, i18n } = useTranslation("dashboard")
 
   return (
     <S.Wrapper>
@@ -73,7 +63,7 @@ const Dashboard = () => {
             <S.ArrowIconBox />
 
             <S.SubTitle>
-              {/* t("title") */}
+              {t("title")}
             </S.SubTitle>
           </S.AuxDiv>
         </S.TitleBox>
@@ -90,7 +80,7 @@ const Dashboard = () => {
                 <S.NavIcon>
                   <FiLogOut />
                 </S.NavIcon>
-                {/* t("logOut") */}
+                {t("logOut")}
               </S.NavItem>
             </Form>
           </S.NavMenu>
@@ -105,7 +95,7 @@ const Dashboard = () => {
                     <FiHome />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {/* t("home") */}
+                    {t("home")}
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}
@@ -118,7 +108,7 @@ const Dashboard = () => {
                     <FiEdit />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {/* t("data") */}
+                    {t("data")}
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}
@@ -131,7 +121,7 @@ const Dashboard = () => {
                     <FiFlag />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {/* t("delegation") */}
+                    {t("delegation")}
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}
@@ -145,7 +135,7 @@ const Dashboard = () => {
                     <FiCreditCard />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {/* t("payments") */}
+                    {t("payments")}
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}
@@ -158,7 +148,7 @@ const Dashboard = () => {
                     <FiFile />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {/* t("documents") */}
+                    {t("documents")}
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}
