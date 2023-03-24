@@ -77,15 +77,17 @@ const LoginPage = () => {
 
       <S.FormContainer>
         <S.TitleBox>
-          <S.Title>
+        <S.Title>
             FAMUN 2023
           </S.Title>
 
-          <S.ArrowIconBox />
+          <S.AuxDiv>
+            <S.ArrowIconBox />
 
-          <S.SubTitle>
-            {t('title')}
-          </S.SubTitle>
+            <S.SubTitle>
+              {t("title")}
+            </S.SubTitle>
+          </S.AuxDiv>
         </S.TitleBox>
 
         <S.AuthForm method="post" noValidate>

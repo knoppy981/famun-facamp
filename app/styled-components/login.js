@@ -27,18 +27,50 @@ export const TitleBox = styled.div`
   align-items: center;
   margin-bottom: 40px;
   height: 40px;
+  width: 426px;
+  
+  @media screen and (max-width: 800px) {
+    height: auto;
+    width: 500px;
+  }
+
+  @media screen and (max-width: 500px) {
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+`
+export const AuxDiv = styled.div`
+  align-items: center;
+  display: flex;
 `
 export const Title = styled.div`
   font-size: 3.6rem;
   font-weight: 900;
   color: #183567;
   margin-right: 5px;
+
+  @media screen and (max-width: 800px) {
+    font-size: 4.2rem;
+  }
+
+  @media screen and (max-width: 500px) {
+    font-size: 5.2rem;
+  }
 `
 export const SubTitle = styled.div`
   font-size: 2.4rem;
   font-weight: 500;
   color: #000;
   transform: translate(0, 1px);
+
+  @media screen and (max-width: 800px) {
+    font-size: 2.8rem;
+  }
+
+  @media screen and (max-width: 500px) {
+    font-size: 3.4rem;
+  }
 `
 export const ArrowIconBox = styled(FiChevronRight)`
   height: 25px;
