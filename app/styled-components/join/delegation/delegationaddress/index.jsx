@@ -9,7 +9,7 @@ const index = ({ data, actionData }) => {
   return (
     <>
       <S.Title>
-        Preencha o endereço da Escola / Universidade
+        Endereço da Escola / Universidade
       </S.Title>
 
       <S.Wrapper>
@@ -23,16 +23,15 @@ const index = ({ data, actionData }) => {
             autoFocus={true}
           />
 
-          <S.SubInputContainer>
-            <SelectInput
-              name="country"
-              text="País"
-              value={data?.country}
-              selectList={Object.keys(isoCountries)}
-              err={actionData?.errors?.country}
-              maxWidth={200}
-            />
+          <SelectInput
+            name="country"
+            text="País"
+            value={data?.country}
+            selectList={Object.keys(isoCountries)}
+            err={actionData?.errors?.country}
+          />
 
+          <S.SubInputContainer>
             <AuthInputBox
               name="cep"
               text="CEP"
@@ -41,9 +40,7 @@ const index = ({ data, actionData }) => {
               err={actionData?.errors?.cep}
               mask={'99999-999'}
             />
-          </S.SubInputContainer>
 
-          <S.SubInputContainer>
             <AuthInputBox
               name="state"
               text="Estado"
@@ -51,7 +48,9 @@ const index = ({ data, actionData }) => {
               value={data?.state}
               err={actionData?.errors?.state}
             />
+          </S.SubInputContainer>
 
+          <S.SubInputContainer>
             <AuthInputBox
               name="city"
               text="Cidade"
@@ -59,9 +58,7 @@ const index = ({ data, actionData }) => {
               value={data?.city}
               err={actionData?.errors?.city}
             />
-          </S.SubInputContainer>
-
-          <S.SubInputContainer>
+            
             <AuthInputBox
               name="neighborhood"
               text="Bairro"

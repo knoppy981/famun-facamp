@@ -3,15 +3,14 @@ import styled from "styled-components";
 const azulClaro = '#BDE8F5'
 
 export const Title = styled.h3`
-  width: 426px;
   font-size: 2.2rem;
   font-weight: 500;
   color: #000;
 `
 export const Subtitle = styled.p`
-  width: 426px;
   font-size: 1.4rem;
   color: #000;
+  white-space: pre-wrap;
 `
 export const ButtonsContainer = styled.div`
   display: flex;
@@ -33,4 +32,9 @@ export const Button = styled.button`
   &:hover {
     transform: translateY(-2px);
   }
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    height: 5.2rem;
+    font-size: 1.8rem;
+	}
 `

@@ -24,25 +24,23 @@ export const AuthInputBox = (props) => {
 				{err ?? props.text}
 			</S.Label>
 
-			<S.InputContainer>
-				<S.Input
-					id={name}
-					ref={inputRef}
-					required
-					name={name}
-					type={props.type}
-					autoComplete={name}
-					defaultValue={props.value}
-					autoFocus={props.autoFocus}
-					aria-invalid={err ? true : undefined}
-					/* onFocus={() => setErr(false)} */
-					aria-describedby={`${name}-error`}
-					err={err}
-					mask={props.mask ?? undefined}
-					formatChars={props.formatChars ?? undefined}
-					maskChar="_"
-				/>
-			</S.InputContainer>
+			<S.Input
+				id={name}
+				ref={inputRef}
+				required
+				name={name}
+				type={props.type}
+				autoComplete={name}
+				defaultValue={props.value}
+				autoFocus={props.autoFocus}
+				aria-invalid={err ? true : undefined}
+				/* onFocus={() => setErr(false)} */
+				aria-describedby={`${name}-error`}
+				err={err}
+				mask={props.mask ?? undefined}
+				formatChars={props.formatChars ?? undefined}
+				maskChar="_"
+			/>
 		</S.InputWrapper>
 	)
 }

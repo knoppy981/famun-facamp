@@ -15,15 +15,15 @@ export default async function handleRequest(
 	responseHeaders,
 	remixContext
 ) {
-
-	const instance = createInstance()
+	resetServerContext()
+	
+	/* const instance = createInstance()
 
 	// Then we could detect locale from the request
 	const lng = await i18n.getLocale(request)
 	// And here we detect what namespaces the routes about to render want to use
 	const ns = i18n.getRouteNamespaces(remixContext)
 
-	resetServerContext()
 
 	// First, we create a new instance of i18next so every request will have a
 	// completely unique instance and not share any state.
@@ -37,15 +37,15 @@ export default async function handleRequest(
 			backend: {
 				loadPath: resolve("./public/locales/{{lng}}/{{ns}}.json"),
 			}
-		})
+		}) */
 
 	const sheet = new ServerStyleSheet();
 
 	let markup = renderToString(
 		sheet.collectStyles(
-			<I18nextProvider i18n={instance}>
+			//<I18nextProvider i18n={instance}>
 				<RemixServer context={remixContext} url={request.url} />
-			</I18nextProvider>
+			//</I18nextProvider>
 		)
 	);
 	const styles = sheet.getStyleTags();

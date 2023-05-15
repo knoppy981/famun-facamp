@@ -71,7 +71,6 @@ export const NavIcon = styled.div`
 `
 export const Menu = styled.div`
   display: flex;
-  gap: 25px;
   margin-left: 5px;
   margin-bottom: 25px;
 `
@@ -85,6 +84,7 @@ export const MenuItem = styled.div`
   padding: 0 15px;
   transition: opacity .4s ease;
   cursor: pointer;
+  margin-right: 25px;
 `
 export const UnderLine = styled(motion.div)`
   position: absolute;

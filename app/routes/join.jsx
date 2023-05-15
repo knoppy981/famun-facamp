@@ -1,5 +1,6 @@
 import { Link, Outlet, useSearchParams } from "@remix-run/react";
 import { json } from "@remix-run/node";
+import { useEffect } from "react";
 
 import { getUserId } from "~/session.server";
 
@@ -14,7 +15,7 @@ export const handle = {
 
 const join = () => {
 
-  const { t, i18n } = useTranslation("translation")
+  /* const { t, i18n } = useTranslation("translation") */
 
   const [searchParams] = useSearchParams();
 
@@ -29,7 +30,7 @@ const join = () => {
         </S.ExternalButton>
       </S.ExternalButtonWrapper>
 
-      <LanguageMenu i18n={i18n} />
+      <LanguageMenu /* i18n={i18n} */ />
 
       <S.Container>
         <S.TitleBox>
@@ -37,14 +38,17 @@ const join = () => {
             FAMUN 2023
           </S.Title>
 
-          <S.ArrowIconBox />
+          <S.AuxDiv>
+            <S.ArrowIconBox />
 
-          <S.SubTitle>
-            Inscrição
-          </S.SubTitle>
+            <S.SubTitle>
+              Inscrição
+            </S.SubTitle>
+          </S.AuxDiv>
         </S.TitleBox>
 
         <Outlet />
+        {/* <div style={{position: 'absolute', bottom: 0, left: 0, height: '100px', width: '100px', background: 'red'}}/> */}
       </S.Container>
     </S.Wrapper >
   )

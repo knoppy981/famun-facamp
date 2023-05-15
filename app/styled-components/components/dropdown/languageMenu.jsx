@@ -7,11 +7,11 @@ import * as S from "./index"
 
 const LanguageMenu = ({ i18n }) => {
 
-  const lngs = i18n.options.supportedLngs.slice(0, -1)
+  const lngs = i18n?.options.supportedLngs.slice(0, -1)
   const updateI18n = useFetcher()
   const handleLanguage = async (e) => {
     e.preventDefault();
-    i18n.changeLanguage(e.target.value);
+    i18n?.changeLanguage(e.target.value);
     updateI18n.submit(
       { locale: e.target.value, url: pathname },
       { method: "post", action: "/api/updateI18n" }
@@ -25,7 +25,7 @@ const LanguageMenu = ({ i18n }) => {
   return (
     <S.LangauegButtonWrapper ref={lngMenuRef} >
       <S.LanguageButton onClick={() => setLngMenuOpen(!lngMenuOpen)}>
-        {i18n.language}<FiGlobe />
+        {i18n?.language ?? 'pt-BR'}<FiGlobe />
       </S.LanguageButton>
 
       <S.Reference open={lngMenuOpen} />
@@ -36,7 +36,7 @@ const LanguageMenu = ({ i18n }) => {
           </S.Item>
 
           <S.MaxHeightMenu>
-            {lngs.map((item) => {
+            {lngs?.map((item) => {
               let flagCode = item.slice(-2).toLowerCase()
               return (
                 <S.Item key={`${item}-lng-option`} height={'30px'}>

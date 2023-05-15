@@ -9,11 +9,20 @@ export const StepsForm = styled(Form)`
   flex-direction: column;
   align-items: center;
   gap: 40px;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    height: 70vh; /* Fallback for browsers that do not support Custom Properties */
+    height: calc((var(--full-height, 1vh) * 80) - 72px);;
+	}
 `
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
   margin: 20px 0 0 0;
+  width: 100%;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+	}
 `
 export const ControlButtonsContainer = styled.div`
   margin-bottom: 0;
@@ -24,7 +33,7 @@ export const ControlButtonsContainer = styled.div`
   gap: 15px;
 `
 export const ControlButton = styled.button`
-  height: 45px;
+  height: 4.5rem;
   width: 150px;
   display: flex;
   align-items: center;
@@ -37,4 +46,9 @@ export const ControlButton = styled.button`
   border-radius: 5px;
 	font-size: 1.5rem;
   transition: .4s all ease;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    height: 5.2rem;
+    font-size: 1.8rem;
+	}
 `

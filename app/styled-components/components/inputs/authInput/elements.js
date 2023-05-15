@@ -19,16 +19,16 @@ export const Label = styled.label`
   margin-left: 5px;
   color: ${props => props.err ? '#d61f0a' : '#000'};
 
-  @media screen and (max-width: 300px) {
-    font-size: 10px;
-  }
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    font-size: 1.6rem;
+	}
 `
 export const InputContainer = styled.div`
   position: relative;
 `
 export const Input = styled(InputMask)`
   width: 100%;
-  height: 45px;
+  height: 4.5rem;
   border-radius: 5px;
   border: 1px solid ${p => p.err ? '#d61f0a' : '#E6E6E6'};
   outline: none;
@@ -42,6 +42,11 @@ export const Input = styled(InputMask)`
   &:focus, &:hover {
     border: 1px solid ${p => p.err ? '#d61f0a' : azulCeu};
   }
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    height: 5.2rem;
+    font-size: 1.8rem;
+	}
 `
 export const Select = styled.select`
   outline: none;

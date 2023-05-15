@@ -10,34 +10,62 @@ const verde = '#3FA534'
 const vermelho = '#C01627'
 
 export const Wrapper = styled.div`
-  width: 100%;
   height: 100vh;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media screen and (max-width: 500px) {
+    overflow: hidden;
+    height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+    height: calc(var(--full-height, 1vh) * 100);;
+	}
 `
 export const FormContainer = styled.div`
-	width: 400px;
+  height: 70vh;
+ 	width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
 
-	@media screen and (max-width: 1100px) {
+	@media screen and (max-width: 500px) {
+    width: auto;
+    max-width: 100vw;
+    margin: 0 20px;
+    gap: 60px;
+	}
+  
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+    height: calc(var(--full-height, 1vh) * 80);
+    margin-top: calc(var(--full-height, 1vh) * 15);
+    margin-bottom: calc(var(--full-height, 1vh) * 5);
+    width: 100vw;
+    width: calc(var(--full-width, 1vh) * 94);
+    margin-left: calc(var(--full-width, 1vh) * 3);
+    margin-right: calc(var(--full-width, 1vh) * 3);
 	}
 `
 export const TitleBox = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 40px;
   height: 40px;
   width: 426px;
   
   @media screen and (max-width: 800px) {
     height: auto;
-    width: 500px;
   }
 
   @media screen and (max-width: 500px) {
     height: auto;
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  @media screen and (max-width: 350px) {
+    height: auto;
+    width: 100vw;
   }
 `
 export const AuxDiv = styled.div`
@@ -55,7 +83,11 @@ export const Title = styled.div`
   }
 
   @media screen and (max-width: 500px) {
-    font-size: 5.2rem;
+    font-size: 4.8rem;
+  }
+
+  @media screen and (max-width: 350px) {
+    font-size: 3rem;
   }
 `
 export const SubTitle = styled.div`
@@ -69,7 +101,11 @@ export const SubTitle = styled.div`
   }
 
   @media screen and (max-width: 500px) {
-    font-size: 3.4rem;
+    font-size: 3.2rem;
+  }
+
+  @media screen and (max-width: 350px) {
+    font-size: 3rem;
   }
 `
 export const ArrowIconBox = styled(FiChevronRight)`
@@ -86,8 +122,6 @@ export const AuthForm = styled(Form)`
   flex-direction: column;
   align-items: center;
 	grid-gap: 15px;
-  margin-bottom: 40px;
-
 `
 export const ButtonContainer = styled.div`
 	margin-top: 30px;
@@ -104,7 +138,7 @@ export const ButtonContainer = styled.div`
 export const SubmitButton = styled.button`
 	border-radius: 5px;
 	width: 300px;
-  height: 45px;
+  height: 4.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -127,11 +161,20 @@ export const SubmitButton = styled.button`
     transform: translateY(-2px);
   }
 
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    height: 5.2rem;
+    font-size: 1.8rem;
+	}
 `
 export const ForgotLinkBox = styled.div`
   color: #000;
   width: 100%;
   display: flex;
+  font-size: 1.4rem;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    font-size: 1.6rem;
+	}
 `
 export const JoinLinkBox = styled.div`
 	font-size: 1.4rem;
@@ -139,9 +182,13 @@ export const JoinLinkBox = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    font-size: 1.6rem;
+	}
 `
 export const StyledLink = styled(Link)`
-  font-size: 1.4rem;
+  font-size: inherit;
   height: 19px;
   margin-left: 5px;
   text-decoration: underline;

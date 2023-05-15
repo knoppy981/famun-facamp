@@ -27,4 +27,9 @@ export const Button = styled.button`
   &:hover {
     transform: translateY(-2px);
   }
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    height: 5.2rem;
+    font-size: 1.8rem;
+	}
 `

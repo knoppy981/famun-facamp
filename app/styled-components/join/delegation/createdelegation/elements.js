@@ -26,12 +26,21 @@ export const Wrapper = styled.div`
   background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
   /* Opera doesn't support this in the shorthand */
   background-attachment: local, local, scroll, scroll;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    max-height: 70vh; /* Fallback for browsers that do not support Custom Properties */
+    max-height: calc((var(--full-height, 1vh) * 80) - 244px);;
+    gap: 10px;
+	}
 `
 export const InputContainer = styled.div`
   display: grid;
   gap: 10px;
   margin-top: 10px;
-  min-width: 426px;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    min-width: auto;
+	}
 `
 export const SubInputContainer = styled.div`
   width: 100%;

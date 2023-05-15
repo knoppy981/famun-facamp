@@ -119,8 +119,7 @@ const payment = () => {
                         <S.Payment status={item.status === "succeeded"}>
                           <S.PaymentInfo>
                             {item.type === 'card' && <FiCreditCard />}
-                            Inscrição d{item.metadata.delegationId ? "a sua delegação " : ""}
-                            {item.metadata.paidUsersIds ? `e ${Object.keys(qs.parse(item.metadata.paidUsersIds)).length}x participantes` : ''}
+                            Inscrição de {item.metadata.paidUsersIds ? ` ${Object.keys(qs.parse(item.metadata.paidUsersIds)).length}x participante${Object.keys(qs.parse(item.metadata.paidUsersIds)).length > 1 ? "s" : ""}` : ''}
                           </S.PaymentInfo>
 
                           <S.PaymentAmountContainer>

@@ -18,7 +18,6 @@ const index = ({ data }) => {
       </S.TitleBox>
 
       <S.List>
-        <S.Column>
           {[
             ["Nome da Escola / Universidade", "schoolName"],
             ["Numero Telefone", "schoolPhoneNumber"],
@@ -33,9 +32,7 @@ const index = ({ data }) => {
               </S.Item>
             )
           })}
-        </S.Column>
 
-        <S.Column>
           {[
             ["País", "country"],
             ["Cidade", "state"],
@@ -50,9 +47,7 @@ const index = ({ data }) => {
               </S.Item>
             )
           })}
-        </S.Column>
 
-        <S.Column>
           {[
             ["CEP", "cep"],
             ["Endereço", "address"],
@@ -67,7 +62,6 @@ const index = ({ data }) => {
               </S.Item>
             )
           })}
-        </S.Column>
       </S.List>
     </>
   )

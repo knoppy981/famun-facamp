@@ -105,13 +105,15 @@ async function seed() {
 		}
 	}) */
 
-	const yyy = await prisma.user.findUnique({
+	const yyy = await prisma.user.update({
 		where: {
-			email: "teste@gmail.com"
+			email: "dede@gmail.com"
 		},
-		select: {
-			stripePaymentsId: true
-		}			
+		data: {
+			delegation: {
+				disconnect: true
+			}
+		}	
 	}) 
 
 	console.log(yyy)

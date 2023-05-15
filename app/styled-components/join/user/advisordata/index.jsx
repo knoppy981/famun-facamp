@@ -66,16 +66,18 @@ const AdvisorData = ({ data, actionData }) => {
               <S.Option>Twitter</S.Option>
             </S.Select>
 
-            <S.Input
-              type="string"
-              ref={inputRef}
-              placeholder="nome de usuario"
-              defaultValue={values[selectValue]}
-            />
+            <S.SelectBoxAuxDiv>
+              <S.Input
+                type="string"
+                ref={inputRef}
+                placeholder="nome de usuario"
+                defaultValue={values[selectValue]}
+              />
 
-            <S.Button onClick={addSM}>
-              {values[selectValue] !== undefined ? "Editar" : "Adicionar"}
-            </S.Button>
+              <S.Button onClick={addSM}>
+                {values[selectValue] !== undefined ? "Editar" : "Adicionar"}
+              </S.Button>
+            </S.SelectBoxAuxDiv>
           </S.SelectBox>
 
           <S.List>

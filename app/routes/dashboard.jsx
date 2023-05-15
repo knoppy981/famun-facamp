@@ -45,31 +45,11 @@ const Dashboard = () => {
 
   const user = useUser()
 
-  const { t, i18n } = useTranslation("dashboard")
-  const lngs = i18n.options.supportedLngs.slice(0, -1)
-
-  const { pathname } = useLocation()
-  const updateI18n = useFetcher()
-
-  const handleLanguage = async (e) => {
-    e.preventDefault();
-    i18n.changeLanguage(e.target.value);
-    updateI18n.submit(
-      { locale: e.target.value, url: pathname },
-      { method: "post", action: "/api/updateI18n" }
-    );
-  }
-
-  const menuRef = useRef(null)
-  const dropDownRef = useRef(null)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [menuHeight, setMenuHeight] = useState(dropDownRef.current?.firstChild.offsetHeight)
-  const [activeMenu, setActiveMenu] = useState("main")
-  useClickOutside(menuRef, () => setMenuOpen(false))
+  /* const { t, i18n } = useTranslation("dashboard") */
 
   return (
     <S.Wrapper>
-      <LanguageMenu i18n={i18n} />
+      <LanguageMenu /* i18n={i18n} */ />
 
       <S.Container>
         <S.TitleBox>
@@ -81,7 +61,7 @@ const Dashboard = () => {
             <S.ArrowIconBox />
 
             <S.SubTitle>
-              {t("title")}
+              Dashboard
             </S.SubTitle>
           </S.AuxDiv>
         </S.TitleBox>
@@ -98,7 +78,7 @@ const Dashboard = () => {
                 <S.NavIcon>
                   <FiLogOut />
                 </S.NavIcon>
-                {t("logOut")}
+                Log out
               </S.NavItem>
             </Form>
           </S.NavMenu>
@@ -113,7 +93,7 @@ const Dashboard = () => {
                     <FiHome />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {t("home")}
+                    Home
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}
@@ -126,7 +106,7 @@ const Dashboard = () => {
                     <FiEdit />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {t("data")}
+                    Subscription Data
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}
@@ -139,7 +119,7 @@ const Dashboard = () => {
                     <FiFlag />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {t("delegation")}
+                    Delegation
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}
@@ -153,7 +133,7 @@ const Dashboard = () => {
                     <FiCreditCard />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {t("payments")}
+                    Payments
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}
@@ -166,7 +146,7 @@ const Dashboard = () => {
                     <FiFile />
                   </S.ItemIcon>
                   <S.ItemTitle>
-                    {t("documents")}
+                    Documents
                   </S.ItemTitle>
                 </S.SidebarItem>
               )}

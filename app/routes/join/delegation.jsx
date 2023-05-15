@@ -35,20 +35,25 @@ export const action = async ({ request }) => {
 
   if (action === "next") {
     if (data.delegationCode) {
+
       const userId = await requireUserId(request)
-      const delegation = await joinDelegation({ code: data.delegationCode, userId: userId })
-        .catch(() => {
-          return json(
-            { errors: { joinDelegation: "Não foi possível entrar na delegação" } },
-            { status: 400 }
-          )
-        })
+      let delegation
+
+      try {
+        delegation = await joinDelegation({ code: data.delegationCode, userId: userId })
+      } catch (e) {
+        console.log(e)
+        return json(
+          { errors: { joinDelegation: "Ocorreu algum erro inesperado, por favor atualize a página e tente novamente" } },
+          { status: 404 }
+        )
+      }
 
       return createUserSession({
         request,
         userId: userId,
         delegationId: delegation.id,
-        redirectTo: safeRedirect(redirectTo ?? ""),
+        redirectTo: redirectTo ? safeRedirect(redirectTo) : `/dashboard/home`,
       });
     }
 
@@ -182,7 +187,7 @@ export const action = async ({ request }) => {
         userId: userId,
         delegationId: delegation.id,
         remember: false,
-        redirectTo: redirectTo ? safeRedirect(redirectTo) : `/`,
+        redirectTo: redirectTo ? safeRedirect(redirectTo) : `/dashboard/home`,
       });
     }
   }

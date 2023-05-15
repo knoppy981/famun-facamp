@@ -64,20 +64,26 @@ export const handle = {
 
 const LoginPage = () => {
 
-  const { t, i18n } = useTranslation("login")
+  /* const { t, i18n } = useTranslation("login") */
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/dashboard/home";
-  const transition = useTransition()
-  const actionData = useActionData()
+  const fetcher = useFetcher()
+  const actionData = fetcher.data
+  const transition = fetcher.state
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    fetcher.submit(e.currentTarget, { replace: true })
+  }
 
   return (
     <S.Wrapper>
-      <LanguageMenu i18n={i18n} />
+      <LanguageMenu /* i18n={i18n} */ />
 
       <S.FormContainer>
         <S.TitleBox>
-        <S.Title>
+          <S.Title>
             FAMUN 2023
           </S.Title>
 
@@ -85,21 +91,21 @@ const LoginPage = () => {
             <S.ArrowIconBox />
 
             <S.SubTitle>
-              {t("title")}
+              Login
             </S.SubTitle>
           </S.AuxDiv>
         </S.TitleBox>
 
         <S.AuthForm method="post" noValidate>
-          <InputBox name="email" text={t("email")} type="email" err={actionData?.errors?.email} autoFocus={true} />
+          <InputBox name="email" text="email" type="email" err={actionData?.errors?.email} autoFocus={true} />
 
-          <InputBox name="password" text={t("password")} type="password" err={actionData?.errors?.password} />
+          <InputBox name="password" text="password" type="password" err={actionData?.errors?.password} />
 
           <S.ForgotLinkBox>
             <S.StyledLink
               to=/* "/resetPassword" */ "/"
             >
-              {t("forgotPassword")}
+              Forgot Password?
             </S.StyledLink>
           </S.ForgotLinkBox>
 
@@ -110,22 +116,23 @@ const LoginPage = () => {
               type="submit"
               name="button"
               value="firstButton"
-              disabled={transition.state !== "idle"}
+              disabled={transition !== "idle"}
+              onClick={handleSubmit}
             >
-              {t("login")} {transition.state !== 'idle' && <Spinner dim={18} />}
+              Log in {transition !== 'idle' && <Spinner dim={18} />}
             </S.SubmitButton>
           </S.ButtonContainer>
         </S.AuthForm>
 
         <S.JoinLinkBox>
-          {t("acc")}
+          Don't have an account?
           <S.StyledLink
             to={{
               pathname: "/join/user",
               search: searchParams.toString(),
             }}
           >
-            {t("join")}
+            Sign in
           </S.StyledLink>
         </S.JoinLinkBox>
       </S.FormContainer>

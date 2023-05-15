@@ -3,7 +3,6 @@ import styled from "styled-components";
 const azulClaro = '#BDE8F5'
 
 export const TitleBox = styled.div`
-  height: 40px;
   display: flex;
   justify-content: center;
 `
@@ -31,28 +30,48 @@ export const Wrapper = styled.div`
   background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
   /* Opera doesn't support this in the shorthand */
   background-attachment: local, local, scroll, scroll;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    max-height: 70vh; /* Fallback for browsers that do not support Custom Properties */
+    max-height: calc((var(--full-height, 1vh) * 80) - 244px);;
+    gap: 20px;
+	}
 `
 export const Container = styled.div`
-  min-width: 426px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+  @media screen and (max-width: 500px) {
+    max-width: calc((var(--full-width, 1vh) * 94) - 15px);
+	}
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    min-width: auto;
+	}
 `
 export const CheckBoxTitle = styled.div`
   max-width: 426px;
   font-size: 1.4rem;
-  font-weight: 500;
-  display: flex;
   gap: 5px;
   margin-left: 5px;
   color: ${props => props.err ? '#d61f0a' : '#000'};
   word-break: normal;
+
+  b {
+    font-size: inherit;
+  }
 
   svg {
     height: 15px;
     width: 15px;
     transform: translateY(2px);
   }
+
+  @media screen and (max-width: 500px) {
+    max-width: calc((var(--full-width, 1vh) * 100) - 55px);
+    font-size: 1.6rem;
+	}
 `
 export const DragDropContainer = styled.div`
   display: flex;
@@ -71,6 +90,10 @@ export const ListItemContainer = styled.div`
   height: 45px;
   display: flex;
   align-items: center;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    height: 5.2rem;
+	}
 `
 export const ListItem = styled.div`
   display: flex;
@@ -84,6 +107,10 @@ export const ListItem = styled.div`
   border: 1px solid ${p => p.first ? 'transparent' : '#E6E6E6'};
   transition: .3s all ease;
   font-size: 1.4rem;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    font-size: 1.6rem;
+	}
 `
 export const CheckBoxWrapper = styled.div`
 

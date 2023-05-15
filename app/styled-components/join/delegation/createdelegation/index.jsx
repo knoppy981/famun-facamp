@@ -2,6 +2,7 @@ import React from 'react'
 
 import * as S from './elements'
 import AuthInputBox from "~/styled-components/components/inputs/authInput";
+import SelectInput from '~/styled-components/components/inputs/selectInput';
 import PhoneInputBox from '~/styled-components/components/inputs/authInput/phoneInput';
 
 const CreateDelegation = ({ data, actionData }) => {
@@ -30,19 +31,13 @@ const CreateDelegation = ({ data, actionData }) => {
             err={actionData?.errors?.schoolPhoneNumber}
           />
 
-          <S.SelectContainer>
-            <S.SelectTitle>
-              Método de participação
-            </S.SelectTitle>
-
-            <S.Select
-              name="participationMethod"
-            >
-              <S.Option value={"Presencial"}>Presencial</S.Option>
-              <S.Option value={"Online"}>Online</S.Option>
-              <S.Option value={"Ambos"}>Ambos</S.Option>
-            </S.Select>
-          </S.SelectContainer>
+          <SelectInput
+            name="participationMethod"
+            text="Método de participação"
+            value={data?.participationMethod}
+            selectList={["Presencial", "Online", "Ambos"]}
+            err={actionData?.errors?.participationMethod}
+          />
         </S.InputContainer>
       </S.Wrapper>
     </>

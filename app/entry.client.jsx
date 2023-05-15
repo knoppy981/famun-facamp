@@ -7,7 +7,7 @@ import Backend from 'i18next-http-backend'
 import { getInitialNamespaces } from 'remix-i18next'
 import i18nextOptions from './i18n/i18nextOptions'
 
-// initialize i18next using initReactI18next and configuring it
+/* // initialize i18next using initReactI18next and configuring it
 if (!i18next.isInitialized) // prevent i18next to be initialized multiple times
   i18next
     .use(initReactI18next) // Tell i18next to use the react-i18next plugin
@@ -36,6 +36,6 @@ if (!i18next.isInitialized) // prevent i18next to be initialized multiple times
           <RemixBrowser />
         </I18nextProvider>,
       )
-    })
+    }) */
 
-/* hydrateRoot(document, <RemixBrowser />); */
+hydrateRoot(document, <RemixBrowser />);

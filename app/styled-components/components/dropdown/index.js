@@ -23,8 +23,12 @@ export const Container = styled.div`
   background: ${color1};
   box-shadow: 0px 3px 5px -2px #000000;
   border-radius: 10px;
-
   transition: all ease .3s;
+
+  @media screen and (max-width: 500px) {
+    width: 90vw;
+    right: 0;
+  }
 `
 export const Reference = styled.div`
   display: ${p => p.open ? 'block' : 'none'};

@@ -36,7 +36,7 @@ const DelegateData = ({ data, actionData }) => {
       <S.Wrapper>
         <S.Container>
           <S.CheckBoxTitle err={actionData?.errors.council}>
-            {actionData?.errors.council ? <><FiAlertTriangle /> {actionData?.errors.council} </> : 'Indique quais Comitês/Conselhos você deseja simular em ordem de preferência. Atenção aos idiomas de cada simulação'}
+            {actionData?.errors.council ? <><FiAlertTriangle /> {actionData?.errors.council} </> : <>Indique quais Comitês/Conselhos você deseja simular em ordem de preferência. Atenção aos idiomas de cada simulação <b>Obs: Arraste os items para trocar a ordem</b></>}
           </S.CheckBoxTitle>
 
           <S.DragDropContainer>
@@ -99,7 +99,7 @@ const DelegateData = ({ data, actionData }) => {
                 />
 
                 <S.LabelContainer>
-                  <S.Label>
+                  <S.Label htmlFor={item}>
                     {item[0] === 'P' ? 'Português' : item[0] === 'I' ? 'Inglês' : item}
                   </S.Label>
                 </S.LabelContainer>

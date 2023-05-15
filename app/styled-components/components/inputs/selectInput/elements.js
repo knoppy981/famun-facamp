@@ -13,12 +13,12 @@ export const Label = styled.label`
   margin-left: 5px;
   color: ${props => props.err ? '#d61f0a' : '#000'};
 
-  @media screen and (max-width: 300px) {
-    font-size: 10px;
-  }
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    font-size: 1.6rem;
+	}
 `
 export const AdvisorRoleSelect = styled.select`
-  height: 4rem;
+  height: 4.5rem;
   outline: none;
   border: none;
   font-size: 1.4rem;
@@ -43,4 +43,9 @@ export const AdvisorRoleSelect = styled.select`
     background: transparent;
     opacity: 1;
   }
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    height: 5.2rem;
+    font-size: 1.8rem;
+	}
 `

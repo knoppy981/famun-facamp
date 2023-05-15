@@ -12,9 +12,9 @@ export const SubTitle = styled.p`
   color: #000;
 `
 export const Container = styled.div`
-  width: 426px;
+  width: 100%;
   margin-top: 10px;
-  height: 45px;
+  height: 4.5rem;
   display: flex;
   gap: 10px;
   padding: 0 10px;
@@ -24,6 +24,11 @@ export const Container = styled.div`
   &:hover {
     border: 1px solid ${azulCeu};
   }
+
+  @media screen and (max-width: 500px) and (min-height: 600px) {
+    width: auto;
+    height: 5.2rem;
+	}
 `
 export const NacionalityFlag = styled.div`
   width: 30px;
@@ -41,6 +46,9 @@ export const Select = styled.select`
   background: url(http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png) no-repeat right transparent;
   background-position-x: 95%;
   background-size: 10px;
+
+  @media screen and (min-width: 700px) and (min-height: 700px) {
+	}
 `
 export const Option = styled.option`
 

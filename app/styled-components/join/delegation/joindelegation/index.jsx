@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useFetcher } from '@remix-run/react'
+import { useFetcher, useTransition } from '@remix-run/react'
 
 import * as S from './elements'
 import { FiCheck, FiX } from 'react-icons/fi'
@@ -7,6 +7,7 @@ import Spinner from '~/styled-components/components/spinner'
 
 const JoinDelegation = ({ data, actionData }) => {
   const inputRef = useRef(null)
+  const transition = useTransition()
   const [value, setValue] = useState("")
   const [label, setLabel] = useState("")
   const [valid, setValid] = useState(false)
@@ -44,9 +45,9 @@ const JoinDelegation = ({ data, actionData }) => {
 
       <S.Wrapper>
         <S.Container>
-          <S.Label>
+          {/* <S.Label>
             Código :
-          </S.Label>
+          </S.Label> */}
 
           <S.InputBox>
             <S.Input
@@ -55,6 +56,7 @@ const JoinDelegation = ({ data, actionData }) => {
               id="delegationCode"
               name="delegationCode"
               type="string"
+              placeholder='Insira o código'
               autoFocus={true}
               onChange={handleChange}
             />
@@ -64,11 +66,11 @@ const JoinDelegation = ({ data, actionData }) => {
           </S.InputBox>
 
           <S.Button name="action" value="next" type="submit" disabled={!valid}>
-            Entrar {valid && searchDelegation.state !== 'idle' && <Spinner dim={18} />}
+            Entrar {transition.state !== 'idle' && <Spinner dim={18} />}
           </S.Button>
         </S.Container>
 
-        <S.Status>
+        <S.Status err={actionData?.errors?.joinDelegation}>
           {actionData?.errors?.joinDelegation ?? label}
         </S.Status>
       </S.Wrapper>

@@ -77,6 +77,17 @@ const ParticipantsPage = ({ participants, handleUserClick }) => {
   )
 }
 
+const CreateParticipantPage = ({ }) => {
+  return (
+    <div>
+      <div>
+        Title
+      </div>
+
+    </div>
+  )
+}
+
 const DataPage = ({ delegation, isActive, fetcher, changes, setChanges, editUser, setEditUser, userScrollRef }) => {
 
   const [languages, setLanguages] = useState(editUser?.delegate?.languagesSimulates)
@@ -306,14 +317,38 @@ const DataPage = ({ delegation, isActive, fetcher, changes, setChanges, editUser
   )
 }
 
+const slideVariants = {
+  enter: (direction) => {
+    return {
+      x: direction > 0 ? "8%" : "-8%",
+      opacity: 0
+    };
+  },
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1
+  },
+  exit: (direction) => {
+    return {
+      zIndex: 0,
+      x: direction < 0 ? "8%" : "-8%",
+      opacity: 0
+    };
+  }
+};
+
 const Delegation = () => {
 
   const { delegation } = useLoaderData()
   const user = useUser()
   const userType = useUserType()
 
-  // menu changes
-  const [menu, setMenu] = useState("participants")
+  // selected menu and slide direction
+  const [[page, direction], setPage] = useState([0, 0]);
+  const paginate = (newDirection, newPage) => {
+    setPage([newPage, newDirection]);
+  };
   const menuRef = useRef(null)
   const [menuHeight, setMenuHeight] = useState(menuRef.current?.firstChild.offsetHeight)
 
@@ -369,14 +404,14 @@ const Delegation = () => {
         <AnimatePresence initial={false} mode="wait">
           <motion.div
             ref={menuRef}
-            key={menu}
+            key={`${page}-menu`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: .4, ease: "easeInOut" }}
-            onAnimationStart={() => { setMenuHeight(menuRef?.current.offsetHeight + (menu === 'participants' ? 25 : 0)) }}
+            onAnimationStart={() => { setMenuHeight(menuRef?.current.offsetHeight + (page === 0 ? 25 : 0)) }}
           >
-            <S.Nav key='participants' active={menu === 'participants'}>
+            <S.Nav key='0-menu' active={page === 0}>
               <S.TitleBox>
                 <S.SubTitle>
                   Delegação
@@ -433,27 +468,49 @@ const Delegation = () => {
       </S.NavContainer>
 
       <S.Menu>
-        <S.MenuItem active={menu === "participants"} onClick={() => { setMenu("participants"); setChanges([]); setIsActive(false) }} >
+        <S.MenuItem
+          active={page === 0}
+          onClick={() => {
+            paginate(0 > page ? 1 : -1, 0)
+            setChanges([]);
+            setIsActive(false)
+          }}
+        >
           Participantes
-          {menu === "participants" ? <S.UnderLine layoutId="paymentPageUnderline" /> : null}
+          {page === 0 ? <S.UnderLine layoutId="paymentPageUnderline" /> : null}
         </S.MenuItem>
 
-        <S.MenuItem active={menu === "data"} onClick={() => setMenu("data")} >
+        <S.MenuItem
+          active={page === 1}
+          onClick={() => {
+            paginate(1 > page ? 1 : -1, 1)
+          }}
+        >
+          Criar Participante
+          {page === 1 ? <S.UnderLine layoutId="paymentPageUnderline" /> : null}
+        </S.MenuItem>
+
+        <S.MenuItem
+          active={page === 2}
+          onClick={() => {
+            paginate(2 > page ? 1 : -1, 2)
+          }}
+        >
           Dados
-          {menu === "data" ? <S.UnderLine layoutId="paymentPageUnderline" /> : null}
+          {page === 2 ? <S.UnderLine layoutId="paymentPageUnderline" /> : null}
         </S.MenuItem>
 
         <AnimatePresence initial={false} mode="wait">
           <motion.div
-            key={menu}
+            key={`${page}-menu`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: .4, ease: "easeInOut" }}
           >
-            {menu === 'data' &&
+            {page === 2 &&
               <P.ColorItem
-                key='data'
+                key='2-menu'
                 onClick={handleSubmit}
                 color={user.leader || userType === 'advisor' ? !isActive ? 'blue' : changes.length > 0 ? 'green' : 'red' : 'gray'}
                 form="data"
@@ -465,31 +522,36 @@ const Delegation = () => {
         </AnimatePresence>
       </S.Menu >
 
-      <AnimatePresence initial={false} mode="wait">
+      <AnimatePresence initial={false} mode="wait" custom={direction}>
         <motion.div
-          key={menu}
-          initial={{ x: menu === "participants" ? "-10%" : "10%", opacity: 0 }}
-          animate={{ x: "0", opacity: 1 }}
-          exit={{ x: menu === "participants" ? "-10%" : "10%", opacity: 0 }}
+          key={`${page}-menu`}
+          custom={direction}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
           transition={{ duration: .4, ease: "easeInOut" }}
         >
-          {menu === "participants" ?
+          {page === 0 ?
             <ParticipantsPage
-              key="participants"
+              key="0-menu"
               participants={delegation.participants}
               handleUserClick={handleUserClick}
-            /> :
-            <DataPage
-              key="data"
-              isActive={isActive}
-              delegation={delegation}
-              fetcher={updateData}
-              changes={changes}
-              setChanges={setChanges}
-              editUser={editUser}
-              setEditUser={setEditUser}
-              userScrollRef={userScrollRef}
-            />
+            /> : page === 1 ?
+              <CreateParticipantPage 
+                key="1-menu"
+              /> :
+              <DataPage
+                key="2-menu"
+                isActive={isActive}
+                delegation={delegation}
+                fetcher={updateData}
+                changes={changes}
+                setChanges={setChanges}
+                editUser={editUser}
+                setEditUser={setEditUser}
+                userScrollRef={userScrollRef}
+              />
           }
         </motion.div>
       </AnimatePresence>
