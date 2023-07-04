@@ -42,6 +42,36 @@ const payment = () => {
   const { payments, userPaymentsIntents } = useLoaderData()
 
   const [menu, setMenu] = useState(userPaymentsIntents.length > 0 ? "payments" : "pending")
+  const slideVariants = {
+    enter: (direction) => {
+      return {
+        //x: direction > 0 ? "8%" : "-8%",
+        opacity: 0
+      };
+    },
+    center: {
+      zIndex: 1,
+      //x: 0,
+      opacity: 1
+    },
+    exit: (direction) => {
+      return {
+        zIndex: 0,
+        //x: direction < 0 ? "8%" : "-8%",
+        opacity: 0
+      };
+    }
+  };
+  const [page, setPage] = useState(userPaymentsIntents.length > 0 ? 1 : 0);
+  const paginate = (newPage) => {
+    // awlays scroll to the top on page change because of animation glitches
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth' // You can change it to 'auto' for instant scrolling
+    });
+    // set page
+    setPage(newPage);
+  };
 
   return (
     <S.Wrapper>
@@ -50,28 +80,29 @@ const payment = () => {
       </S.Title>
 
       <S.Menu>
-        <S.MenuItem active={menu === "pending"} onClick={() => setMenu("pending")} >
+        <S.MenuItem active={page === 0} onClick={() => paginate(0)} >
           {/* Pagamentos  */}Pendentes
-          {menu === "pending" ? <S.UnderLine layoutId="paymentPageUnderLine" /> : null}
+          {page === 0 ? <S.UnderLine layoutId="paymentPageUnderLine" /> : null}
         </S.MenuItem>
 
-        <S.MenuItem active={menu === "payments"} onClick={() => setMenu("payments")} >
+        <S.MenuItem active={page === 1} onClick={() => paginate(1)} >
           {/* Pagamentos  */}Realizados
-          {menu === "payments" ? <S.UnderLine layoutId="paymentPageUnderLine" /> : null}
+          {page === 1 ? <S.UnderLine layoutId="paymentPageUnderLine" /> : null}
         </S.MenuItem>
       </S.Menu>
 
-      <AnimatePresence initial={false} mode="wait">
-        <motion.div
-          key={menu}
-          initial={{ x: menu === "pending" ? "-10%" : "10%", opacity: 0 }}
-          animate={{ x: "0", opacity: 1 }}
-          exit={{ x: menu === "pending" ? "-10%" : "10%", opacity: 0 }}
-          transition={{ duration: .4, ease: "easeInOut" }}
-        >
-          {menu === 'pending' ?
-            <S.Container>
-              {payments?.find(el => el.available) ?
+      <S.Container>
+        <AnimatePresence initial={false} mode="wait">
+          <motion.div
+            key={`menu-${page}`}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: .6, ease: "easeInOut" }}
+          >
+            {page === 0 ?
+              payments?.find(el => el.available) ?
                 <S.PaymentsList>
                   {payments.map((item, index) => {
                     if (!item.available) return null
@@ -79,10 +110,10 @@ const payment = () => {
                       <S.PaymentContainer key={`paymentspage-payment${index}`}>
                         <S.Payment pending>
                           <S.PaymentInfo>
-                            {item.type === 'user' ? `Inscrição de ${item.name}` : 'Inscrição da Delegação'}
+                            {`Inscrição de ${item.name}`}
 
                             <S.PayContainer>
-                              <S.PayButton to={`/pay?${new URLSearchParams([["s", item.name]])}`}>
+                              <S.PayButton to={`/pay/s?${new URLSearchParams([["s", item.name]])}`}>
                                 <FiExternalLink /> Pagar
                               </S.PayButton>
                             </S.PayContainer>
@@ -107,11 +138,8 @@ const payment = () => {
                 <S.NoPaymentsMessage>
                   Voce e sua delegação ja realizaram todos os pagamentos necessários!
                 </S.NoPaymentsMessage>
-              }
-            </S.Container>
-            :
-            <S.Container>
-              {userPaymentsIntents?.length > 0 ?
+              :
+              userPaymentsIntents?.length > 0 ?
                 <S.PaymentsList>
                   {userPaymentsIntents.map((item, index) => {
                     return (
@@ -145,11 +173,10 @@ const payment = () => {
                 <S.NoPaymentsMessage>
                   Voce ainda não realizou nenhum pagamento
                 </S.NoPaymentsMessage>
-              }
-            </S.Container>
-          }
-        </motion.div>
-      </AnimatePresence>
+            }
+          </motion.div>
+        </AnimatePresence>
+      </S.Container>
     </S.Wrapper >
   )
 }

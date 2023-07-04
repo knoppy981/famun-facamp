@@ -16,63 +16,100 @@ const begeClaro = "#d57748"
 const begeBackground = "#FFEFE1"
 
 export const Wrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
   position: relative;
 `
-export const NavContainer = styled.div`
-  transition: all ease .3s;
-`
-export const Nav = styled.div`
-  display: ${p => p.active ? 'flex' : 'none'};
+export const Nav = styled(motion.div)`
+  width: 100%;
+	display: flex;
+  align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 25px;
+  gap: 15px;
+  margin-bottom: 15px;
+
+  @media screen and (max-width: 700px) {
+    padding: 0 15px;
+  }
 `
-export const TitleBox = styled.div`
-  height: 100%;
+export const NavContainer = styled.div`
+  font-size: 1.8rem;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+export const DelegationTitle = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  font-size: 1.8rem;
+  flex: 1 0;
+  min-width: 0;
 `
 export const SubTitle = styled.div`
   font-size: 1.4rem;
   font-weight: 400;
   color: #666666;
 `
-export const Title = styled.div`
-  height: 3rem;
+export const Title = styled.h2`
+  gap: 10px;
   font-size: 1.8rem;
   font-weight: 500;
   color: #000;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
-export const NavMenu = styled.div`
-  align-self: flex-end;
-  padding-right: 20px;
-`
-export const NavItem = styled.div`
+export const NavButton = styled.div`
   position: relative;
-  height: 40px;
-  display: grid;
-`
-export const NavIcon = styled.div`
-  place-self: center;
   display: flex;
   align-items: center;
   gap: 10px;
+  font-size: 1.8rem;
+  color: #000;
+  white-space: nowrap;
+`
+export const NavButtonTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.8rem;
+  font-weight: 500;
   cursor: pointer;
 
-  p {
-    font-size: 1.8rem;
-    font-weight: 400;
-    transform: translateY(1px);
+  svg {
+    transform: translateY(-1px);
   }
 `
 export const Menu = styled.div`
   display: flex;
+  position: relative;
   margin-left: 5px;
   margin-bottom: 25px;
+  z-index: 99;
+  background: #fff;
+  border-radius: 1.5rem;
+  box-shadow: 0 0 10px 20px #fff;
+
+  @media screen and (max-width: 700px) {
+    position: sticky;
+    top: 40px;
+    margin: 0 0 15px 0;
+    padding: 10px 0 10px 15px;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    top: 45px;
+    box-shadow: none;
+    border-radius: 0;
+
+    box-shadow: ${p => p.isSticky ? "1px 0 1px 1px #E6E6E6" : "none"};
+  }
+
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `
 export const MenuItem = styled.div`
   height: 3rem;
@@ -80,11 +117,20 @@ export const MenuItem = styled.div`
   display: flex;
   align-items: center;
   font-size: 1.4rem;
-  opacity: ${p => p.active ? 1 : 0.6};
   padding: 0 15px;
   transition: opacity .4s ease;
   cursor: pointer;
   margin-right: 25px;
+  white-space: nowrap;
+
+  ${p => p.colorItem && "padding: 0;"}
+
+  @media screen and (max-width: 700px) {
+    margin-right: 10px;
+    border-radius: 25px;
+    border: 1px solid #e6e6e6;
+    ${p => p.colorItem && "border: none;"}
+  }
 `
 export const UnderLine = styled(motion.div)`
   position: absolute;
@@ -96,16 +142,26 @@ export const UnderLine = styled(motion.div)`
   background: #e1e1e1;
   border-radius: 25px;
 `
-export const DelegatesListWrapper = styled.div`
+export const Container = styled(motion.div)`
+  margin-bottom: 50px;
+
+  @media screen and (max-width: 700px) {
+    margin: 0;
+  }
+`
+export const OverflowContainer = styled.div`
+  display: flex;
   width: 100%;
+  overflow-x: scroll;
+
+  @media screen and (max-width: 700px) {
+    padding: 0 15px;
+  }
+`
+export const DelegatesListWrapper = styled.div`
   border: 1px solid #E6E6E6;
   border-radius: 5px;
-`
-export const DelegatesList = styled.ul`
-  width: 100%;
-  height: 220px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  flex: 1 0 auto;
 `
 export const DelegateContainer = styled.div`
   height: 4.5rem;
@@ -165,60 +221,75 @@ export const Item = styled.div`
   }
 `
 export const DataForm = styled(Form)`
+  @media screen and (max-width: 700px) {
+    padding: 0 15px;
+  }
 `
 export const DataWrapper = styled.div`
-  max-height: 350px;
+  //max-height: 350px;
   width: 100%;
   display: flex;
+  gap: 10px;
   flex-direction: column;
   flex-wrap: nowrap;
   transition: all .4s ease;
 
-  overflow-y: scroll;
+/*   overflow-y: scroll;
   overflow-x: hidden;
 
-  background: /* Shadow covers */
-  linear-gradient(white 30%, rgba(255, 255, 255, 0)), linear-gradient(rgba(255, 255, 255, 0), white 70%) 0 100%, /* Shadows */
+  background:
+  linear-gradient(white 30%, rgba(255, 255, 255, 0)), linear-gradient(rgba(255, 255, 255, 0), white 70%) 0 100%,
   radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, .2), rgba(0, 0, 0, 0)), radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, .2), rgba(0, 0, 0, 0)) 0 100%;
   background-repeat: no-repeat;
   background-color: white;
   background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
-  /* Opera doesn't support this in the shorthand */
-  background-attachment: local, local, scroll, scroll;
+  background-attachment: local, local, scroll, scroll; */
 `
-export const DataContainer = styled.div`
-  max-width: 550px;
-  min-width: 400px;
-  display: grid;
-  margin-bottom: 10px;
-  grid-gap: 8px;
-  padding: 15px;
-  border-radius: 5px;
-  border: 1px solid #E6E6E6;
-`
-export const UserDataContainer = styled.div`
+export const DisabledMask = styled.div`
+  position: relative;
   width: 100%;
-  min-height: 300px;
   display: flex;
-  grid-gap: 8px;
+  gap: 10px;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  transition: all .4s ease;
 
-  @media screen and (max-width: 1090px) {
-    flex-direction: column;
-	}
-
-  @media screen and (max-height: 580px) {
-    flex-direction: column;
-	}
+  &::before {
+    display: ${props => (props.show ? 'block' : 'none')};
+    position: absolute;
+    content: '';
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: #fff;
+    opacity: .7;
+    z-index: 2;
+  }
 `
-export const UserSelectBox = styled.div`
+export const DataTitleBox = styled.div`
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  padding: 5px 15px;
-  margin-bottom: 10px;
+  margin: 15px 0;
   gap: 15px;
+  padding-left: 5px;
 `
-export const UserSelectTitle = styled.div`
-  font-size: 1.5rem;
+export const DataTitle = styled.div`
+  font-size: 1.6rem;
+  font-weight: 500;
+
+  @media screen and (max-width: 700px) {
+    font-size: 1.8rem;
+  }
+`
+export const DataSubTitle = styled.div`
+  font-size: 1.4rem;
+  font-weight: 400;
+
+  @media screen and (max-width: 700px) {
+    font-size: 1.8rem;
+  }
 `
 export const UserSelect = styled.select`
   height: 3rem;
@@ -230,6 +301,7 @@ export const UserSelect = styled.select`
   border: 1px solid ${p => p.err ? '#d61f0a' : '#E6E6E6'};
   font-size: 1.4rem;
   color: #000;
+  appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   background: url(http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png) no-repeat right transparent;
@@ -243,6 +315,13 @@ export const UserSelect = styled.select`
   &:disabled {
     border: 1px solid transparent;
     background: transparent;
+    opacity: 1;
+  }
+
+  @media screen and (max-width: 700px) {
+    min-width: 0;
+    height: 4rem;
+    font-size: 1.6rem;
     opacity: 1;
   }
 `

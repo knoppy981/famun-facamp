@@ -3,6 +3,7 @@ import styled from "styled-components";
 export const TitleBox = styled.div`
   display: flex;
   justify-content: center;
+  margin-left: 5px;
 `
 export const Title = styled.h3`
   width: 426px;
@@ -19,19 +20,7 @@ export const List = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   margin-top: 20px;
-  max-height: calc(70vh - 271px);
   gap: 10px 40px;
-  overflow-y: scroll;
-  overflow-x: hidden;
-
-  background: /* Shadow covers */
-  linear-gradient(white 30%, rgba(255, 255, 255, 0)), linear-gradient(rgba(255, 255, 255, 0), white 70%) 0 100%, /* Shadows */
-  radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, .2), rgba(0, 0, 0, 0)), radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, .2), rgba(0, 0, 0, 0)) 0 100%;
-  background-repeat: no-repeat;
-  background-color: white;
-  background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
-  /* Opera doesn't support this in the shorthand */
-  background-attachment: local, local, scroll, scroll;
 
   @media screen and (max-width: 500px) and (min-height: 700px) {
     grid-template-columns: repeat(2, 1fr);
@@ -42,6 +31,15 @@ export const List = styled.div`
 export const Item = styled.div`
   font-size: 1.5rem;
   max-width: 150px;
+`
+export const Text = styled.p`
+  font-size: 1.5rem;
+`
+export const MaxWidthText = styled.div`
+  font-size: inherit;
+	overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `
 export const Label = styled.div`
   font-size: 1.2rem;

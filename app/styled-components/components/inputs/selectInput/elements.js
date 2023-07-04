@@ -21,13 +21,13 @@ export const AdvisorRoleSelect = styled.select`
   height: 4.5rem;
   outline: none;
   border: none;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   padding: 0 30px 0 15px;
   border-radius: 5px;
   border: 1px solid ${p => p.err ? '#d61f0a' : '#E6E6E6'};
   flex-grow: 2;
-  font-size: 1.4rem;
   color: #000;
+  appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   background: url(http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png) no-repeat right transparent;

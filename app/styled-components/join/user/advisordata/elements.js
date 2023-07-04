@@ -2,75 +2,38 @@ import styled from "styled-components";
 
 const azulCeu = '#14A7D8'
 
-export const TitleBox = styled.div`
-  display: flex;
-  justify-content: center;
-`
 export const Title = styled.h3`
-  width: 426px;
   font-size: 2.2rem;
   font-weight: 500;
   color: #000;
+  margin-left: 5px;
 `
 export const Wrapper = styled.div`
-  max-height: calc(70vh - 271px);
   margin-top: 20px;
   display: grid;
   gap: 30px;
   padding: 5px;
   padding-right: 10px;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  
-
-  background: /* Shadow covers */
-  linear-gradient(white 30%, rgba(255, 255, 255, 0)), linear-gradient(rgba(255, 255, 255, 0), white 70%) 0 100%, /* Shadows */
-  radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, .2), rgba(0, 0, 0, 0)), radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, .2), rgba(0, 0, 0, 0)) 0 100%;
-  background-repeat: no-repeat;
-  background-color: white;
-  background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
-  /* Opera doesn't support this in the shorthand */
-  background-attachment: local, local, scroll, scroll;
 
   @media screen and (max-width: 500px) and (min-height: 700px) {
-    max-height: 80vh; /* Fallback for browsers that do not support Custom Properties */
-    max-height: calc((var(--full-height, 1vh) * 80) - 270px);;
-    gap: 20px;
+    gap: 10px;
 	}
 `
-export const Container = styled.div`
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
+export const InputContainer = styled.div`
+  display: grid;
   gap: 10px;
-
-  @media screen and (max-width: 500px) {
-    max-width: calc((var(--full-width, 1vh) * 94) - 15px);
-    gap: 0px;
-
-	}
+  margin-top: 10px;
 
   @media screen and (max-width: 500px) and (min-height: 700px) {
     min-width: auto;
 	}
 `
 export const Label = styled.div`
-  max-width: 426px;
   font-size: 1.4rem;
-  display: flex;
-  gap: 5px;
   margin-left: 5px;
   color: ${props => props.err ? '#d61f0a' : '#000'};
-  word-break: normal;
 
-  svg {
-    height: 15px;
-    width: 15px;
-    transform: translateY(2px);
-  }
-
-  @media screen and (max-width: 500px) {
-    max-width: calc((var(--full-width, 1vh) * 100) - 55px);
+  @media screen and (max-width: 500px) and (min-height: 700px) {
     font-size: 1.6rem;
 	}
 `

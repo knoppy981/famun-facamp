@@ -2,6 +2,9 @@ import qs from 'qs'
 import * as S from './elements'
 
 const ConfirmData = ({ data, userType }) => {
+
+  console.log(data)
+
   return (
     <>
       <S.TitleBox>
@@ -23,12 +26,13 @@ const ConfirmData = ({ data, userType }) => {
           ["E-mail", "email"],
           ["Telefone", "phoneNumber"],
         ].map((item, index) => {
+          if (!data[item[1]]) return null
           return (
-            <S.Item key={`1column-item-${index}`}>
+            <S.Item key={`1column-item-${index}`} x-autocompletetype="off">
               <S.Label>
                 {item[0]}
               </S.Label>
-              {data[item[1]]}
+              <S.MaxWidthText>{data[item[1]]}</S.MaxWidthText>
             </S.Item>
           )
         })}
@@ -37,14 +41,14 @@ const ConfirmData = ({ data, userType }) => {
           <S.Label>
             {data.cpf ? "Cpf" : "Número do Passaporte"}
           </S.Label>
-          {data.cpf ?? data?.passport}
+          <S.MaxWidthText>{data.cpf ?? data?.passport}</S.MaxWidthText>
         </S.Item>
 
         <S.Item>
           <S.Label>
             Data de Nascimento
           </S.Label>
-          {data.birthDate}
+          <S.MaxWidthText>{data.birthDate}</S.MaxWidthText>
         </S.Item>
 
         <S.Item>
@@ -87,7 +91,7 @@ const ConfirmData = ({ data, userType }) => {
                 <S.Label>
                   {item[0]}
                 </S.Label>
-                {data[item[1]]}
+                <S.MaxWidthText>{data[item[1]]}</S.MaxWidthText>
               </S.Item>
             )
           })}

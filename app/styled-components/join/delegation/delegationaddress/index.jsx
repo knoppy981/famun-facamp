@@ -1,11 +1,15 @@
-import React from 'react'
+import { useState, useEffect } from 'react'
 
 import * as S from './elements'
-import AuthInputBox from "~/styled-components/components/inputs/authInput";
+import DefaultInputBox from "~/styled-components/components/inputs/defaultInput";
 import SelectInput from '~/styled-components/components/inputs/selectInput';
 import { isoCountries } from '~/data/ISO-3661-1';
+import { postalCodeMask } from '~/data/postal-codes';
 
 const index = ({ data, actionData }) => {
+
+  const [country, setCountry] = useState(data.country ?? "Brazil")
+
   return (
     <>
       <S.Title>
@@ -14,7 +18,7 @@ const index = ({ data, actionData }) => {
 
       <S.Wrapper>
         <S.InputContainer>
-          <AuthInputBox
+          <DefaultInputBox
             name="address"
             text="Endereço"
             type="text"
@@ -26,22 +30,23 @@ const index = ({ data, actionData }) => {
           <SelectInput
             name="country"
             text="País"
-            value={data?.country}
+            value={data?.country ?? "Brazil"}
             selectList={Object.keys(isoCountries)}
             err={actionData?.errors?.country}
+            func={e => setCountry(e.target.value)}
           />
 
           <S.SubInputContainer>
-            <AuthInputBox
-              name="cep"
-              text="CEP"
+            <DefaultInputBox
+              name="postalCode"
+              text="Código Postal"
               type="text"
-              value={data?.cep}
-              err={actionData?.errors?.cep}
-              mask={'99999-999'}
+              value={data?.postalCode}
+              err={actionData?.errors?.postalCode}
+              mask={postalCodeMask[country] ?? undefined}
             />
 
-            <AuthInputBox
+            <DefaultInputBox
               name="state"
               text="Estado"
               type="text"
@@ -51,15 +56,15 @@ const index = ({ data, actionData }) => {
           </S.SubInputContainer>
 
           <S.SubInputContainer>
-            <AuthInputBox
+            <DefaultInputBox
               name="city"
               text="Cidade"
               type="text"
               value={data?.city}
               err={actionData?.errors?.city}
             />
-            
-            <AuthInputBox
+
+            <DefaultInputBox
               name="neighborhood"
               text="Bairro"
               type="text"

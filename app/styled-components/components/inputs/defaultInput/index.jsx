@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import * as S from './elements'
 
-export const AuthInputBox = (props) => {
+export const DefaultInputBox = (props) => {
 
 	/* const [err, setErr] = useState(false) */
 	const err = props.err
@@ -45,4 +45,4 @@ export const AuthInputBox = (props) => {
 	)
 }
 
-export default AuthInputBox
+export default DefaultInputBox

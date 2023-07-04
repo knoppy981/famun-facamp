@@ -18,7 +18,7 @@ export async function updateUsersPaymentStatus({ paidUsersIds, stripePaymentId }
   })
 }
 
-export async function updateUserPayments({userId, stripePaymentId}) {
+export async function updateUserPayments({ userId, stripePaymentId }) {
   return prisma.user.update({
     where: {
       id: userId
@@ -33,13 +33,13 @@ export async function updateUserPayments({userId, stripePaymentId}) {
 
 export async function getUserPaymentsIds(userId) {
   return prisma.user.findUnique({
-		where: {
-			id: userId
-		},
-		select: {
-			stripePaymentsId: true
-		}			
-	}) 
+    where: {
+      id: userId
+    },
+    select: {
+      stripePaymentsId: true
+    }
+  })
 }
 
 export async function getRequiredPayments({ user, delegationId }) {
@@ -54,16 +54,20 @@ export async function getRequiredPayments({ user, delegationId }) {
     select: {
       participants: {
         where: {
-          stripePaydId: {
-            isSet: false
-          }
+          OR: [
+            { stripePaydId: { isSet: false } },
+            { stripePaydId: { equals: "" } }
+          ]
         },
         select: {
           id: true,
           name: true,
           nacionality: true,
           delegate: true,
-        }
+        },
+        orderBy: {
+          delegationAdvisor: {id: "asc"}
+        },
       }
     }
   })
@@ -71,10 +75,10 @@ export async function getRequiredPayments({ user, delegationId }) {
 
   delegation.participants?.forEach(participant => {
     payments.push({
-      type: "user",
       id: participant.id,
       name: participant.name,
       price: participant.delegate ? 10000 : 3000,
+      type: participant.delegate ? "delegate" : "advisor",
       available: user.leader || userType === 'advisor' ? true : user.id === participant.id
     })
   })

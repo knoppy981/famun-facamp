@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react'
 import * as S from './elements'
 import { FiTrash2 } from 'react-icons/fi'
 import SelectInput from '~/styled-components/components/inputs/selectInput'
+import DefaultInputBox from '~/styled-components/components/inputs/defaultInput'
 
 const AdvisorData = ({ data, actionData }) => {
 
@@ -31,79 +32,44 @@ const AdvisorData = ({ data, actionData }) => {
 
   return (
     <>
-      <S.TitleBox>
-        <S.Title>
-          Dados do(a) Professor(a) Orientador(a)
-        </S.Title>
-      </S.TitleBox>
-
+      <S.Title>
+        Dados do(a) Professor(a) Orientador(a)
+      </S.Title>
 
       <S.Wrapper>
-        <SelectInput
-          name="role"
-          text="Posição do(a) Professor(a) Orientador(a)"
-          value={data?.role}
-          selectList={["Professor(a)", "Coordenador(a)", "Diretor(a)", "Outro"]}
-          err={actionData?.errors?.name}
-        />
+        <S.InputContainer>
+          <SelectInput
+            name="role"
+            text="Posição do(a) Professor(a) Orientador(a)"
+            value={data?.role}
+            selectList={["Professor(a)", "Coordenador(a)", "Diretor(a)", "Outro"]}
+            err={actionData?.errors?.name}
+          />
 
-        <S.Container>
-          <S.Label>
-            Redes Sociais
-          </S.Label>
+          <DefaultInputBox
+            name="Instagram"
+            text="Instagram"
+            type="text"
+            value={data?.Instagram}
+            err={actionData?.errors?.Instagram}
+          />
 
-          <S.SelectBox>
-            <S.Select
-              value={selectValue}
-              onChange={e => {
-                setSelectValue(e.target.value)
-                inputRef.current.value = values[e.target.value] ?? inputRef.current.value
-              }}
-            >
-              <S.Option>Instagram</S.Option>
-              <S.Option>Facebook</S.Option>
-              <S.Option>Linkedin</S.Option>
-              <S.Option>Twitter</S.Option>
-            </S.Select>
+          <DefaultInputBox
+            name="Facebook"
+            text="Facebook"
+            type="text"
+            value={data?.Facebook}
+            err={actionData?.errors?.Facebook}
+          />
 
-            <S.SelectBoxAuxDiv>
-              <S.Input
-                type="string"
-                ref={inputRef}
-                placeholder="nome de usuario"
-                defaultValue={values[selectValue]}
-              />
-
-              <S.Button onClick={addSM}>
-                {values[selectValue] !== undefined ? "Editar" : "Adicionar"}
-              </S.Button>
-            </S.SelectBoxAuxDiv>
-          </S.SelectBox>
-
-          <S.List>
-            {valuesArray.map((item, index) => {
-              const active = selectValue === item[0]
-              if (item[1] === undefined) return
-              return (
-                <S.SocialMedias
-                  first={index === 0}
-                  key={`sm-${item[0]}`}
-                  active={active}
-                  onClick={() => setSelectValue(item[0])}
-                >
-                  <input type="hidden" name={item[0]} value={item[1]} />
-                  <S.SMName>{item[0]}</S.SMName>
-                  <S.SMValue>
-                    {item[1]}
-                  </S.SMValue>
-                  <S.SMDeleteButton onClick={e => removeSM(e, item[0])}>
-                    <FiTrash2 />
-                  </S.SMDeleteButton>
-                </S.SocialMedias>
-              )
-            })}
-          </S.List>
-        </S.Container>
+          <DefaultInputBox
+            name="Linkedin"
+            text="Linkedin"
+            type="text"
+            value={data?.Linkedin}
+            err={actionData?.errors?.Linkedin}
+          />
+        </S.InputContainer>
       </S.Wrapper>
     </>
   )

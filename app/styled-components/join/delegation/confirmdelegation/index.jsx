@@ -28,7 +28,7 @@ const index = ({ data }) => {
                 <S.Label>
                   {item[0]}
                 </S.Label>
-                {data[item[1]]}
+                <S.MaxWidthText>{data[item[1]]}</S.MaxWidthText>
               </S.Item>
             )
           })}
@@ -43,13 +43,13 @@ const index = ({ data }) => {
                 <S.Label>
                   {item[0]}
                 </S.Label>
-                {data[item[1]]}
+                <S.MaxWidthText>{data[item[1]]}</S.MaxWidthText>
               </S.Item>
             )
           })}
 
           {[
-            ["CEP", "cep"],
+            ["Código Postal (CEP)", "postalCode"],
             ["Endereço", "address"],
             ["Bairro", "neighborhood"],
           ].map((item, index) => {
@@ -58,7 +58,7 @@ const index = ({ data }) => {
                 <S.Label>
                   {item[0]}
                 </S.Label>
-                {data[item[1]]}
+                <S.MaxWidthText>{data[item[1]]}</S.MaxWidthText>
               </S.Item>
             )
           })}

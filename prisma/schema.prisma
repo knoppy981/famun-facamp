@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["orderByNulls"]
 }
 
 datasource db {
@@ -54,25 +55,23 @@ model UserPreferences {
 }
 
 model Delegate {
-  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
-  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId             String            @unique @db.ObjectId
-  EmergencyContact   EmergencyContact?
-  councilPreference  Council[]
-  languagesSimulates Languages[]
-}
-
-type EmergencyContact {
-  name        String
-  phoneNumber String
+  id                          String      @id @default(auto()) @map("_id") @db.ObjectId
+  user                        User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId                      String      @unique @db.ObjectId
+  emergencyContactName        String
+  emergencyContactPhoneNumber String
+  councilPreference           Council[]
+  languagesSimulates          Languages[]
 }
 
 model DelegationAdvisor {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId      String        @unique @db.ObjectId
-  advisorRole AdvisorRole   @default(Professor)
-  socialMedia SocialMedia[]
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId      String      @unique @db.ObjectId
+  advisorRole AdvisorRole @default(Professor)
+  Facebook    String?
+  Instagram   String?
+  Linkedin    String?
 }
 
 model Delegation {
@@ -96,7 +95,7 @@ model Address {
   address      String
   city         String
   state        String
-  cep          String
+  postalCode   String?
   country      String
 }
 

@@ -1,5 +1,8 @@
 import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
+import { postalCodes } from "./data/postal-codes";
+import { isValidPhoneNumber } from 'react-phone-number-input'
+import qs from 'qs'
 
 const DEFAULT_REDIRECT = "/";
 
@@ -53,9 +56,7 @@ export function useOptionalUser() {
 export function useUser() {
 	const maybeUser = useOptionalUser();
 	if (!maybeUser) {
-		throw new Error(
-			"No user found in root loader, but user is required by useUser. If user is optional, try useOptionalUser instead."
-		);
+		throw new Error("No user found in root loader, but user is required by useUser. If user is optional, try useOptionalUser instead.");
 	}
 	return maybeUser;
 }
@@ -68,38 +69,51 @@ export function useUserType() {
 	return data.userType;
 }
 
-export function validateEmail(email) {
-	return typeof email === "string" && email.length > 3 && email.includes("@");
-}
+export function generateString(length) {
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-export function validatePhoneNumber(phoneNumber) {
-	phoneNumber = phoneNumber.replace(/\D/g, '').slice(2);
+	let result = '';
+	const charactersLength = characters.length;
 
-	if (phoneNumber.length !== 11) return false;
-
-	if (phoneNumber.length == 11 && parseInt(phoneNumber.substring(2, 3)) != 9) return false;
-
-	for (var n = 0; n < 10; n++) {
-		if (phoneNumber == new Array(11).join(n) || phoneNumber == new Array(12).join(n)) return false;
+	for (let i = 0; i < length; i++) {
+		result += characters.charAt(Math.floor(Math.random() * charactersLength));
 	}
 
-	var codigosDDD =
-		[11, 12, 13, 14, 15, 16, 17, 18, 19,
-			21, 22, 24, 27, 28, 31, 32, 33, 34,
-			35, 37, 38, 41, 42, 43, 44, 45, 46,
-			47, 48, 49, 51, 53, 54, 55, 61, 62,
-			64, 63, 65, 66, 67, 68, 69, 71, 73,
-			74, 75, 77, 79, 81, 82, 83, 84, 85,
-			86, 87, 88, 89, 91, 92, 93, 94, 95,
-			96, 97, 98, 99];
-
-	if (codigosDDD.indexOf(parseInt(phoneNumber.substring(0, 2))) == -1) return false;
-
-	return true;
+	return result;
 }
 
-export function validateCpf(_cpf) {
-	let cpf = _cpf.replace(/[^0-9]/g, "")
+export function generatePassword() {
+	const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+	const numbers = '0123456789';
+	const specialChars = '!@#$%^&*_-+=';
+
+	let password = '';
+
+	// Generate random characters
+	for (let i = 0; i < 6; i++) {
+		let randomIndex = Math.floor(Math.random() * letters.length);
+		password += letters[randomIndex];
+	}
+
+	for (let i = 0; i < 2; i++) {
+		let randomIndex = Math.floor(Math.random() * numbers.length);
+		password += numbers[randomIndex];
+	}
+
+	password += specialChars[Math.floor(Math.random() * specialChars.length)];
+
+	return password;
+}
+
+export function validateEmail(email) {
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+	return emailRegex.test(email);
+}
+
+export function validateCpf(cpf) {
+	cpf = cpf.replace(/[^0-9]/g, "")
+	if (cpf.length !== 11) return false
 
 	var Soma;
 	var Resto;
@@ -121,17 +135,70 @@ export function validateCpf(_cpf) {
 	return true;
 }
 
-export function generateString(length) {
-	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+export function validatePassword(password) {
+	const digitRegex = /\d/;
+	const lowercaseRegex = /[a-z]/;
+	const uppercaseRegex = /[A-Z]/;
+	console.log(password)
 
-	let result = '';
-	const charactersLength = characters.length;
-
-	for (let i = 0; i < length; i++) {
-		result += characters.charAt(Math.floor(Math.random() * charactersLength));
+	if (digitRegex.test(password)) {
+		return "invalid";
 	}
 
-	return result;
+	if (!lowercaseRegex.test(password)) {
+		return "lowercase";
+	}
+
+	if (!uppercaseRegex.test(password)) {
+		return "uppercase";
+	}
+
+	if (password.length < 8) {
+		return "length";
+	}
+
+	return true;
+}
+
+export function validateBirthDate(dateString) {
+	const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+
+	if (!dateRegex.test(dateString)) {
+		return false;
+	}
+
+	const [day, month, year] = dateString.split("/");
+	const parsedDate = new Date(`${year}-${month}-${day}T00:00:00`);
+
+	const isValidDate =
+		parsedDate.getDate() == day &&
+		parsedDate.getMonth() + 1 == month &&
+		parsedDate.getFullYear() == year;
+
+	if (!isValidDate) {
+		return false;
+	}
+
+	return true;
+}
+
+export function validatePostalCode(postalCode, country) {
+
+	const countryRegex = postalCodes[country];
+
+	if (!countryRegex) {
+		return true;
+	}
+
+	if (countryRegex === "") {
+		return true;
+	}
+
+	if (!new RegExp(countryRegex).test(postalCode)) {
+		return false;
+	}
+
+	return true
 }
 
 export function checkString(str) {
@@ -142,8 +209,92 @@ export function checkStringWithNumbers(str) {
 	return !/[^A-Za-z0-9àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇ ]+/.test(str)
 }
 
-export function createNestedObject(base, names) {
-	for (var i = 0; i < names.length; i++) {
-		base = base[names[i]] = base[names[i]] || {};
-	}
-};
+export function checkUserInputData(data) {
+	// typeof data array
+	// key, value, errorMessages, valuesToCompare, auxValue
+
+	// --user--
+	// name
+	// email
+	// password
+	// cpf
+	// passport
+	// birth date
+	// phone number
+
+	// --delegation--
+	//	school name
+
+	// --address--
+	// country
+	// Postal Code
+	// city
+	// state
+	// address
+	// neighborhood
+	data.forEach(({ key, value, errorMessages, valuesToCompare, auxValue, dontValidate }) => {
+
+		//console.log(key, dontValidate)
+		if (dontValidate) return
+
+		if (value === undefined || value === "" || value.length === 0) throw new Error(qs.stringify({ key: key, msg: errorMessages.undefined }))
+
+		// only value to not throw error if equal is confirm password
+		if (valuesToCompare?.includes(value)) {
+			if (key !== "confirmPassword") {
+				throw new Error(qs.stringify({ key: key, msg: errorMessages.existingUser }))
+			}
+		} else {
+			if (key === "confirmPassword") {
+				throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
+			}
+		}
+
+		if (key === "name" || key === "emergencyContactName" || key === "country" || key === "city" || key === "state" || key === "neighborhood") {
+			if (!checkString(value)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
+		}
+
+		if (key === "email") {
+			if (!validateEmail(value)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
+		}
+
+		if (key === "password") {
+			switch (validatePassword(value)) {
+				case "invalid":
+					throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
+				case "lowercase":
+					throw new Error(qs.stringify({ key: key, msg: errorMessages.passwordLowerCase }))
+				case "uppercase":
+					throw new Error(qs.stringify({ key: key, msg: errorMessages.passwordUppercase }))
+				case "length":
+					throw new Error(qs.stringify({ key: key, msg: errorMessages.passwordLength }))
+				case true:
+					break
+			}
+		}
+
+		if (key === "cpf") {
+			if (!validateCpf(value)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
+		}
+
+		if (key === "passport") {
+			if (value.length > 20) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
+		}
+
+		if (key === "birthDate") {
+			if (!validateBirthDate(value)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
+		}
+
+		if (key === "phoneNumber" || key === "emergencyContactPhoneNumber") {
+			if (!isValidPhoneNumber(value)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
+		}
+
+		if (key === "schoolName" || key === "address") {
+			if (!checkStringWithNumbers(value)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
+		}
+
+		if (key === "postalCode") {
+			if (!validatePostalCode(value, auxValue)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
+		}
+	})
+}

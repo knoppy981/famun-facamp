@@ -1,7 +1,7 @@
 import * as S from './elements'
-import AuthInputBox from '~/styled-components/components/inputs/authInput'
-import PhoneInputBox from '~/styled-components/components/inputs/authInput/phoneInput'
-import DateInputBox from '~/styled-components/components/inputs/authInput/dateInput'
+import DefaultInputBox from '~/styled-components/components/inputs/defaultInput'
+import PhoneInputBox from '~/styled-components/components/inputs/defaultInput/phoneInput'
+import DateInputBox from '~/styled-components/components/inputs/defaultInput/dateInput'
 
 const UserData = ({ data, actionData }) => {
   return (
@@ -12,7 +12,7 @@ const UserData = ({ data, actionData }) => {
 
       <S.Wrapper>
         <S.InputContainer>
-          <AuthInputBox
+          <DefaultInputBox
             name="name"
             text="Nome"
             type="text"
@@ -23,7 +23,7 @@ const UserData = ({ data, actionData }) => {
 
           <S.SubInputContainer>
             {data?.nacionality === "Brazil" ?
-              <AuthInputBox
+              <DefaultInputBox
                 name="cpf"
                 text="Cpf"
                 type="text"
@@ -31,7 +31,7 @@ const UserData = ({ data, actionData }) => {
                 err={actionData?.errors?.cpf}
                 mask={'999.999.999-99'}
               /> :
-              <AuthInputBox
+              <DefaultInputBox
                 name="passport"
                 text="Número do Passaporte"
                 type="text"

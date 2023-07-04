@@ -9,17 +9,9 @@ const azulEscuro = '#183567'
 const azulBackground = "#EDF9FC"
 
 export const Wrapper = styled.div`
-  height: 100vh;
   width: 100%;
   display: flex;
-  align-items: center;
   justify-content: center;
-
-  @media screen and (max-width: 500px) {
-    overflow: hidden;
-    height: 100vh; /* Fallback for browsers that do not support Custom Properties */
-    height: calc(var(--full-height, 1vh) * 100);;
-	}
 `
 export const ExternalButtonWrapper = styled.div`
   position: absolute;
@@ -40,36 +32,27 @@ export const ExternalButton = styled(Link)`
     transform: translateY(1px);
   }
 `
-export const Container = styled.div`
-  height: 70vh;
+export const SubscriptionForm = styled(Form)`
+  min-height: 70svh;
+  margin: 15vh 0;
  	width: 400px;
   display: flex;
   flex-direction: column;
   gap: 40px;
-
-	@media screen and (max-width: 500px) {
-    width: auto;
-    max-width: 100vw;
-    margin: 0 20px;
-    gap: 0;
-	}
   
   @media screen and (max-width: 500px) and (min-height: 700px) {
-    height: 100vh; /* Fallback for browsers that do not support Custom Properties */
-    height: calc(var(--full-height, 1vh) * 80);
-    margin-top: calc(var(--full-height, 1vh) * 15);
-    margin-bottom: calc(var(--full-height, 1vh) * 5);
+    gap: 20px;
+    margin: 100px 0 50px;
     width: 100vw;
-    width: calc(var(--full-width, 1vh) * 94);
-    margin-left: calc(var(--full-width, 1vh) * 3);
-    margin-right: calc(var(--full-width, 1vh) * 3);
+    padding: 0 15px;
 	}
 `
+
 export const TitleBox = styled.div`
   display: flex;
   align-items: center;
   height: 40px;
-  width: 426px;
+  width: 400px;
   
   @media screen and (max-width: 800px) {
     height: auto;
@@ -79,6 +62,9 @@ export const TitleBox = styled.div`
     height: auto;
     flex-direction: column;
     align-items: flex-start;
+    width: auto;
+    margin-left: 0;
+    margin-right: auto;
   }
 
   @media screen and (max-width: 350px) {
@@ -89,10 +75,6 @@ export const TitleBox = styled.div`
 export const AuxDiv = styled.div`
   align-items: center;
   display: flex;
-
-  @media screen and (max-width: 500px) and (min-height: 700px) {
-    display: none;
-	}
 `
 export const Title = styled.div`
   font-size: 3.6rem;
@@ -111,6 +93,10 @@ export const Title = styled.div`
   @media screen and (max-width: 350px) {
     font-size: 3rem;
   }
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    display: none;
+	}
 `
 export const SubTitle = styled.div`
   font-size: 2.4rem;
@@ -136,4 +122,56 @@ export const ArrowIconBox = styled(FiChevronRight)`
   color: #000;
   display: flex;
   align-items: bottom;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    display: none;
+	}
+`
+export const Container = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+	}
+`
+export const ControlButtonsContainer = styled.div`
+  margin-top: auto;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row-reverse;
+  gap: 15px;
+
+  background: #fff;
+  border-radius: 1.5rem;
+  box-shadow: 0 0 5px 10px #fff;
+`
+export const ControlButton = styled.button`
+  height: 4.5rem;
+  width: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  background: ${p => !p.prev ? azulClaro : "#fff"};
+  box-shadow: 0px 2px 5px -2px #000000;
+  border: 1px solid ${p => !p.prev ? 'transparent' : '#E6E6E6'};
+  font-weight: 500;
+  color: #000;
+  border-radius: 5px;
+	font-size: 1.5rem;
+  transition: .4s all ease;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    height: 5.2rem;
+    font-size: 1.8rem;
+	}
+
+  &:disabled {
+    border: 1px solid transparent;
+    background: #fff;
+    opacity: .6;
+  }
 `

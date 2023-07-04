@@ -28,6 +28,7 @@ export const meta = () => ({
   charset: "utf-8",
   title: "Famun Dashboard",
   viewport: "width=device-width,initial-scale=1",
+  "format-detection": "telephone=no"
 });
 
 export const loader = async ({ request }) => {

@@ -5,9 +5,9 @@ import qs from "qs"
 
 import { createUserSession, sessionStorage, getSession, requireUserId } from "~/session.server";
 import { joinDelegation, createDelegation, generateDelegationInviteLink } from "~/models/delegation.server";
-import { safeRedirect, checkStringWithNumbers, checkString, validatePhoneNumber, generateString } from "~/utils";
+import { safeRedirect, checkUserInputData, generateString } from "~/utils";
 
-import * as S from '~/styled-components/join/delegation'
+import * as S from '~/styled-components/join'
 
 import JoinMethod from "~/styled-components/join/delegation/joinmethod"
 import JoinDelegation from "~/styled-components/join/delegation/joindelegation"
@@ -22,20 +22,9 @@ export const action = async ({ request }) => {
   const session = await getSession(request)
   const { redirectTo, step, action, joinType, ...data } = qs.parse(text)
 
-  console.log(step)
-
-  let nextStep = Number(step) + (action === 'next' ? 1 : -1)
-
-  if (joinType) {
-    session.set('join-type', { joinType: joinType })
-    nextStep = 2
-  }
-
-  if (session.get("join-type")?.joinType === "join" && step > 2) nextStep = 1
-
   if (action === "next") {
     if (data.delegationCode) {
-
+      // join delegation
       const userId = await requireUserId(request)
       let delegation
 
@@ -57,114 +46,27 @@ export const action = async ({ request }) => {
       });
     }
 
-    if (data.schoolName?.length === 0)
-      return json(
-        { errors: { schoolName: "Preencha com o nome da sua escola / universidade" } },
-        { status: 400 }
-      );
-    if (data.schoolName) {
-      if (typeof data.schoolName !== "string" || !checkStringWithNumbers(data.schoolName))
-        return json(
-          { errors: { schoolName: "Nome de Escola / Universidade inválido" } },
-          { status: 400 }
-        );
-    }
+    try {
+      checkUserInputData([
+        { key: "schoolName", value: data.schoolName, errorMessages: { undefined: "School / University name is required", invalid: "Invalid name", existingUser: "School / University already registered" }, dontValidate: data.schoolName === undefined ? true : false },
+        { key: "schoolPhoneNumber", value: data.schoolPhoneNumber, errorMessages: { undefined: "Phone number is required", invalid: "Invalid phone number" }, dontValidate: data.schoolPhoneNumber === undefined ? true : false },
 
-    if (data.schoolPhoneNumber?.length === 0)
+        { key: "address", value: data.address, errorMessages: { undefined: "Address is required", invalid: "Invalid address" }, dontValidate: data.address === undefined ? true : false },
+        { key: "country", value: data.country, errorMessages: { undefined: "Address is required", invalid: "Invalid address" }, dontValidate: data.country === undefined ? true : false },
+        { key: "postalCode", value: data.postalCode, errorMessages: { undefined: "Postal code is required", invalid: "Invalid postal code" }, auxValue: data?.country, dontValidate: data.postalCode === undefined ? true : false },
+        { key: "state", value: data.state, errorMessages: { undefined: "State is required", invalid: "Invalid state" }, dontValidate: data.state === undefined ? true : false },
+        { key: "city", value: data.city, errorMessages: { undefined: "City is required", invalid: "Invalid city" }, dontValidate: data.city === undefined ? true : false },
+        { key: "neighborhood", value: data.neighborhood, errorMessages: { undefined: "Neighborhood is required", invalid: "Invalid Neighborhood" }, dontValidate: data.neighborhood === undefined ? true : false },
+      ])
+    } catch (error) {
+      error = qs.parse(error.message)
       return json(
-        { errors: { schoolPhoneNumber: "Preencha o número de telefone" } },
+        { errors: { [error.key]: error.msg } },
         { status: 400 }
       );
-    if (data.schoolPhoneNumber) {
-      if (typeof data.schoolPhoneNumber !== "string" || !validatePhoneNumber(data.schoolPhoneNumber))
-        return json(
-          { errors: { schoolPhoneNumber: "Número de telefone da Escola / Universidade inválido" } },
-          { status: 400 }
-        );
-    }
-
-    if (data.address?.length === 0)
-      return json(
-        { errors: { address: "Digite o endereço" } },
-        { status: 400 }
-      );
-    if (data.address) {
-      if (typeof data.address !== "string")
-        return json(
-          { errors: { address: "Endereço Inválido" } },
-          { status: 400 }
-        );
-    }
-
-    if (data.country?.length === 0)
-      return json(
-        { errors: { country: "Digite o país" } },
-        { status: 400 }
-      );
-    if (data.country) {
-      if (typeof data.country !== "string" || !checkString(data.country))
-        return json(
-          { errors: { country: "País Inválido" } },
-          { status: 400 }
-        );
-    }
-
-    if (data.cep?.length === 0)
-      return json(
-        { errors: { cep: "Digite o CEP" } },
-        { status: 400 }
-      );
-    if (data.cep) {
-      if (typeof data.cep !== "string")
-        return json(
-          { errors: { cep: "CEP Inválido" } },
-          { status: 400 }
-        );
-    }
-
-    if (data.state?.length === 0)
-      return json(
-        { errors: { state: "Digite o estado" } },
-        { status: 400 }
-      );
-    if (data.state) {
-      if (typeof data.state !== "string" || !checkString(data.state))
-        return json(
-          { errors: { state: "Estado inválido" } },
-          { status: 400 }
-        );
-    }
-
-    if (data.city?.length === 0)
-      return json(
-        { errors: { city: "Digite a cidade" } },
-        { status: 400 }
-      );
-    if (data.city) {
-      if (typeof data.city !== "string" || !checkString(data.city))
-        return json(
-          { errors: { city: "Cidade inválido" } },
-          { status: 400 }
-        );
-    }
-
-    if (data.neighborhood?.length === 0)
-      return json(
-        { errors: { neighborhood: "Digite o bairro" } },
-        { status: 400 }
-      );
-    if (data.neighborhood) {
-      if (typeof data.neighborhood !== "string" || !checkString(data.neighborhood))
-        return json(
-          { errors: { neighborhood: "Bairro inválido" } },
-          { status: 400 }
-        );
     }
 
     if (step == 4) {
-
-      console.log('before user id')
-
       const userId = await requireUserId(request)
       const code = generateString(6)
 
@@ -175,12 +77,7 @@ export const action = async ({ request }) => {
         inviteLink: await generateDelegationInviteLink(code),
         userId: userId,
       }
-
-      console.log('creating delegation')
-
       const delegation = await createDelegation(delegationData)
-
-      console.log(delegation)
 
       return createUserSession({
         request,
@@ -192,7 +89,18 @@ export const action = async ({ request }) => {
     }
   }
 
+  // next step
+  let nextStep = Number(step) + (action === 'next' ? 1 : -1)
+  // if setting join type mvoe to second step
+  if (joinType) {
+    session.set('join-type', { joinType: joinType })
+    nextStep = 2
+  }
+  // if you are joining you can only be aat step 1 or 2
+  if (session.get("join-type")?.joinType === "join" && step > 2) nextStep = 1
+  // set the data for the current step
   if (session.get("join-type")?.joinType === "create") session.set(`delegation-data-${step}`, data)
+  // set next step
   session.set('delegation-current-step', { step: nextStep })
 
   const searchParams = redirectTo === "" ? "" : new URLSearchParams([["redirectTo", safeRedirect(redirectTo)]])
@@ -243,7 +151,21 @@ const delegation = () => {
   if (!step) step = 1
 
   return (
-    <S.StepsForm type="submit" noValidate method='post' >
+    <S.SubscriptionForm type="submit" noValidate method='post' >
+      <S.TitleBox>
+        <S.Title>
+          FAMUN 2023
+        </S.Title>
+
+        <S.AuxDiv>
+          <S.ArrowIconBox />
+
+          <S.SubTitle>
+            Delegação
+          </S.SubTitle>
+        </S.AuxDiv>
+      </S.TitleBox>
+
       <input type="hidden" name="step" value={step} />
       <input type="hidden" name="redirectTo" value={redirectTo} />
 
@@ -264,7 +186,7 @@ const delegation = () => {
 
         {step !== 1 && <S.ControlButton name="action" value="previous" type="submit" prev> Voltar </S.ControlButton>}
       </S.ControlButtonsContainer>
-    </S.StepsForm >
+    </S.SubscriptionForm >
   )
 }
 

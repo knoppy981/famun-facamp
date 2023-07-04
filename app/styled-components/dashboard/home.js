@@ -15,11 +15,13 @@ const begeClaro = "#d57748"
 const begeBackground = "#FFEFE1"
 
 export const Wrapper = styled.div`
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 30px;
+
+  @media screen and (max-width: 700px) {
+    padding: 0 15px;
+  }
 `
 export const Title = styled.div`
   height: 3rem;
@@ -53,22 +55,36 @@ export const Container = styled.div`
   gap: 10px;
 `
 export const Grid = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 30px;
+
+  @media screen and (max-width: 700px) {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 `
 export const GridItem = styled(Link)`
   position: relative;
   min-width: 200px;
   padding: 20px;
+  border-radius: 15px;
 
-  &::before {
-    content: '';
-    position: absolute;
-    height: 50%;
-    top: 50%;
-    left: -15px;
-    transform: translateY(-50%);
-    border-left: ${p => p.first !== 1 ? '1px solid #E6E6E6' : undefined};
+  @media screen and (min-width: 700px) {
+    &::before {
+      content: '';
+      position: absolute;
+      height: 50%;
+      top: 50%;
+      left: -15px;
+      transform: translateY(-50%);
+      border-left: ${p => p.first !== 1 ? '1px solid #E6E6E6' : undefined};
+    }
+  }
+
+  @media screen and (max-width: 700px) {
+    padding: 15px;
+    box-shadow: 0px 2px 5px -2px #000000;
   }
 `
 export const GridItemTitle = styled.div`

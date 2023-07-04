@@ -1,9 +1,9 @@
 import React from 'react'
 
 import * as S from './elements'
-import AuthInputBox from "~/styled-components/components/inputs/authInput";
+import DefaultInputBox from "~/styled-components/components/inputs/defaultInput";
 import SelectInput from '~/styled-components/components/inputs/selectInput';
-import PhoneInputBox from '~/styled-components/components/inputs/authInput/phoneInput';
+import PhoneInputBox from '~/styled-components/components/inputs/defaultInput/phoneInput';
 
 const CreateDelegation = ({ data, actionData }) => {
   return (
@@ -14,7 +14,7 @@ const CreateDelegation = ({ data, actionData }) => {
 
       <S.Wrapper>
         <S.InputContainer>
-          <AuthInputBox
+          <DefaultInputBox
             name="schoolName"
             text="Nome da Escola / Universidade"
             type="text"

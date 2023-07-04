@@ -4,8 +4,8 @@ import qs from 'qs'
 import * as S from './elements'
 import { FiAlertTriangle } from 'react-icons/fi'
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
-import AuthInputBox from '~/styled-components/components/inputs/authInput'
-import PhoneInputBox from '~/styled-components/components/inputs/authInput/phoneInput'
+import DefaultInputBox from '~/styled-components/components/inputs/defaultInput'
+import PhoneInputBox from '~/styled-components/components/inputs/defaultInput/phoneInput'
 
 const initialItems = ['Assembleia Geral da ONU', 'Rio 92', 'Conselho de Juventude da ONU', 'Conselho de Seguranca da ONU'];
 
@@ -27,17 +27,15 @@ const DelegateData = ({ data, actionData }) => {
 
   return (
     <>
-      <S.TitleBox>
-        <S.Title>
-          Informações do Delegado
-        </S.Title>
-      </S.TitleBox>
+      <S.Title>
+        Informações do Delegado
+      </S.Title>
 
       <S.Wrapper>
         <S.Container>
-          <S.CheckBoxTitle err={actionData?.errors.council}>
+          <S.ContainerTitle err={actionData?.errors.council}>
             {actionData?.errors.council ? <><FiAlertTriangle /> {actionData?.errors.council} </> : <>Indique quais Comitês/Conselhos você deseja simular em ordem de preferência. Atenção aos idiomas de cada simulação <b>Obs: Arraste os items para trocar a ordem</b></>}
-          </S.CheckBoxTitle>
+          </S.ContainerTitle>
 
           <S.DragDropContainer>
             <S.DragDropIndexes>
@@ -81,9 +79,9 @@ const DelegateData = ({ data, actionData }) => {
         </S.Container>
 
         <S.Container>
-          <S.CheckBoxTitle err={actionData?.errors.language}>
-            {actionData?.errors.language ? <><FiAlertTriangle /> {actionData?.errors.language} </> : 'Idiomas que pode simular'}
-          </S.CheckBoxTitle>
+          <S.ContainerTitle err={actionData?.errors.language}>
+            {actionData?.errors.language ? <> {actionData?.errors.language} </> : 'Idiomas que pode simular'}
+          </S.ContainerTitle>
 
           <S.CheckBoxWrapper>
             {["Portugues", "Ingles", "Espanhol"].map((item, index) => (
@@ -109,11 +107,11 @@ const DelegateData = ({ data, actionData }) => {
         </S.Container>
 
         <S.Container>
-          <S.CheckBoxTitle>
+          <S.ContainerTitle>
             Contato de Emergência
-          </S.CheckBoxTitle>
+          </S.ContainerTitle>
 
-          <AuthInputBox
+          <DefaultInputBox
             name="emergencyContactName"
             text="Nome"
             type="text"

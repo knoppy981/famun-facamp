@@ -16,7 +16,7 @@ const begeBackground = "#FFEFE1"
 export const Container = styled.div`
   display: ${p => p.open ? 'block' : 'none'};
   position: absolute;
-  z-index: 99;
+  z-index: 500;
   top: 110%;
   right: -20px;
   width: 30rem;
@@ -37,7 +37,7 @@ export const Reference = styled.div`
   width: 10px;
   right: 50%;
   top: calc(110% - 5px);
-  z-index: 98;
+  z-index: 499;
   background: ${color1};
   border-radius: 2px;
   box-shadow: -1px 1px 5px -2px #000000;

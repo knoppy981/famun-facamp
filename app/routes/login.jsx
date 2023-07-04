@@ -2,16 +2,17 @@ import { useState, useRef } from 'react'
 import { useActionData, useSearchParams, useTransition, Link, useFetcher } from '@remix-run/react'
 import { json, redirect } from '@remix-run/node';
 import { useTranslation } from 'react-i18next'
+import qs from 'qs'
 
 import { getUserId, createUserSession } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
-import { safeRedirect, validateEmail } from "~/utils";
+import { safeRedirect, validateEmail, checkUserInputData } from "~/utils";
 import { i18nCookie } from '~/cookies';
 
 import * as S from '~/styled-components/login'
 import * as D from '~/styled-components/components/dropdown'
 import { useClickOutside } from "~/hooks/useClickOutside";
-import InputBox from '~/styled-components/components/inputs/authInput'
+import InputBox from '~/styled-components/components/inputs/defaultInput'
 import { FiGlobe, FiX } from 'react-icons/fi';
 import LanguageMenu from '~/styled-components/components/dropdown/languageMenu';
 import Spinner from '~/styled-components/components/spinner';
@@ -23,13 +24,21 @@ export const action = async ({ request }) => {
   const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
   const remember = formData.get("remember");
 
-  if (!validateEmail(email)) {
-    return json({ errors: { email: "Email is invalid" } }, { status: 400 });
-  }
-
   if (typeof password !== "string" || password.length === 0) {
     return json(
       { errors: { password: "Password is required" } },
+      { status: 400 }
+    );
+  }
+
+  try {
+    checkUserInputData([
+      { key: "email", value: email, errorMessages: { undefined: "E-mail is required", invalid: "Invalid e-mail" }, valuesToCompare: [] },
+    ])
+  } catch (error) {
+    error = qs.parse(error.message)
+    return json(
+      { errors: { [error.key]: error.msg } },
       { status: 400 }
     );
   }
@@ -82,19 +91,9 @@ const LoginPage = () => {
       <LanguageMenu /* i18n={i18n} */ />
 
       <S.FormContainer>
-        <S.TitleBox>
-          <S.Title>
-            FAMUN 2023
-          </S.Title>
-
-          <S.AuxDiv>
-            <S.ArrowIconBox />
-
-            <S.SubTitle>
-              Login
-            </S.SubTitle>
-          </S.AuxDiv>
-        </S.TitleBox>
+        <S.Title>
+          FAMUN 2023
+        </S.Title>
 
         <S.AuthForm method="post" noValidate>
           <InputBox name="email" text="email" type="email" err={actionData?.errors?.email} autoFocus={true} />

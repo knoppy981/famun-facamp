@@ -58,6 +58,7 @@ export const UnderLine = styled(motion.div)`
 `
 export const Container = styled.div`
   width: 100%;
+  margin-bottom: 50px;
 `
 export const SubTitle = styled.div`
   font-size: 16px;
@@ -68,9 +69,6 @@ export const SubTitle = styled.div`
 `
 export const PaymentsList = styled.ul`
   width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-  overflow-x: hidden;
   padding: 0 5px;
   border: 1px solid #E6E6E6;
   border-radius: 5px;

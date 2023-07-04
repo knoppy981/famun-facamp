@@ -43,6 +43,39 @@ export async function joinDelegation(data) {
 	})
 }
 
+export async function joinDelegationById(delegationId, userId) {
+	return prisma.delegation.update({
+		where: {
+			id: delegationId
+		},
+		data: {
+			participants: {
+				connect: [
+					{ id: userId }
+				]
+			}
+		}
+	})
+}
+
+export async function updateDelegation({ delegationId, values }) {
+	return prisma.delegation.update({
+		where: {
+			id: delegationId
+		},
+		data: values,
+		include: {
+			address: true,
+			participants: {
+				include: {
+					delegate: true,
+					delegationAdvisor: true
+				}
+			}
+		}
+	})
+}
+
 export async function updateDelegationCode(delegationId, code) {
 	return prisma.delegation.update({
 		where: {
@@ -70,7 +103,7 @@ export async function createDelegation(data) {
 			address: {
 				create: {
 					address: data.address,
-					cep: data.cep,
+					postalCode: data.postalCode,
 					city: data.city,
 					country: data.country,
 					neighborhood: data.neighborhood,

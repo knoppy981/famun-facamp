@@ -6,6 +6,7 @@ export const Title = styled.h3`
   font-size: 2.2rem;
   font-weight: 500;
   color: #000;
+  margin-left: 5px;
 `
 export const SubTitle = styled.p`
   font-size: 1.4rem;

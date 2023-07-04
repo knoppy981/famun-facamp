@@ -1,5 +1,5 @@
 import * as S from './elements'
-import AuthInputBox from '~/styled-components/components/inputs/authInput'
+import DefaultInputBox from '~/styled-components/components/inputs/defaultInput'
 
 const CreateUser = ({ data, actionData }) => {
   return (
@@ -10,7 +10,7 @@ const CreateUser = ({ data, actionData }) => {
 
       <S.Wrapper>
         <S.InputContainer>
-          <AuthInputBox
+          <DefaultInputBox
             name="email"
             text="E-mail"
             type="email"
@@ -20,7 +20,7 @@ const CreateUser = ({ data, actionData }) => {
           />
 
           <S.SubInputContainer>
-            <AuthInputBox
+            <DefaultInputBox
               name="password"
               text="Senha"
               type="password"
@@ -28,7 +28,7 @@ const CreateUser = ({ data, actionData }) => {
               err={actionData?.errors?.password}
             />
 
-            <AuthInputBox
+            <DefaultInputBox
               name="confirmPassword"
               text="Confirme a Senha"
               type="password"

@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 async function seed() {
 
-/* 	await prisma.user.delete({ where: { email: "andre.knopp8@gmail.com" } }).catch(err => { console.log('no user found') })
+	/* await prisma.user.delete({ where: { email: "andre.knopp8@gmail.com" } }).catch(err => { console.log('no user found') })
 	await prisma.user.delete({ where: { email: "teste@gmail.com" } }).catch(err => { console.log('no user found') })
 
 	await prisma.delegation.delete({ where: { code: "123456" } }).catch(err => { console.log('no delegation found') })
@@ -27,6 +27,7 @@ async function seed() {
 				}
 			},
 			nacionality: "Brasil",
+			leader: true,
 			delegate: {
 				create: {
 					councilPreference: {
@@ -39,7 +40,9 @@ async function seed() {
 					},
 					languagesSimulates: {
 						set: ["Alemao", "Mandarin"]
-					}
+					},
+					emergencyContactName: "Julia",
+					emergencyContactPhoneNumber: "+55 (11) 99877-2333"
 				}
 			},
 		}
@@ -64,7 +67,9 @@ async function seed() {
 			delegationAdvisor: {
 				create: {
 					advisorRole: "Professor",
-					socialMedia: []
+					Facebook: "Tinto",
+					Instagram: "Jose",
+					Linkedin: "Jose Alvarenga"
 				}
 			}
 		}
@@ -92,7 +97,7 @@ async function seed() {
 					city: "Campinas",
 					state: "SP",
 					address: "Rua Elviro",
-					cep: "12099522",
+					postalCode: "12099522",
 					country: "Brasil",
 				}
 			},
@@ -103,20 +108,54 @@ async function seed() {
 				]
 			}
 		}
-	}) */
+	})
 
-	const yyy = await prisma.user.update({
+	await prisma.user.update({
 		where: {
-			email: "dede@gmail.com"
+			email: "andre.knopp8@gmail.com"
 		},
 		data: {
-			delegation: {
-				disconnect: true
-			}
-		}	
-	}) 
+			leader: true
+		}
+	}) */
 
-	console.log(yyy)
+	const del = await prisma.delegation.findUnique({
+		where: {
+			code: "123456"
+		},
+		select: {
+			participants: {
+				where: {
+					OR: [
+						{ stripePaydId: { isSet: false } },
+						{ stripePaydId: { equals: "" } }
+					]
+				},
+				select: {
+					id: true,
+					name: true,
+					nacionality: true,
+					delegate: true,
+				},
+			}
+		}
+	})
+
+	const users = await prisma.user.findMany({
+		where: {
+			delegation: {
+				code: "123456"
+			}
+		},
+		orderBy: {
+			delegationAdvisor: {id: "asc"}
+		},
+		select: {
+			name: true
+		}
+	})
+
+	console.log(users)
 
 	console.log(`Database has been seeded. 🌱`);
 }

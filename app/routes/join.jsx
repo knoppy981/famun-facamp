@@ -32,24 +32,7 @@ const join = () => {
 
       <LanguageMenu /* i18n={i18n} */ />
 
-      <S.Container>
-        <S.TitleBox>
-          <S.Title>
-            FAMUN 2023
-          </S.Title>
-
-          <S.AuxDiv>
-            <S.ArrowIconBox />
-
-            <S.SubTitle>
-              Inscrição
-            </S.SubTitle>
-          </S.AuxDiv>
-        </S.TitleBox>
-
-        <Outlet />
-        {/* <div style={{position: 'absolute', bottom: 0, left: 0, height: '100px', width: '100px', background: 'red'}}/> */}
-      </S.Container>
+      <Outlet />
     </S.Wrapper >
   )
 }

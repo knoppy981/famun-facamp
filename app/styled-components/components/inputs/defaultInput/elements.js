@@ -1,6 +1,7 @@
 import styled from "styled-components"
 
 import InputMask from "react-input-mask"
+import PhoneInput from "react-phone-number-input"
 
 const azulClaro = '#BDE8F5'
 const azul = '#01558A'
@@ -48,11 +49,35 @@ export const Input = styled(InputMask)`
     font-size: 1.8rem;
 	}
 `
+let AuxDiv = styled.div`
+  width: 100%;
+  height: 4.5rem;
+  border-radius: 5px;
+  border: 1px solid ${p => p.disabled ? 'transparent' : p => p.err ? '#d61f0a' : '#E6E6E6'};
+  outline: none;
+  padding: 0 10px;
+  font-size: 1.6rem;
+  transition: all .4 ease;
+  color: #000;
+  background: transparent;
+
+  &:focus, &:hover {
+    border: 1px solid ${p => p.disabled ? 'transparent' : p => p.err ? '#d61f0a' : azulCeu};
+  }
+`
+export const PhoneNumberInput = (props) => {
+  return (
+    <AuxDiv disabled={props.disabled}>
+      <PhoneInput {...props} />
+    </AuxDiv>
+  )
+}
 export const Select = styled.select`
   outline: none;
   border: none;
   flex-grow: 2;
   font-size: 1.6rem;
+  appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   background: url(http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png) no-repeat right transparent;

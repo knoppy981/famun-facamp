@@ -25,6 +25,7 @@ const SelectInput = (props) => {
         autoFocus={props.autoFocus}
         aria-invalid={err ? true : undefined}
         /* onFocus={() => setErr(false)} */
+        onChange={props?.func}
         aria-describedby={`${name}-error`}
         err={err}
         style={{maxWidth: props?.maxWidth}}
