@@ -28,7 +28,7 @@ export const Wrapper = styled.div`
 export const Container = styled.div`
   margin: 10px 0 0 0;
   display: flex;
-  align-items: center;
+  flex-direction: column;
 	grid-gap: 20px;
 `
 export const Label = styled.label`

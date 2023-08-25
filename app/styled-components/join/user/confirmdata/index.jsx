@@ -1,23 +1,17 @@
 import qs from 'qs'
 import * as S from './elements'
+import React from 'react'
 
 const ConfirmData = ({ data, userType }) => {
-
-  console.log(data)
-
   return (
     <>
-      <S.TitleBox>
-        <S.Title>
-          Confirmar os dados
-        </S.Title>
-      </S.TitleBox>
+      <S.Title>
+        Confirmar os dados
+      </S.Title>
 
-      <S.TitleBox>
-        <S.SubTitle>
-          É possível alterar os dados após a inscrição
-        </S.SubTitle>
-      </S.TitleBox>
+      <S.SubTitle>
+        É possível alterar os dados após a inscrição
+      </S.SubTitle>
 
       <S.List>
         {[
@@ -28,11 +22,11 @@ const ConfirmData = ({ data, userType }) => {
         ].map((item, index) => {
           if (!data[item[1]]) return null
           return (
-            <S.Item key={`1column-item-${index}`} x-autocompletetype="off">
+            <S.Item key={index} x-autocompletetype="off">
               <S.Label>
                 {item[0]}
               </S.Label>
-              <S.MaxWidthText>{data[item[1]]}</S.MaxWidthText>
+              {data[item[1]]}
             </S.Item>
           )
         })}
@@ -41,60 +35,66 @@ const ConfirmData = ({ data, userType }) => {
           <S.Label>
             {data.cpf ? "Cpf" : "Número do Passaporte"}
           </S.Label>
-          <S.MaxWidthText>{data.cpf ?? data?.passport}</S.MaxWidthText>
+          {data.cpf ?? data?.passport}
         </S.Item>
 
         <S.Item>
           <S.Label>
             Data de Nascimento
           </S.Label>
-          <S.MaxWidthText>{data.birthDate}</S.MaxWidthText>
+          {new Date(data.birthDate).toLocaleDateString("pt-BR")}
         </S.Item>
 
-        <S.Item>
-          <S.Label>
-            {data.role ? "Posição" : "Preferência de Conselho"}
-          </S.Label>
-          {data.role ? data.role :
-            Object.values(qs.parse(data.council)).map((item, index) => (
-              <S.MaxWidthText key={`${index}-councilPreference`}>{index + 1}. {" " + item}</S.MaxWidthText>
-            ))
-          }
-        </S.Item>
+        {userType === "delegate" &&
+          <>
+            <S.Item isSpanTwoColumns={1}>
+              <S.Label>
+                Preferência de Conselho
+              </S.Label>
+              {Object.values(qs.parse(data.councilPreference)).map((item, index) => (
+                <p style={{ fontSize: "inherit" }} key={index}>{index + 1}-{" " + item}</p>
+              ))}
+            </S.Item>
 
-        {data.language &&
-          <S.Item>
-            <S.Label>
-              Idiomas que pode simular
-            </S.Label>
-            {Array.isArray(data.language) ?
-              data.language.map((item, index) => (
-                <S.MaxWidthText key={`${index}-language`}>
-                  {item}
-                </S.MaxWidthText>
-              )) :
-              data.language
-            }
-          </S.Item>
+            <S.Item isSpanTwoColumns={1}>
+              <S.Label>
+                Idiomas que pode simular
+              </S.Label>
+              {Array.isArray(data.languagesSimulates) ?
+                data.languagesSimulates.map((item, index) => (
+                  <p style={{ fontSize: "inherit" }} key={index}>{item}</p>
+                )) :
+                data.languagesSimulates
+              }
+            </S.Item>
+          </>
         }
 
         {userType === "advisor" &&
-          [
-            ["Instagram", "Instagram"],
-            ["Facebook", "Facebook"],
-            ["Linkedin", "Linkedin"],
-            ["Twitter", "Twitter"]
-          ].map((item, index) => {
-            if (!data[item[1]]) return null
-            return (
-              <S.Item key={`4column-item-${index}`}>
-                <S.Label>
-                  {item[0]}
-                </S.Label>
-                <S.MaxWidthText>{data[item[1]]}</S.MaxWidthText>
-              </S.Item>
-            )
-          })}
+          <>
+            <S.Item>
+              <S.Label>Posição</S.Label>
+              {data.role}
+            </S.Item>
+
+            {[
+              ["Instagram", "instagram"],
+              ["Facebook", "facebook"],
+              ["Linkedin", "linkedin"],
+              ["Twitter", "twitter"]
+            ].map((item, index) => {
+              if (!data[item[1]]) return null
+              return (
+                <S.Item key={index}>
+                  <S.Label>
+                    {item[0]}
+                  </S.Label>
+                  {data[item[1]]}
+                </S.Item>
+              )
+            })}
+          </>
+        }
       </S.List>
     </>
   )

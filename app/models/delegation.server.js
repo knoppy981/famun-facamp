@@ -2,6 +2,7 @@ import { prisma } from "~/db.server";
 import { Prisma } from '@prisma/client'
 import jwt from "jsonwebtoken";
 import { updateUser } from "./user.server";
+import { ValidationError } from "~/utils";
 
 export async function getDelegationById(id) {
 	return prisma.delegation.findUnique({
@@ -89,34 +90,73 @@ export async function updateDelegationCode(delegationId, code) {
 	})
 }
 
-export async function createDelegation(data) {
+export async function getExistingDelegation(values) {
+	const checkableValues = Object.entries(values).map(entry => {
+		return { [entry[0]]: entry[1] };
+	})
 
-	await updateUser({ userId: data.userId, values: { leader: true } })
+	let delegation
 
-	return prisma.delegation.create({
-		data: {
-			code: data.code,
-			inviteLink: data.inviteLink,
-			participationMethod: data.participationMethod,
-			school: data.schoolName,
-			schoolPhoneNumber: data.schoolPhoneNumber,
-			address: {
-				create: {
-					address: data.address,
-					postalCode: data.postalCode,
-					city: data.city,
-					country: data.country,
-					neighborhood: data.neighborhood,
-					state: data.state,
-				}
-			},
-			participants: {
-				connect: {
-					id: data.userId
-				}
+	try {
+		delegation = await prisma.delegation.findFirstOrThrow({
+			where: {
+				OR: checkableValues
+			}
+		})
+	} catch (e) {
+		return {}
+	}
+
+	let field
+	let errorMsg
+
+	if (values.school === delegation.school) {
+		field = "school"
+		errorMsg = "Name already taken"
+	}
+
+	const errorDetails = [
+		{
+			message: errorMsg,
+			path: [field],
+			context: { label: field, value: '', key: field }
+		}
+	];
+
+	throw new ValidationError(errorMsg, errorDetails)
+}
+
+export async function formatDelegationData(data) {
+	return {
+		code: data.code,
+		inviteLink: await generateDelegationInviteLink(data.code),
+		participationMethod: data.participationMethod,
+		school: data.school,
+		schoolPhoneNumber: data.schoolPhoneNumber,
+		address: {
+			create: {
+				address: data.address,
+				postalCode: data.postalCode,
+				city: data.city,
+				country: data.country,
+				neighborhood: data.neighborhood,
+				state: data.state,
+			}
+		},
+		participants: {
+			connect: {
+				id: data.userId
 			}
 		}
-	})
+	}
+}
+
+export async function createDelegation(data, userId) {
+	const delegation = await prisma.delegation.create({ data: data })
+	
+	await updateUser({ userId: userId, values: { leader: true } })
+
+	return delegation
 }
 
 export async function generateDelegationInviteLink(delegationCode) {

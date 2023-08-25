@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { json } from '@remix-run/node'
 import { useLoaderData, useCatch, useMatches } from '@remix-run/react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -41,7 +41,6 @@ const payment = () => {
 
   const { payments, userPaymentsIntents } = useLoaderData()
 
-  const [menu, setMenu] = useState(userPaymentsIntents.length > 0 ? "payments" : "pending")
   const slideVariants = {
     enter: (direction) => {
       return {
@@ -73,13 +72,29 @@ const payment = () => {
     setPage(newPage);
   };
 
+  // used for aditional style when menu is in sticky state in mobile
+  const stickyRef = useRef(null);
+  const [isSticky, setIsSticky] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const { top } = stickyRef.current.getBoundingClientRect();
+      setIsSticky(top <= 45);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <S.Wrapper>
       <S.Title>
         Pagamentos
       </S.Title>
 
-      <S.Menu>
+      <S.Menu ref={stickyRef} isSticky={isSticky}>
         <S.MenuItem active={page === 0} onClick={() => paginate(0)} >
           {/* Pagamentos  */}Pendentes
           {page === 0 ? <S.UnderLine layoutId="paymentPageUnderLine" /> : null}
@@ -91,92 +106,139 @@ const payment = () => {
         </S.MenuItem>
       </S.Menu>
 
-      <S.Container>
-        <AnimatePresence initial={false} mode="wait">
-          <motion.div
-            key={`menu-${page}`}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: .6, ease: "easeInOut" }}
-          >
-            {page === 0 ?
-              payments?.find(el => el.available) ?
-                <S.PaymentsList>
-                  {payments.map((item, index) => {
-                    if (!item.available) return null
-                    return (
-                      <S.PaymentContainer key={`paymentspage-payment${index}`}>
-                        <S.Payment pending>
-                          <S.PaymentInfo>
-                            {`Inscrição de ${item.name}`}
+      <AnimatePresence initial={false} mode="wait">
+        <motion.div
+          style={{marginBottom: "50px"}}
+          key={`menu-${page}`}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{ duration: .6, ease: "easeInOut" }}
+        >
+          {page === 0 ?
+            payments?.find(el => el.available) ?
+              <S.OverflowContainer>
+                <S.PaymentsTable>
+                  <thead>
+                    <S.TableRow example>
+                      <S.TableCell>
+                        Pagamento
+                      </S.TableCell>
 
-                            <S.PayContainer>
+                      <S.TableCell style={{ paddingLeft: "30px" }}>
+                        Preço
+                      </S.TableCell>
+
+                      <S.TableCell>
+                        Expira em
+                      </S.TableCell>
+                    </S.TableRow>
+                  </thead>
+
+                  <tbody>
+                    {payments.map((item, index) => {
+                      if (!item.available) return null
+                      return (
+                        <S.TableRow key={`paymentspage-payment${index}`}>
+                          <S.TableCell>
+                            <S.CellFlexBox>
+                              {`Inscrição de ${item.name}`}
+
                               <S.PayButton to={`/pay/s?${new URLSearchParams([["s", item.name]])}`}>
                                 <FiExternalLink /> Pagar
                               </S.PayButton>
-                            </S.PayContainer>
-                          </S.PaymentInfo>
+                            </S.CellFlexBox>
+                          </S.TableCell>
 
-                          <S.PaymentAmountContainer>
-                            <S.PaymentAmount pending>
-                              {"R$ " + item.price / 100 + ",00"}
-                            </S.PaymentAmount>
-                          </S.PaymentAmountContainer>
+                          <S.TableCell>
+                            <S.CellFlexBox>
+                              <S.ColorItem color="red">
+                                {"R$ " + item.price / 100 + ",00"}
+                              </S.ColorItem>
+                            </S.CellFlexBox>
+                          </S.TableCell>
 
-                          <div />
-
-                          <S.PaymentDate>
-                            Até a data 30/8/2023
-                          </S.PaymentDate>
-                        </S.Payment>
-                      </S.PaymentContainer>
-                    )
-                  })}
-                </S.PaymentsList> :
-                <S.NoPaymentsMessage>
-                  Voce e sua delegação ja realizaram todos os pagamentos necessários!
-                </S.NoPaymentsMessage>
+                          <S.TableCell>
+                            30/8/2023
+                          </S.TableCell>
+                        </S.TableRow>
+                      )
+                    })}
+                  </tbody>
+                </S.PaymentsTable>
+              </S.OverflowContainer>
               :
-              userPaymentsIntents?.length > 0 ?
-                <S.PaymentsList>
-                  {userPaymentsIntents.map((item, index) => {
-                    return (
-                      <S.PaymentContainer key={`realized-payment-${index}`} first={index === 0}>
-                        <S.Payment status={item.status === "succeeded"}>
-                          <S.PaymentInfo>
-                            {item.type === 'card' && <FiCreditCard />}
-                            Inscrição de {item.metadata.paidUsersIds ? ` ${Object.keys(qs.parse(item.metadata.paidUsersIds)).length}x participante${Object.keys(qs.parse(item.metadata.paidUsersIds)).length > 1 ? "s" : ""}` : ''}
-                          </S.PaymentInfo>
+              <S.NoPaymentsMessage>
+                Voce e sua delegação ja realizaram todos os pagamentos necessários!
+              </S.NoPaymentsMessage>
+            :
+            userPaymentsIntents?.length > 0 ?
+              <S.OverflowContainer>
+                <S.PaymentsTable>
+                  <thead>
+                    <S.TableRow example>
+                      <S.TableCell>
+                        Pagamento
+                      </S.TableCell>
 
-                          <S.PaymentAmountContainer>
-                            <S.PaymentAmount>
-                              R${" " + item.amount / 100},00
-                            </S.PaymentAmount>
-                          </S.PaymentAmountContainer>
+                      <S.TableCell style={{ paddingLeft: "30px" }}>
+                        Valor do Pagamento
+                      </S.TableCell>
 
-                          <S.PaymentLinkContainer>
-                            <S.PaymentLink href={item.receipt_url} target="_blank" rel="noopener noreferrer">
-                              <FiExternalLink />  Recibo
-                            </S.PaymentLink>
-                          </S.PaymentLinkContainer>
+                      <S.TableCell style={{ paddingLeft: "30px" }}>
+                        Recibo
+                      </S.TableCell>
 
-                          <S.PaymentDate>
-                            {new Date(item.created * 1000).toLocaleDateString("pt-BR")}
-                          </S.PaymentDate>
-                        </S.Payment>
-                      </S.PaymentContainer>
-                    )
-                  })}
-                </S.PaymentsList> :
-                <S.NoPaymentsMessage>
-                  Voce ainda não realizou nenhum pagamento
-                </S.NoPaymentsMessage>
-            }
-          </motion.div>
-        </AnimatePresence>
-      </S.Container>
+                      <S.TableCell>
+                        Data do pagamento
+                      </S.TableCell>
+                    </S.TableRow>
+                  </thead>
+
+                  <tbody>
+                    {userPaymentsIntents.map((item, index) => {
+                      return (
+                        <S.TableRow key={`realized-payment-${index}`} first={index === 0}>
+                          <S.TableCell>
+                            <S.CellFlexBox>
+                              {item.type === 'card' && <FiCreditCard />}
+                              Inscrição de {item?.metadata?.paidUsersIds ? ` ${Object.keys(qs.parse(item?.metadata?.paidUsersIds)).length}x participante${Object.keys(qs.parse(item?.metadata?.paidUsersIds)).length > 1 ? "s" : ""}` : ''}
+                            </S.CellFlexBox>
+                          </S.TableCell>
+
+                          <S.TableCell>
+                            <S.CellFlexBox>
+                              <S.ColorItem>
+                                R${" " + item?.amount / 100},00
+                              </S.ColorItem>
+                            </S.CellFlexBox>
+                          </S.TableCell>
+
+                          <S.TableCell>
+                            <S.CellFlexBox>
+                              <S.PaymentLink href={item?.receipt_url} target="_blank" rel="noopener noreferrer">
+                                <FiExternalLink />  Recibo
+                              </S.PaymentLink>
+                            </S.CellFlexBox>
+                          </S.TableCell>
+
+                          <S.TableCell>
+                            {new Date(item?.created * 1000).toLocaleDateString("pt-BR")}
+                          </S.TableCell>
+                        </S.TableRow>
+                      )
+                    })}
+                  </tbody>
+                </S.PaymentsTable>
+              </S.OverflowContainer>
+              :
+              <S.NoPaymentsMessage>
+                Voce ainda não realizou nenhum pagamento
+              </S.NoPaymentsMessage>
+          }
+        </motion.div>
+      </AnimatePresence>
     </S.Wrapper >
   )
 }

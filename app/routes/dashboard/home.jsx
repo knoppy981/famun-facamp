@@ -8,7 +8,6 @@ import { getRequiredPayments, getUserPayments } from '~/models/payments.server'
 import * as S from '~/styled-components/dashboard/home'
 
 export const loader = async ({ request }) => {
-  const user = await requireUser(request)
   const delegationId = await getDelegationId(request)
 
   return json({ delegationId })

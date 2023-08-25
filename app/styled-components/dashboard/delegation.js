@@ -93,7 +93,6 @@ export const Menu = styled.div`
 
   @media screen and (max-width: 700px) {
     position: sticky;
-    top: 40px;
     margin: 0 0 15px 0;
     padding: 10px 0 10px 15px;
     overflow-x: scroll;
@@ -158,57 +157,40 @@ export const OverflowContainer = styled.div`
     padding: 0 15px;
   }
 `
-export const DelegatesListWrapper = styled.div`
-  border: 1px solid #E6E6E6;
+export const DelegatesTable = styled.table`
   border-radius: 5px;
   flex: 1 0 auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid #E6E6E6;
 `
-export const DelegateContainer = styled.div`
+export const TableRow = styled.tr`
   height: 4.5rem;
-  padding: 5px;
-  border-bottom: 1px solid rgba(0,0,0,.2);
   background: ${p => p.example ? '#FAFAFA' : 'transparent'};
   cursor: ${p => p.example ? 'auto' : 'pointer'};
-`
-export const Delegate = styled.div`
-  height: 100%;
-  width: 100%;
-  display: grid;
-  align-items: center;
-  padding: 0 20px;
-  grid-template-columns: 4fr 1fr 1fr;
-  border-left: ${p => p.user ? `3px solid ${azulCeu}` : "3px solid transparent"};
-  font-size: 1.5rem;
-`
-export const Icon = styled.div`
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
 
-  svg {
-    height: 25px;
-    width: 25px;
+  td {
+    font-weight: ${p => p.example ? 500 : 400};
   }
 `
-export const Name = styled.div`
+export const TableCell = styled.td`
+  padding: 0 15px;
+  font-size: 1.5rem;
+  border-bottom: 1px solid rgba(0,0,0,.2);
+
+  ${({ user }) => user && `
+    border-left: 2px solid ${azulCeu};
+  `}
+`
+export const CellFlexBox = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: inherit;
 `
-export const Role = styled.div`
-  display: flex;
-  padding-left: ${p => p.example ? '15px' : '0'};
-  font-size: inherit;
-`
-export const JoinDate = styled.div`
-  place-self: center end;
-  font-size: inherit;
-`
 export const Item = styled.div`
   height: 3rem;
-  display: flex;
-  align-items: center;
   padding: 5px 15px;
   border-radius: 15px;
   gap: 5px;
@@ -274,6 +256,10 @@ export const DataTitleBox = styled.div`
   margin: 15px 0;
   gap: 15px;
   padding-left: 5px;
+
+  @media screen and (max-width: 700px) {
+    gap: 5px;
+  }
 `
 export const DataTitle = styled.div`
   font-size: 1.6rem;
@@ -288,7 +274,7 @@ export const DataSubTitle = styled.div`
   font-weight: 400;
 
   @media screen and (max-width: 700px) {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
 `
 export const UserSelect = styled.select`
@@ -323,5 +309,20 @@ export const UserSelect = styled.select`
     height: 4rem;
     font-size: 1.6rem;
     opacity: 1;
+  }
+`
+export const DelegateCountdown = styled.div`
+  @media screen and (max-width: 700px) {
+    margin-top: 10px
+  }
+`
+export const StickyButton = styled(motion.div)`
+  position: sticky;
+  bottom: 80px;
+  margin: 0 0 0 auto;
+  width: max-content;
+
+  @media screen and (max-width: 700px) {
+    bottom: 20px;
   }
 `

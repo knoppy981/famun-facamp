@@ -6,7 +6,7 @@ export const action = async ({ request }) => {
   const formData = await request.formData()
   const delegationCode = formData.get("delegationCode")
 
-  if (typeof delegationCode !== "string" || delegationCode.length !== 6) {
+  if (typeof delegationCode !== "string" || delegationCode.length !== 6 || !delegationCode.match(/^[A-Za-z0-9]+$/)) {
     return json(
       { errors: { code: "Código invalido" } },
       { status: 400 }

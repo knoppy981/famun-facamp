@@ -1,8 +1,5 @@
 import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
-import { postalCodes } from "./data/postal-codes";
-import { isValidPhoneNumber } from 'react-phone-number-input'
-import qs from 'qs'
 
 const DEFAULT_REDIRECT = "/";
 
@@ -105,13 +102,34 @@ export function generatePassword() {
 	return password;
 }
 
-export function validateEmail(email) {
-	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export function prioritizeUser(users, id) {
+  // Find the index of the user with the provided id
+  const userIndex = users.findIndex(user => user.id === id);
 
-	return emailRegex.test(email);
+  if (userIndex === -1) {
+    // If the user isn't found, return the original array
+    return users;
+  }
+
+  // Remove the user from their current position
+  const user = users.splice(userIndex, 1)[0];
+
+  // Insert the user at the beginning of the array
+  users.unshift(user);
+
+  return users;
 }
 
-export function validateCpf(cpf) {
+export function formatDate(inputDate) {
+  const dateObj = new Date(inputDate);
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Months are 0-based in JavaScript
+  const year = dateObj.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
+export function isValidCpf(cpf) {
 	cpf = cpf.replace(/[^0-9]/g, "")
 	if (cpf.length !== 11) return false
 
@@ -135,166 +153,10 @@ export function validateCpf(cpf) {
 	return true;
 }
 
-export function validatePassword(password) {
-	const digitRegex = /\d/;
-	const lowercaseRegex = /[a-z]/;
-	const uppercaseRegex = /[A-Z]/;
-	console.log(password)
-
-	if (digitRegex.test(password)) {
-		return "invalid";
-	}
-
-	if (!lowercaseRegex.test(password)) {
-		return "lowercase";
-	}
-
-	if (!uppercaseRegex.test(password)) {
-		return "uppercase";
-	}
-
-	if (password.length < 8) {
-		return "length";
-	}
-
-	return true;
-}
-
-export function validateBirthDate(dateString) {
-	const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
-
-	if (!dateRegex.test(dateString)) {
-		return false;
-	}
-
-	const [day, month, year] = dateString.split("/");
-	const parsedDate = new Date(`${year}-${month}-${day}T00:00:00`);
-
-	const isValidDate =
-		parsedDate.getDate() == day &&
-		parsedDate.getMonth() + 1 == month &&
-		parsedDate.getFullYear() == year;
-
-	if (!isValidDate) {
-		return false;
-	}
-
-	return true;
-}
-
-export function validatePostalCode(postalCode, country) {
-
-	const countryRegex = postalCodes[country];
-
-	if (!countryRegex) {
-		return true;
-	}
-
-	if (countryRegex === "") {
-		return true;
-	}
-
-	if (!new RegExp(countryRegex).test(postalCode)) {
-		return false;
-	}
-
-	return true
-}
-
-export function checkString(str) {
-	return !/[^A-Za-zàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇ ]+/.test(str)
-}
-
-export function checkStringWithNumbers(str) {
-	return !/[^A-Za-z0-9àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇ ]+/.test(str)
-}
-
-export function checkUserInputData(data) {
-	// typeof data array
-	// key, value, errorMessages, valuesToCompare, auxValue
-
-	// --user--
-	// name
-	// email
-	// password
-	// cpf
-	// passport
-	// birth date
-	// phone number
-
-	// --delegation--
-	//	school name
-
-	// --address--
-	// country
-	// Postal Code
-	// city
-	// state
-	// address
-	// neighborhood
-	data.forEach(({ key, value, errorMessages, valuesToCompare, auxValue, dontValidate }) => {
-
-		//console.log(key, dontValidate)
-		if (dontValidate) return
-
-		if (value === undefined || value === "" || value.length === 0) throw new Error(qs.stringify({ key: key, msg: errorMessages.undefined }))
-
-		// only value to not throw error if equal is confirm password
-		if (valuesToCompare?.includes(value)) {
-			if (key !== "confirmPassword") {
-				throw new Error(qs.stringify({ key: key, msg: errorMessages.existingUser }))
-			}
-		} else {
-			if (key === "confirmPassword") {
-				throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
-			}
-		}
-
-		if (key === "name" || key === "emergencyContactName" || key === "country" || key === "city" || key === "state" || key === "neighborhood") {
-			if (!checkString(value)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
-		}
-
-		if (key === "email") {
-			if (!validateEmail(value)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
-		}
-
-		if (key === "password") {
-			switch (validatePassword(value)) {
-				case "invalid":
-					throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
-				case "lowercase":
-					throw new Error(qs.stringify({ key: key, msg: errorMessages.passwordLowerCase }))
-				case "uppercase":
-					throw new Error(qs.stringify({ key: key, msg: errorMessages.passwordUppercase }))
-				case "length":
-					throw new Error(qs.stringify({ key: key, msg: errorMessages.passwordLength }))
-				case true:
-					break
-			}
-		}
-
-		if (key === "cpf") {
-			if (!validateCpf(value)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
-		}
-
-		if (key === "passport") {
-			if (value.length > 20) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
-		}
-
-		if (key === "birthDate") {
-			if (!validateBirthDate(value)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
-		}
-
-		if (key === "phoneNumber" || key === "emergencyContactPhoneNumber") {
-			if (!isValidPhoneNumber(value)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
-		}
-
-		if (key === "schoolName" || key === "address") {
-			if (!checkStringWithNumbers(value)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
-		}
-
-		if (key === "postalCode") {
-			if (!validatePostalCode(value, auxValue)) throw new Error(qs.stringify({ key: key, msg: errorMessages.invalid }))
-		}
-	})
+export class ValidationError extends Error {
+  constructor(message, details) {
+    super(message);
+    this.name = 'ValidationError';
+    this.details = details;
+  }
 }

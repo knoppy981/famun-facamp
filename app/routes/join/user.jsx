@@ -4,10 +4,15 @@ import { json, redirect } from '@remix-run/node'
 import qs from 'qs'
 
 import { sessionStorage, getSession, createUserSession, getUserId, logout } from "~/session.server";
-import { checkUserInputData, safeRedirect } from "~/utils";
+import { safeRedirect } from "~/utils";
 import { createUser, formatUserData, getExistingUser } from '~/models/user.server';
+import { userStepValidation } from '~/schemas/steps/user';
+import { prismaUserSchema } from '~/schemas';
 
 import * as S from '~/styled-components/join'
+import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
+import Button from '~/styled-components/components/button';
+import Spinner from '~/styled-components/components/spinner';
 
 import AdvisorData from "~/styled-components/join/user/advisordata"
 import ConfirmData from "~/styled-components/join/user/confirmdata"
@@ -16,64 +21,54 @@ import DelegateData from "~/styled-components/join/user/delegatedata"
 import Nacionality from "~/styled-components/join/user/nacionality"
 import UserData from "~/styled-components/join/user/userdata"
 import UserType from "~/styled-components/join/user/usertype"
-import Spinner from '~/styled-components/components/spinner';
 import TermsAndConditions from '~/styled-components/join/user/termsAndConditions';
 
 export const action = async ({ request }) => {
-  // get data from form
   const text = await request.text()
   const session = await getSession(request)
-  // extract variables
-  const { redirectTo, step, action, userType, ...data } = qs.parse(text)
-  // if there is a redirectTo, keep it in the link
+  const { redirectTo, step, action, ...data } = qs.parse(text)
   const searchParams = redirectTo === "" ? "" : new URLSearchParams([["redirectTo", safeRedirect(redirectTo)]])
 
-  // check data if action is next
+  if (data.userType) session.set('user-type', { userType: data.userType })
+
   if (action === 'next') {
-
-    // get user type
-    const userType = session.get("user-type")?.userType
-    // get existing user data
-    const userData = { name: data?.name, email: data?.email, document: { is: { value: data.cpf ?? data.passport } } }
-    const user = await getExistingUser(userData)
-
     try {
-      checkUserInputData([
-        { key: "email", value: data.email, errorMessages: { undefined: "E-mail is required", invalid: "Invalid e-mail", existingUser: "E-mail already taken" }, valuesToCompare: [user?.email], dontValidate: data.email === undefined ? true : false },
-        { key: "password", value: data.password, errorMessages: { undefined: "Password is required", invalid: "Invalid password", passwordLowerCase: "Password needs at least one lower case character", passwordUppercase: "Password needs at least one upper case character", passwordLength: "Password needs to be at least 8 characters long" }, dontValidate: data.password === undefined ? true : false },
-        { key: "confirmPassword", value: data.confirmPassword, errorMessages: { undefined: "Password is required", invalid: "Passwords don't match" }, valuesToCompare: [data.password], dontValidate: data.confirmPassword === undefined ? true : false },
-
-        { key: "name", value: data.name, errorMessages: { undefined: "Name is required", invalid: "Invalid name", existingUser: "Name already taken" }, valuesToCompare: [user?.name], dontValidate: data.name === undefined ? true : false },
-        { key: "cpf", value: data.cpf, errorMessages: { undefined: "Cpf is required", invalid: "Invalid cpf", existingUser: "Cpf already taken" }, valuesToCompare: [user?.document?.value], dontValidate: data.cpf === undefined ? true : false },
-        { key: "passport", value: data.passport, errorMessages: { undefined: "Passport number is required", invalid: "Invalid passport number", existingUser: "Passport number already taken" }, valuesToCompare: [user?.document?.value], dontValidate: data.passport === undefined ? true : false },
-        { key: "birthDate", value: data.birthDate, errorMessages: { undefined: "Birth date is required", invalid: "Invalid birth date" }, dontValidate: data.birthDate === undefined ? true : false },
-        { key: "phoneNumber", value: data.phoneNumber, errorMessages: { undefined: "Phone number is required", invalid: "Invalid phone number" }, dontValidate: data.phoneNumber === undefined ? true : false },
-
-        { key: "language", value: data.language, errorMessages: { undefined: "At least one language required" }, dontValidate: (step != 6 || userType !== "delegate") },
-        { key: "emergencyContactName", value: data.emergencyContactName, errorMessages: { undefined: "Name is required", invalid: "Invalid name" }, dontValidate: (step != 6 || userType !== "delegate") },
-        { key: "emergencyContactPhoneNumber", value: data.emergencyContactPhoneNumber, errorMessages: { undefined: "Phone number is required", invalid: "Invalid phone number" }, dontValidate: (step != 6 || userType !== "delegate") },
-      ])
+      await userStepValidation(Number(step), data)
+      await getExistingUser({
+        name: data.name ?? "",
+        email: data.email ?? "",
+        document: { is: { value: data.cpf ?? data.passport ?? "" } }
+      })
     } catch (error) {
-      error = qs.parse(error.message)
       return json(
-        { errors: { [error.key]: error.msg } },
+        { errors: { [error.details[0].context.key]: error.details[0].message } },
         { status: 400 }
       );
     }
 
     if (step == 7) {
-      // if last step create the user
       let userData = {
         ...session.get("user-data-2"),
         ...session.get("user-data-3"),
         ...session.get("user-data-4"),
+        ...session.get("user-data-5"),
         ...session.get("user-data-6"),
         ...session.get("user-type"),
       }
 
       userData = await formatUserData(userData)
 
-      const user = await createUser(userData)
+      let user
+
+      try {
+        await prismaUserSchema.validateAsync(userData)
+        user = await createUser(userData)
+      } catch (e) {
+        return json(
+          { errors: e },
+          { status: 400 }
+        );
+      }
 
       return createUserSession({
         request,
@@ -83,14 +78,9 @@ export const action = async ({ request }) => {
     }
   }
 
-  // save next step to the cookie
-  const nextStep = userType ? 6 : Number(step) + (action === 'next' ? 1 : -1)
+  const nextStep = Number(step) + (action === 'next' ? 1 : -1)
   session.set('current-step', { step: nextStep })
-  // save the current page data
-  console.log(data)
   session.set(`user-data-${step}`, data)
-  // save new usertype if it is being defined
-  if (userType) session.set('user-type', { userType: userType })
 
   return redirect(`/join/user?${searchParams}`, {
     headers: {
@@ -115,7 +105,7 @@ export const loader = async ({ request }) => {
       ...session.get("user-data-3"),
       ...session.get("user-data-4"),
       ...session.get("user-data-6"),
-    }
+    } ?? {}
     return json({ data, step, userType })
   } else if (step === 4) {
     const data = {
@@ -171,34 +161,38 @@ const user = () => {
         {step === 4 && <UserData data={data} actionData={actionData} />}
         {step === 5 && <UserType data={data} actionData={actionData} />}
         {step === 6 && (userType === "advisor" ?
-          <AdvisorData data={data} actionData={actionData} /> : <DelegateData data={data} actionData={actionData} />)
+          <AdvisorData data={data} actionData={actionData} /> :
+          <DelegateData data={data} actionData={actionData} />)
         }
         {step === 7 && <ConfirmData data={data} userType={userType} />}
       </S.Container>
 
       <S.ControlButtonsContainer>
         {step !== 5 &&
-          <S.ControlButton
-            name="action"
-            value="next"
-            type="submit"
-            disabled={isNextButtonDisabled}
-            onClick={() => setIsNextButtonClicked(true)}
-          >
-            {step === 7 ? 'Cadastrar' : 'Próximo'}
-            {transition.state !== 'idle' && isNextButtonClicked && <Spinner dim={18} />}
-          </S.ControlButton>
+          <DefaultButtonBox isDisabled={isNextButtonDisabled}>
+            <Button
+              name="action"
+              value="next"
+              type="submit"
+              isDisabled={isNextButtonDisabled}
+              onPress={() => setIsNextButtonClicked(true)}
+            >
+              {step === 7 ? 'Cadastrar' : 'Próximo'}
+              {transition.state !== 'idle' && isNextButtonClicked && <Spinner dim={18} />}
+            </Button>
+          </DefaultButtonBox>
         }
 
         {step > 2 &&
-          <S.ControlButton
-            name="action"
-            value="previous"
-            type="submit"
-            prev
-          >
-            Voltar
-          </S.ControlButton>
+          <DefaultButtonBox whiteBackground>
+            <Button
+              name="action"
+              value="previous"
+              type="submit"
+            >
+              Voltar
+            </Button>
+          </DefaultButtonBox>
         }
       </S.ControlButtonsContainer>
     </S.SubscriptionForm>

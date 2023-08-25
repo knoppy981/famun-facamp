@@ -1,35 +1,9 @@
-import { useState, useRef, useEffect } from 'react'
-
 import * as S from './elements'
-import { FiTrash2 } from 'react-icons/fi'
-import SelectInput from '~/styled-components/components/inputs/selectInput'
-import DefaultInputBox from '~/styled-components/components/inputs/defaultInput'
+import DefaultInputBox from '~/styled-components/components/inputBox/default';
+import TextField from '~/styled-components/components/textField';
+import { Select, Item } from '~/styled-components/components/select';
 
 const AdvisorData = ({ data, actionData }) => {
-
-  const [values, setValues] = useState({
-    Instagram: data?.Instagram,
-    Facebook: data?.Facebook,
-    Linkedin: data?.Linkedin,
-    Twiteer: data?.Twitter
-  })
-  const valuesArray = Object.entries(values)
-
-  const inputRef = useRef(null)
-  const [selectValue, setSelectValue] = useState("Instagram")
-
-  const addSM = (e) => {
-    e.preventDefault();
-    if (inputRef?.current.value.length > 0) setValues({ ...values, [selectValue]: inputRef?.current.value })
-  }
-
-  const removeSM = (e, item) => {
-    e.preventDefault();
-    let copyOfValues = { ...values }
-    delete copyOfValues[item]
-    setValues(copyOfValues);
-  }
-
   return (
     <>
       <S.Title>
@@ -38,37 +12,57 @@ const AdvisorData = ({ data, actionData }) => {
 
       <S.Wrapper>
         <S.InputContainer>
-          <SelectInput
-            name="role"
-            text="Posição do(a) Professor(a) Orientador(a)"
-            value={data?.role}
-            selectList={["Professor(a)", "Coordenador(a)", "Diretor(a)", "Outro"]}
-            err={actionData?.errors?.name}
-          />
+          <DefaultInputBox>
+            <Select
+              name="advisorRole"
+              label="Posição do(a) Professor(a) Orientador(a)"
+              defaultSelectedKey={data?.role}
+              items={[
+                { id: "Professor" },
+                { id: "Coordenador" },
+                { id: "Diretor" },
+                { id: "Outro" }
+              ]}
+              err={actionData?.errors?.role}
+            >
+              {(item) => <Item>{`${item.id}${item.id !== "Outro" ? "(a)" : ""}`}</Item>}
+            </Select>
+          </DefaultInputBox>
 
-          <DefaultInputBox
-            name="Instagram"
-            text="Instagram"
-            type="text"
-            value={data?.Instagram}
-            err={actionData?.errors?.Instagram}
-          />
+          <DefaultInputBox>
+            <TextField
+              name="instagram"
+              label="Instagram"
+              type="text"
+              defaultValue={data?.instagram}
+              err={actionData?.errors?.instagram}
+              action={actionData}
+            />
+          </DefaultInputBox>
 
-          <DefaultInputBox
-            name="Facebook"
-            text="Facebook"
-            type="text"
-            value={data?.Facebook}
-            err={actionData?.errors?.Facebook}
-          />
+          <DefaultInputBox>
+            <TextField
+              name="facebook"
+              label="Facebook"
+              type="text"
+              defaultValue={data?.facebook}
+              err={actionData?.errors?.facebook}
+              action={actionData}
+            />
+          </DefaultInputBox>
 
-          <DefaultInputBox
-            name="Linkedin"
-            text="Linkedin"
-            type="text"
-            value={data?.Linkedin}
-            err={actionData?.errors?.Linkedin}
-          />
+          <DefaultInputBox>
+            <TextField
+              name="linkedin"
+              label="Linkedin"
+              type="text"
+              defaultValue={data?.linkedin}
+              err={actionData?.errors?.linkedin}
+              action={actionData}
+            />
+          </DefaultInputBox>
+
+          <input type='hidden' name="userType" value="advisor" />
         </S.InputContainer>
       </S.Wrapper>
     </>

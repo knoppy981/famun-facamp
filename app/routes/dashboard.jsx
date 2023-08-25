@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { json } from "@remix-run/node";
+import { useEffect, useRef, useState } from "react";
+import { json, redirect } from "@remix-run/node";
 import { Form, NavLink, Outlet, useFetcher, useLocation } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "framer-motion";
@@ -8,7 +8,7 @@ import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
 
 import * as S from '~/styled-components/dashboard'
-import * as D from '~/styled-components/components/dropdown'
+import * as D from '~/styled-components/components/dropdown/elements'
 import {
   FiMenu,
   FiShoppingBag,
@@ -33,6 +33,9 @@ import { useClickOutside } from "~/hooks/useClickOutside";
 import LanguageMenu from "~/styled-components/components/dropdown/languageMenu";
 
 export const loader = async ({ request }) => {
+  const url = new URL(request.url);
+  if (url.pathname === "/dashboard") return redirect("/dashboard/home")
+
   const userId = await requireUserId(request)
   return json({ userId })
 };
@@ -49,8 +52,16 @@ const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
-    document.body.classList.toggle('sidebar-open');
   };
+  // cancel scroll when sidebar is open
+  useEffect(() => {
+    if (isSidebarOpen) {
+      document.body.classList.add('sidebar-open');
+    } else {
+      document.body.classList.remove('sidebar-open');
+    }
+  }, [isSidebarOpen])
+
   const sidebarVariants = {
     enter: {
       x: "100%",
@@ -115,77 +126,35 @@ const Dashboard = () => {
               </S.AsideCloseIcon>
             </S.AsideNavbar>
 
-            <NavLink to="home" onClick={toggleSidebar}>
-              {({ isActive }) => (
-                <S.SidebarItem active={isActive ? true : false}>
-                  <S.ItemIcon>
-                    <FiHome />
-                  </S.ItemIcon>
-                  <S.ItemTitle>
-                    Home
-                  </S.ItemTitle>
-                </S.SidebarItem>
-              )}
-            </NavLink>
-
-            <NavLink to="data" prefetch="render" onClick={toggleSidebar}>
-              {({ isActive }) => (
-                <S.SidebarItem active={isActive ? true : false}>
-                  <S.ItemIcon>
-                    <FiEdit />
-                  </S.ItemIcon>
-                  <S.ItemTitle>
-                    Profile
-                  </S.ItemTitle>
-                </S.SidebarItem>
-              )}
-            </NavLink>
-
-            <NavLink to="delegation" prefetch="render" onClick={toggleSidebar}>
-              {({ isActive }) => (
-                <S.SidebarItem active={isActive ? true : false}>
-                  <S.ItemIcon>
-                    <FiFlag />
-                  </S.ItemIcon>
-                  <S.ItemTitle>
-                    Delegation
-                  </S.ItemTitle>
-                </S.SidebarItem>
-              )}
-            </NavLink>
-
-            <NavLink to="payment" prefetch="render" onClick={toggleSidebar}>
-              {({ isActive }) => (
-                <S.SidebarItem active={isActive ? true : false}>
-                  <S.ItemIcon>
-                    <FiCreditCard />
-                  </S.ItemIcon>
-                  <S.ItemTitle>
-                    Payments
-                  </S.ItemTitle>
-                </S.SidebarItem>
-              )}
-            </NavLink>
-
-            <NavLink to="documents" onClick={toggleSidebar}>
-              {({ isActive }) => (
-                <S.SidebarItem active={isActive ? true : false}>
-                  <S.ItemIcon>
-                    <FiFile />
-                  </S.ItemIcon>
-                  <S.ItemTitle>
-                    Documents
-                  </S.ItemTitle>
-                </S.SidebarItem>
-              )}
-            </NavLink>
+            {[
+              { name: "Home", to: "home", icon: <FiHome />, prefetch: "none" },
+              { name: "Profile", to: "data", icon: <FiEdit />, prefetch: "render" },
+              { name: "Delegation", to: "delegation", icon: <FiFlag />, prefetch: "render" },
+              { name: "Payments", to: "payment", icon: <FiCreditCard />, prefetch: "render" },
+              { name: "Documents", to: "documents", icon: <FiFile />, prefetch: "none" },
+            ].map((item, index) => (
+              <NavLink to={item.to} onClick={toggleSidebar} prefetch={item.prefetch} key={`${item.to}-link`}>
+                {({ isActive }) => (
+                  <S.SidebarItem active={isActive ? true : false}>
+                    <S.ItemIcon>
+                      {item.icon}
+                    </S.ItemIcon>
+                    <S.ItemTitle>
+                      {item.name}
+                    </S.ItemTitle>
+                  </S.SidebarItem>
+                )}
+              </NavLink>
+            ))}
 
             <S.AsideLogout>
               <Form action='/logout' method='post' onClick={toggleSidebar}>
-                <S.NavItem type='submit'>
-                  <FiLogOut />
-                  Log out
-                </S.NavItem>
+                <S.Button>
+                  <S.NavItem type='submit'>
+                    <FiLogOut />
+                    Log out
+                  </S.NavItem>
+                </S.Button>
               </Form>
             </S.AsideLogout>
           </S.AsideContainer>
@@ -209,19 +178,21 @@ const Dashboard = () => {
 
         <S.Navbar>
           <S.NavItem disabled>
-            <FiUser/>
-            <span>
+            <FiUser />
 
+            <span>
               {user.name}
             </span>
           </S.NavItem>
 
           <S.DisappearOnWidth>
             <Form action='/logout' method='post'>
-              <S.NavItem type='submit'>
-                <FiLogOut />
-                Log out
-              </S.NavItem>
+              <S.Button type='submit'>
+                <S.NavItem>
+                  <FiLogOut />
+                  Log out
+                </S.NavItem>
+              </S.Button>
             </Form>
           </S.DisappearOnWidth>
 
@@ -235,71 +206,26 @@ const Dashboard = () => {
 
         <S.DashboardContainer>
           <S.Sidebar>
-            <NavLink to="home">
-              {({ isActive }) => (
-                <S.SidebarItem active={isActive ? true : false}>
-                  <S.ItemIcon>
-                    <FiHome />
-                  </S.ItemIcon>
-                  <S.ItemTitle>
-                    Home
-                  </S.ItemTitle>
-                </S.SidebarItem>
-              )}
-            </NavLink>
-
-            <NavLink to="data" prefetch="render">
-              {({ isActive }) => (
-                <S.SidebarItem active={isActive ? true : false}>
-                  <S.ItemIcon>
-                    <FiEdit />
-                  </S.ItemIcon>
-                  <S.ItemTitle>
-                    Profile
-                  </S.ItemTitle>
-                </S.SidebarItem>
-              )}
-            </NavLink>
-
-            <NavLink to="delegation" prefetch="render">
-              {({ isActive }) => (
-                <S.SidebarItem active={isActive ? true : false}>
-                  <S.ItemIcon>
-                    <FiFlag />
-                  </S.ItemIcon>
-                  <S.ItemTitle>
-                    Delegation
-                  </S.ItemTitle>
-                </S.SidebarItem>
-              )}
-            </NavLink>
-
-
-            <NavLink to="payment" prefetch="render">
-              {({ isActive }) => (
-                <S.SidebarItem active={isActive ? true : false}>
-                  <S.ItemIcon>
-                    <FiCreditCard />
-                  </S.ItemIcon>
-                  <S.ItemTitle>
-                    Payments
-                  </S.ItemTitle>
-                </S.SidebarItem>
-              )}
-            </NavLink>
-
-            <NavLink to="documents">
-              {({ isActive }) => (
-                <S.SidebarItem active={isActive ? true : false}>
-                  <S.ItemIcon>
-                    <FiFile />
-                  </S.ItemIcon>
-                  <S.ItemTitle>
-                    Documents
-                  </S.ItemTitle>
-                </S.SidebarItem>
-              )}
-            </NavLink>
+            {[
+              { name: "Home", to: "home", icon: <FiHome />, prefetch: "none" },
+              { name: "Profile", to: "data", icon: <FiEdit />, prefetch: "render" },
+              { name: "Delegation", to: "delegation", icon: <FiFlag />, prefetch: "render" },
+              { name: "Payments", to: "payment", icon: <FiCreditCard />, prefetch: "render" },
+              { name: "Documents", to: "documents", icon: <FiFile />, prefetch: "none" },
+            ].map((item, index) => (
+              <NavLink to={item.to} prefetch={item.prefetch} key={`${item.to}-link`}>
+                {({ isActive }) => (
+                  <S.SidebarItem active={isActive ? true : false}>
+                    <S.ItemIcon>
+                      {item.icon}
+                    </S.ItemIcon>
+                    <S.ItemTitle>
+                      {item.name}
+                    </S.ItemTitle>
+                  </S.SidebarItem>
+                )}
+              </NavLink>
+            ))}
           </S.Sidebar>
 
           <S.OutletWrapper>

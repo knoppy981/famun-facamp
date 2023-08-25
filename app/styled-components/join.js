@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { FiChevronRight } from "react-icons/fi";
-import { Form, Link } from "@remix-run/react";
+import { Form } from "@remix-run/react";
 
 const azulClaro = '#BDE8F5'
 const azul = '#01558A'
@@ -13,24 +13,12 @@ export const Wrapper = styled.div`
   display: flex;
   justify-content: center;
 `
-export const ExternalButtonWrapper = styled.div`
+export const GoBackLinkWrapper = styled.div`
   position: absolute;
   left: 5%;
   top: 5%;
   height: 40px;
-`
-export const ExternalButton = styled(Link)`
-  border: 0;
-  outline: none;
-  display: flex;
-  gap: 10px;
   font-size: 1.6rem;
-  cursor: pointer;
-
-  svg {
-    font-size: 2rem;
-    transform: translateY(1px);
-  }
 `
 export const SubscriptionForm = styled(Form)`
   min-height: 70svh;
@@ -138,40 +126,13 @@ export const Container = styled.div`
 export const ControlButtonsContainer = styled.div`
   margin-top: auto;
   margin-bottom: 0;
+  align-self: center;
   display: flex;
-  align-items: center;
   justify-content: center;
   flex-direction: row-reverse;
   gap: 15px;
 
-  background: #fff;
-  border-radius: 1.5rem;
-  box-shadow: 0 0 5px 10px #fff;
-`
-export const ControlButton = styled.button`
-  height: 4.5rem;
-  width: 150px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  background: ${p => !p.prev ? azulClaro : "#fff"};
-  box-shadow: 0px 2px 5px -2px #000000;
-  border: 1px solid ${p => !p.prev ? 'transparent' : '#E6E6E6'};
-  font-weight: 500;
-  color: #000;
-  border-radius: 5px;
-	font-size: 1.5rem;
-  transition: .4s all ease;
-
-  @media screen and (max-width: 500px) and (min-height: 700px) {
-    height: 5.2rem;
-    font-size: 1.8rem;
-	}
-
-  &:disabled {
-    border: 1px solid transparent;
-    background: #fff;
-    opacity: .6;
+  > * {
+    width: 150px;
   }
 `

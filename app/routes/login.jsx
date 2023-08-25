@@ -1,21 +1,23 @@
 import { useState, useRef } from 'react'
-import { useActionData, useSearchParams, useTransition, Link, useFetcher } from '@remix-run/react'
+import { useActionData, useSearchParams, useTransition, useFetcher, Form } from '@remix-run/react'
 import { json, redirect } from '@remix-run/node';
 import { useTranslation } from 'react-i18next'
 import qs from 'qs'
 
 import { getUserId, createUserSession } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
-import { safeRedirect, validateEmail, checkUserInputData } from "~/utils";
+import { safeRedirect } from "~/utils";
 import { i18nCookie } from '~/cookies';
 
 import * as S from '~/styled-components/login'
-import * as D from '~/styled-components/components/dropdown'
-import { useClickOutside } from "~/hooks/useClickOutside";
-import InputBox from '~/styled-components/components/inputs/defaultInput'
-import { FiGlobe, FiX } from 'react-icons/fi';
 import LanguageMenu from '~/styled-components/components/dropdown/languageMenu';
 import Spinner from '~/styled-components/components/spinner';
+import DefaultInputBox from '~/styled-components/components/inputBox/default';
+import TextField from '~/styled-components/components/textField';
+import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
+import Button from '~/styled-components/components/button';
+import Checkbox from '~/styled-components/components/checkbox'
+import Link from '~/styled-components/components/link';
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
@@ -24,21 +26,18 @@ export const action = async ({ request }) => {
   const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
   const remember = formData.get("remember");
 
-  if (typeof password !== "string" || password.length === 0) {
-    return json(
-      { errors: { password: "Password is required" } },
-      { status: 400 }
-    );
-  }
-
   try {
-    checkUserInputData([
-      { key: "email", value: email, errorMessages: { undefined: "E-mail is required", invalid: "Invalid e-mail" }, valuesToCompare: [] },
-    ])
   } catch (error) {
     error = qs.parse(error.message)
     return json(
       { errors: { [error.key]: error.msg } },
+      { status: 400 }
+    );
+  }
+
+  if (typeof password !== "string" || password.length === 0) {
+    return json(
+      { errors: { password: "Password is required" } },
       { status: 400 }
     );
   }
@@ -56,7 +55,7 @@ export const action = async ({ request }) => {
     request,
     userId: user.id,
     delegationId: user?.delegation?.id,
-    remember: false,
+    remember: remember === "on" ? true : false,
     redirectTo,
   });
 }
@@ -81,61 +80,80 @@ const LoginPage = () => {
   const actionData = fetcher.data
   const transition = fetcher.state
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    fetcher.submit(e.currentTarget, { replace: true })
-  }
-
   return (
     <S.Wrapper>
       <LanguageMenu /* i18n={i18n} */ />
 
-      <S.FormContainer>
+      <S.Container>
         <S.Title>
           FAMUN 2023
         </S.Title>
 
-        <S.AuthForm method="post" noValidate>
-          <InputBox name="email" text="email" type="email" err={actionData?.errors?.email} autoFocus={true} />
+        <fetcher.Form method="post" noValidate>
+          <S.FormContainer>
+            <DefaultInputBox>
+              <TextField
+                label="e-mail"
+                name="email"
+                type="email"
+                err={actionData?.errors?.email}
+              />
+            </DefaultInputBox>
 
-          <InputBox name="password" text="password" type="password" err={actionData?.errors?.password} />
+            <DefaultInputBox>
+              <TextField
+                label="password"
+                name="password"
+                type="password"
+                defaultValue={null}
+                err={actionData?.errors?.password}
+              />
+            </DefaultInputBox>
 
-          <S.ForgotLinkBox>
-            <S.StyledLink
-              to=/* "/resetPassword" */ "/"
+            <Checkbox
+              name="rememeber"
             >
-              Forgot Password?
-            </S.StyledLink>
-          </S.ForgotLinkBox>
+              Remember me
+            </Checkbox>
 
-          <input type="hidden" name="redirectTo" value={redirectTo} />
+            <S.LinkBox>
+              <Link
+                to=/* "/resetPassword" */ "/"
+                underline={1}
+              >
+                Forgot Password?
+              </Link>
+            </S.LinkBox>
 
-          <S.ButtonContainer>
-            <S.SubmitButton
-              type="submit"
-              name="button"
-              value="firstButton"
-              disabled={transition !== "idle"}
-              onClick={handleSubmit}
-            >
-              Log in {transition !== 'idle' && <Spinner dim={18} />}
-            </S.SubmitButton>
-          </S.ButtonContainer>
-        </S.AuthForm>
+            <input type="hidden" name="redirectTo" value={redirectTo} />
 
-        <S.JoinLinkBox>
+            <S.ButtonContainer>
+              <DefaultButtonBox>
+                <Button
+                  type="submit"
+                  disabled={transition !== "idle"}
+                >
+                  Log in {transition !== 'idle' && <Spinner dim={18} />}
+                </Button>
+              </DefaultButtonBox>
+            </S.ButtonContainer>
+          </S.FormContainer>
+        </fetcher.Form>
+
+        <S.LinkBox center={true}>
           Don't have an account?
-          <S.StyledLink
+          <Link
             to={{
               pathname: "/join/user",
               search: searchParams.toString(),
             }}
+            underline={1}
           >
             Sign in
-          </S.StyledLink>
-        </S.JoinLinkBox>
-      </S.FormContainer>
-    </S.Wrapper>
+          </Link>
+        </S.LinkBox>
+      </S.Container >
+    </S.Wrapper >
   )
 }
 

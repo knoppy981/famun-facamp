@@ -2,11 +2,21 @@ import { useState } from 'react'
 
 import * as S from './elements'
 import { isoCountries } from '~/data/ISO-3661-1'
+import DefaultInputBox from '~/styled-components/components/inputBox/default'
+import { ComboBox, Item } from '~/styled-components/components/comboBox'
 
 const Nacionality = ({ data }) => {
+  function createCountryArray(countries) {
+    return Object.keys(countries).map(countryName => {
+      return {
+        id: countryName
+      };
+    });
+  }
 
-  const [focus, setFocus] = useState(false)
-  const [flag, setFlag] = useState(data.nacionality ?? "Brazil")
+  const countryArray = createCountryArray(isoCountries)
+
+  let [country, setCountry] = useState(data.nacionality ?? "Brazil");
 
   return (
     <>
@@ -14,29 +24,20 @@ const Nacionality = ({ data }) => {
         Nacionalidade
       </S.Title>
 
-      <S.SubTitle>
-        Escolha seu país de nascimento
-      </S.SubTitle>
-
-      <S.Container
-        onClick={() => setFocus(true)}
-        focused={focus}
-      >
-        <S.NacionalityFlag
-          className={`flag-icon flag-icon-${isoCountries[flag].toLowerCase()}`}
-        />
-
-        <S.Select
-          defaultValue={data.nacionality ?? "Brazil"}
-          onChange={e => { setFlag(e.target.value); setFocus(false) }}
-          name="nacionality"
-          onBlur={() => setFocus(false)}
-        >
-          {Object.keys(isoCountries).map((item, index) => (
-            <S.Option key={`country-${item}`}>{item}</S.Option>
-          ))}
-        </S.Select>
-      </S.Container>
+      <S.Wrapper>
+        <DefaultInputBox>
+          <ComboBox
+            name="nacionality"
+            label="País de Nascimento"
+            defaultItems={countryArray}
+            leftItem={<S.NacionalityFlag className={`flag-icon flag-icon-${isoCountries[country]?.toLowerCase()}`}/>}
+            onSelectionChange={setCountry}
+            defaultInputValue={country}
+          >
+            {(item) => <Item>{item.id}</Item>}
+          </ComboBox>
+        </DefaultInputBox>
+      </S.Wrapper>
     </>
   )
 }

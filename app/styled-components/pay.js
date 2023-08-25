@@ -19,24 +19,12 @@ export const Wrapper = styled.div`
   display: flex;
   justify-content: center;
 `
-export const ExternalButtonWrapper = styled.div`
+export const GoBackLinkWrapper = styled.div`
   position: absolute;
   left: 5%;
   top: 5%;
   height: 40px;
-`
-export const ExternalButton = styled(Link)`
-  border: 0;
-  outline: none;
-  display: flex;
-  gap: 10px;
   font-size: 1.6rem;
-  cursor: pointer;
-
-  svg {
-    font-size: 2rem;
-    transform: translateY(1px);
-  }
 `
 export const PaymentWrapper = styled.div`
   min-height: 70svh;
@@ -185,9 +173,9 @@ export const Payment = styled.div`
 export const CheckBox = styled.input`
   flex-shrink: 0;
 `
-export const Label = styled.label`
+export const OvrflowText = styled.span`
   font-size: 1.4rem;
-	overflow: hidden;
+  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 `
@@ -237,46 +225,17 @@ export const StripeElementsWrapper = styled.div`
   gap: 40px;
   width: 100%;
 `
-export const PayButtonContainer = styled.div`
+export const ButtonWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
-  justify-content: center;
+  place-items: stretch;
   margin-top: 10px;
-`
-export const GoBackLink = styled(Link)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 500;
+  `
+export const LinkContainer = styled.div`
+  place-self: center;
   font-size: 1.4rem;
 `
 export const ButtonContainer = styled.div`
-  display: grid;
   gap: 15px;
-`
-export const Button = styled.button`
-  height: 4.5rem;
   min-width: 150px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  background: ${p => !p.prev ? azulClaro : "#fff"};
-  box-shadow: 0px 2px 5px -2px #000000;
-  border: 1px solid ${p => !p.prev ? 'transparent' : '#E6E6E6'};
-  color: #000;
-  border-radius: 5px;
-  font-weight: 500;
-	font-size: 1.6rem;
-  transition: .4s all ease;
-
-  @media screen and (max-width: 500px) and (min-height: 700px) {
-    height: 5.2rem;
-	}
-
-  &:disabled {
-    border: 1px solid transparent;
-    background: #fff;
-    opacity: .6;
-  }
 `

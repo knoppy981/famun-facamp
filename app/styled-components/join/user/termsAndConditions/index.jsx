@@ -2,6 +2,7 @@
 import { useEffect } from 'react'
 import termsAndConditions from '~/data/termsAndConditions'
 import * as S from './elements'
+import Checkbox from '~/styled-components/components/checkbox'
 
 const TermsAndConditions = ({ setIsNextButtonDisabled }) => {
 
@@ -19,19 +20,13 @@ const TermsAndConditions = ({ setIsNextButtonDisabled }) => {
         {termsAndConditions}
       </S.TextContainer>
 
-      <S.Container>
-        <S.CheckBox 
-          type="checkbox" 
-          name="termsAndConditions"
-          id="termsAndConditions"
-          required
-          onChange={e => setIsNextButtonDisabled(!e.target.checked)}
-        />
-
-        <S.Label htmlFor='termsAndConditions'>
-          Eu li e aceito os Termos e Condições do evento Famun.
-        </S.Label>
-      </S.Container>
+      <Checkbox
+        name="termsAndConditions"
+        required
+        onChange={value => setIsNextButtonDisabled(!value)}
+      >
+        Eu li e aceito os Termos e Condições do evento Famun.
+      </Checkbox>
     </>
   )
 }

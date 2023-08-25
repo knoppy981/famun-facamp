@@ -15,69 +15,56 @@ export const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
 `
-export const ExternalButtonWrapper = styled.div`
+export const GoBackLinkWrapper = styled.div`
   position: absolute;
   left: 5%;
   top: 5%;
   height: 40px;
-`
-export const ExternalButton = styled(Link)`
-  border: 0;
-  outline: none;
-  display: flex;
-  gap: 10px;
   font-size: 1.6rem;
-  cursor: pointer;
-
-  svg {
-    font-size: 2rem;
-    transform: translateY(1px);
-  }
 `
 export const Container = styled.div`
-  min-width: 400px;
-  height: 70vh;
+  min-height: 70svh;
+  margin: 15vh 0;
+ 	width: 400px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 40px;
-`
-export const TitleBox = styled.div`
-  display: flex;
-  align-items: center;
-  min-width: 400px;
-  height: 40px;
+  
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    gap: 20px;
+    margin: 100px 0 50px;
+    width: 100vw;
+    padding: 0 15px;
+	}
 `
 export const Title = styled.div`
   font-size: 3.6rem;
   font-weight: 900;
   color: #183567;
   margin-right: 5px;
-`
-export const SubTitle = styled.div`
-  font-size: 2.4rem;
-  font-weight: 500;
-  color: #000;
-  transform: translate(0, 1px);
-`
-export const ArrowIconBox = styled(FiChevronRight)`
-  height: 25px;
-  width: 25px;
-  color: #000;
   display: flex;
-  align-items: bottom;
+  justify-content: center;
+
+  @media screen and (max-width: 800px) {
+    font-size: 4.2rem;
+  }
+
+  @media screen and (max-width: 500px) {
+    font-size: 4.8rem;
+  }
+
+  @media screen and (max-width: 350px) {
+    font-size: 3rem;
+  }
 `
-export const StepsForm = styled(Form)`
+export const InviteForm = styled(Form)`
   width: 100%;
-  height: 100%;
+  color: #fff;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 10px;
-  padding-left: 5px;
+	grid-gap: 15px;
 `
 export const FormTitle = styled.h3`
-  width: 426px;
   font-size: 2.2rem;
   font-weight: 500;
   color: #000;
@@ -88,10 +75,17 @@ export const FormSubTitle = styled.p`
   color: #000;
 `
 export const ButtonsContainer = styled.div`
+  margin-top: auto;
+  margin-bottom: 0;
   display: flex;
   justify-content: center;
-  gap: 16px;
-  margin-top: 25px;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 40px;
+
+  > * {
+    width: 100%;
+  }
 `
 export const Button = styled.button`
   height: 45px;

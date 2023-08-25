@@ -34,3 +34,9 @@ export const SubInputContainer = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 `
+export const NacionalityFlag = styled.div`
+  width: 30px;
+  background-size: contain;
+  background-position: 50%;
+  background-repeat: no-repeat;
+`

@@ -1,9 +1,10 @@
 import React from 'react'
 
 import * as S from './elements'
-import DefaultInputBox from "~/styled-components/components/inputs/defaultInput";
-import SelectInput from '~/styled-components/components/inputs/selectInput';
-import PhoneInputBox from '~/styled-components/components/inputs/defaultInput/phoneInput';
+import DefaultInputBox from '~/styled-components/components/inputBox/default';
+import TextField from '~/styled-components/components/textField';
+import PhoneNumberField from '~/styled-components/components/textField/phoneNumber';
+import { Select, Item } from '~/styled-components/components/select';
 
 const CreateDelegation = ({ data, actionData }) => {
   return (
@@ -14,30 +15,42 @@ const CreateDelegation = ({ data, actionData }) => {
 
       <S.Wrapper>
         <S.InputContainer>
-          <DefaultInputBox
-            name="schoolName"
-            text="Nome da Escola / Universidade"
-            type="text"
-            value={data?.schoolName}
-            err={actionData?.errors?.schoolName}
-            autoFocus={true}
-          />
+          <DefaultInputBox>
+            <TextField
+              name="school"
+              label="Nome da Escola / Universidade"
+              type="text"
+              defaultValue={data?.school}
+              err={actionData?.errors?.school}
+              action={actionData}
+            />
+          </DefaultInputBox>
 
-          <PhoneInputBox
-            name="schoolPhoneNumber"
-            text="Numero de Telefone da Escola / Universidade"
-            type="text"
-            value={data?.schoolPhoneNumber}
-            err={actionData?.errors?.schoolPhoneNumber}
-          />
+          <DefaultInputBox>
+            <PhoneNumberField
+              name="schoolPhoneNumber"
+              label="Numero de Telefone da Escola / Universidade"
+              _defaultValue={data?.schoolPhoneNumber}
+              err={actionData?.errors?.schoolPhoneNumber}
+              action={actionData}
+            />
+          </DefaultInputBox>
 
-          <SelectInput
-            name="participationMethod"
-            text="Método de participação"
-            value={data?.participationMethod}
-            selectList={["Presencial", "Online", "Ambos"]}
-            err={actionData?.errors?.participationMethod}
-          />
+          <DefaultInputBox>
+            <Select
+              name="participationMethod"
+              label="Método de participação"
+              defaultSelectedKey={data?.participationMethod}
+              items={[
+                { id: "Presencial" },
+                { id: "Online" },
+                { id: "Ambos" }
+              ]}
+              err={actionData?.errors?.participationMethod}
+            >
+              {(item) => <Item>{item.id}</Item>}
+            </Select>
+          </DefaultInputBox>
         </S.InputContainer>
       </S.Wrapper>
     </>

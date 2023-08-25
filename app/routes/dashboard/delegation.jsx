@@ -1,24 +1,37 @@
 import { useState, useRef, useEffect } from 'react';
-import { json } from '@remix-run/node';
-import { useMatches, useCatch, useLoaderData, useFetcher, useActionData, useTransition, useSubmit } from '@remix-run/react';
+import { json, redirect } from '@remix-run/node';
+import { useMatches, useCatch, useLoaderData, useFetcher, useActionData, useTransition, useSubmit, Outlet, NavLink } from '@remix-run/react';
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import qs from 'qs'
-import _ from 'lodash';
+import _, { set } from 'lodash';
 
 import { getDelegationId } from '~/session.server';
-import { useUser, safeRedirect, useUserType } from '~/utils';
+import { useUser, safeRedirect, useUserType, formatDate } from '~/utils';
+import { getDelegationById } from '~/models/delegation.server';
 import { useClickOutside } from "~/hooks/useClickOutside";
+import { useWrapChange } from '~/hooks/useWrapChange';
+import { useOnScreen } from '~/hooks/useOnScreen';
 
 import * as S from '~/styled-components/dashboard/delegation'
 import * as P from '~/styled-components/dashboard/data'
-import * as D from '~/styled-components/components/dropdown'
+import * as D from '~/styled-components/components/dropdown/elements'
 import * as E from '~/styled-components/error'
-import { FiMail, FiExternalLink, FiCheck, FiEdit, FiX, FiUserPlus } from 'react-icons/fi';
-import { getDelegationById } from '~/models/delegation.server';
-import { EditUserData } from './data';
+import DataChangeInputBox from '~/styled-components/components/textField/dataChangeInput'
+import DataChangePhoneInputBox from '~/styled-components/components/textField/dataChangeInput/phoneInput'
+import DataChangeDateInputBox from '~/styled-components/components/textField/dataChangeInput/dateInput'
+import DataChangeSelectInput from '~/styled-components/components/textField/dataChangeInput/selectInput'
 import Spinner from '~/styled-components/components/spinner';
+import { FiMail, FiExternalLink, FiCheck, FiEdit, FiX, FiUserPlus } from 'react-icons/fi';
+import EditUserData from '~/styled-components/components/dataBox/user';
+import { isoCountries } from '~/data/ISO-3661-1'
+import { postalCodeMask } from '~/data/postal-codes';
+import DefaultDropdown from '~/styled-components/components/dropdown';
+import EditDelegationData from '~/styled-components/components/dataBox/delegation';
 
 export const loader = async ({ request }) => {
+  const url = new URL(request.url);
+  if (url.pathname === "/dashboard/delegation") return redirect("/dashboard/delegation/participants")
+
   const delegationId = await getDelegationId(request)
 
   if (!delegationId) throw json({ errors: { delegation: "No delegation found" } }, { status: 404 });
@@ -31,54 +44,79 @@ export const loader = async ({ request }) => {
 const ParticipantsPage = ({ user, participants, handleUserClick }) => {
   return (
     <S.OverflowContainer>
-      <S.DelegatesListWrapper>
-        <S.DelegateContainer example>
-          <S.Delegate>
-            <S.Name>
+      <S.DelegatesTable>
+        <thead>
+          <S.TableRow example>
+            <S.TableCell>
               Nome
-            </S.Name>
+            </S.TableCell>
 
-            <S.Role example>
+            <S.TableCell style={{ paddingLeft: "30px" }}>
               Posição
-            </S.Role>
+            </S.TableCell>
 
-            <S.JoinDate>
+            <S.TableCell>
               Entrou em
-            </S.JoinDate>
-          </S.Delegate>
-        </S.DelegateContainer>
+            </S.TableCell>
+          </S.TableRow>
+        </thead>
 
-        {participants.map((item, index) => {
-          const leader = item.leader
-          return (
-            <S.DelegateContainer key={`delegation-user-${index}`} onClick={() => handleUserClick(item.id)}>
-              <S.Delegate key={index} user={item.id === user.id}>
-                <S.Name>
-                  {item.name}
-                  {leader && <S.Item color="red"> Chefe da Delegação </S.Item>}
-                </S.Name>
+        <tbody>
+          {participants.map((item, index) => {
+            const leader = item.leader
+            return (
+              <S.TableRow key={`delegation-user-${index}`} onClick={() => handleUserClick(item.id)}>
+                <S.TableCell user={item.id === user.id}>
+                  <S.CellFlexBox>
+                    {item.name}
+                    {leader && <S.Item color="red"> Chefe da Delegação </S.Item>}
+                  </S.CellFlexBox>
+                </S.TableCell>
 
-                <S.Role>
-                  <S.Item color={item.delegate ? 'blue' : 'green'}>
-                    {item.delegate ? "Delegado" : item.delegationAdvisor.advisorRole}
-                  </S.Item>
-                </S.Role>
+                <S.TableCell>
+                  <S.CellFlexBox>
+                    <S.Item color={item.delegate ? 'blue' : 'green'}>
+                      {item.delegate ? "Delegado" : item.delegationAdvisor.advisorRole}
+                    </S.Item>
+                  </S.CellFlexBox>
+                </S.TableCell>
 
-                <S.JoinDate>
-                  {item.createdAt.split("T")[0]}
-                </S.JoinDate>
-              </S.Delegate>
-            </S.DelegateContainer>
-          )
-        })}
-      </S.DelegatesListWrapper>
+                <S.TableCell>
+                  {formatDate(item.createdAt.split("T")[0])}
+                </S.TableCell>
+              </S.TableRow>
+            )
+          })}
+        </tbody>
+      </S.DelegatesTable>
     </S.OverflowContainer>
   )
 }
 
 const CreateParticipantPage = ({ user, userType, delegatesCount, delegationId }) => {
 
-  const allowChanges = userType === "advisor" ? true : user.leader ?? false
+  // used for showing alternate button when the first one isn't visible
+  const [buttonRef, isRefVisible] = useOnScreen();
+
+  const [creatingUserType, setCreatingUserType] = useState("delegate")
+  const shouldBeAbleToCreate = userType === "advisor" ? true : user.leader ?? false
+  const [allowCreation, setAllowCreation] = useState(false)
+
+  useEffect(() => {
+    setAllowCreation(() => {
+      if (creatingUserType === "delegate" && delegatesCount > 10) return false
+      if (userType === "advisor" || user.leader) return true
+    })
+  }, [creatingUserType])
+
+  const changeCreatingUserType = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+    setCreatingUserType(prevState => prevState === "delegate" ? "delegationAdvisor" : "delegate")
+  }
+
   const fetcher = useFetcher()
 
   // handle create user submission
@@ -88,7 +126,6 @@ const CreateParticipantPage = ({ user, userType, delegatesCount, delegationId })
   }
 
   // state to verify type of user being created
-  const [isDelegate, setIsDelegate] = useState(true)
 
   // normal user for parameter
   const normalUser = {
@@ -125,7 +162,7 @@ const CreateParticipantPage = ({ user, userType, delegatesCount, delegationId })
     setFormData((prevState) => {
       let newData = { ...prevState }
 
-      if (isDelegate) {
+      if (creatingUserType === "delegate") {
         newData.delegationAdvisor = null
         newData.delegate = normalUser.delegate
       } else {
@@ -135,19 +172,12 @@ const CreateParticipantPage = ({ user, userType, delegatesCount, delegationId })
 
       return newData
     })
-  }, [isDelegate])
+  }, [creatingUserType])
 
+  // if user created set the input values back to empty
   useEffect(() => {
     if (fetcher?.data?.name === formData.name) setFormData(normalUser)
   }, [fetcher])
-
-  const changeUserType = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth' // You can change it to 'auto' for instant scrolling
-    });
-    setIsDelegate(!isDelegate)
-  }
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -203,84 +233,92 @@ const CreateParticipantPage = ({ user, userType, delegatesCount, delegationId })
     });
   };
 
-  const handleCouncilPreference = (result) => {
-    if (!result.destination) {
-      return;
-    }
-
-    const items = Array.from(formData.delegate.councilPreference);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    setFormData(prevState => ({
-      ...prevState,
-      delegate: {
-        ...prevState.delegate,
-        councilPreference: items,
-      }
-    }));
-  }
-
   return (
-    <S.DataForm disabled={!allowChanges} method="post" action="/api/manualUserCreate">
+    <S.DataForm disabled={!allowCreation} method="post" action="/api/manualUserCreate">
       <S.DataTitleBox>
         <S.DataTitle>
-          {allowChanges ?
-            "Adicionar participante manualmente" :
-            "Somente o líder da delegação e os orientadores podem adicionar participantes manualmente"}
+          {shouldBeAbleToCreate ?
+            <P.ColorItem
+              onClick={handleSubmission}
+              color={fetcher.state !== 'idle' ? "blue" : allowCreation ? "green" : "gray"}
+              disabled={!allowCreation}
+              ref={buttonRef}
+            >
+              {fetcher.state !== 'idle' ?
+                <><Spinner dim={18} color='green' /> Adicionando</> :
+                <><FiUserPlus /> Adicionar Participante</>}
+            </P.ColorItem> :
+            "Somente o líder da delegação e os orientadores podem adicionar participantes manualmente"
+          }
         </S.DataTitle>
       </S.DataTitleBox>
 
-      <S.DisabledMask show={!allowChanges}>
-        <S.DataTitleBox>
-          <S.DataSubTitle>
-            Tipo do participante
-          </S.DataSubTitle>
+      <S.DataTitleBox
+        style={{
+          pointerEvents: allowCreation ? 'auto' : 'none',
+          opacity: allowCreation ? 1 : 0.5,
+        }}
+      >
+        <S.DataSubTitle>
+          Tipo do participante
+        </S.DataSubTitle>
 
-          <S.UserSelect
-            onChange={changeUserType}
-            disabled={!allowChanges}
-          >
-            {["delegate", "delegationAdvisor"].map((type, index) => (
-              <option
-                style={{ whiteSpace: 'pre' }}
-                key={type}
-                value={type}
-              >
-                {type === "delegate" ? "Delegado" : "Professor(a) Orientador(a)"}
-              </option>
-            ))}
-          </S.UserSelect>
+        <S.UserSelect
+          onChange={changeCreatingUserType}
+          disabled={!allowCreation}
+        >
+          {["delegate", "delegationAdvisor"].map((type, index) => (
+            <option
+              style={{ whiteSpace: 'pre' }}
+              key={type}
+              value={type}
+            >
+              {type === "delegate" ? "Delegado" : "Professor(a) Orientador(a)"}
+            </option>
+          ))}
+        </S.UserSelect>
 
-          {isDelegate && allowChanges ?
-            <S.DataTitle>
-              <P.ColorItem color="red" disabled>
-                {10 - delegatesCount} vagas restantes para delegados
-              </P.ColorItem>
-            </S.DataTitle> :
-            null
-          }
-        </S.DataTitleBox>
-
-        <EditUserData
-          allowChanges={allowChanges}
-          actionData={fetcher.data}
-          formData={formData}
-          handleChange={handleChange}
-          handleAddLanguage={handleAddLanguage}
-          handleRemoveLanguage={handleRemoveLanguage}
-          handleCouncilPreference={handleCouncilPreference}
-          userType={isDelegate ? "delegate" : "delegationAdvisor"}
-        />
-
-        <S.DataTitleBox>
-          <S.DataTitle>
-            <P.ColorItem color="green" onClick={handleSubmission}>
-              <FiUserPlus /> Adicionar Usuário
+        {creatingUserType === "delegate" && allowCreation ?
+          <S.DelegateCountdown>
+            <P.ColorItem color="red" disabled>
+              {10 - delegatesCount} vagas restantes para delegados
             </P.ColorItem>
-          </S.DataTitle>
-        </S.DataTitleBox>
-      </S.DisabledMask>
+          </S.DelegateCountdown> :
+          null
+        }
+      </S.DataTitleBox>
+
+      <EditUserData
+        isDisabled={!allowCreation}
+        actionData={fetcher.data}
+        formData={formData}
+        handleChange={handleChange}
+        handleAddLanguage={handleAddLanguage}
+        handleRemoveLanguage={handleRemoveLanguage}
+        userType={creatingUserType}
+      />
+
+      {allowCreation ? <AnimatePresence>
+        {!isRefVisible && (
+          <S.StickyButton
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <P.ColorItem
+              onClick={handleSubmission}
+              boxShadow
+              color={fetcher.state !== 'idle' ? "blue" : allowCreation ? "green" : "gray"}
+              disabled={!allowCreation}
+            >
+              {fetcher.state !== 'idle' ?
+                <><Spinner dim={18} color='green' /> Adicionando</> :
+                <><FiUserPlus /> Adicionar Participante</>}
+            </P.ColorItem>
+          </S.StickyButton>
+        )}
+      </AnimatePresence> : null}
 
       <input type="hidden" name="data" value={qs.stringify(formData)} />
       <input type="hidden" name="delegationId" value={delegationId} />
@@ -297,11 +335,11 @@ const DataPage = ({
   clickedUserFromTableId
 }) => {
 
-  const containerRef = useRef(null);
-  const isWrapped = useWrapChange(containerRef);
+  // used for showing alternate button when the first one isnt visible
+  const [buttonRef, isRefVisible] = useOnScreen();
 
   // data changes
-  const dataChangeFecther = useFetcher()
+  const fetcher = useFetcher()
   // only allow changes to advisor or delegation leader
   const allowChanges = userType === "advisor" ? true : user.leader ?? false
   // ready submission if changes have been made, and data change active if user clicked on the button to edit the data
@@ -318,23 +356,6 @@ const DataPage = ({
     clickedUserFromTableId ?? formData.participants[0].id
   );
 
-  useEffect(() => {
-    console.log(formData)
-  }, [])
-
-  // useEffect for successful submission of data change form
-  useEffect(() => {
-    if (dataChangeFecther.state === 'loading' && !dataChangeFecther.data?.errors) {
-      // set the delegation data for the updated one recieved from the server
-      setFormData(_.cloneDeep(dataChangeFecther.data))
-      // set these variables to original state
-      setReadySubmission(false)
-      setUserWantsToChangeData(false)
-      setAllowChangeParticipant(true)
-      dataChangeFecther.data = undefined
-    }
-  }, [dataChangeFecther])
-
   // useEffect for every data change
   useEffect(() => {
     // if data is different from orginal data and the user clicked on the edit data button (userWantsToChangeData),
@@ -349,13 +370,26 @@ const DataPage = ({
     }
   }, [formData])
 
+  // useEffect for successful submission of data change form
+  useEffect(() => {
+    if (fetcher.state === 'loading' && !fetcher.data?.errors) {
+      // set the delegation data for the updated one recieved from the server
+      setFormData(_.cloneDeep(fetcher.data))
+      // set these variables to original state
+      setReadySubmission(false)
+      setUserWantsToChangeData(false)
+      setAllowChangeParticipant(true)
+      fetcher.data = undefined
+    }
+  }, [fetcher])
+
   const handleSubmission = (e) => {
     e.preventDefault()
     if (!allowChanges) return
 
     // if submission is ready, meaning that the data has been modified, submi the form, else it means that the user wants to edit the data
     if (readySubmission) {
-      dataChangeFecther.submit(e.currentTarget, { replace: true })
+      fetcher.submit(e.currentTarget, { replace: true })
     } else {
       setUserWantsToChangeData(!userWantsToChangeData)
     }
@@ -430,7 +464,7 @@ const DataPage = ({
       const user = newData.participants.find(
         (participant) => participant.id === selectedUserId
       );
-      if (user) {
+      if (user && !user.delegate.languagesSimulates.includes(newLanguage)) {
         user.delegate.languagesSimulates.push(newLanguage);
       }
 
@@ -438,7 +472,7 @@ const DataPage = ({
     });
   };
 
-  const handleRemoveLanguage = (languageToRemove) => {
+  const handleRemoveLanguage = (language) => {
     setFormData((prevState) => {
       let newData = { ...prevState };
 
@@ -448,7 +482,7 @@ const DataPage = ({
       );
       if (user) {
         user.delegate.languagesSimulates = user.delegate.languagesSimulates.filter(
-          (language) => language !== languageToRemove
+          (el) => el !== language
         );
       }
 
@@ -456,36 +490,9 @@ const DataPage = ({
     });
   };
 
-  const handleCouncilPreference = (result) => {
-    if (!result.destination) {
-      return;
-    }
-
-    setFormData((prevState) => {
-      let newData = { ...prevState };
-
-      const user = newData.participants.find(
-        (participant) => participant.id === selectedUserId
-      );
-      if (user && user.delegate) {
-        const reorderedCouncilPreferences = Array.from(user.delegate.councilPreference);
-        const [removed] = reorderedCouncilPreferences.splice(result.source.index, 1);
-        reorderedCouncilPreferences.splice(result.destination.index, 0, removed);
-
-        user.delegate.councilPreference = reorderedCouncilPreferences;
-      }
-
-      return newData;
-    });
-  }
-
   return (
-    <S.DataForm disabled={false} method="post" action="/dashboard/data" id='data'>
-      <S.DataTitleBox>
-        {/* <S.DataTitle>
-          Editar dados da delegação e de seus participantes
-        </S.DataTitle> */}
-
+    <S.DataForm method="post" action="/dashboard/data">
+      <S.DataTitleBox ref={buttonRef}>
         <P.ColorItem
           key='2-menu'
           onClick={handleSubmission}
@@ -498,9 +505,8 @@ const DataPage = ({
                 'blue' :
               'gray'
           }
-          form="data"
         >
-          {dataChangeFecther.state !== 'idle' ?
+          {fetcher.state !== 'idle' ?
             <><Spinner dim={18} color='green' /> Salvando</> :
             !userWantsToChangeData ?
               <><FiEdit /> Editar Dados</> :
@@ -510,106 +516,12 @@ const DataPage = ({
         </P.ColorItem>
       </S.DataTitleBox>
 
-      <P.Wrapper ref={containerRef} isWrapped={isWrapped}>
-        <P.Column>
-          <P.Container key="delegation-address-container">
-            <P.ContainerTitle>
-              Endereço da Escola / Universidade
-            </P.ContainerTitle>
-
-            <P.InputContainer>
-              {[
-                ["Country", "address.country", "text"],
-                ["CEP", "address.postalCode", "text"],
-                ["State", "address.state", "text"],
-                ["City", "address.city", "text"],
-                ["Address", "address.address", "text"],
-                ["Neighborhood", "address.neighborhood", "text"],
-
-              ].map((item, index) => (
-                <React.Fragment key={`${index}-address-input`}>
-                  <P.Label err={dataChangeFecther.data?.errors?.[item[1]]}>
-                    {dataChangeFecther.data?.errors?.[item[1]] ?? item[0]}
-                  </P.Label>
-
-                  <P.Input
-                    id={item[1]}
-                    required
-                    name={item[1]}
-                    type={item[2]}
-                    defaultValue={formData.address[item[1].split('.')[1]]}
-                    autoComplete="false"
-                    disabled={!userWantsToChangeData}
-                    onChange={handleDelegationChange}
-                  />
-                </React.Fragment>
-              ))}
-            </P.InputContainer>
-          </P.Container>
-        </P.Column>
-
-        <P.Column>
-          <P.Container key="delegation-data-container">
-            <P.ContainerTitle border="red">
-              Dados da Delegação
-            </P.ContainerTitle>
-
-            <P.InputContainer>
-
-              <P.Label err={dataChangeFecther.data?.errors?.school} key="label-schoolName">
-                {dataChangeFecther.data?.errors?.school ?? "School / University"}
-              </P.Label>
-
-              <P.Input
-                id="school"
-                required
-                name="school"
-                type="text"
-                value={formData?.school}
-                autoComplete="false"
-                disabled={!userWantsToChangeData}
-                onChange={handleDelegationChange}
-              />
-
-              <P.Label err={dataChangeFecther.data?.errors?.schoolPhoneNumber} key="label-schoolPhoneNumber">
-                {dataChangeFecther.data?.errors?.schoolPhoneNumber ?? "Contact Number"}
-              </P.Label>
-
-              <P.PhoneNumberInput
-                id="schoolPhoneNumber"
-                required
-                name="schoolPhoneNumber"
-                type='text'
-                value={formData?.schoolPhoneNumber}
-                onChange={value => handleDelegationChange({ target: { name: "schoolPhoneNumber", value: value } })}
-                disabled={!userWantsToChangeData}
-                autoComplete="false"
-                err={dataChangeFecther.data?.errors?.schoolPhoneNumber}
-              />
-
-              <P.Label err={dataChangeFecther.data?.errors?.participationMethod}>
-                {dataChangeFecther.data?.errors?.participationMethod ?? "Participação"}
-              </P.Label>
-
-              <P.Select
-                disabled={!userWantsToChangeData}
-                name="participationMethod"
-                onChange={handleDelegationChange}
-                key={formData.participationMethod}
-                defaultValue={formData.participationMethod}
-              >
-                {[
-                  'Online',
-                  'Presencial',
-                  'Ambos'
-                ].map((item, index) => (
-                  <option key={`position-${item}`}>{item}</option>
-                ))}
-              </P.Select>
-            </P.InputContainer>
-          </P.Container>
-        </P.Column>
-      </P.Wrapper>
+      <EditDelegationData
+        isDisabled={!userWantsToChangeData}
+        formData={formData}
+        actionData={fetcher.data}
+        handleChange={handleDelegationChange}
+      />
 
       <S.DataTitleBox ref={userScrollRef}>
         <S.DataSubTitle>
@@ -634,15 +546,48 @@ const DataPage = ({
       </S.DataTitleBox>
 
       <EditUserData
-        allowChanges={userWantsToChangeData}
-        actionData={dataChangeFecther.data}
+        isDisabled={!userWantsToChangeData}
+        actionData={fetcher.data}
         formData={formData.participants.find((participant) => participant.id === selectedUserId)}
         handleChange={handleChange}
         handleAddLanguage={handleAddLanguage}
         handleRemoveLanguage={handleRemoveLanguage}
-        handleCouncilPreference={handleCouncilPreference}
         userType={formData.participants.find((participant) => participant.id === selectedUserId).delegate ? 'delegate' : 'delegationAdvisor'}
       />
+
+      <AnimatePresence>
+        {!isRefVisible && (
+          <S.StickyButton
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <P.ColorItem
+              key='2-menu'
+              onClick={handleSubmission}
+              boxShadow={true}
+              color={
+                allowChanges ?
+                  userWantsToChangeData ?
+                    readySubmission ?
+                      'green' :
+                      'red' :
+                    'blue' :
+                  'gray'
+              }
+            >
+              {fetcher.state !== 'idle' ?
+                <><Spinner dim={18} color='green' /> Salvando</> :
+                !userWantsToChangeData ?
+                  <><FiEdit /> Editar Dados</> :
+                  readySubmission ?
+                    <><FiCheck /> Salvar Alterações</> :
+                    <><FiX /> Cancelar</>}
+            </P.ColorItem>
+          </S.StickyButton>
+        )}
+      </AnimatePresence>
 
       <input type="hidden" name="userId" value={selectedUserId} />
       <input type="hidden" name="data" value={qs.stringify(formData)} />
@@ -650,32 +595,9 @@ const DataPage = ({
   )
 }
 
-const useWrapChange = (ref) => {
-  const [isWrapped, setIsWrapped] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (!ref.current) return;
-      const children = ref.current.children;
-      if (children.length < 2) return;
-      setIsWrapped(children[0].offsetTop !== children[1].offsetTop);
-    };
-    window.addEventListener('resize', handleResize);
-    handleResize(); // check on mount
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [ref]);
-
-  return isWrapped;
-};
-
 const Delegation = () => {
 
   const { delegation } = useLoaderData()
-
-  const user = useUser()
-  const userType = useUserType()
 
   // selected menu
   // slide variants are the framer motion states of the pages for animation
@@ -700,7 +622,7 @@ const Delegation = () => {
       };
     }
   };
-  const [page, setPage] = useState(2);
+  const [page, setPage] = useState(0);
   const paginate = (newPage) => {
     // awlays scroll to the top on page change because of animation glitches
     new Promise((resolve) => {
@@ -745,13 +667,17 @@ const Delegation = () => {
   // invite menu
   const [inviteMenuOpen, setInviteMenuOpen] = useState(false)
   const inviteMenuRef = useRef(null)
+
   // use this hook to detect outside of the menu click, if the user click outside close the menu
   useClickOutside(inviteMenuRef, () => setInviteMenuOpen(false))
   const updateInviteLink = useFetcher()
   // update invite link submission
   const handleUpdateInviteLink = async (e) => {
     e.preventDefault();
-    updateInviteLink.submit(e.currentTarget, { replace: true })
+    updateInviteLink.submit(
+      { delegationCode: delegation.code },
+      { method: "post", action: "/api/updateInviteLink" }
+    );
   }
 
   // when clicking on a user row in the users table, the selected menu has to be the data page 
@@ -787,115 +713,54 @@ const Delegation = () => {
 
         <S.NavButton ref={inviteMenuRef}>
           <S.NavButtonTitle onClick={() => setInviteMenuOpen(!inviteMenuOpen)}>
-            <FiMail />
-
-            Convidar
+            <FiMail /> Convidar
           </S.NavButtonTitle>
 
+          <DefaultDropdown open={inviteMenuOpen}>
+            <D.CopyToClipBoardLabel text="Compartilhe o link abaixo" icon={<FiExternalLink />} value={delegation.inviteLink} />
 
-          <D.Reference open={inviteMenuOpen} />
+            <D.ColorItem color={updateInviteLink.data ? 'green' : 'blue'} type="submit" onClick={handleUpdateInviteLink} disabled={updateInviteLink.state !== "idle"}>
+              {updateInviteLink.state === "idle" ? 'Gerar novo link' : 'Alterando'} {updateInviteLink.data && <FiCheck />}
+            </D.ColorItem>
 
-          <D.Container open={inviteMenuOpen}>
-            <D.Menu active>
-              <D.Title>
-                Compartilhe o link abaixo <FiExternalLink />
-              </D.Title>
+            <D.Title>
+              Ou utilize este código na inscrição
+            </D.Title>
 
-              <D.Link
-                readOnly
-                value={delegation.inviteLink}
-              />
-
-              <D.DForm style={{ padding: '10px 0 0 10px' }} action="/api/updateInviteLink" method="post">
-                <input type="hidden" name="delegationCode" value={delegation.code} />
-
-                <D.ColorItem color={updateInviteLink.data ? 'green' : 'blue'} type="submit" onClick={handleUpdateInviteLink} disabled={updateInviteLink.state !== "idle"}>
-                  {updateInviteLink.state === "idle" ? 'Gerar novo link' : 'Alterando'} {updateInviteLink.data && <FiCheck />}
-                </D.ColorItem>
-              </D.DForm>
-
-              <D.Title>
-                ou utilize este código na inscrição
-              </D.Title>
-
-              <D.Data>
-                {delegation.code}
-              </D.Data>
-            </D.Menu>
-          </D.Container>
+            <D.BiggerItem>
+              {delegation.code}
+            </D.BiggerItem>
+          </DefaultDropdown>
         </S.NavButton>
       </S.Nav>
 
       <S.Menu ref={stickyRef} isSticky={isSticky}>
-        <S.MenuItem
-          active={page === 0}
-          onClick={() => {
-            paginate(0)
-          }}
-        >
-          Participantes
-          {page === 0 ? <S.UnderLine layoutId="paymentPageUnderline" /> : null}
+        <S.MenuItem>
+          <NavLink to="participants">
+            {({ isActive }) => (
+              <> Participantes {isActive ? <S.UnderLine layoutId="paymentPageUnderline" /> : null} </>
+            )}
+          </NavLink>
         </S.MenuItem>
 
-        <S.MenuItem
-          active={page === 1}
-          onClick={() => {
-            paginate(1)
-          }}
-        >
-          Criar Participante
-          {page === 1 ? <S.UnderLine layoutId="paymentPageUnderline" /> : null}
+        <S.MenuItem>
+          <NavLink to="createUser">
+            {({ isActive }) => (
+              <> Criar Participante {isActive ? <S.UnderLine layoutId="paymentPageUnderline" /> : null} </>
+            )}
+          </NavLink>
         </S.MenuItem>
 
-        <S.MenuItem
-          active={page === 2}
-          onClick={() => {
-            paginate(2)
-          }}
-        >
-          Dados
-          {page === 2 ? <S.UnderLine layoutId="paymentPageUnderline" /> : null}
+        <S.MenuItem>
+          <NavLink to="data">
+            {({ isActive }) => (
+              <> Dados {isActive ? <S.UnderLine layoutId="paymentPageUnderline" /> : null} </>
+            )}
+          </NavLink>
         </S.MenuItem>
-
-        {/* <AnimatePresence initial={false} mode="wait">
-          <motion.div
-            key={`${page}-menu`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: .4, ease: "easeInOut" }}
-          >
-            {page === 2 &&
-              <S.MenuItem active colorItem>
-                <P.ColorItem
-                  key='2-menu'
-                  onClick={handleSubmission}
-                  color={
-                    allowChanges ?
-                      userWantsToChangeData ?
-                        readySubmission ?
-                          'green' :
-                          'red' :
-                        'blue' :
-                      'gray'
-                  }
-                  form="data"
-                >
-                  {dataChangeFecther.state !== 'idle' ?
-                    <><Spinner dim={18} color='green' /> Salvando</> :
-                    !userWantsToChangeData ?
-                      <><FiEdit /> Editar</> :
-                      readySubmission ?
-                        <><FiCheck /> Salvar Alterações</> :
-                        <><FiX /> Cancelar</>}
-                </P.ColorItem>
-              </S.MenuItem>
-            }
-          </motion.div>
-        </AnimatePresence> */}
       </S.Menu >
 
-      <AnimatePresence initial={false} mode="wait">
+      {/* <AnimatePresence initial={false} mode="wait">
         {page === 0 ?
           <S.Container
             key="0-menu"
@@ -949,7 +814,8 @@ const Delegation = () => {
               />
             </S.Container>
         }
-      </AnimatePresence>
+      </AnimatePresence> */}
+      <Outlet context={delegation} />
     </S.Wrapper>
   )
 }

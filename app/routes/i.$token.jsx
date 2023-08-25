@@ -1,5 +1,5 @@
 import React from 'react'
-import { useLoaderData, Link, useCatch, Form, useMatches, useSearchParams } from '@remix-run/react'
+import { useLoaderData, useCatch, Form, useMatches, useSearchParams } from '@remix-run/react'
 import invariant from 'tiny-invariant';
 import { json, redirect } from '@remix-run/node';
 
@@ -10,8 +10,11 @@ import { safeRedirect } from '~/utils';
 import * as S from '~/styled-components/invite'
 import * as E from '~/styled-components/error'
 import { FiHelpCircle, FiArrowLeft, } from "react-icons/fi";
+import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
+import Button from '~/styled-components/components/button';
+import Link from "~/styled-components/components/link";
 import LanguageMenu from '~/styled-components/components/dropdown/languageMenu';
-import { useTranslation } from 'react-i18next';
+/* import { useTranslation } from 'react-i18next'; */
 
 export const action = async ({ request }) => {
   const userId = await requireUserId(request)
@@ -56,80 +59,81 @@ export const loader = async ({ request, params }) => {
   return json({ delegation, user })
 }
 
-export const handle = {
+/* export const handle = {
   i18n: "translation"
-};
+}; */
 
 const invite = () => {
 
-  const { t, i18n } = useTranslation("translation")
+  /* const { t, i18n } = useTranslation("translation") */
+  const [searchParams] = useSearchParams();
   const matches = useMatches()
   const { delegation, user } = useLoaderData()
 
   return (
     <S.Wrapper>
-      <S.ExternalButtonWrapper>
-        <S.ExternalButton to={{
-          pathname: '/login',
-        }}>
+      <S.GoBackLinkWrapper>
+        <Link
+          to={{
+            pathname: '/',
+            search: searchParams.toString()
+          }}
+        >
           <FiArrowLeft /> Início
-        </S.ExternalButton>
-      </S.ExternalButtonWrapper>
+        </Link>
+      </S.GoBackLinkWrapper>
 
-      <LanguageMenu i18n={i18n} />
+      <LanguageMenu /* i18n={i18n} */ />
 
       <S.Container>
-        <S.TitleBox>
-          <S.Title>
-            FAMUN 2023
-          </S.Title>
+        <S.Title>
+          FAMUN 2023
+        </S.Title>
 
-          <S.ArrowIconBox />
-
-          <S.SubTitle>
-            Inscrição
-          </S.SubTitle>
-        </S.TitleBox>
-
-        <S.StepsForm method='post'>
+        <S.InviteForm method='post'>
           <S.FormTitle>
             Entre em sua delegação
           </S.FormTitle>
 
           <S.FormSubTitle>
-            O {delegation.school} está te convidando para participar de sua delegação
+            O {delegation.school} está te convidando para participar de sua delegação.
+            {!user && <><br />Cadastre-se ou, se voce ja está cadastrado, entre na sua conta para participar.</>}
           </S.FormSubTitle>
 
-          {!user &&
-            <S.FormSubTitle>
-              Cadastre-se ou entre na sua conta para participar
-            </S.FormSubTitle>
+          {user ?
+            <S.ButtonsContainer>
+              <DefaultButtonBox>
+                <Button>
+                  Entrar
+                </Button>
+              </DefaultButtonBox>
+            </S.ButtonsContainer>
+            :
+            <S.ButtonsContainer>
+              <DefaultButtonBox>
+                <Link
+                  to={{
+                    pathname: `/join/user?${new URLSearchParams([["redirectTo", safeRedirect(matches[1].pathname)]])}`,
+                  }}
+                >
+                  Cadastrar
+                </Link>
+              </DefaultButtonBox>
+
+              <DefaultButtonBox>
+                <Link
+                  to={{
+                    pathname: `/login?${new URLSearchParams([["redirectTo", safeRedirect(matches[1].pathname)]])}`,
+                  }}
+                >
+                  Login
+                </Link>
+              </DefaultButtonBox>
+            </S.ButtonsContainer>
           }
 
           <input type='hidden' name='delegationCode' value={delegation.code} />
-
-          <S.ButtonsContainer>
-            {user ?
-              <S.Button>
-                Entrar
-              </S.Button>
-              :
-              <>
-                <S.AccountLink to={{
-                  pathname: `/join/user?${new URLSearchParams([["redirectTo", safeRedirect(matches[1].pathname)]])}`,
-                }}>
-                  Cadastrar
-                </S.AccountLink>
-
-                <S.AccountLink to={{
-                  pathname: `/login?${new URLSearchParams([["redirectTo", safeRedirect(matches[1].pathname)]])}`,
-                }}>
-                  Login
-                </S.AccountLink>
-              </>
-            }
-          </S.ButtonsContainer>
-        </S.StepsForm>
+        </S.InviteForm>
       </S.Container>
     </S.Wrapper >
   )

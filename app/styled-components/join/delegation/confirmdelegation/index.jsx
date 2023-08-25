@@ -19,7 +19,7 @@ const index = ({ data }) => {
 
       <S.List>
           {[
-            ["Nome da Escola / Universidade", "schoolName"],
+            ["Escola / Universidade", "school"],
             ["Numero Telefone", "schoolPhoneNumber"],
             ["Metodo de Participação", "participationMethod"],
           ].map((item, index) => {
@@ -28,22 +28,22 @@ const index = ({ data }) => {
                 <S.Label>
                   {item[0]}
                 </S.Label>
-                <S.MaxWidthText>{data[item[1]]}</S.MaxWidthText>
+                {data[item[1]]}
               </S.Item>
             )
           })}
 
           {[
             ["País", "country"],
-            ["Cidade", "state"],
-            ["Estado", "city"],
+            ["Cidade", "city"],
+            ["Estado", "state"],
           ].map((item, index) => {
             return (
               <S.Item key={`2column-item-${index}`}>
                 <S.Label>
                   {item[0]}
                 </S.Label>
-                <S.MaxWidthText>{data[item[1]]}</S.MaxWidthText>
+                {data[item[1]]}
               </S.Item>
             )
           })}
@@ -58,7 +58,7 @@ const index = ({ data }) => {
                 <S.Label>
                   {item[0]}
                 </S.Label>
-                <S.MaxWidthText>{data[item[1]]}</S.MaxWidthText>
+                {data[item[1]]}
               </S.Item>
             )
           })}

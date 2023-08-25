@@ -26,7 +26,7 @@ export async function createPaymentIntent({
   price,
   userId,
   stripeCustomerId,
-  paidUsersIds
+  usersIdsThatWillBePaid
 }) {
   return stripe.paymentIntents.create({
     customer: stripeCustomerId,
@@ -35,7 +35,7 @@ export async function createPaymentIntent({
     payment_method_types: ['card'],
     metadata: {
       payerId: userId,
-      paidUsersIds: qs.stringify(paidUsersIds),
+      paidUsersIds: qs.stringify(usersIdsThatWillBePaid),
     },
   });
 }

@@ -71,7 +71,6 @@ export const AsideLogout = styled.div`
   margin: auto 0 0;
 `
 export const Container = styled.div`
-  position: relative;
   min-height: 85svh;
   margin: 10vh 0 5vh;
  	width: 80%;
@@ -191,7 +190,11 @@ export const DisappearOnWidth = styled.div`
     display: ${p => p.reverse ? "block" : "none"};
   }
 `
-export const NavItem = styled.button`
+export const Button = styled.button`
+  border: none;
+  outline: none;
+`
+export const NavItem = styled.div`
   height: 100%;
   position: relative;
   display: flex;

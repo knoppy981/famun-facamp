@@ -20,7 +20,7 @@ async function seed() {
 				value: "512.070.218-06"
 			},
 			email: "andre.knopp8@gmail.com",
-			phoneNumber: "+55 (19) 97154-7424",
+			phoneNumber: "+55 19 97154 7424",
 			password: {
 				create: {
 					hash: await bcrypt.hash("dede5562", 10)
@@ -42,7 +42,7 @@ async function seed() {
 						set: ["Alemao", "Mandarin"]
 					},
 					emergencyContactName: "Julia",
-					emergencyContactPhoneNumber: "+55 (11) 99877-2333"
+					emergencyContactPhoneNumber: "+55 11 99877 2333"
 				}
 			},
 		}
@@ -57,7 +57,7 @@ async function seed() {
 				value: "123.123.123-23"
 			},
 			email: "teste@gmail.com",
-			phoneNumber: "+55 (19) 97154-7424",
+			phoneNumber: "+55 19 97154 7424",
 			password: {
 				create: {
 					hash: await bcrypt.hash("teste123", 10)
@@ -67,9 +67,9 @@ async function seed() {
 			delegationAdvisor: {
 				create: {
 					advisorRole: "Professor",
-					Facebook: "Tinto",
-					Instagram: "Jose",
-					Linkedin: "Jose Alvarenga"
+					facebook: "Tinto",
+					instagram: "Jose",
+					linkedin: "Jose Alvarenga"
 				}
 			}
 		}
@@ -89,7 +89,7 @@ async function seed() {
 			code: "123456",
 			inviteLink: `http://localhost:3000/i/${token}`,
 			school: "Colégio Notre Dame Campinas",
-			schoolPhoneNumber: "+55 (19) 97866-7676",
+			schoolPhoneNumber: "+55 19 97866 7676",
 			participationMethod: "Presencial",
 			address: {
 				create: {
@@ -115,47 +115,26 @@ async function seed() {
 			email: "andre.knopp8@gmail.com"
 		},
 		data: {
-			leader: true
+			file: {
+				create: {
+					url: "https://www.hhsjjd.com/djkhsjjjs3298923",
+					fileName: "ComprovanteVacinacaoAndreKnoppGuimaraes_2023_11_10.jpeg",
+				}
+			}
 		}
 	}) */
 
-	const del = await prisma.delegation.findUnique({
-		where: {
-			code: "123456"
-		},
-		select: {
+	const aaa = await prisma.delegation.create({
+		data: {
 			participants: {
-				where: {
-					OR: [
-						{ stripePaydId: { isSet: false } },
-						{ stripePaydId: { equals: "" } }
-					]
-				},
-				select: {
-					id: true,
-					name: true,
-					nacionality: true,
-					delegate: true,
-				},
+				connect: {
+					
+				}
 			}
 		}
 	})
 
-	const users = await prisma.user.findMany({
-		where: {
-			delegation: {
-				code: "123456"
-			}
-		},
-		orderBy: {
-			delegationAdvisor: {id: "asc"}
-		},
-		select: {
-			name: true
-		}
-	})
-
-	console.log(users)
+	console.log(aaa)
 
 	console.log(`Database has been seeded. 🌱`);
 }

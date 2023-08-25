@@ -1,28 +1,32 @@
-import { useEffect, useState } from 'react'
 import qs from 'qs'
+import { useListData } from 'react-stately';
 
 import * as S from './elements'
 import { FiAlertTriangle } from 'react-icons/fi'
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
-import DefaultInputBox from '~/styled-components/components/inputs/defaultInput'
-import PhoneInputBox from '~/styled-components/components/inputs/defaultInput/phoneInput'
-
-const initialItems = ['Assembleia Geral da ONU', 'Rio 92', 'Conselho de Juventude da ONU', 'Conselho de Seguranca da ONU'];
+import DefaultInputBox from '~/styled-components/components/inputBox/default';
+import TextField from '~/styled-components/components/textField';
+import PhoneNumberField from '~/styled-components/components/textField/phoneNumber'
+import { ReorderableListBox, Item } from '~/styled-components/components/reordableList';
+import { CheckboxGroup, Checkbox } from '~/styled-components/components/checkbox/checkboxGroup';
 
 const DelegateData = ({ data, actionData }) => {
+  const list = useListData({
+    initialItems: data.councilPreference ?
+      Object.values(qs.parse(data.councilPreference)).map(item => ({ id: item })) :
+      [
+        { id: 'Assembleia_Geral_da_ONU' },
+        { id: 'Rio_92' },
+        { id: 'Conselho_de_Juventude_da_ONU' },
+        { id: 'Conselho_de_Seguranca_da_ONU' },
+      ]
+  });
 
-  const [items, setItems] = useState(initialItems);
-
-  const onDragEnd = (result) => {
-    if (!result.destination) {
-      return;
+  const onReorder = (e) => {
+    if (e.target.dropPosition === 'before') {
+      list.moveBefore(e.target.key, e.keys);
+    } else if (e.target.dropPosition === 'after') {
+      list.moveAfter(e.target.key, e.keys);
     }
-
-    const newItems = [...items];
-    const [removed] = newItems.splice(result.source.index, 1);
-    newItems.splice(result.destination.index, 0, removed);
-
-    setItems(newItems);
   };
 
   return (
@@ -34,76 +38,44 @@ const DelegateData = ({ data, actionData }) => {
       <S.Wrapper>
         <S.Container>
           <S.ContainerTitle err={actionData?.errors.council}>
-            {actionData?.errors.council ? <><FiAlertTriangle /> {actionData?.errors.council} </> : <>Indique quais Comitês/Conselhos você deseja simular em ordem de preferência. Atenção aos idiomas de cada simulação <b>Obs: Arraste os items para trocar a ordem</b></>}
+            Coloque em ordem crescente quais Comitês / Conselhos você deseja simular em ordem de preferência.
+            Atenção aos idiomas de cada simulação
           </S.ContainerTitle>
 
-          <S.DragDropContainer>
-            <S.DragDropIndexes>
-              {items.map((item, index) => (
-                <div key={`dropdown-index-${index}`}>
-                  {index + 1}.
-                </div>
+          <S.ReorderableListWrapper>
+            <S.ReordableListIndexes>
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i}> {i}- </div>
               ))}
-            </S.DragDropIndexes>
+            </S.ReordableListIndexes>
 
-            <DragDropContext onDragEnd={onDragEnd}>
-              <Droppable droppableId="list">
-                {(provided) => (
-                  <ul {...provided.droppableProps} ref={provided.innerRef}>
-                    {items.map((item, index) => (
-                      <Draggable key={item} draggableId={item} index={index}>
-                        {(provided, snapshot) => (
-                          <S.ListItemContainer
-                            first={index === 0}
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                          >
-                            <S.ListItem
-                              first={index === 0}
-                              {...provided.dragHandleProps}
-                            >
-                              {item}
-                            </S.ListItem>
-                          </S.ListItemContainer>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </ul>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </S.DragDropContainer>
+            <S.ReorderableListContainer>
+              <ReorderableListBox
+                aria-label="Favorite animals"
+                selectionMode="multiple"
+                selectionBehavior="replace"
+                items={list.items}
+                onReorder={onReorder}
+              >
+                {(item) => <Item>{item.id}</Item>}
+              </ReorderableListBox>
+            </S.ReorderableListContainer>
 
-          <input type="hidden" name="council" value={qs.stringify(items)} />
+            <input type="hidden" name="councilPreference" value={qs.stringify(list.items.map(item => item.id))} />
+          </S.ReorderableListWrapper>
         </S.Container>
 
         <S.Container>
-          <S.ContainerTitle err={actionData?.errors.language}>
-            {actionData?.errors.language ? <> {actionData?.errors.language} </> : 'Idiomas que pode simular'}
-          </S.ContainerTitle>
-
-          <S.CheckBoxWrapper>
-            {["Portugues", "Ingles", "Espanhol"].map((item, index) => (
-              <S.CheckBoxContainer key={`language-checkbox-${index}`}>
-                <S.CheckBox
-                  id={item}
-                  name="language"
-                  value={item}
-                  defaultChecked={data?.language?.includes(
-                    `${item}`
-                  )}
-                  type="checkbox"
-                />
-
-                <S.LabelContainer>
-                  <S.Label htmlFor={item}>
-                    {item[0] === 'P' ? 'Português' : item[0] === 'I' ? 'Inglês' : item}
-                  </S.Label>
-                </S.LabelContainer>
-              </S.CheckBoxContainer>
-            ))}
-          </S.CheckBoxWrapper>
+          <CheckboxGroup
+            label="Idiomas que pode simular"
+            name="languagesSimulates"
+            defaultValue={data.languagesSimulates}
+            err={actionData?.errors.languagesSimulates}
+          >
+            <Checkbox value="Portugues">Português</Checkbox>
+            <Checkbox value="Ingles">Inglês</Checkbox>
+            <Checkbox value="Espanhol">Espanhol</Checkbox>
+          </CheckboxGroup>
         </S.Container>
 
         <S.Container>
@@ -111,21 +83,29 @@ const DelegateData = ({ data, actionData }) => {
             Contato de Emergência
           </S.ContainerTitle>
 
-          <DefaultInputBox
-            name="emergencyContactName"
-            text="Nome"
-            type="text"
-            value={data?.emergencyContactName}
-            err={actionData?.errors?.emergencyContactName}
-          />
+          <DefaultInputBox>
+            <TextField
+              name="emergencyContactName"
+              label="Nome"
+              type="text"
+              defaultValue={data?.emergencyContactName}
+              err={actionData?.errors?.emergencyContactName}
+              action={actionData}
+            />
+          </DefaultInputBox>
 
-          <PhoneInputBox
-            name="emergencyContactPhoneNumber"
-            text="Número para Contato"
-            type="text"
-            value={data?.emergencyContactPhoneNumber}
-            err={actionData?.errors?.emergencyContactPhoneNumber}
-          />
+          <DefaultInputBox>
+            <PhoneNumberField
+              name="emergencyContactPhoneNumber"
+              label="Número para Contato"
+              type="text"
+              _defaultValue={data?.emergencyContactPhoneNumber}
+              err={actionData?.errors?.emergencyContactPhoneNumber}
+              action={actionData}
+            />
+          </DefaultInputBox>
+
+          <input type='hidden' name="userType" value="delegate" />
         </S.Container>
       </S.Wrapper>
     </>

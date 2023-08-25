@@ -1,5 +1,8 @@
 import * as S from './elements'
-import DefaultInputBox from '~/styled-components/components/inputs/defaultInput'
+
+import DefaultInputBox from '~/styled-components/components/inputBox/default';
+import TextField from '~/styled-components/components/textField';
+
 
 const CreateUser = ({ data, actionData }) => {
   return (
@@ -10,31 +13,39 @@ const CreateUser = ({ data, actionData }) => {
 
       <S.Wrapper>
         <S.InputContainer>
-          <DefaultInputBox
-            name="email"
-            text="E-mail"
-            type="email"
-            value={data?.email}
-            err={actionData?.errors?.email}
-            autoFocus={true}
-          />
+          <DefaultInputBox>
+            <TextField
+              name="email"
+              label="E-mail"
+              type="email"
+              defaultValue={data?.email}
+              err={actionData?.errors?.email}
+              action={actionData}
+            />
+          </DefaultInputBox>
 
           <S.SubInputContainer>
-            <DefaultInputBox
-              name="password"
-              text="Senha"
-              type="password"
-              value={data?.password}
-              err={actionData?.errors?.password}
-            />
+            <DefaultInputBox>
+              <TextField
+                name="password"
+                label="Senha"
+                type="password"
+                defaultValue={data?.password}
+                err={actionData?.errors?.password}
+                action={actionData}
+              />
+            </DefaultInputBox>
 
-            <DefaultInputBox
-              name="confirmPassword"
-              text="Confirme a Senha"
-              type="password"
-              value={data?.confirmPassword}
-              err={actionData?.errors?.confirmPassword}
-            />
+            <DefaultInputBox>
+              <TextField
+                name="confirmPassword"
+                label="Confirme a Senha"
+                type="password"
+                defaultValue={data?.confirmPassword}
+                err={actionData?.errors?.confirmPassword}
+                action={actionData}
+              />
+            </DefaultInputBox>
           </S.SubInputContainer>
         </S.InputContainer>
       </S.Wrapper>

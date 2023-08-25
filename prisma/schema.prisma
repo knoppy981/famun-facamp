@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["orderByNulls"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -14,10 +13,11 @@ model User {
   // personal info
   name              String
   password          Password?
-  document          Document
+  document          PerosnalDocument
   phoneNumber       String
   birthDate         String
   nacionality       String
+  file              File[]
   // useful info
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
@@ -35,9 +35,18 @@ model User {
   stripePaymentsId  String[]
 }
 
-type Document {
+type PerosnalDocument {
   documentName String
   value        String
+}
+
+model File {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  url       String   @unique
+  fileName  String   
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
 }
 
 model Password {
@@ -69,9 +78,9 @@ model DelegationAdvisor {
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId      String      @unique @db.ObjectId
   advisorRole AdvisorRole @default(Professor)
-  Facebook    String?
-  Instagram   String?
-  Linkedin    String?
+  facebook    String?
+  instagram   String?
+  linkedin    String?
 }
 
 model Delegation {
@@ -97,18 +106,6 @@ model Address {
   state        String
   postalCode   String?
   country      String
-}
-
-type SocialMedia {
-  username        String
-  socialMediaName SocialMediaTypes
-}
-
-enum SocialMediaTypes {
-  Facebook
-  Instagram
-  Twitter
-  Linkedin
 }
 
 enum AdvisorRole {

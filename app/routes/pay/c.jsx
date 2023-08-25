@@ -1,4 +1,4 @@
-import { Link, useActionData, useLoaderData, useNavigate, useOutletContext } from "@remix-run/react"
+import { useActionData, useLoaderData, useNavigate, useOutletContext } from "@remix-run/react"
 import { useState } from "react"
 import { json } from '@remix-run/node'
 import qs from 'qs'
@@ -6,37 +6,34 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 
 import { createPaymentIntent } from '~/stripe.server'
-import { requireDelegationId } from "~/session.server"
+import { requireDelegationId, requireUser } from "~/session.server"
 import { getUserById } from "~/models/user.server"
 import { getRequiredPayments } from "~/models/payments.server"
 
 import * as S from '~/styled-components/pay'
 import Spinner from "~/styled-components/components/spinner"
+import Link from "~/styled-components/components/link"
+import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
+import Button from '~/styled-components/components/button';
 
 const stripePromise = loadStripe("pk_test_51Lwc6CG8QBKHSgkGKn1eEavFX2wS75qcPXAhIf6a1FKhiTb3En4rlawvC5xohEmhIzvWn4C8gw3FcV2N59V7CKll00YmZnlrcw")
 
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
-  //get the user Id to register which user is paying
-  const userId = url.searchParams.get("userId");
-  // stripe customer Id
-  const stripeCustomerId = url.searchParams.get("stripeCustomerId");
   // get all user names that were selected to be paid
   const namesForPayments = url.searchParams.getAll("s");
 
-  // now filter all the payments in of the delegation by the names the user selected
-  const user = await getUserById(userId)
+  const user = await requireUser(request)
   const delegationId = await requireDelegationId(request)
   let payments = await getRequiredPayments({ user, delegationId: delegationId })
-  payments = payments.filter(payment => namesForPayments.includes(payment.name))
-  // get the payments data
 
-  // get only the paid users ids if it is available
-  const paidUsersIds = payments
+  // with the array of available payments, select the Id for the users that are gonna get their payment paid
+  payments = payments.filter(payment => namesForPayments.includes(payment.name))
+  const usersIdsThatWillBePaid = payments
     .filter(payment => payment.available === true)
     .map(payment => payment.id);
 
-  // get the total price for the payment intent
+  // get the total price
   const price = payments.reduce((sum, item) => {
     if (item.available) {
       return sum + item.price;
@@ -45,7 +42,9 @@ export const loader = async ({ request }) => {
   }, 0);
 
   // create the payment intent
-  const paymentIntent = await createPaymentIntent({ price, userId, stripeCustomerId, paidUsersIds })
+  const paymentIntent = await createPaymentIntent(
+    { price, userId: user.id, stripeCustomerId: user.stripeCustomerId, usersIdsThatWillBePaid }
+  )
 
   // if there is no payment intent throw an error
   if (paymentIntent === undefined)
@@ -55,13 +54,59 @@ export const loader = async ({ request }) => {
     })
 
   // return payment intent and the price
-  return json({ paymentIntent, price, payments })
+  return json({ paymentIntent, price, payments, WEBSITE_URL: process.env.WEBSITE_URL })
+}
+
+const PaymentForm = ({ WEBSITE_URL, paymentNames }) => {
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const stripe = useStripe()
+  const elements = useElements()
+
+  const handleSubmit = async (e) => {
+    setIsSubmitting(true);
+    await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${WEBSITE_URL}/dashboard/payment`
+      }
+    })
+    setIsSubmitting(false)
+  }
+
+  const goBackParams = new URLSearchParams();
+  paymentNames.forEach(names => {
+    goBackParams.append('s', names);
+  });
+
+  return (
+    <>
+      <PaymentElement />
+
+      <S.ButtonWrapper>
+        <S.LinkContainer>
+          <Link
+            to={`/pay/s?${goBackParams}`}
+          >
+            Voltar
+          </Link>
+        </S.LinkContainer>
+
+        <S.ButtonContainer>
+          <DefaultButtonBox>
+            <Button onPress={handleSubmit}>
+              Realizar Pagamento {isSubmitting && <Spinner dim={18} />}
+            </Button>
+          </DefaultButtonBox>
+        </S.ButtonContainer>
+      </S.ButtonWrapper>
+    </>
+  )
 }
 
 const CompletePayment = () => {
-
-  const { paymentIntent, price, payments } = useLoaderData()
-  const { WEBSITE_URL } = useOutletContext()
+  const { paymentIntent, price, payments, WEBSITE_URL } = useLoaderData()
 
   const delegatesPaymentsCount = payments.reduce((totalCount, payment) => {
     if (payment.type === "delegate") {
@@ -135,50 +180,6 @@ const CompletePayment = () => {
         </S.StripeElementsWrapper>
       </S.Container>
     </S.PaymentWrapper>
-  )
-}
-
-const PaymentForm = ({ WEBSITE_URL, paymentNames }) => {
-
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const stripe = useStripe()
-  const elements = useElements()
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setIsSubmitting(true);
-    await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${WEBSITE_URL}/dashboard/payment`
-      }
-    })
-    setIsSubmitting(false)
-  }
-
-  const goBackParams = new URLSearchParams();
-  paymentNames.forEach(names => {
-    goBackParams.append('s', names);
-  });
-
-  return (
-    <>
-      <PaymentElement />
-
-      <S.PayButtonContainer>
-        <S.GoBackLink
-          to={`/pay/s?${goBackParams}`}
-        >
-          Voltar
-        </S.GoBackLink>
-
-        <S.Button onClick={handleSubmit}>
-          Realizar Pagamento {isSubmitting && <Spinner dim={18} />}
-        </S.Button>
-      </S.PayButtonContainer>
-    </>
   )
 }
 

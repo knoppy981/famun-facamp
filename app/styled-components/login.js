@@ -1,6 +1,5 @@
 import styled from "styled-components";
-import { Link, Form } from '@remix-run/react'
-import { FiChevronRight } from "react-icons/fi";
+import { Form } from '@remix-run/react'
 
 const azulClaro = '#BDE8F5'
 const azul = '#01558A'
@@ -15,7 +14,7 @@ export const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
 `
-export const FormContainer = styled.div`
+export const Container = styled.div`
   min-height: 70svh;
   margin: 15vh 0;
  	width: 400px;
@@ -50,85 +49,72 @@ export const Title = styled.div`
     font-size: 3rem;
   }
 `
-export const AuthForm = styled(Form)`
+export const FormContainer = styled.div`
 	width: 100%;
   color: #fff;
   display: flex;
   flex-direction: column;
-  align-items: center;
 	grid-gap: 15px;
 `
-export const ButtonContainer = styled.div`
-	margin-top: 30px;
-	width: 100%;
-	height: 45px;
+export const RememberMe = styled.label`
   display: flex;
-  justify-content: center;
-	align-items: center;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+  color: #000;
+  width: 100%;
+  font-size: 1.4rem;
+  cursor: pointer;
 
-	@media screen and (max-width: 800px) {
-		grid-template-columns: 1fr 2fr 1fr;
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    font-size: 1.6rem;
 	}
+`
+export const RememberMeCheckBox = styled.input`
+  appearance: none;
+  background-color: #fff;
+  margin: 0;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #E6E6E6;
+  border-radius: 5px;
+  display: grid;
+  place-content: center;
+
+  &:checked {
+    border-color: #183567;
+  }
+  &::before {
+    content: "";
+    width: 2rem;
+    height: 2rem;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em #183567;
+    transform-origin: center;
+    clip-path: polygon(28% 38%, 41% 53%, 75% 24%, 86% 38%, 40% 78%, 15% 50%);
+  } 
+  &:checked::before {
+    transform: scale(1);
+  }
+`
+export const ButtonContainer = styled.div`
+  align-self: center;
+  width: 300px;
+	margin-top: 30px;
 
   @media screen and (max-width: 500px) and (min-height: 700px) {
     margin-top: 60px;
 	}
 `
-export const SubmitButton = styled.button`
-	border-radius: 5px;
-	width: 300px;
-  height: 4.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${azulClaro};
-  gap: 15px;
-  border-radius: 5px;
-  box-shadow: 0px 2px 5px -2px #000000;
-	height: 100%;
-	cursor: pointer;
-  transition: 0.4s all ease;
+export const LinkBox = styled.div`
+  align-self: ${p => p.center ? "center" : "flex-start"};
   color: #000;
-  font-weight: 400;
-	font-size: 1.5rem;
-
-  &:disabled {
-    color: #666666;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-  }
-
-  @media screen and (max-width: 500px) and (min-height: 700px) {
-    height: 5.2rem;
-    font-size: 1.8rem;
-	}
-`
-export const ForgotLinkBox = styled.div`
-  color: #000;
-  width: 100%;
   display: flex;
+  gap: 5px;
   font-size: 1.4rem;
 
   @media screen and (max-width: 500px) and (min-height: 700px) {
     font-size: 1.6rem;
 	}
-`
-export const JoinLinkBox = styled.div`
-	font-size: 1.4rem;
-  color: #000;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-
-  @media screen and (max-width: 500px) and (min-height: 700px) {
-    font-size: 1.6rem;
-	}
-`
-export const StyledLink = styled(Link)`
-  font-size: inherit;
-  height: 19px;
-  margin-left: 5px;
-  text-decoration: underline;
 `

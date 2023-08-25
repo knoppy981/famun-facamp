@@ -23,12 +23,12 @@ function getClient() {
 
 	const databaseUrl = new URL(DATABASE_URL);
 
-	const isLocalHost = databaseUrl.hostname === "localhost";
+	/* const isLocalHost = databaseUrl.hostname === "localhost";
 
 	const PRIMARY_REGION = isLocalHost ? null : process.env.PRIMARY_REGION;
 	const FLY_REGION = isLocalHost ? null : process.env.FLY_REGION;
 
-	const isReadReplicaRegion = !PRIMARY_REGION || PRIMARY_REGION === FLY_REGION;
+	const isReadReplicaRegion = !PRIMARY_REGION || PRIMARY_REGION === FLY_REGION; */
 
 	// if (!isLocalHost) {
 	// 	//for fly usage

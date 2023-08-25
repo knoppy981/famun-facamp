@@ -1,20 +1,15 @@
 import styled from "styled-components";
 
-export const TitleBox = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-left: 5px;
-`
 export const Title = styled.h3`
-  width: 426px;
   font-size: 2.2rem;
   font-weight: 500;
   color: #000;
+  margin-left: 5px;
 `
 export const SubTitle = styled.p`
-  width: 426px;
   font-size: 1.4rem;
   color: #000;
+  margin-left: 5px;
 `
 export const List = styled.div`
   display: grid;
@@ -30,16 +25,12 @@ export const List = styled.div`
 `
 export const Item = styled.div`
   font-size: 1.5rem;
-  max-width: 150px;
-`
-export const Text = styled.p`
-  font-size: 1.5rem;
-`
-export const MaxWidthText = styled.div`
-  font-size: inherit;
-	overflow: hidden;
+  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  ${({isSpanTwoColumns}) => isSpanTwoColumns && `
+    grid-column: span 2;
+  `}
 `
 export const Label = styled.div`
   font-size: 1.2rem;

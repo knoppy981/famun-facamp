@@ -35,7 +35,6 @@ export const Container = styled.div`
 export const ContainerTitle = styled.div`
   font-size: 1.4rem;
   gap: 5px;
-  margin-left: 5px;
   color: ${props => props.err ? '#d61f0a' : '#000'};
   word-break: normal;
 
@@ -54,11 +53,14 @@ export const ContainerTitle = styled.div`
     font-size: 1.6rem;
 	}
 `
-export const DragDropContainer = styled.div`
+export const ReorderableListWrapper = styled.div`
   display: flex;
   gap: 10px;
 `
-export const DragDropIndexes = styled.div`
+export const ReorderableListContainer = styled.div`
+  
+`
+export const ReordableListIndexes = styled.div`
   display: grid;
 
   div {
@@ -66,32 +68,6 @@ export const DragDropIndexes = styled.div`
     align-self: center;
     font-size: 1.4rem;
   }
-`
-export const ListItemContainer = styled.div`
-  height: 45px;
-  display: flex;
-  align-items: center;
-
-  @media screen and (max-width: 500px) and (min-height: 700px) {
-    height: 5.2rem;
-	}
-`
-export const ListItem = styled.div`
-  display: flex;
-  align-items: center;
-  height: 80%;
-  background: #fff;
-  border-radius: 5px;
-  padding: 0 5px;
-  background: ${p => p.first ? azulClaro : "#fff"};
-  box-shadow: 0px 2px 5px -2px #000000;
-  border: 1px solid ${p => p.first ? 'transparent' : '#E6E6E6'};
-  transition: .3s all ease;
-  font-size: 1.4rem;
-
-  @media screen and (max-width: 500px) and (min-height: 700px) {
-    font-size: 1.6rem;
-	}
 `
 export const CheckBoxWrapper = styled.div`
 

@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react'
 import { useClickOutside } from '~/hooks/useClickOutside'
 import { useFetcher } from '@remix-run/react'
+import { AnimatePresence, motion } from 'framer-motion';
 
 import { FiGlobe } from 'react-icons/fi';
-import * as S from "./index"
+import * as S from "./elements"
 
 const LanguageMenu = ({ i18n }) => {
 
@@ -18,28 +19,75 @@ const LanguageMenu = ({ i18n }) => {
     );
   }
 
-  const [lngMenuOpen, setLngMenuOpen] = useState(false)
+  const [open, setOpen] = useState(false)
   const lngMenuRef = useRef(null)
-  useClickOutside(lngMenuRef, () => setLngMenuOpen(false))
+  useClickOutside(lngMenuRef, () => setOpen(false))
+
+  const menu = {
+    closed: {
+      scale: 0,
+      opacity: 0,
+      transition: {
+        duration: 0.3,
+      },
+    },
+    open: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        duration: 0.3,
+        delayChildren: 0.2,
+        staggerChildren: 0.05,
+      },
+    },
+  }
+
+  const arrow = {
+    variants: {
+      closed: { opacity: 0 },
+      open: { opacity: 1 },
+    },
+    transition: { duration: 0.2 },
+  }
+
+  const menuItem = {
+    variants: {
+      closed: { x: -16, opacity: 0 },
+      open: { x: 0, opacity: 1 },
+    },
+    transition: { opacity: { duration: 0.2 } },
+  }
 
   return (
-    <S.LangauegButtonWrapper ref={lngMenuRef} >
-      <S.LanguageButton onClick={() => setLngMenuOpen(!lngMenuOpen)}>
+    <S.Wrapper ref={lngMenuRef} >
+      <S.ToggleButton onClick={() => setOpen(!open)}>
         {i18n?.language ?? 'pt-BR'}<FiGlobe />
-      </S.LanguageButton>
+      </S.ToggleButton>
 
-      <S.Reference open={lngMenuOpen} />
-      <S.Container open={lngMenuOpen}>
-        <S.Menu active height={'200px'}>
-          <S.Item noHover>
-            Alterar Idioma
-          </S.Item>
+      <AnimatePresence>
+        {open &&
+          <S.Container
+            open={open}
+            animate={open ? "open" : "closed"}
+            initial="closed"
+            exit="closed"
+            variants={menu}
+          >
+            <S.Arrow
+              {...arrow}
+            />
 
-          <S.MaxHeightMenu>
-            {lngs?.map((item) => {
+            <S.Title /* {...menuItem} */ noHover>
+              Alterar Idioma
+            </S.Title>
+
+            {/* lngs? */["pt-BR", "EN-us", "ES-es"].map((item, index) => {
               let flagCode = item.slice(-2).toLowerCase()
               return (
-                <S.Item key={`${item}-lng-option`} height={'30px'}>
+                <S.Item
+                  key={`${item}-lng-option`}
+                  {...menuItem}
+                >
                   <S.Button onClick={handleLanguage} value={item} key={`${item}-language-item`}>
                     <S.NacionalityFlag className={`flag-icon flag-icon-${flagCode}`} />
                     {item}
@@ -47,10 +95,10 @@ const LanguageMenu = ({ i18n }) => {
                 </S.Item>
               )
             })}
-          </S.MaxHeightMenu>
-        </S.Menu>
-      </S.Container>
-    </S.LangauegButtonWrapper>
+          </S.Container>
+        }
+      </AnimatePresence>
+    </S.Wrapper >
   )
 }
 

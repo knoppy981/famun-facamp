@@ -7,7 +7,7 @@ export const Title = styled.h3`
   margin-left: 5px;
 `
 export const Wrapper = styled.div`
-  margin-top: 20px;
+  margin-top: 30px;
   display: grid;
   gap: 30px;
   padding: 5px;
@@ -20,7 +20,6 @@ export const Wrapper = styled.div`
 export const InputContainer = styled.div`
   display: grid;
   gap: 10px;
-  margin-top: 10px;
 
   @media screen and (max-width: 500px) and (min-height: 700px) {
     min-width: auto;

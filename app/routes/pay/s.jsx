@@ -1,22 +1,54 @@
-import { Form, useOutletContext, useTransition } from '@remix-run/react'
 import { useEffect, useState } from 'react'
+import { Form, useActionData, useFetcher, useLoaderData, useOutletContext, useSearchParams, useTransition } from '@remix-run/react'
+import { json } from '@remix-run/node'
 import qs from 'qs'
+
+import { requireUser, requireDelegationId } from '~/session.server'
+import { ensureStripeCostumer } from '~/models/user.server'
+import { getRequiredPayments } from '~/models/payments.server'
+import { useUser } from '~/utils'
 
 import * as S from '~/styled-components/pay'
 import Spinner from '~/styled-components/components/spinner'
+import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
+import Button from '~/styled-components/components/button';
+
+import { CheckboxGroup, Checkbox } from '~/styled-components/components/checkbox/checkboxGroup'
+
+export const loader = async ({ request }) => {
+  const user = await requireUser(request)
+  await ensureStripeCostumer(user)
+
+  const delegationId = await requireDelegationId(request)
+
+  const payments = await getRequiredPayments({ user, delegationId })
+
+  return json({ payments })
+}
 
 const SelectPayments = () => {
-
+  const { payments } = useLoaderData()
+  const actionData = useActionData()
+  const err = actionData?.errors
+  
   const transition = useTransition()
+  const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    console.log(transition.state)
-  }, [transition])
-
-  const { payments, selectedPaymentsNames, setSelectedPaymentsNames, price, err, user } = useOutletContext()
+  const [selectedPaymentsNames, setSelectedPaymentsNames] = useState(searchParams.getAll("s"))
+  const [price, setPrice] = useState(0)
   const [isButtonDisabled, setIsButtonDisabled] = useState(false)
+
   useEffect(() => {
-    selectedPaymentsNames.length > 0 ? setIsButtonDisabled(false) : setIsButtonDisabled(true)
+    const sumPrices = payments.reduce((sum, payment) => {
+      if (selectedPaymentsNames.includes(payment.name)) {
+        return sum + payment.price;
+      }
+      return sum;
+    }, 0);
+
+    setPrice(sumPrices)
+
+    setIsButtonDisabled(selectedPaymentsNames.length === 0)
   }, [selectedPaymentsNames])
 
   return (
@@ -41,41 +73,33 @@ const SelectPayments = () => {
           {err ? <S.Error><FiAlertTriangle />{err?.selectedPayments}</S.Error> : null}
         </S.PageTitle>
 
-        <input type="hidden" name="stripeCustomerId" value={user.stripeCustomerId} />
-        <input type="hidden" name="userId" value={user.id} />
-
         <S.PaymentList>
-          {payments.map((item, index) => {
-            return (
-              <S.Payment key={index} last={index === 0} disabled={!item.available}>
-                <S.CheckBox
-                  type="checkbox"
-                  name="s"
+          <CheckboxGroup
+            name="s"
+            label="Pagamento Selecionados"
+            hideLabel={true}
+            value={selectedPaymentsNames}
+            onChange={setSelectedPaymentsNames}
+          >
+            {payments.map((item, index) => {
+              return (
+                <Checkbox
+                  key={index}
                   value={item.name}
-                  id={`${item.name}-subscription`}
-                  onChange={e => {
-                    if (e.target.checked) {
-                      setSelectedPaymentsNames(oldArray => [...oldArray, item.name])
-                    } else {
-                      setSelectedPaymentsNames(oldArray => oldArray.filter(name => name !== item.name))
-                    }
-                  }}
-                  defaultChecked={selectedPaymentsNames?.some(name => name === item.name)}
-                  disabled={!item.available}
-                />
+                >
+                  <S.OvrflowText>
+                    Taxa de inscrição de {item.name}
+                  </S.OvrflowText>
 
-                <S.Label htmlFor={`${item.name}-subscription`}>
-                  {`Taxa de inscrição de ${item.name}`}
-                </S.Label>
-
-                <S.RightContainer>
-                  <S.ColorLabel color={item.available ? 'green' : 'red'} >
-                    R$ {" "} {item.price / 100},00
-                  </S.ColorLabel>
-                </S.RightContainer>
-              </S.Payment>
-            )
-          })}
+                  <S.RightContainer>
+                    <S.ColorLabel color={item.available ? 'green' : 'red'} >
+                      R$ {" "} {item.price / 100},00
+                    </S.ColorLabel>
+                  </S.RightContainer>
+                </Checkbox>
+              )
+            })}
+          </CheckboxGroup>
         </S.PaymentList>
 
         <S.Price>
@@ -83,7 +107,9 @@ const SelectPayments = () => {
         </S.Price>
 
         <S.ButtonContainer>
-          <S.Button type='submit' disabled={isButtonDisabled}> Próximo {transition.state !== "idle" && <Spinner dim={18} />}</S.Button>
+          <DefaultButtonBox isDisabled={isButtonDisabled}>
+            <Button type='submit' isDisabled={isButtonDisabled}> Próximo {transition.state !== "idle" && <Spinner dim={18} />}</Button>
+          </DefaultButtonBox>
         </S.ButtonContainer>
       </S.PaymentWrapper>
     </Form>

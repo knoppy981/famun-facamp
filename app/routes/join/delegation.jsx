@@ -4,40 +4,45 @@ import { useSearchParams, useFetcher, useLoaderData, useActionData, useTransitio
 import qs from "qs"
 
 import { createUserSession, sessionStorage, getSession, requireUserId } from "~/session.server";
-import { joinDelegation, createDelegation, generateDelegationInviteLink } from "~/models/delegation.server";
-import { safeRedirect, checkUserInputData, generateString } from "~/utils";
+import { joinDelegation, createDelegation, generateDelegationInviteLink, formatDelegationData, getExistingDelegation } from "~/models/delegation.server";
+import { safeRedirect, generateString } from "~/utils";
+import { delegationStepValidation, delegationSchema } from "~/schemas";
 
 import * as S from '~/styled-components/join'
+import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
+import Button from '~/styled-components/components/button';
+import Spinner from "~/styled-components/components/spinner";
 
 import JoinMethod from "~/styled-components/join/delegation/joinmethod"
 import JoinDelegation from "~/styled-components/join/delegation/joindelegation"
 import CreateDelegation from "~/styled-components/join/delegation/createdelegation"
 import DelegationAddress from "~/styled-components/join/delegation/delegationaddress"
 import ConfirmDelegation from "~/styled-components/join/delegation/confirmdelegation"
-import Spinner from "~/styled-components/components/spinner";
+import { prismaDelegationSchema } from "~/schemas/objects/delegation";
 
 
 export const action = async ({ request }) => {
   const text = await request.text()
   const session = await getSession(request)
-  const { redirectTo, step, action, joinType, ...data } = qs.parse(text)
+  const { redirectTo, step, action, ...data } = qs.parse(text)
+  const searchParams = redirectTo === "" ? "" : new URLSearchParams([["redirectTo", safeRedirect(redirectTo)]])
+
+  if (data.joinMethod) session.set('join-method', { joinMethod: data.joinMethod })
 
   if (action === "next") {
     if (data.delegationCode) {
       // join delegation
-      const userId = await requireUserId(request)
+      let userId
       let delegation
-
       try {
+        userId = await requireUserId(request)
         delegation = await joinDelegation({ code: data.delegationCode, userId: userId })
       } catch (e) {
-        console.log(e)
         return json(
-          { errors: { joinDelegation: "Ocorreu algum erro inesperado, por favor atualize a página e tente novamente" } },
-          { status: 404 }
-        )
+          { errors: e },
+          { status: 400 }
+        );
       }
-
       return createUserSession({
         request,
         userId: userId,
@@ -47,37 +52,44 @@ export const action = async ({ request }) => {
     }
 
     try {
-      checkUserInputData([
-        { key: "schoolName", value: data.schoolName, errorMessages: { undefined: "School / University name is required", invalid: "Invalid name", existingUser: "School / University already registered" }, dontValidate: data.schoolName === undefined ? true : false },
-        { key: "schoolPhoneNumber", value: data.schoolPhoneNumber, errorMessages: { undefined: "Phone number is required", invalid: "Invalid phone number" }, dontValidate: data.schoolPhoneNumber === undefined ? true : false },
-
-        { key: "address", value: data.address, errorMessages: { undefined: "Address is required", invalid: "Invalid address" }, dontValidate: data.address === undefined ? true : false },
-        { key: "country", value: data.country, errorMessages: { undefined: "Address is required", invalid: "Invalid address" }, dontValidate: data.country === undefined ? true : false },
-        { key: "postalCode", value: data.postalCode, errorMessages: { undefined: "Postal code is required", invalid: "Invalid postal code" }, auxValue: data?.country, dontValidate: data.postalCode === undefined ? true : false },
-        { key: "state", value: data.state, errorMessages: { undefined: "State is required", invalid: "Invalid state" }, dontValidate: data.state === undefined ? true : false },
-        { key: "city", value: data.city, errorMessages: { undefined: "City is required", invalid: "Invalid city" }, dontValidate: data.city === undefined ? true : false },
-        { key: "neighborhood", value: data.neighborhood, errorMessages: { undefined: "Neighborhood is required", invalid: "Invalid Neighborhood" }, dontValidate: data.neighborhood === undefined ? true : false },
-      ])
+      await delegationStepValidation(Number(step), data)
+      await getExistingDelegation({
+        school: data.school ?? ""
+      })
     } catch (error) {
-      error = qs.parse(error.message)
+      console.dir(error, { depth: null })
       return json(
-        { errors: { [error.key]: error.msg } },
+        { errors: { [error.details[0].context.key]: error.details[0].message } },
         { status: 400 }
       );
     }
 
     if (step == 4) {
+      // create delegation
       const userId = await requireUserId(request)
       const code = generateString(6)
 
-      const delegationData = {
+      let delegationData = {
         ...session.get("delegation-data-2"),
         ...session.get("delegation-data-3"),
-        code: code,
-        inviteLink: await generateDelegationInviteLink(code),
         userId: userId,
+        code: code,
       }
-      const delegation = await createDelegation(delegationData)
+
+      delegationData = await formatDelegationData(delegationData, userId)
+      console.dir(delegationData, { depth: null })
+      let delegation
+
+      try {
+        await prismaDelegationSchema.validateAsync(delegationData)
+        delegation = await createDelegation(delegationData, userId)
+      } catch (error) {
+        console.dir(error, { depth: null })
+        return json(
+          error,
+          { status: 400 }
+        );
+      }
 
       return createUserSession({
         request,
@@ -91,19 +103,10 @@ export const action = async ({ request }) => {
 
   // next step
   let nextStep = Number(step) + (action === 'next' ? 1 : -1)
-  // if setting join type mvoe to second step
-  if (joinType) {
-    session.set('join-type', { joinType: joinType })
-    nextStep = 2
-  }
-  // if you are joining you can only be aat step 1 or 2
-  if (session.get("join-type")?.joinType === "join" && step > 2) nextStep = 1
-  // set the data for the current step
-  if (session.get("join-type")?.joinType === "create") session.set(`delegation-data-${step}`, data)
-  // set next step
+  if (session.get("join-method")?.joinMethod === "join" && step > 2) nextStep = 1
+  if (session.get("join-method")?.joinMethod === "create") session.set(`delegation-data-${step}`, data)
   session.set('delegation-current-step', { step: nextStep })
 
-  const searchParams = redirectTo === "" ? "" : new URLSearchParams([["redirectTo", safeRedirect(redirectTo)]])
   return redirect(`/join/delegation?${searchParams}`, {
     headers: {
       'Set-cookie': await sessionStorage.commitSession(session),
@@ -113,10 +116,11 @@ export const action = async ({ request }) => {
 
 export const loader = async ({ request }) => {
   const session = await getSession(request)
+  const userId = await requireUserId(request)
 
-  const { joinType, step } = {
+  const { joinMethod, step } = {
     ...session.get("delegation-current-step"),
-    ...session.get("join-type"),
+    ...session.get("join-method"),
   }
 
   if (step === 4) {
@@ -124,10 +128,10 @@ export const loader = async ({ request }) => {
       ...session.get("delegation-data-2"),
       ...session.get("delegation-data-3"),
     }
-    return json({ data, step, joinType })
+    return json({ data, step, joinMethod })
   } else {
     const data = session.get(`delegation-data-${step}`) ?? {}
-    return json({ data, step, joinType })
+    return json({ data, step, joinMethod })
   }
 
 }
@@ -144,10 +148,7 @@ const delegation = () => {
 
   const actionData = useActionData()
 
-  useEffect(() => {
-    console.log(actionData)
-  }, [actionData])
-  let { data, step, joinType } = useLoaderData()
+  let { data, step, joinMethod } = useLoaderData()
   if (!step) step = 1
 
   return (
@@ -171,20 +172,46 @@ const delegation = () => {
 
       <S.Container>
         {step === 1 && <JoinMethod />}
-        {step === 2 && (joinType === "create" ?
-          <CreateDelegation data={data} actionData={actionData} /> : <JoinDelegation data={data} actionData={actionData} />)
-        }
-        {step === 3 && joinType === "create" && <DelegationAddress data={data} actionData={actionData} />}
-        {step === 4 && joinType === "create" && <ConfirmDelegation data={data} />}
+        {step === 2 && (joinMethod === "create" ?
+          <CreateDelegation data={data} actionData={actionData} /> :
+          <JoinDelegation
+            data={data}
+            actionData={actionData}
+            transition={transition}
+            isNextButtonClicked={isNextButtonClicked}
+            setIsNextButtonClicked={setIsNextButtonClicked}
+          />
+        )}
+        {step === 3 && joinMethod === "create" && <DelegationAddress data={data} actionData={actionData} />}
+        {step === 4 && joinMethod === "create" && <ConfirmDelegation data={data} />}
       </S.Container>
 
       <S.ControlButtonsContainer>
-        {step > 1 ?
-          joinType === "create" ?
-            <S.ControlButton name="action" value="next" type="submit" onClick={() => setIsNextButtonClicked(true)}> Próximo  {transition.state !== 'idle' && isNextButtonClicked && <Spinner dim={18} />} </S.ControlButton> : null : null
+        {step > 1 && joinMethod === "create" &&
+          <DefaultButtonBox>
+            <Button
+              name="action"
+              value="next"
+              type="submit"
+              onPress={() => setIsNextButtonClicked(true)}
+            >
+              Próximo  {transition.state !== 'idle' && isNextButtonClicked && <Spinner dim={18} />}
+            </Button>
+          </DefaultButtonBox>
+
         }
 
-        {step !== 1 && <S.ControlButton name="action" value="previous" type="submit" prev> Voltar </S.ControlButton>}
+        {step !== 1 &&
+          <DefaultButtonBox whiteBackground>
+            <Button
+              name="action"
+              value="previous"
+              type="submit"
+            >
+              Voltar
+            </Button>
+          </DefaultButtonBox>
+        }
       </S.ControlButtonsContainer>
     </S.SubscriptionForm >
   )
