@@ -7,7 +7,6 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 
 import { createPaymentIntent } from '~/stripe.server'
 import { requireDelegationId, requireUser } from "~/session.server"
-import { getUserById } from "~/models/user.server"
 import { getRequiredPayments } from "~/models/payments.server"
 
 import * as S from '~/styled-components/pay'

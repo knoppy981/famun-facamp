@@ -34,7 +34,7 @@ export const meta = () => ({
 export const loader = async ({ request }) => {
   // const t = await remixI18n.getFixedT(request, 'translation')
   // const title = t('headTitle')
-  const user = await getUser(request)
+  const user = await getUser(request).catch(error => console.log(error))
   return json({
     user,
     userType: await getUserType(user?.id),

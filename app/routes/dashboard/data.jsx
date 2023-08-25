@@ -7,7 +7,6 @@ import _ from 'lodash'
 
 import { useUser, useUserType } from '~/utils'
 import { getExistingUser, updateUser } from '~/models/user.server';
-import { updateDelegation } from '~/models/delegation.server'
 import { useOnScreen } from '~/hooks/useOnScreen';
 
 import * as S from '~/styled-components/dashboard/data'
@@ -42,62 +41,6 @@ export const action = async ({ request }) => {
 
   try {
     console.dir(data, { depth: null })
-    checkUserInputData([
-      {
-        key: "email",
-        value: user.email,
-        errorMessages: { undefined: "E-mail is required", invalid: "Invalid e-mail", existingUser: "E-mail already taken" },
-        valuesToCompare: [existingUser?.email]
-      },
-      {
-        key: "name",
-        value: user.name,
-        errorMessages: { undefined: "Name is required", invalid: "Invalid name", existingUser: "Name already taken" },
-        valuesToCompare: [existingUser?.name]
-      },
-      {
-        key: "cpf",
-        value: user.document.value,
-        errorMessages: { undefined: "Cpf is required", invalid: "Invalid cpf", existingUser: "Cpf already taken" },
-        valuesToCompare: [existingUser?.document?.value],
-        dontValidate: user.document.documentName !== "cpf"
-      },
-      {
-        key: "passport",
-        value: user.document.value,
-        errorMessages: { undefined: "Passport number is required", invalid: "Invalid passport number", existingUser: "Passport number already taken" },
-        valuesToCompare: [existingUser?.document?.value],
-        dontValidate: user.document.documentName !== "passport"
-      },
-      {
-        key: "birthDate",
-        value: user.birthDate,
-        errorMessages: { undefined: "Birth date is required", invalid: "Invalid birth date" }
-      },
-      {
-        key: "phoneNumber",
-        value: user.phoneNumber,
-        errorMessages: { undefined: "Phone number is required", invalid: "Invalid phone number" }
-      },
-      {
-        key: "emergencyContactName",
-        value: user.delegate?.update.emergencyContactName,
-        errorMessages: { undefined: "Name is required", invalid: "Invalid name" },
-        dontValidate: user.delegate ? false : true
-      },
-      {
-        key: "emergencyContactPhoneNumber",
-        value: user.delegate?.update.emergencyContactPhoneNumber,
-        errorMessages: { undefined: "Phone number is required", invalid: "Invalid phone number" },
-        dontValidate: user.delegate ? false : true
-      },
-      {
-        key: "languagesSimulates",
-        value: user.delegate?.update.languagesSimulates,
-        errorMessages: { undefined: "Select at least one language", invalid: "Invalid language" },
-        dontValidate: user.delegate ? false : true
-      },
-    ])
   } catch (error) {
     console.log(error)
     error = qs.parse(error.message)

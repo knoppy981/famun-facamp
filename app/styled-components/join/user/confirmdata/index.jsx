@@ -52,7 +52,7 @@ const ConfirmData = ({ data, userType }) => {
                 Preferência de Conselho
               </S.Label>
               {Object.values(qs.parse(data.councilPreference)).map((item, index) => (
-                <p style={{ fontSize: "inherit" }} key={index}>{index + 1}-{" " + item}</p>
+                <p style={{ fontSize: "inherit" }} key={index}>{index + 1}-{" " + item.replace(/_/g, ' ')}</p>
               ))}
             </S.Item>
 
