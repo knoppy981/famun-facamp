@@ -71,6 +71,7 @@ const DelegateData = ({ data, actionData }) => {
             name="languagesSimulates"
             defaultValue={data.languagesSimulates}
             err={actionData?.errors.languagesSimulates}
+            action={actionData}
           >
             <Checkbox value="Portugues">Português</Checkbox>
             <Checkbox value="Ingles">Inglês</Checkbox>

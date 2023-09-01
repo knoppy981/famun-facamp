@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react'
 
 import * as S from "../elements"
 import { FiX } from 'react-icons/fi'
+import DataChangeInputBox from '~/styled-components/components/inputBox/dataChange'
+import { Select, Item } from '~/styled-components/components/select';
 
 const LanguageData = (props) => {
 
@@ -37,28 +39,28 @@ const LanguageData = (props) => {
         </S.CheckboxButton>
       ))}
 
-      {!isDisabled && <S.Select
-        name="languages"
-        onChange={event => {
-          event.target.value !== "Adicionar idioma" && !isDisabled ? handleAddLanguage(event) : null
-          setLanguageError(null)
-        }}
-        defaultValue="Adicionar idioma"
-        key={`${formData?.id}-languages`}
-      >
-        {[
-          'Adicionar idioma',
-          'Portugues',
-          'Ingles',
-          'Espanhol',
-        ].map((language, index) => (
-          <option
-            key={`${formData?.id}-language-option-${index}`}
+      <S.LanguageSelectContainer>
+        {!isDisabled &&
+          <Select
+            placeholder="Adicionar Idioma"
+            name="language"
+            hideLabel={1}
+            onSelectionChange={value => {
+              !isDisabled ? handleAddLanguage(value) : null
+              setLanguageError(null)
+            }}
+            selectedKey=""
+            aria-label="Método de Participação"
+            items={[
+              { id: "Portugues" },
+              { id: "Ingles" },
+              { id: "Espanhol" }
+            ]}
           >
-            {language}
-          </option>
-        ))}
-      </S.Select>}
+            {(item) => <Item>{item.id}</Item>}
+          </Select>
+        }
+      </S.LanguageSelectContainer>
 
       {languageError && <S.Error>{languageError}</S.Error>}
     </S.Container>

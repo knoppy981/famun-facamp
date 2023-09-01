@@ -34,7 +34,7 @@ export const CheckboxGroup = (props) => {
   const [error, setError] = React.useState(null)
   React.useEffect(() => {
     setError(err)
-  }, [err]);
+  }, [err, props.action]);
 
   React.useEffect(() => {
     setError(null)

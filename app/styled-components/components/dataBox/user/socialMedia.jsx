@@ -14,11 +14,11 @@ const SocialMediaData = (props) => {
       </S.ContainerTitle>
 
       <DataChangeInputBox>
-        {["Instagram", "Facebook", "Linkedin"].map((socialMedia, index) => (
+        {["instagram", "facebook", "linkedin"].map((socialMedia, index) => (
           <TextField
             key={index}
             name={`delegationAdvisor.${socialMedia}`}
-            label={socialMedia}
+            label={socialMedia.charAt(0).toUpperCase() + socialMedia.slice(1)}
             type="text"
             defaultValue={formData?.delegationAdvisor?.[socialMedia]}
             onChange={handleChange}

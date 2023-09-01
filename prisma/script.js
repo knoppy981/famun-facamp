@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 async function seed() {
 
-	/* await prisma.user.delete({ where: { email: "andre.knopp8@gmail.com" } }).catch(err => { console.log('no user found') })
+	await prisma.user.delete({ where: { email: "andre.knopp8@gmail.com" } }).catch(err => { console.log('no user found') })
 	await prisma.user.delete({ where: { email: "teste@gmail.com" } }).catch(err => { console.log('no user found') })
 
 	await prisma.delegation.delete({ where: { code: "123456" } }).catch(err => { console.log('no delegation found') })
@@ -14,7 +14,7 @@ async function seed() {
 	const user1 = await prisma.user.create({
 		data: {
 			name: "Andre Knopp Guimaraes",
-			birthDate: "23/06/2003",
+			birthDate: "2003-06-23",
 			document: {
 				documentName: "cpf",
 				value: "512.070.218-06"
@@ -51,7 +51,7 @@ async function seed() {
 	const user2 = await prisma.user.create({
 		data: {
 			name: "Ciclano de Fulano",
-			birthDate: "23/06/2003",
+			birthDate: "2003-06-23",
 			document: {
 				documentName: "cpf",
 				value: "123.123.123-23"
@@ -122,19 +122,7 @@ async function seed() {
 				}
 			}
 		}
-	}) */
-
-	const aaa = await prisma.delegation.create({
-		data: {
-			participants: {
-				connect: {
-					
-				}
-			}
-		}
 	})
-
-	console.log(aaa)
 
 	console.log(`Database has been seeded. 🌱`);
 }

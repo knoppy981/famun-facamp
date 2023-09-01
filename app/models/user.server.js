@@ -25,7 +25,7 @@ export async function getUserByEmail(email) {
 	});
 }
 
-export async function getExistingUser(values) {
+export async function getExistingUser({ userId, ...values }) {
 	const checkableValues = Object.entries(values).map(entry => {
 		return { [entry[0]]: entry[1] };
 	})
@@ -35,12 +35,15 @@ export async function getExistingUser(values) {
 	try {
 		user = await prisma.user.findFirstOrThrow({
 			where: {
-				OR: checkableValues
+				OR: checkableValues,
+				NOT: { id: userId }
 			}
 		})
 	} catch (e) {
 		return {}
 	}
+
+	console.log(user)
 
 	let field
 	let errorMsg
@@ -80,20 +83,24 @@ export async function updateUser({ userId, values }) {
 	})
 }
 
-export async function formatUserData(data) {
-
-	console.log(data)
-
+export async function formatUserData({
+	data,
+	childrenModification,
+	userType
+}) {
 	let delegate
 	let delegationAdvisor
 	let document
-	let userType
 
 	if (data.delegate) {
-		delegate = { create: data.delegate }
+		delete data.delegate.id
+		delete data.delegate.userId
+		delegate = { [childrenModification]: data.delegate }
 	} else {
 		delegate = {
 			create: {
+				id: undefined,
+				userId: undefined,
 				councilPreference: Object.values(qs.parse(data?.councilPreference))/* .map(function (item) { return item.replace(/ /g, "_")}) */,
 				languagesSimulates: data?.languagesSimulates,
 				emergencyContactName: data.emergencyContactName,
@@ -103,7 +110,9 @@ export async function formatUserData(data) {
 	}
 
 	if (data.delegationAdvisor) {
-		delegationAdvisor = { create: data.delegationAdvisor }
+		delete data.delegationAdvisor.id
+		delete data.delegationAdvisor.userId
+		delegationAdvisor = { [childrenModification]: data.delegationAdvisor }
 	} else {
 		delegationAdvisor = {
 			create: {
@@ -124,20 +133,14 @@ export async function formatUserData(data) {
 		}
 	}
 
-	if (data.userType) {
-		userType = data.userType
-	} else {
-		userType = delegate ? "delegate" : "advisor"
-	}
-
 	return {
 		name: data.name,
 		email: data.email,
-		password: {
+		password: data.password ? {
 			create: {
 				hash: await bcrypt.hash(data.password, 10)
 			}
-		},
+		} : undefined,
 		document: document,
 		birthDate: data.birthDate,
 		phoneNumber: data.phoneNumber,

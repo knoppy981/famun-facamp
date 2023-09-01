@@ -38,7 +38,7 @@ export function ComboBox(props) {
 
   React.useEffect(() => {
     setErr(null)
-  }, [state.inputValue, props.action])
+  }, [state.inputValue])
 
   return (
     <>

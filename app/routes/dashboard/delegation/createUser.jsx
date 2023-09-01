@@ -8,16 +8,19 @@ import { useOverlayTrigger } from "react-aria";
 import { createUser, formatUserData, getExistingUser } from "~/models/user.server"
 import { joinDelegationById } from "~/models/delegation.server"
 import { useOnScreen } from "~/hooks/useOnScreen";
-import { useUser, useUserType, generatePassword } from "~/utils";
+import { useUser, useUserType, generatePassword, getCorrectErrorMessage } from "~/utils";
 
-import * as P from '~/styled-components/dashboard/data'
-import * as S from "~/styled-components/dashboard/delegation"
+import * as S from "~/styled-components/dashboard/delegation/createUser"
 import EditUserData from '~/styled-components/components/dataBox/user';
 import Spinner from "~/styled-components/components/spinner";
 import { FiUserPlus } from "react-icons/fi";
 import { prismaUserSchema } from "~/schemas";
 import Modal from "~/styled-components/components/modalOverlay";
-
+import ColorButtonBox from "~/styled-components/components/buttonBox/withColor";
+import Button from "~/styled-components/components/button";
+import Dialog from "~/styled-components/components/dialog";
+import { Select, Item } from '~/styled-components/components/select';
+import DataChangeInputBox from "~/styled-components/components/inputBox/dataChange";
 
 export const action = async ({ request }) => {
   const formData = await request.formData()
@@ -27,9 +30,11 @@ export const action = async ({ request }) => {
     ...qs.parse(formData.get("data")),
     password: generatePassword(),
   }
-
-  userData = await formatUserData(userData)
-
+  userData = await formatUserData({
+    data: userData,
+    childrenModification: "update",
+    userType: userData.delegate ? "delegate" : "advisor"
+  })
   let user
 
   try {
@@ -40,18 +45,18 @@ export const action = async ({ request }) => {
       document: { is: { value: userData.document.value ?? "" } }
     })
 
-    user = await createUser(userData)
+    /* user = await createUser(userData)
 
-    await joinDelegationById(delegationId, user.id)
+    await joinDelegationById(delegationId, user.id) */
   } catch (error) {
-    console.dir(error, { depth: null })
+    const [label, msg] = getCorrectErrorMessage(error)
     return json(
-      { errors: { [error.details[0].context.key ?? "error"]: error.details[0].message ?? error } },
+      { errors: { [label]: msg } },
       { status: 400 }
     );
   }
 
-  return json({})
+  return json({ user: { name: "jorge", id: "1298371928379182723", email: "jorge@gmail.com" } })
 }
 
 const CreateUser = () => {
@@ -61,12 +66,207 @@ const CreateUser = () => {
   const user = useUser()
   const userType = useUserType()
   const fetcher = useFetcher()
-  const { creatingUserType, handleCreatingUserTypeChange, allowCreation, formData, setFormData } =
+  const { creatingUserType, handleCreatingUserType, allowCreation, formData, setFormData } =
     useUserCreation(user, userType, fetcher, delegatesCount)
+  const [handleChange, handleAddLanguage, handleRemoveLanguage] =
+    useUpdateStateFunctions(formData, setFormData)
+  const [buttonLabel, buttonIcon, buttonColor] = useButtonState(allowCreation, fetcher.state)
   const handleSubmission = (e) => {
-    e.preventDefault()
-    fetcher.submit(e.currentTarget, { replace: true })
+    if (!allowCreation) return
+    fetcher.submit(
+      { data: qs.stringify(formData), delegationId: delegation.id },
+      { replace: true, method: "post" }
+    )
   }
+  const [modalContext, state] = useModalContext(fetcher)
+
+  return (
+    <S.DataForm>
+      {state.isOpen &&
+        <Modal state={state} isDismissable>
+          <Dialog>
+            asdjalskdjasd
+          </Dialog>
+        </Modal>
+      }
+
+      <S.DataTitleBox>
+        <S.DataTitle ref={buttonRef}>
+          {allowCreation ?
+            <ColorButtonBox color={buttonColor}>
+              <Button onPress={handleSubmission} isDisabled={!allowCreation}>
+                {buttonIcon} {buttonLabel}
+              </Button>
+            </ColorButtonBox> :
+            "Somente o líder da delegação e os orientadores podem adicionar participantes manualmente"
+          }
+        </S.DataTitle>
+      </S.DataTitleBox>
+
+      <S.DataTitleBox style={{ pointerEvents: allowCreation ? 'auto' : 'none', opacity: allowCreation ? 1 : 0.5, }}>
+        <DataChangeInputBox>
+          <Select
+            label="Tipo do Participante"
+            defaultSelectedKey={creatingUserType}
+            onSelectionChange={handleCreatingUserType}
+            items={[
+              { id: "delegate", name: "Delegado" },
+              { id: "delegationAdvisor", name: "Professor(a) Oritentador(a)" },
+            ]}
+            isDisabled={!allowCreation}
+          >
+            {(item) => <Item>{item.name}</Item>}
+          </Select>
+        </DataChangeInputBox>
+
+        {creatingUserType === "delegate" && allowCreation ?
+          <S.DelegateCountdown>
+            <ColorButtonBox color="red">
+              {10 - delegatesCount} vagas restantes para delegados
+            </ColorButtonBox>
+          </S.DelegateCountdown> :
+          null
+        }
+      </S.DataTitleBox>
+
+      <EditUserData
+        isDisabled={!allowCreation}
+        actionData={fetcher.data}
+        formData={formData}
+        handleChange={handleChange}
+        handleAddLanguage={handleAddLanguage}
+        handleRemoveLanguage={handleRemoveLanguage}
+        userType={creatingUserType}
+      />
+
+      <AnimatePresence>
+        {allowCreation && !isRefVisible && (
+          <S.StickyButton
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ColorButtonBox color={buttonColor} boxShadow={1}>
+              <Button onPress={handleSubmission} isDisabled={!allowCreation}>
+                {buttonIcon} {buttonLabel}
+              </Button>
+            </ColorButtonBox>
+          </S.StickyButton>
+        )}
+      </AnimatePresence>
+    </S.DataForm >
+  )
+}
+
+function useUserCreation(user, userType, fetcher, delegatesCount) {
+  const normalUser = {
+    /* email: '',
+    name: '',
+    document: { documentName: 'cpf', value: '' },
+    phoneNumber: '',
+    birthDate: '',
+    nacionality: 'Brazil',
+    delegate: {
+      emergencyContactName: '',
+      emergencyContactPhoneNumber: '',
+      councilPreference: [
+        'Conselho_de_Seguranca_da_ONU',
+        'Rio_92',
+        'Assembleia_Geral_da_ONU',
+        'Conselho_de_Juventude_da_ONU'
+      ],
+      languagesSimulates: []
+    },
+    delegationAdvisor: {
+      advisorRole: 'Professor',
+      Facebook: '',
+      Instagram: '',
+      Linkedin: ''
+    } */
+    email: 'lksad@gmail.com',
+    name: 'lksad',
+    document: { documentName: 'passport', value: '0928323' },
+    phoneNumber: '+55 19 99283 3233',
+    birthDate: '2000-06-23',
+    nacionality: 'Angola',
+    delegate: {
+      emergencyContactName: 'aklsdjd',
+      emergencyContactPhoneNumber: '+55 19 99283 3239',
+      councilPreference: [
+        'Conselho_de_Seguranca_da_ONU',
+        'Rio_92',
+        'Assembleia_Geral_da_ONU',
+        'Conselho_de_Juventude_da_ONU'
+      ],
+      languagesSimulates: ['Portugues']
+    },
+    delegationAdvisor: {
+      advisorRole: 'Professor',
+      facebook: 'lkjsad',
+      instagram: '',
+      linkedin: ''
+    }
+  }
+
+  const [creatingUserType, setCreatingUserType] = React.useState("delegate")
+  const [allowCreation, setAllowCreation] = React.useState(false)
+  const [formData, setFormData] = React.useState(normalUser)
+
+  React.useEffect(() => {
+    // update the variable that decides if the user can create a user
+    setAllowCreation(() => {
+      if (creatingUserType === "delegate" && delegatesCount > 10) {
+        return false
+      } else if (userType === "delegationAdvisor" || user.leader) {
+        return true
+      } else {
+        return false
+      }
+    })
+    // update the default value for the user being created
+
+  }, [creatingUserType])
+
+  React.useEffect(() => {
+    // setting data back to default after creating user
+    if (fetcher?.data?.name === formData.name) setFormData(normalUser)
+  }, [fetcher])
+
+  const handleCreatingUserType = (userType) => {
+    setFormData((prevState) => {
+      let newData = { ...prevState }
+      newData.delegate = userType === "delegate" ? normalUser.delegate : undefined
+      newData.delegationAdvisor = userType === "delegationAdvisor" ? normalUser.delegationAdvisor : undefined
+      return newData
+    })
+    setCreatingUserType(userType)
+  }
+
+  return {
+    creatingUserType,
+    handleCreatingUserType,
+    allowCreation,
+    formData,
+    setFormData,
+  }
+}
+
+function useButtonState(allowCreation, transition) {
+  const [buttonLabel, setButtonLabel] = React.useState("Adicionar Participante")
+  const [buttonIcon, setButtonIcon] = React.useState(<FiUserPlus />)
+  const [buttonColor, setButtonColor] = React.useState("gray")
+
+  React.useEffect(() => {
+    setButtonLabel(transition !== 'idle' ? "Adicionando" : "Adicionar Participante")
+    setButtonIcon(transition !== 'idle' ? <Spinner dim={18} color='green' /> : <FiUserPlus />)
+    setButtonColor(transition !== 'idle' ? "blue" : allowCreation ? "green" : "gray")
+  }, [allowCreation, transition])
+
+  return [buttonLabel, buttonIcon, buttonColor]
+}
+
+function useUpdateStateFunctions(formData, setFormData) {
   function handleChange(event) {
     const { name, value } = event.target;
 
@@ -97,14 +297,13 @@ const CreateUser = () => {
       return newData;
     });
   };
-  function handleAddLanguage(event) {
-    const newLanguage = event.target.value;
-    if (!formData.delegate.languagesSimulates.includes(newLanguage)) {
+  function handleAddLanguage(language) {
+    if (!formData.delegate.languagesSimulates.includes(language)) {
       setFormData({
         ...formData,
         delegate: {
           ...formData.delegate,
-          languagesSimulates: [...formData.delegate.languagesSimulates, newLanguage],
+          languagesSimulates: [...formData.delegate.languagesSimulates, language],
         },
       });
     }
@@ -119,198 +318,21 @@ const CreateUser = () => {
     });
   };
 
-  const state = useOverlayTriggerState({});
-
-  return (
-    <S.DataForm disabled={!allowCreation} method="post">
-      <button onClick={state.toggle}>asdasdasd</button>
-
-      {state.isOpen && <Modal state={state} isDismissable></Modal>}
-      <S.DataTitleBox>
-        <S.DataTitle>
-          {allowCreation ?
-            <P.ColorItem
-              onClick={handleSubmission}
-              color={fetcher.state !== 'idle' ? "blue" : allowCreation ? "green" : "gray"}
-              disabled={!allowCreation}
-              ref={buttonRef}
-            >
-              {fetcher.state !== 'idle' ?
-                <><Spinner dim={18} color='green' /> Adicionando</> :
-                <><FiUserPlus /> Adicionar Participante</>}
-            </P.ColorItem> :
-            "Somente o líder da delegação e os orientadores podem adicionar participantes manualmente"
-          }
-        </S.DataTitle>
-      </S.DataTitleBox>
-
-      <S.DataTitleBox
-        style={{
-          pointerEvents: allowCreation ? 'auto' : 'none',
-          opacity: allowCreation ? 1 : 0.5,
-        }}
-      >
-        <S.DataSubTitle>
-          Tipo do participante
-        </S.DataSubTitle>
-
-        <S.UserSelect
-          onChange={handleCreatingUserTypeChange}
-          disabled={!allowCreation}
-        >
-          {["delegate", "delegationAdvisor"].map((type, index) => (
-            <option
-              style={{ whiteSpace: 'pre' }}
-              key={type}
-              value={type}
-            >
-              {type === "delegate" ? "Delegado" : "Professor(a) Orientador(a)"}
-            </option>
-          ))}
-        </S.UserSelect>
-
-        {creatingUserType === "delegate" && allowCreation ?
-          <S.DelegateCountdown>
-            <P.ColorItem color="red" disabled>
-              {10 - delegatesCount} vagas restantes para delegados
-            </P.ColorItem>
-          </S.DelegateCountdown> :
-          null
-        }
-      </S.DataTitleBox>
-
-      <EditUserData
-        isDisabled={!allowCreation}
-        actionData={fetcher.data}
-        formData={formData}
-        handleChange={handleChange}
-        handleAddLanguage={handleAddLanguage}
-        handleRemoveLanguage={handleRemoveLanguage}
-        userType={creatingUserType}
-      />
-
-      <AnimatePresence>
-        {allowCreation && !isRefVisible && (
-          <S.StickyButton
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <P.ColorItem
-              onClick={handleSubmission}
-              boxShadow
-              color={fetcher.state !== 'idle' ? "blue" : allowCreation ? "green" : "gray"}
-              disabled={!allowCreation}
-            >
-              {fetcher.state !== 'idle' ?
-                <><Spinner dim={18} color='green' /> Adicionando</> :
-                <><FiUserPlus /> Adicionar Participante</>}
-            </P.ColorItem>
-          </S.StickyButton>
-        )}
-      </AnimatePresence>
-
-      <input type="hidden" name="data" value={qs.stringify(formData)} />
-      <input type="hidden" name="delegationId" value={delegation.id} />
-
-    </S.DataForm >
-  )
+  return [handleChange, handleAddLanguage, handleRemoveLanguage]
 }
 
-function useUserCreation(user, userType, fetcher, delegatesCount) {
-  const normalUser = {
-    /* email: '',
-    name: '',
-    document: { documentName: 'cpf', value: '' },
-    phoneNumber: '',
-    birthDate: '',
-    nacionality: 'Brazil',
-    delegate: {
-      emergencyContactName: '',
-      emergencyContactPhoneNumber: '',
-      councilPreference: [
-        'Conselho_de_Seguranca_da_ONU',
-        'Rio_92',
-        'Assembleia_Geral_da_ONU',
-        'Conselho_de_Juventude_da_ONU'
-      ],
-      languagesSimulates: []
-    },
-    delegationAdvisor: {
-      advisorRole: 'Professor',
-      Facebook: '',
-      Instagram: '',
-      Linkedin: ''
-    } */
-    email: 'kasjdhakjsd@gmail.com',
-    name: 'kjasdhakjsd',
-    document: { documentName: 'passport', value: '092832093' },
-    phoneNumber: '+55 19 99283 3233',
-    birthDate: '2000-06-23',
-    nacionality: 'Angola',
-    delegate: {
-      emergencyContactName: 'aklsdjd',
-      emergencyContactPhoneNumber: '+55 19 99283 3239',
-      councilPreference: [
-        'Conselho_de_Seguranca_da_ONU',
-        'Rio_92',
-        'Assembleia_Geral_da_ONU',
-        'Conselho_de_Juventude_da_ONU'
-      ],
-      languagesSimulates: ['Portugues']
-    },
-    delegationAdvisor: {
-      advisorRole: 'Professor',
-      Facebook: '',
-      Instagram: '',
-      Linkedin: ''
+function useModalContext(fetcher) {
+  const [modalContext, setModalContext] = React.useState()
+  const state = useOverlayTriggerState({});
+
+  React.useEffect(() => {
+    if (fetcher.data?.user) {
+      state.open()
+      setModalContext(fetcher.data?.user)
     }
-  }
-
-  const [creatingUserType, setCreatingUserType] = React.useState("delegationAdvisor")
-  const [allowCreation, setAllowCreation] = React.useState(false)
-  const [formData, setFormData] = React.useState(normalUser)
-
-  React.useEffect(() => {
-    // update the variable that decides if the user can create a user
-    setAllowCreation(() => {
-      if (creatingUserType === "delegate" && delegatesCount > 10) {
-        return false
-      } else if (userType === "delegationAdvisor" || user.leader) {
-        return true
-      } else {
-        return false
-      }
-    })
-  }, [creatingUserType])
-
-  React.useEffect(() => {
-    // update the default value for the user being created
-    setFormData((prevState) => {
-      let newData = { ...prevState }
-      newData.delegate = creatingUserType === "delegate" ? normalUser.delegate : null
-      newData.delegationAdvisor = creatingUserType === "delegationAdvisor" ? normalUser.delegationAdvisor : null
-      return newData
-    })
-  }, [creatingUserType])
-
-  React.useEffect(() => {
-    // setting data back to default after creating user
-    if (fetcher?.data?.name === formData.name) setFormData(normalUser)
   }, [fetcher])
 
-  const handleCreatingUserTypeChange = () => {
-    setCreatingUserType(prevState => prevState === "delegate" ? "delegationAdvisor" : "delegate")
-  }
-
-  return {
-    creatingUserType,
-    allowCreation,
-    formData,
-    setFormData,
-    handleCreatingUserTypeChange
-  }
+  return [modalContext, state]
 }
 
 export default CreateUser

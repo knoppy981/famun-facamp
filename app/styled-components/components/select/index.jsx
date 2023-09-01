@@ -53,13 +53,14 @@ export const Select = (props) => {
           <span {...valueProps}>
             {state.selectedItem
               ? state.selectedItem.rendered
-              : 'Select an option'}
+              : props.placeholder}
           </span>
-          <span
-            aria-hidden="true"
-          >
-            <FiChevronDown />
-          </span>
+          {!props.isDisabled &&
+            <span
+              aria-hidden="true"
+            >
+              <FiChevronDown />
+            </span>}
         </Button>
       </S.Box>
       {state.isOpen &&

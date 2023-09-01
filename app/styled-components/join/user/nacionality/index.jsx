@@ -5,7 +5,7 @@ import { isoCountries } from '~/data/ISO-3661-1'
 import DefaultInputBox from '~/styled-components/components/inputBox/default'
 import { ComboBox, Item } from '~/styled-components/components/comboBox'
 
-const Nacionality = ({ data }) => {
+const Nacionality = ({ data, actionData }) => {
   function createCountryArray(countries) {
     return Object.keys(countries).map(countryName => {
       return {
@@ -30,7 +30,9 @@ const Nacionality = ({ data }) => {
             name="nacionality"
             label="País de Nascimento"
             defaultItems={countryArray}
-            leftItem={<S.NacionalityFlag className={`flag-icon flag-icon-${isoCountries[country]?.toLowerCase()}`}/>}
+            err={actionData?.errors?.nacionality}
+            action={actionData}
+            leftItem={<S.NacionalityFlag className={`flag-icon flag-icon-${isoCountries[country]?.toLowerCase()}`} />}
             onSelectionChange={setCountry}
             defaultInputValue={country}
           >

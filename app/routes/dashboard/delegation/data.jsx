@@ -1,4 +1,4 @@
-import { useFetcher, useOutletContext } from "@remix-run/react";
+import { useFetcher, useOutletContext, useSearchParams } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { AnimatePresence, motion } from "framer-motion";
 import _, { set } from 'lodash';
@@ -6,128 +6,153 @@ import qs from "qs"
 
 import { useOnScreen } from "~/hooks/useOnScreen";
 import { updateUser } from "~/models/user.server";
-import { updateDelegation } from "~/models/delegation.server";
-import { useUser, useUserType } from "~/utils";
+import { formatDelegationData, getExistingDelegation, updateDelegation } from "~/models/delegation.server";
+import { getCorrectErrorMessage, timeout, useUser, useUserType } from "~/utils";
+import { prismaDelegationSchema } from "~/schemas/objects/delegation";
 
-import * as S from "~/styled-components/dashboard/delegation"
-import * as P from '~/styled-components/dashboard/data'
+import * as S from "~/styled-components/dashboard/delegation/data"
 import EditUserData from '~/styled-components/components/dataBox/user';
 import EditDelegationData from '~/styled-components/components/dataBox/delegation';
 import Spinner from "~/styled-components/components/spinner";
 import { FiEdit, FiX, FiCheck } from "react-icons/fi";
+import ColorButtonBox from "~/styled-components/components/buttonBox/withColor";
+import Button from "~/styled-components/components/button";
+import DataChangeInputBox from '~/styled-components/components/inputBox/dataChange'
+import { ComboBox, Item } from '~/styled-components/components/comboBox';
+import { Select } from "~/styled-components/components/select";
 
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
-  const userId = formData.get("userId")
-  const data = qs.parse(formData.get("data"))
+  let userId = formData.get("userId")
+  let { id, ...data } = qs.parse(formData.get("data"))
 
-  let user
-  let delegationId
+  data = await formatDelegationData({
+    data,
+    addressModification: "update",
+    participantModification: "update",
+    usersIdFilter: [userId]
+  })
 
   if (data === undefined) return json({ errors: { data: "Unknown error" } }, { status: 404 })
 
-  // check if it is a delegation change or user change
-  if (data.name) {
-    user = data
-
-    //delete useless values
-    delete data.id
-    delete data.delegationId
-    delete data?.delegate.id
-    delete data?.delegate.userId
-    data.leader = data.leader === "true" ? true : false
-    delete data?.delegationAdvisor.id
-    delete data?.delegationAdvisor.userId
-
-    // add update
-    data.delegate ? data.delegate = { update: data.delegate } : delete data.delegate
-    data.delegationAdvisor ? data.delegationAdvisor = { update: data.delegationAdvisor } : delete data.delegationAdvisor
-  } else {
-    console.log("xxxx")
-    // find user
-    user = data.participants.find(delegate => delegate.id === userId)
-    delegationId = data.id
-
-    //delete useless values
-    delete data.id
-    delete data.address.id
-    delete data.address.delegationId
-
-    delete user.id
-    delete user.delegationId
-    delete user?.delegate.id
-    delete user?.delegate.userId
-    user.leader = user.leader === "true" ? true : false
-    delete user?.delegationAdvisor.id
-    delete user?.delegationAdvisor.userId
-
-    // add update
-    user.delegate ? user.delegate = { update: user.delegate } : delete user.delegate
-    user.delegationAdvisor ? user.delegationAdvisor = { update: user.delegationAdvisor } : delete user.delegationAdvisor
-
-    data.address = { update: data.address }
-    data.participants = {
-      update: {
-        where: { id: userId },
-        data: user
-      }
-    }
-  }
-
-  const userData = { name: user?.name, email: user?.email, document: { is: { value: user.document.value } } }
-  let existingUser = await getExistingUser(userData)
-  if (existingUser.id === userId) existingUser = {}
-
   try {
-    console.dir(data, { depth: null })
+    await getExistingDelegation({ school: data.school ?? "", delegationId: id })
+    await prismaDelegationSchema.validateAsync(data)
   } catch (error) {
-    console.log(error)
-    error = qs.parse(error.message)
-    console.log(error.key)
+    console.dir(error, { depth: null })
+    const [label, msg] = getCorrectErrorMessage(error)
     return json(
-      { errors: { [error.key]: error.msg } },
+      { errors: { [label]: msg } },
       { status: 400 }
     );
   }
 
-  // atualizar usuario ou delegacao
-
-  if (data.name) {
-    return updateUser({ userId, values: data })
-  } else {
-    return updateDelegation({ delegationId: delegationId, values: data })
-  }
+  return updateDelegation({ delegationId: id, values: data })
 }
 
-const DelegationData = ({
-  userScrollRef,
-  clickedUserFromTableId
-}) => {
-
-  const user = useUser()
-  const userType = useUserType()
-  const delegation = useOutletContext()
-  // used for showing alternate button when the first one isnt visible
-  const [buttonRef, isRefVisible] = useOnScreen();
-
-  // data changes
+const DelegationData = () => {
   const fetcher = useFetcher()
-  // only allow changes to advisor or delegation leader
-  const allowChanges = userType === "advisor" ? true : user.leader ?? false
-  // ready submission if changes have been made, and data change active if user clicked on the button to edit the data
+  const user = useUser()
+
+  const userType = useUserType()
+  const [searchParams] = useSearchParams();
+  const allowChanges = userType === "advisor" ? true : user.leader ?? false // only allow changes to advisor or delegation leader
+  const delegation = useOutletContext()
+  const [buttonRef, isRefVisible] = useOnScreen();
+  const { readySubmission, userWantsToChangeData, handleUserWantsToChangeData, formData, setFormData, allowChangeParticipant } =
+    useDelegationUpdate(delegation, fetcher)
+    const [selectedUserId, setSelectedUserId] = React.useState(formData.participants[0].id);
+  const [userDataRef] = useUserScroll(searchParams, delegation, setSelectedUserId)
+  const [handleDelegationChange, handleChange, handleAddLanguage, handleRemoveLanguage] =
+    useUpdateStateFunctions(formData, setFormData, selectedUserId)
+  const [buttonLabel, buttonIcon, buttonColor] =
+    useButtonState(userWantsToChangeData, readySubmission, fetcher.state, allowChanges)
+  const handleSubmission = () => {
+    if (!allowChanges) return
+    if (readySubmission) {
+      fetcher.submit(
+        { data: qs.stringify(formData), userId: selectedUserId },
+        { replace: true, method: "post" }
+      )
+    } else {
+      handleUserWantsToChangeData()
+    }
+  }
+
+  return (
+    <S.DataForm method="post">
+      <S.DataTitleBox>
+        <S.DataTitle ref={buttonRef}>
+          <ColorButtonBox color={buttonColor}>
+            <Button onPress={handleSubmission}>
+              {buttonIcon} {buttonLabel}
+            </Button>
+          </ColorButtonBox>
+        </S.DataTitle>
+      </S.DataTitleBox>
+
+      <EditDelegationData
+        isDisabled={!userWantsToChangeData}
+        formData={formData}
+        actionData={fetcher.data}
+        handleChange={handleDelegationChange}
+      />
+
+      <S.DataTitleBox ref={userDataRef}>
+        <S.InputWrapper>
+          <Select
+            name="selectedParticipant"
+            label="Dados do Participante"
+            isRequired
+            items={delegation.participants.map(participant => { return { id: participant.id } })}
+            onSelectionChange={value => { if (value !== null) setSelectedUserId(value) }}
+            selectedKey={selectedUserId}
+            isDisabled={!allowChangeParticipant}
+          >
+            {(item) => <Item>{delegation.participants.find(el => el.id === item.id)?.name}</Item>}
+          </Select>
+        </S.InputWrapper>
+      </S.DataTitleBox>
+
+      <EditUserData
+        isDisabled={!userWantsToChangeData}
+        actionData={fetcher.data}
+        formData={formData.participants.find((participant) => participant.id === selectedUserId)}
+        handleChange={handleChange}
+        handleAddLanguage={handleAddLanguage}
+        handleRemoveLanguage={handleRemoveLanguage}
+        userType={formData.participants.find((participant) => participant.id === selectedUserId).delegate ? 'delegate' : 'delegationAdvisor'}
+      />
+
+      <AnimatePresence>
+        {!isRefVisible && (
+          <S.StickyButton
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ColorButtonBox color={buttonColor} boxShadow={1}>
+              <Button onPress={handleSubmission}>
+                {buttonIcon} {buttonLabel}
+              </Button>
+            </ColorButtonBox>
+          </S.StickyButton>
+        )}
+      </AnimatePresence>
+    </S.DataForm >
+  )
+}
+
+function useDelegationUpdate(delegation, fetcher) {
+  const [formData, setFormData] = React.useState(_.cloneDeep(delegation));
   const [readySubmission, setReadySubmission] = React.useState(false)
   const [userWantsToChangeData, setUserWantsToChangeData] = React.useState(false)
-  // only one user change at a time, this state controls if you can change the user being edited
   const [allowChangeParticipant, setAllowChangeParticipant] = React.useState(true)
-
-  // delegation data is the copy of the delegation ready for being changed without altering the original data
-  // have to use cloneDeep here for later lodash functions uses later
-  const [formData, setFormData] = React.useState(_.cloneDeep(delegation));
-  // current user being visualized
-  const [selectedUserId, setSelectedUserId] = React.useState(clickedUserFromTableId ?? formData.participants[0].id);
-
-  // useEffect for every data change
+  const handleUserWantsToChangeData = () => {
+    setUserWantsToChangeData(!userWantsToChangeData)
+  }
   React.useEffect(() => {
     // if data is different from orginal data and the user clicked on the edit data button (userWantsToChangeData),
     // allow form submission and lock the user being edited, else don't
@@ -140,8 +165,6 @@ const DelegationData = ({
       setAllowChangeParticipant(true)
     }
   }, [formData])
-
-  // useEffect for successful submission of data change form
   React.useEffect(() => {
     if (fetcher.state === 'loading' && !fetcher.data?.errors) {
       // set the delegation data for the updated one recieved from the server
@@ -153,19 +176,47 @@ const DelegationData = ({
       fetcher.data = undefined
     }
   }, [fetcher])
-
-  const handleSubmission = (e) => {
-    e.preventDefault()
-    if (!allowChanges) return
-
-    // if submission is ready, meaning that the data has been modified, submi the form, else it means that the user wants to edit the data
-    if (readySubmission) {
-      fetcher.submit(e.currentTarget, { replace: true })
-    } else {
-      setUserWantsToChangeData(!userWantsToChangeData)
-    }
+  return {
+    readySubmission,
+    userWantsToChangeData,
+    handleUserWantsToChangeData,
+    formData,
+    setFormData,
+    allowChangeParticipant,
   }
+}
 
+function useButtonState(userWantsToChangeData, readySubmission, transition, allowChanges) {
+  const [buttonLabel, setButtonLabel] = React.useState("Editar Dados")
+  const [buttonIcon, setButtonIcon] = React.useState(<FiEdit />)
+  const [buttonColor, setButtonColor] = React.useState("blue")
+
+  React.useEffect(() => {
+    setButtonLabel(transition !== 'idle' ?
+      "Salvando" :
+      !userWantsToChangeData ?
+        "Editar Dados" :
+        readySubmission ?
+          "Salvar Alterações" :
+          "Cancelar")
+    setButtonIcon(transition !== 'idle' ?
+      <Spinner dim={18} color='green' /> :
+      !userWantsToChangeData ?
+        <FiEdit /> :
+        readySubmission ?
+          <FiCheck /> :
+          <FiX />)
+    setButtonColor(!allowChanges ?
+      'gray' :
+      userWantsToChangeData ?
+        readySubmission ? 'green' : 'red' :
+        'blue')
+  }, [userWantsToChangeData, readySubmission, transition])
+
+  return [buttonLabel, buttonIcon, buttonColor]
+}
+
+function useUpdateStateFunctions(formData, setFormData, selectedUserId) {
   const handleDelegationChange = (event) => {
     const { name, value } = event.target;
 
@@ -188,7 +239,6 @@ const DelegationData = ({
       return newData
     })
   }
-
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -225,24 +275,20 @@ const DelegationData = ({
       return newData;
     });
   };
-
-  const handleAddLanguage = (event) => {
-    const newLanguage = event.target.value;
-
+  const handleAddLanguage = (language) => {
     setFormData((prevState) => {
       let newData = { ...prevState };
 
       const user = newData.participants.find(
         (participant) => participant.id === selectedUserId
       );
-      if (user && !user.delegate.languagesSimulates.includes(newLanguage)) {
-        user.delegate.languagesSimulates.push(newLanguage);
+      if (user && !user.delegate.languagesSimulates.includes(language)) {
+        user.delegate.languagesSimulates.push(language);
       }
 
       return newData;
     });
   };
-
   const handleRemoveLanguage = (language) => {
     setFormData((prevState) => {
       let newData = { ...prevState };
@@ -261,110 +307,31 @@ const DelegationData = ({
     });
   };
 
-  return (
-    <S.DataForm method="post" action="/dashboard/data">
-      <S.DataTitleBox>
-        <P.ColorItem
-          key='2-menu'
-          onClick={handleSubmission}
-          color={
-            allowChanges ?
-              userWantsToChangeData ?
-                readySubmission ?
-                  'green' :
-                  'red' :
-                'blue' :
-              'gray'
-          }
-          ref={buttonRef}
-        >
-          {fetcher.state !== 'idle' ?
-            <><Spinner dim={18} color='green' /> Salvando</> :
-            !userWantsToChangeData ?
-              <><FiEdit /> Editar Dados</> :
-              readySubmission ?
-                <><FiCheck /> Salvar Alterações</> :
-                <><FiX /> Cancelar</>}
-        </P.ColorItem>
-      </S.DataTitleBox>
+  return [handleDelegationChange, handleChange, handleAddLanguage, handleRemoveLanguage]
+}
 
-      <EditDelegationData
-        isDisabled={!userWantsToChangeData}
-        formData={formData}
-        actionData={fetcher.data}
-        handleChange={handleDelegationChange}
-      />
+function useUserScroll(searchParams, delegation, setSelectedUserId) {
+  const userDataRef = React.useRef()
 
-      <S.DataTitleBox ref={userScrollRef}>
-        <S.DataSubTitle>
-          Dados do participante
-        </S.DataSubTitle>
+  if (!searchParams) return 
+  const name = searchParams.get("u")
 
-        <S.UserSelect
-          onChange={event => setSelectedUserId(event.target.value)}
-          disabled={!allowChangeParticipant}
-          value={selectedUserId}
-        >
-          {formData.participants.map((user, index) => (
-            <option
-              style={{ whiteSpace: 'pre' }}
-              key={user.id}
-              value={user.id}
-            >
-              {user.name}
-            </option>
-          ))}
-        </S.UserSelect>
-      </S.DataTitleBox>
+  React.useEffect(() => {
+    const id = delegation.participants.find(participant => participant.name === name)?.id
+    if (id) {
+      setSelectedUserId(id)
 
-      <EditUserData
-        isDisabled={!userWantsToChangeData}
-        actionData={fetcher.data}
-        formData={formData.participants.find((participant) => participant.id === selectedUserId)}
-        handleChange={handleChange}
-        handleAddLanguage={handleAddLanguage}
-        handleRemoveLanguage={handleRemoveLanguage}
-        userType={formData.participants.find((participant) => participant.id === selectedUserId).delegate ? 'delegate' : 'delegationAdvisor'}
-      />
+      const timer = setTimeout(() => {
+        userDataRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 500)
 
-      <AnimatePresence>
-        {!isRefVisible && (
-          <S.StickyButton
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <P.ColorItem
-              key='2-menu'
-              onClick={handleSubmission}
-              boxShadow={true}
-              color={
-                allowChanges ?
-                  userWantsToChangeData ?
-                    readySubmission ?
-                      'green' :
-                      'red' :
-                    'blue' :
-                  'gray'
-              }
-            >
-              {fetcher.state !== 'idle' ?
-                <><Spinner dim={18} color='green' /> Salvando</> :
-                !userWantsToChangeData ?
-                  <><FiEdit /> Editar Dados</> :
-                  readySubmission ?
-                    <><FiCheck /> Salvar Alterações</> :
-                    <><FiX /> Cancelar</>}
-            </P.ColorItem>
-          </S.StickyButton>
-        )}
-      </AnimatePresence>
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [])
 
-      <input type="hidden" name="userId" value={selectedUserId} />
-      <input type="hidden" name="data" value={qs.stringify(formData)} />
-    </S.DataForm >
-  )
+  return [userDataRef]
 }
 
 export default DelegationData

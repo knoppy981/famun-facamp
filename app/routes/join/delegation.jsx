@@ -67,16 +67,14 @@ export const action = async ({ request }) => {
     if (step == 4) {
       // create delegation
       const userId = await requireUserId(request)
-      const code = generateString(6)
-
       let delegationData = {
         ...session.get("delegation-data-2"),
         ...session.get("delegation-data-3"),
         userId: userId,
-        code: code,
+        code: generateString(6),
       }
 
-      delegationData = await formatDelegationData(delegationData, userId)
+      delegationData = await formatDelegationData({data: delegationData})
       console.dir(delegationData, { depth: null })
       let delegation
 

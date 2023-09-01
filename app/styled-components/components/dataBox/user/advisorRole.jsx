@@ -18,7 +18,7 @@ const AdvisorRoleData = (props) => {
           name="advisorRole"
           aria-label="Posição do(a) Professor(a) Orientador(a)"
           defaultSelectedKey={formData?.delegationAdvisor?.advisorRole}
-          onSelectionChange={selected => handleChange({ target: { name: "delegationAdvisor.advisorRole", value: selected } })}
+          onSelectionChange={value => handleChange({ target: { name: "delegationAdvisor.advisorRole", value: value } })}
           isDisabled={isDisabled}
           hideLabel={true}
           items={[

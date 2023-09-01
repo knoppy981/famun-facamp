@@ -1,7 +1,7 @@
 import { prisma } from "~/db.server";
 import { Prisma } from '@prisma/client'
 import jwt from "jsonwebtoken";
-import { updateUser } from "./user.server";
+import { formatUserData, updateUser } from "./user.server";
 import { ValidationError } from "~/utils";
 
 export async function getDelegationById(id) {
@@ -90,7 +90,7 @@ export async function updateDelegationCode(delegationId, code) {
 	})
 }
 
-export async function getExistingDelegation(values) {
+export async function getExistingDelegation({ delegationId, ...values }) {
 	const checkableValues = Object.entries(values).map(entry => {
 		return { [entry[0]]: entry[1] };
 	})
@@ -100,7 +100,8 @@ export async function getExistingDelegation(values) {
 	try {
 		delegation = await prisma.delegation.findFirstOrThrow({
 			where: {
-				OR: checkableValues
+				OR: checkableValues,
+				NOT: { id: delegationId }
 			}
 		})
 	} catch (e) {
@@ -126,15 +127,23 @@ export async function getExistingDelegation(values) {
 	throw new ValidationError(errorMsg, errorDetails)
 }
 
-export async function formatDelegationData(data) {
-	return {
-		code: data.code,
-		inviteLink: await generateDelegationInviteLink(data.code),
-		participationMethod: data.participationMethod,
-		school: data.school,
-		schoolPhoneNumber: data.schoolPhoneNumber,
-		address: {
-			create: {
+export async function formatDelegationData({
+	data,
+	addressModification,
+	participantModification,
+	usersIdFilter
+}) {
+	let address
+	let participants
+
+	// handle address
+	if (typeof data.address === "object") {
+		delete data.address.id
+		delete data.address.delegationId
+		address = { [addressModification]: data.address }
+	} else {
+		delegate = {
+			[addressModification]: {
 				address: data.address,
 				postalCode: data.postalCode,
 				city: data.city,
@@ -142,18 +151,59 @@ export async function formatDelegationData(data) {
 				neighborhood: data.neighborhood,
 				state: data.state,
 			}
-		},
-		participants: {
-			connect: {
-				id: data.userId
+		}
+	}
+
+	// handle participants
+	if (data?.participants.length > 0 && usersIdFilter.length > 0) {
+		if (participantModification === "updateMany") {
+			let aux = await Promise.all(data.participants
+				.filter(participant => usersIdFilter.includes(participant.id))
+				.map(async participant => {
+					return {
+						where: { id: participant.id },
+						data: await formatUserData({
+							data: participant,
+							childrenModification: "update",
+							userType: participant.delegate ? "delegate" : "advisor"
+						})
+					}
+				})
+			)
+			participants = {
+				[participantModification]: aux
+			}
+		} else if (participantModification === "update" && usersIdFilter.length === 1) {
+			let aux = data.participants.find(participant => participant.id === usersIdFilter[0])
+			participants = {
+				[participantModification]: {
+					where: { id: aux.id },
+					data: await formatUserData({
+						data: aux,
+						childrenModification: "update",
+						userType: aux.delegate ? "delegate" : "advisor"
+					}),
+				}
 			}
 		}
+	} else {
+		participants = undefined
+	}
+
+	return {
+		code: data.code,
+		inviteLink: await generateDelegationInviteLink(data.code),
+		participationMethod: data.participationMethod,
+		school: data.school,
+		schoolPhoneNumber: data.schoolPhoneNumber,
+		address,
+		participants,
 	}
 }
 
 export async function createDelegation(data, userId) {
 	const delegation = await prisma.delegation.create({ data: data })
-	
+
 	await updateUser({ userId: userId, values: { leader: true } })
 
 	return delegation

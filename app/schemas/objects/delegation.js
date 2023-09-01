@@ -1,6 +1,8 @@
 import Joi from "joi";
 
 import { customPhoneNumber } from "../keys/phoneNumber";
+import { addressSchema, prismaAddressSchema } from "./address";
+import { findUser, prismaUserSchema } from "./user";
 
 export const delegationSchema = Joi.object({
   school: Joi.string()
@@ -27,43 +29,7 @@ export const delegationSchema = Joi.object({
 
   inviteLink: Joi.string(),
 
-  address: Joi.object({
-    address: Joi.string()
-      .required()
-      .messages({
-        'string.empty': 'Address is required'
-      }),
-
-    country: Joi.string()
-      .required()
-      .messages({
-        'string.empty': 'Country is required'
-      }),
-
-    postalCode: Joi.string()
-      .required()
-      .messages({
-        'string.empty': 'Postal code is required'
-      }),
-
-    state: Joi.string()
-      .required()
-      .messages({
-        'string.empty': 'State is required'
-      }),
-
-    city: Joi.string()
-      .required()
-      .messages({
-        'string.empty': 'City is required'
-      }),
-
-    neighborhood: Joi.string()
-      .required()
-      .messages({
-        'string.empty': 'Neighborhood is required'
-      }),
-  })
+  address: addressSchema
 })
 
 export const prismaDelegationSchema = Joi.object({
@@ -91,55 +57,25 @@ export const prismaDelegationSchema = Joi.object({
 
   inviteLink: Joi.string(),
 
-  address: Joi.object({
-    create: ({
-      address: Joi.string()
-        .required()
-        .messages({
-          'string.empty': 'Address is required'
-        }),
+  address: prismaAddressSchema,
 
-      country: Joi.string()
-        .required()
-        .messages({
-          'string.empty': 'Country is required'
-        }),
-
-      postalCode: Joi.string()
-        .required()
-        .messages({
-          'string.empty': 'Postal code is required'
-        }),
-
-      state: Joi.string()
-        .required()
-        .messages({
-          'string.empty': 'State is required'
-        }),
-
-      city: Joi.string()
-        .required()
-        .messages({
-          'string.empty': 'City is required'
-        }),
-
-      neighborhood: Joi.string()
-        .required()
-        .messages({
-          'string.empty': 'Neighborhood is required'
-        }),
+  participants: Joi.alternatives().try(
+    Joi.object({
+      connect: findUser
+    }),
+    Joi.object({
+      update: Joi.object({
+        data: prismaUserSchema,
+        where: findUser
+      })
+    }),
+    Joi.object({
+      updateMany: Joi.array().items(
+        Joi.object({
+          data: prismaUserSchema,
+          where: findUser
+        })
+      )
     })
-  }),
-
-  participants: Joi.object({
-    connect: Joi.object({
-      id: Joi.string(),
-      email: Joi.string()
-        .email()
-        .messages({
-          'string.empty': 'E-mail is required',
-          'string.email': "Invalid e-mail"
-        }),
-    }).xor('id', 'email')
-  })
+  ).optional()
 })

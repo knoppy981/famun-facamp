@@ -42,7 +42,7 @@ const PhoneNumberField = (props) => {
         className={`${err ? 'err' : ""}`}
         {...inputProps}
         ref={setRef}
-        required
+        required={props.required ?? false}
         name={name}
         autoComplete={name}
         value={value}

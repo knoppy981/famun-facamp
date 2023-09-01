@@ -1,13 +1,20 @@
-import { useOutletContext } from "@remix-run/react"
+import { useNavigate, useOutletContext } from "@remix-run/react"
 import { useUser, formatDate } from "~/utils"
 
-import * as S from "~/styled-components/dashboard/delegation"
+import * as S from "~/styled-components/dashboard/delegation/participants"
+import ColorButtonBox from "~/styled-components/components/buttonBox/withColor";
 
-const Participants = ({ handleUserClick }) => {
+const Participants = () => {
 
   const delegation = useOutletContext()
+  const navigate = useNavigate()
   const participants = delegation.participants
   const user = useUser()
+
+  const handleUserClick = (username) => {
+    const searchParams = new URLSearchParams([["u", username]])
+    navigate(`/dashboard/delegation/data?${searchParams}`)
+  }
 
   return (
     <S.OverflowContainer>
@@ -32,19 +39,31 @@ const Participants = ({ handleUserClick }) => {
           {participants.map((item, index) => {
             const leader = item.leader
             return (
-              <S.TableRow key={`delegation-user-${index}`} onClick={() => handleUserClick(item.id)}>
+              <S.TableRow
+                key={index}
+                onClick={() => handleUserClick(item.name)}
+                tabIndex="0"
+                role="link"
+                aria-label={`Details for user ${user.name}`}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === 'Space') {
+                    handleUserClick(item.name);
+                    event.preventDefault();
+                  }
+                }}
+              >
                 <S.TableCell user={item.id === user.id}>
                   <S.CellFlexBox>
                     {item.name}
-                    {leader && <S.Item color="red"> Chefe da Delegação </S.Item>}
+                    {leader && <ColorButtonBox color="red"> Chefe da Delegação </ColorButtonBox>}
                   </S.CellFlexBox>
                 </S.TableCell>
 
                 <S.TableCell>
                   <S.CellFlexBox>
-                    <S.Item color={item.delegate ? 'blue' : 'green'}>
+                    <ColorButtonBox color={item.delegate ? 'blue' : 'green'}>
                       {item.delegate ? "Delegado" : item.delegationAdvisor.advisorRole}
-                    </S.Item>
+                    </ColorButtonBox>
                   </S.CellFlexBox>
                 </S.TableCell>
 

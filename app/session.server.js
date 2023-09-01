@@ -34,11 +34,9 @@ export async function getUserId(request) {
 
 export async function getUser(request) {
   const userId = await getUserId(request);
-  console.log(userId)
   if (userId === undefined) return null;
 
   const user = await getUserById(userId);
-  console.log(user)
   if (user) return user;
 
   throw await logout({request});

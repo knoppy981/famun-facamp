@@ -103,30 +103,30 @@ export function generatePassword() {
 }
 
 export function prioritizeUser(users, id) {
-  // Find the index of the user with the provided id
-  const userIndex = users.findIndex(user => user.id === id);
+	// Find the index of the user with the provided id
+	const userIndex = users.findIndex(user => user.id === id);
 
-  if (userIndex === -1) {
-    // If the user isn't found, return the original array
-    return users;
-  }
+	if (userIndex === -1) {
+		// If the user isn't found, return the original array
+		return users;
+	}
 
-  // Remove the user from their current position
-  const user = users.splice(userIndex, 1)[0];
+	// Remove the user from their current position
+	const user = users.splice(userIndex, 1)[0];
 
-  // Insert the user at the beginning of the array
-  users.unshift(user);
+	// Insert the user at the beginning of the array
+	users.unshift(user);
 
-  return users;
+	return users;
 }
 
 export function formatDate(inputDate) {
-  const dateObj = new Date(inputDate);
-  const day = String(dateObj.getDate()).padStart(2, '0');
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Months are 0-based in JavaScript
-  const year = dateObj.getFullYear();
+	const dateObj = new Date(inputDate);
+	const day = String(dateObj.getDate()).padStart(2, '0');
+	const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Months are 0-based in JavaScript
+	const year = dateObj.getFullYear();
 
-  return `${day}/${month}/${year}`;
+	return `${day}/${month}/${year}`;
 }
 
 export function isValidCpf(cpf) {
@@ -154,9 +154,54 @@ export function isValidCpf(cpf) {
 }
 
 export class ValidationError extends Error {
-  constructor(message, details) {
-    super(message);
-    this.name = 'ValidationError';
-    this.details = details;
-  }
+	constructor(message, details) {
+		super(message);
+		this.name = 'ValidationError';
+		this.details = details;
+	}
+}
+
+export function getCorrectErrorMessage(error) {
+	// the error message of joi contains the detail object by default
+	let scope = error.details[0]
+	let x = 0
+
+	/* 
+	however if there is an alternatives().try() error another detail object is created inside the detail of the error.
+	this loop goes on when there are nested alternatives().try() in a validation and the error shows up in the last 
+	alternatives().try().
+	so we want to extract the real error inside the details object independent of how long the nested alternatives().try() error
+	details are there
+	*/
+
+	// we check if there are details in the error (it is still an alternatives().try() error)
+	while (scope.context.details !== undefined) {
+		let isScopeChanged = false
+
+		// iterate over each error detail in the details object, if there is a nested alternatives().try() error details in there
+		// update the scope variable to the next details object
+		for (var i = 0; i < scope.context.details.length; i++) {
+			let y = scope.context.details[i]
+			if (typeof y.context.details === "object") {
+				isScopeChanged = true
+				scope = y
+				break
+			}
+		}
+
+		// if scope has not been changed, that means that it didn't find another details nested object so we break the loop
+		if (!isScopeChanged) {
+			scope = scope.context.details.find(detail => detail.type !== 'object.unknown')
+		}
+
+		x = x + 1
+		if (x > 10) break
+	}
+
+	// error.details[0].context.key, error.details[0].message
+	return [scope.context.key, scope.message]
+}
+
+export async function timeout(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
 }

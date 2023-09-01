@@ -10,4 +10,6 @@ export const Container = styled.div`
   gap: 12px;
   padding: 20px;
   color: #fff;
+  border: none;
+  outline: none;
 `

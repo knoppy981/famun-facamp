@@ -5,8 +5,8 @@ import qs from 'qs'
 import _ from 'lodash'
 
 
-import { useUser, useUserType } from '~/utils'
-import { getExistingUser, updateUser } from '~/models/user.server';
+import { getCorrectErrorMessage, useUser, useUserType } from '~/utils'
+import { formatUserData, getExistingUser, updateUser } from '~/models/user.server';
 import { useOnScreen } from '~/hooks/useOnScreen';
 
 import * as S from '~/styled-components/dashboard/data'
@@ -15,76 +15,55 @@ import EditUserData from '~/styled-components/components/dataBox/user';
 import ColorButtonBox from '~/styled-components/components/buttonBox/withColor'
 import Button from '~/styled-components/components/button'
 import { FiEdit, FiCheck, FiX } from 'react-icons/fi'
+import { prismaUserSchema } from '~/schemas'
+import React from 'react'
 
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
-  const { userId: id, ...data } = qs.parse(formData.get("data"))
+  let { id, ...userData } = qs.parse(formData.get("data"))
 
-  if (data === undefined) return json({ errors: { data: "Unknown error" } }, { status: 404 })
+  console.log(userData.birthDate)
 
-  //delete useless values
-  delete data?.delegate.id
-  delete data?.delegate.userId
-  data.leader = data.leader === "true" ? true : false
-  delete data?.delegationAdvisor.id
-  delete data?.delegationAdvisor.userId
+  userData = await formatUserData({
+    data: userData,
+    childrenModification: "update",
+    userType: userData.delegate ? "delegate" : "advisor"
+  })
 
-  // add update
-  data.delegate ? data.delegate = { update: data.delegate } : delete data.delegate
-  data.delegationAdvisor ? data.delegationAdvisor = { update: data.delegationAdvisor } : delete data.delegationAdvisor
-
-
-  const userData = { name: user?.name, email: user?.email, document: { is: { value: user.document.value } } }
-  let existingUser = await getExistingUser(userData)
-  if (existingUser.id === userId) existingUser = {}
+  if (userData === undefined) return json({ errors: { data: "Unknown error" } }, { status: 404 })
 
   try {
-    console.dir(data, { depth: null })
+    await prismaUserSchema.validateAsync(userData)
+    await getExistingUser({
+      name: userData.name ?? "",
+      email: userData.email ?? "",
+      document: { is: { value: userData.document.value ?? "" } },
+      userId: id
+    })
   } catch (error) {
-    console.log(error)
-    error = qs.parse(error.message)
-    console.log(error.key)
+    const [label, msg] = getCorrectErrorMessage(error)
     return json(
-      { errors: { [error.key]: error.msg } },
+      { errors: { [label]: msg } },
       { status: 400 }
     );
   }
 
-  return updateUser({ userId, values: data })
+  return updateUser({ userId: id, values: userData })
 }
 
 const data = () => {
 
   const fetcher = useFetcher()
-  const transition = fetcher.state
   const actionData = fetcher.data
-
   const [buttonRef, isRefVisible] = useOnScreen();
-
   const user = useUser()
   const userType = useUserType()
-
-  const [readySubmission, setReadySubmission] = React.useState(false)
-  const [userWantsToChangeData, setUserWantsToChangeData] = React.useState(false)
-  const [formData, setFormData] = React.useState(_.cloneDeep(user));
-
-  // useEffect for every data change
-  React.useEffect(() => {
-    // if input values are different than user data allow form submission
-    setReadySubmission(!_.isEqual(formData, user) && userWantsToChangeData)
-  }, [formData])
-
-  // useEffect for successful submission of data change form
-  React.useEffect(() => {
-    // if loading back data and no errors, set every state back to default
-    if (transition === 'loading' && !actionData?.errors) {
-      setFormData(_.cloneDeep(actionData))
-      setReadySubmission(false)
-      setUserWantsToChangeData(false)
-    }
-  }, [fetcher])
-
+  const { readySubmission, userWantsToChangeData, handleUserWantsToChangeData, formData, setFormData, } =
+    useUserUpdate(user, fetcher)
+  const [handleChange, handleAddLanguage, handleRemoveLanguage] =
+    useUpdateStateFunctions(formData, setFormData)
+  const [buttonLabel, buttonIcon, buttonColor] = useButtonState(userWantsToChangeData, readySubmission, fetcher.state)
   const handleSubmission = () => {
     if (readySubmission) {
       fetcher.submit(
@@ -92,10 +71,108 @@ const data = () => {
         { replace: true, method: "post" }
       )
     } else {
-      setUserWantsToChangeData(!userWantsToChangeData)
+      handleUserWantsToChangeData()
     }
   }
 
+  return (
+    <S.Wrapper method="post">
+      <S.DataTitle ref={buttonRef}>
+        Dados da Inscrição
+        <ColorButtonBox color={buttonColor}>
+          <Button onPress={handleSubmission}>
+            {buttonIcon} {buttonLabel}
+          </Button>
+        </ColorButtonBox>
+      </S.DataTitle>
+
+      <EditUserData
+        isDisabled={!userWantsToChangeData}
+        actionData={actionData}
+        formData={formData}
+        handleChange={handleChange}
+        handleAddLanguage={handleAddLanguage}
+        handleRemoveLanguage={handleRemoveLanguage}
+        userType={userType}
+      />
+
+      <AnimatePresence>
+        {!isRefVisible &&
+          <S.StickyButton
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ColorButtonBox color={buttonColor} boxShadow={1}>
+              <Button onClick={handleSubmission}>
+                {buttonIcon} {buttonLabel}
+              </Button>
+            </ColorButtonBox>
+          </S.StickyButton>}
+      </AnimatePresence>
+    </S.Wrapper >
+  )
+}
+
+function useUserUpdate(user, fetcher) {
+  const [readySubmission, setReadySubmission] = React.useState(false)
+  const [userWantsToChangeData, setUserWantsToChangeData] = React.useState(false)
+  const [formData, setFormData] = React.useState(_.cloneDeep(user));
+  const handleUserWantsToChangeData = () => {
+    setUserWantsToChangeData(!userWantsToChangeData)
+  }
+  React.useEffect(() => {
+    // if input values are different than user data allow form submission
+    setReadySubmission(!_.isEqual(formData, user) && userWantsToChangeData)
+  }, [formData])
+  React.useEffect(() => {
+    // if loading back data and no errors, set every state back to default
+    if (fetcher.state === 'loading' && !fetcher.data?.errors) {
+      setFormData(_.cloneDeep(fetcher.data))
+      setReadySubmission(false)
+      setUserWantsToChangeData(false)
+    }
+  }, [fetcher])
+
+  return {
+    readySubmission,
+    userWantsToChangeData,
+    handleUserWantsToChangeData,
+    formData,
+    setFormData,
+  }
+}
+
+function useButtonState(userWantsToChangeData, readySubmission, transition) {
+  const [buttonLabel, setButtonLabel] = React.useState("Editar Dados")
+  const [buttonIcon, setButtonIcon] = React.useState(<FiEdit />)
+  const [buttonColor, setButtonColor] = React.useState("blue")
+
+  React.useEffect(() => {
+    setButtonLabel(transition !== 'idle' ?
+      "Salvando" :
+      !userWantsToChangeData ?
+        "Editar Dados" :
+        readySubmission ?
+          "Salvar Alterações" :
+          "Cancelar")
+    setButtonIcon(transition !== 'idle' ?
+      <Spinner dim={18} color='green' /> :
+      !userWantsToChangeData ?
+        <FiEdit /> :
+        readySubmission ?
+          <FiCheck /> :
+          <FiX />)
+    setButtonColor(userWantsToChangeData ?
+      readySubmission ? 'green' : 'red' :
+      'blue')
+  }, [userWantsToChangeData, readySubmission, transition])
+
+  return [buttonLabel, buttonIcon, buttonColor]
+}
+
+function useUpdateStateFunctions(formData, setFormData) {
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -126,20 +203,17 @@ const data = () => {
       return newData;
     });
   };
-
-  const handleAddLanguage = (event) => {
-    const newLanguage = event.target.value;
-    if (!formData.delegate.languagesSimulates.includes(newLanguage)) {
+  const handleAddLanguage = (language) => {
+    if (!formData.delegate.languagesSimulates.includes(language)) {
       setFormData({
         ...formData,
         delegate: {
           ...formData.delegate,
-          languagesSimulates: [...formData.delegate.languagesSimulates, newLanguage],
+          languagesSimulates: [...formData.delegate.languagesSimulates, language],
         },
       });
     }
   };
-
   const handleRemoveLanguage = (language) => {
     setFormData({
       ...formData,
@@ -150,57 +224,7 @@ const data = () => {
     });
   };
 
-  return (
-    <S.Wrapper method="post">
-      <S.DataTitle ref={buttonRef}>
-        Dados da Inscrição
-        <ColorButtonBox color={userWantsToChangeData ? readySubmission ? 'green' : 'red' : 'blue'}>
-          <Button onPress={handleSubmission}>
-            {fetcher.state !== 'idle' ?
-              <><Spinner dim={18} color='green' /> Salvando</> :
-              !userWantsToChangeData ?
-                <><FiEdit /> Editar Dados</> :
-                readySubmission ?
-                  <><FiCheck /> Salvar Alterações</> :
-                  <><FiX /> Cancelar</>}
-          </Button>
-        </ColorButtonBox>
-      </S.DataTitle>
-
-      <EditUserData
-        isDisabled={!userWantsToChangeData}
-        actionData={actionData}
-        formData={formData}
-        handleChange={handleChange}
-        handleAddLanguage={handleAddLanguage}
-        handleRemoveLanguage={handleRemoveLanguage}
-        userType={userType}
-      />
-
-      <AnimatePresence>
-        {!isRefVisible &&
-          <S.StickyButton
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <S.ColorItem
-              color={userWantsToChangeData ? readySubmission ? 'green' : 'red' : 'blue'}
-              boxShadow={true}
-              onClick={handleSubmission}
-            >
-              {fetcher.state !== 'idle' ?
-                <><Spinner dim={18} color='green' /> Salvando</> :
-                !userWantsToChangeData ? <><FiEdit /> Editar Dados</> :
-                  readySubmission ?
-                    <><FiCheck /> Salvar Alterações</> :
-                    <><FiX /> Cancelar</>}
-            </S.ColorItem>
-          </S.StickyButton>}
-      </AnimatePresence>
-    </S.Wrapper >
-  )
+  return [handleChange, handleAddLanguage, handleRemoveLanguage]
 }
 
 export default data

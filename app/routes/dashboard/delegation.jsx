@@ -16,17 +16,15 @@ import * as S from '~/styled-components/dashboard/delegation'
 import * as P from '~/styled-components/dashboard/data'
 import * as D from '~/styled-components/components/dropdown/elements'
 import * as E from '~/styled-components/error'
-import DataChangeInputBox from '~/styled-components/components/textField/dataChangeInput'
-import DataChangePhoneInputBox from '~/styled-components/components/textField/dataChangeInput/phoneInput'
-import DataChangeDateInputBox from '~/styled-components/components/textField/dataChangeInput/dateInput'
-import DataChangeSelectInput from '~/styled-components/components/textField/dataChangeInput/selectInput'
 import Spinner from '~/styled-components/components/spinner';
 import { FiMail, FiExternalLink, FiCheck, FiEdit, FiX, FiUserPlus } from 'react-icons/fi';
 import EditUserData from '~/styled-components/components/dataBox/user';
-import { isoCountries } from '~/data/ISO-3661-1'
-import { postalCodeMask } from '~/data/postal-codes';
 import DefaultDropdown from '~/styled-components/components/dropdown';
 import EditDelegationData from '~/styled-components/components/dataBox/delegation';
+import PopoverTrigger from '~/styled-components/components/popover/popoverTrigger';
+import Dialog from '~/styled-components/components/dialog';
+import ColorButtonBox from '~/styled-components/components/buttonBox/withColor';
+import Button from '~/styled-components/components/button';
 
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
@@ -598,57 +596,6 @@ const DataPage = ({
 const Delegation = () => {
 
   const { delegation } = useLoaderData()
-
-  // selected menu
-  // slide variants are the framer motion states of the pages for animation
-  const slideVariants = {
-    enter: (direction) => {
-      return {
-        height: 0,
-        //x: direction > 0 ? "8%" : "-8%",
-        opacity: 0
-      };
-    },
-    center: {
-      //x: 0,
-      height: "auto",
-      opacity: 1
-    },
-    exit: (direction) => {
-      return {
-        //x: direction < 0 ? "8%" : "-8%",
-        height: 0,
-        opacity: 0
-      };
-    }
-  };
-  const [page, setPage] = useState(0);
-  const paginate = (newPage) => {
-    // awlays scroll to the top on page change because of animation glitches
-    new Promise((resolve) => {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      });
-
-      const checkScrollComplete = () => {
-        if (
-          window.pageYOffset === 0 ||
-          document.documentElement.scrollTop === 0
-        ) {
-          resolve(); // Resolves the promise when scrolling completes
-        } else {
-          requestAnimationFrame(checkScrollComplete);
-        }
-      };
-
-      checkScrollComplete();
-    }).then(() => {
-      // set page
-      setPage(newPage);
-    })
-  };
-  // used for aditional style when menu is in sticky state in mobile
   const stickyRef = useRef(null);
   const [isSticky, setIsSticky] = useState(false);
 
@@ -680,28 +627,10 @@ const Delegation = () => {
     );
   }
 
-  // when clicking on a user row in the users table, the selected menu has to be the data page 
-  // and the window must scroll down for the user section
-  const [clickedUserFromTableId, setClickedUserFromTableId] = useState(undefined)
-  const userScrollRef = useRef(null)
-  function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-  const handleUserClick = async id => {
-    // got to page
-    paginate(2)
-    // change user for the clicked one
-    setClickedUserFromTableId(id)
-    // wait page animation load
-    await timeout(1000)
-    // scroll into view
-    userScrollRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-
   return (
     <S.Wrapper>
       <S.Nav>
-        <S.DelegationTitle>
+        <S.TilteContainer>
           <S.SubTitle>
             Delegação
           </S.SubTitle>
@@ -709,9 +638,33 @@ const Delegation = () => {
           <S.Title>
             {delegation.school}
           </S.Title>
-        </S.DelegationTitle>
+        </S.TilteContainer>
 
-        <S.NavButton ref={inviteMenuRef}>
+        <S.PopoverContainer>
+          <PopoverTrigger label={<><FiMail /> Convidar</>}>
+            <Dialog>
+              <S.DialogTitle>
+                Compartilhe o link abaixo
+              </S.DialogTitle>
+
+              <ColorButtonBox theme='light' color='red'>
+                <Button>
+                  Gerar novo link
+                </Button>
+              </ColorButtonBox>
+
+              <S.DialogTitle>
+                Ou utilize este código na inscrição
+              </S.DialogTitle>
+
+              <S.DialogItem>
+                {delegation.code}
+              </S.DialogItem>
+            </Dialog>
+          </PopoverTrigger>
+        </S.PopoverContainer>
+
+        {/* <S.NavButton ref={inviteMenuRef}>
           <S.NavButtonTitle onClick={() => setInviteMenuOpen(!inviteMenuOpen)}>
             <FiMail /> Convidar
           </S.NavButtonTitle>
@@ -731,90 +684,31 @@ const Delegation = () => {
               {delegation.code}
             </D.BiggerItem>
           </DefaultDropdown>
-        </S.NavButton>
+        </S.NavButton> */}
       </S.Nav>
 
       <S.Menu ref={stickyRef} isSticky={isSticky}>
-        <S.MenuItem>
-          <NavLink to="participants">
-            {({ isActive }) => (
-              <> Participantes {isActive ? <S.UnderLine layoutId="paymentPageUnderline" /> : null} </>
-            )}
-          </NavLink>
-        </S.MenuItem>
-
-        <S.MenuItem>
-          <NavLink to="createUser">
-            {({ isActive }) => (
-              <> Criar Participante {isActive ? <S.UnderLine layoutId="paymentPageUnderline" /> : null} </>
-            )}
-          </NavLink>
-        </S.MenuItem>
-
-        <S.MenuItem>
-          <NavLink to="data">
-            {({ isActive }) => (
-              <> Dados {isActive ? <S.UnderLine layoutId="paymentPageUnderline" /> : null} </>
-            )}
-          </NavLink>
-        </S.MenuItem>
-      </S.Menu >
-
-      {/* <AnimatePresence initial={false} mode="wait">
-        {page === 0 ?
-          <S.Container
-            key="0-menu"
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: .4, ease: "easeInOut" }}
-          >
-            <ParticipantsPage
-              key="0-menu"
-              user={user}
-              participants={delegation.participants}
-              handleUserClick={handleUserClick}
-              delegationId={delegation.id}
-            />
-          </S.Container>
-          : page === 1 ?
-            <S.Container
-              key="1-menu"
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: .4, ease: "easeInOut" }}
+        {[
+          { to: "participants", title: "Participantes" },
+          { to: "createUser", title: "Criar Participante" },
+          { to: "data", title: "Dados" }
+        ].map((item, i) => (
+          <S.MenuItem key={i}>
+            <NavLink
+              tabIndex="0"
+              role="link"
+              prefetch='render'
+              aria-label={`${item.title}-page`}
+              to={item.to}
             >
-              <CreateParticipantPage
-                key="1-menu"
-                user={user}
-                userType={userType}
-                delegatesCount={delegation.participants.filter(user => user.delegate !== null).length}
-                delegationId={delegation.id}
-              />
-            </S.Container>
-            :
-            <S.Container
-              key="2-menu"
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: .4, ease: "easeInOut" }}
-            >
-              <DataPage
-                key="2-menu"
-                user={user}
-                userType={userType}
-                delegation={delegation}
-                userScrollRef={userScrollRef}
-                clickedUserFromTableId={clickedUserFromTableId}
-              />
-            </S.Container>
-        }
-      </AnimatePresence> */}
+              {({ isActive }) => (
+                <> {item.title} {isActive ? <S.UnderLine layoutId="paymentPageUnderline" /> : null} </>
+              )}
+            </NavLink>
+          </S.MenuItem>
+        ))}
+      </S.Menu>
+
       <Outlet context={delegation} />
     </S.Wrapper>
   )

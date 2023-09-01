@@ -156,7 +156,7 @@ const user = () => {
 
       <S.Container>
         {step === 1 && <TermsAndConditions setIsNextButtonDisabled={setIsNextButtonDisabled} />}
-        {step === 2 && <Nacionality data={data} />}
+        {step === 2 && <Nacionality data={data} actionData={actionData} />}
         {step === 3 && <CreateUser data={data} actionData={actionData} />}
         {step === 4 && <UserData data={data} actionData={actionData} />}
         {step === 5 && <UserType data={data} actionData={actionData} />}

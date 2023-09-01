@@ -62,7 +62,10 @@ const PersonalData = (props) => {
           isRequired
           maxValue={today(getLocalTimeZone())}
           defaultValue={formData.birthDate ? parseDate(formData.birthDate) : ""}
-          onChange={value => handleChange({ target: { name: "birthDate", value: value.toString() } })}
+          onChange={value => {
+            handleChange({ target: { name: "birthDate", value: value ? value.toString() : null } })
+            console.log(value ? value.toString() : null)
+          }}
           isDisabled={isDisabled}
           err={actionData?.errors?.birthDate}
         />
@@ -85,7 +88,8 @@ const PersonalData = (props) => {
           label={formData?.nacionality === "Brazil" ? "Cpf" : "Passport"}
           type="text"
           isRequired
-          defaultValue={formData?.document?.value}
+          /* defaultValue={formData?.document?.value} */
+          value={formData?.document?.value}
           onChange={handleChange}
           isDisabled={isDisabled}
           mask={formData?.nacionality === "Brazil" ? '999.999.999-99' : null}

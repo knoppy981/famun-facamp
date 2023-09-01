@@ -38,7 +38,7 @@ export const NavContainer = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
 `
-export const DelegationTitle = styled.div`
+export const TilteContainer = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -60,25 +60,47 @@ export const Title = styled.h2`
   overflow: hidden;
   text-overflow: ellipsis;
 `
-export const NavButton = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.8rem;
-  color: #000;
-  white-space: nowrap;
+export const PopoverContainer = styled.div`
+  & > button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: #000;
+    white-space: nowrap;
+  }
 `
-export const NavButtonTitle = styled.div`
+export const DialogTitle = styled(motion.div)`
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: #fff;
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.8rem;
-  font-weight: 500;
-  cursor: pointer;
+  word-wrap: break-word;
 
-  svg {
-    transform: translateY(-1px);
+  @media screen and (max-width: 700px) {
+    font-size: 2rem;
+    font-weight: 500;
+  }
+`
+export const DialogItem = styled(motion.div)`
+  position: relative;
+  margin-left: 10px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.5rem;
+  font-weight: 400;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  transition: all .4s;
+
+  @media screen and (max-width: 700px) {
+    font-size: 1.8rem;
   }
 `
 export const Menu = styled.div`
@@ -88,8 +110,6 @@ export const Menu = styled.div`
   margin-bottom: 25px;
   z-index: 99;
   background: #fff;
-  border-radius: 1.5rem;
-  box-shadow: 0 0 10px 20px #fff;
 
   @media screen and (max-width: 700px) {
     position: sticky;
@@ -130,6 +150,10 @@ export const MenuItem = styled.div`
     border: 1px solid #e6e6e6;
     ${p => p.colorItem && "border: none;"}
   }
+
+  & > a{
+    font-size: 1.3rem;
+  }
 `
 export const UnderLine = styled(motion.div)`
   position: absolute;
@@ -140,189 +164,4 @@ export const UnderLine = styled(motion.div)`
   height: 100%;
   background: #e1e1e1;
   border-radius: 25px;
-`
-export const Container = styled(motion.div)`
-  margin-bottom: 50px;
-
-  @media screen and (max-width: 700px) {
-    margin: 0;
-  }
-`
-export const OverflowContainer = styled.div`
-  display: flex;
-  width: 100%;
-  overflow-x: scroll;
-
-  @media screen and (max-width: 700px) {
-    padding: 0 15px;
-  }
-`
-export const DelegatesTable = styled.table`
-  border-radius: 5px;
-  flex: 1 0 auto;
-  border-collapse: separate;
-  border-spacing: 0;
-  overflow: hidden;
-  border: 1px solid #E6E6E6;
-`
-export const TableRow = styled.tr`
-  height: 4.5rem;
-  background: ${p => p.example ? '#FAFAFA' : 'transparent'};
-  cursor: ${p => p.example ? 'auto' : 'pointer'};
-
-  td {
-    font-weight: ${p => p.example ? 500 : 400};
-  }
-`
-export const TableCell = styled.td`
-  padding: 0 15px;
-  font-size: 1.5rem;
-  border-bottom: 1px solid rgba(0,0,0,.2);
-
-  ${({ user }) => user && `
-    border-left: 2px solid ${azulCeu};
-  `}
-`
-export const CellFlexBox = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: inherit;
-`
-export const Item = styled.div`
-  height: 3rem;
-  padding: 5px 15px;
-  border-radius: 15px;
-  gap: 5px;
-  color: ${p => p.color === 'red' ? begeClaro : p.color === 'green' ? verdeClaro : azulCeu};
-  background: ${p => p.color === 'red' ? begeBackground : p.color === 'green' ? verdeBackground : azulBackground};
-  font-size: 1.4rem;
-
-  svg {
-    transform: translateY(-1px);
-  }
-`
-export const DataForm = styled(Form)`
-  @media screen and (max-width: 700px) {
-    padding: 0 15px;
-  }
-`
-export const DataWrapper = styled.div`
-  //max-height: 350px;
-  width: 100%;
-  display: flex;
-  gap: 10px;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  transition: all .4s ease;
-
-/*   overflow-y: scroll;
-  overflow-x: hidden;
-
-  background:
-  linear-gradient(white 30%, rgba(255, 255, 255, 0)), linear-gradient(rgba(255, 255, 255, 0), white 70%) 0 100%,
-  radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, .2), rgba(0, 0, 0, 0)), radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, .2), rgba(0, 0, 0, 0)) 0 100%;
-  background-repeat: no-repeat;
-  background-color: white;
-  background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
-  background-attachment: local, local, scroll, scroll; */
-`
-export const DisabledMask = styled.div`
-  position: relative;
-  width: 100%;
-  display: flex;
-  gap: 10px;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  transition: all .4s ease;
-
-  &::before {
-    display: ${props => (props.show ? 'block' : 'none')};
-    position: absolute;
-    content: '';
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background: #fff;
-    opacity: .7;
-    z-index: 2;
-  }
-`
-export const DataTitleBox = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  margin: 15px 0;
-  gap: 15px;
-  padding-left: 5px;
-
-  @media screen and (max-width: 700px) {
-    gap: 5px;
-  }
-`
-export const DataTitle = styled.div`
-  font-size: 1.6rem;
-  font-weight: 500;
-
-  @media screen and (max-width: 700px) {
-    font-size: 1.8rem;
-  }
-`
-export const DataSubTitle = styled.div`
-  font-size: 1.4rem;
-  font-weight: 400;
-
-  @media screen and (max-width: 700px) {
-    font-size: 1.5rem;
-  }
-`
-export const UserSelect = styled.select`
-  height: 3rem;
-  outline: none;
-  border: none;
-  font-size: 1.4rem;
-  padding: 0 30px 0 5px;
-  border-radius: 5px;
-  border: 1px solid ${p => p.err ? '#d61f0a' : '#E6E6E6'};
-  font-size: 1.4rem;
-  color: #000;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background: url(http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png) no-repeat right transparent;
-  background-position-x: 95%;
-  background-size: 10px;
-
-  &:focus, &:hover {
-    border: 1px solid ${p => p.err ? '#d61f0a' : azulCeu};
-  }
-
-  &:disabled {
-    border: 1px solid transparent;
-    background: transparent;
-    opacity: 1;
-  }
-
-  @media screen and (max-width: 700px) {
-    min-width: 0;
-    height: 4rem;
-    font-size: 1.6rem;
-    opacity: 1;
-  }
-`
-export const DelegateCountdown = styled.div`
-  @media screen and (max-width: 700px) {
-    margin-top: 10px
-  }
-`
-export const StickyButton = styled(motion.div)`
-  position: sticky;
-  bottom: 80px;
-  margin: 0 0 0 auto;
-  width: max-content;
-
-  @media screen and (max-width: 700px) {
-    bottom: 20px;
-  }
 `

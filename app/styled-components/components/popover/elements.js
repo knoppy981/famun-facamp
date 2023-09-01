@@ -40,10 +40,6 @@ export const Arrow = styled.svg`
   }
 `
 export const Wrapper = styled.div`
-  min-width: 200px;
   position: absolute;
-  background: ${color1};
   z-index: 1;
-  box-shadow: 0px 3px 5px -2px #000000;
-  border-radius: 10px;
 `

@@ -48,7 +48,7 @@ export const userSchema = Joi.object({
   delegate: delegateSchema,
 
   delegationAdvisor: advisorSchema,
-}).xor('delegate', 'advisor');
+}).xor('delegate', 'delegationAdvisor');
 
 export const prismaUserSchema = Joi.object({
   name: Joi.string()
@@ -93,11 +93,31 @@ export const prismaUserSchema = Joi.object({
 
   document: documentSchema,
 
-  delegate: Joi.object({
-    create: delegateSchema
-  }),
+  delegate: Joi.alternatives().try(
+    Joi.object({
+      create: delegateSchema
+    }),
+    Joi.object({
+      update: delegateSchema
+    }),
+  ),
 
-  delegationAdvisor: Joi.object({
-    create: advisorSchema
-  }),
-}).xor('delegate', 'advisor');
+  delegationAdvisor: Joi.alternatives().try(
+    Joi.object({
+      create: advisorSchema
+    }),
+    Joi.object({
+      update: advisorSchema
+    }),
+  ),
+}).xor('delegate', 'delegationAdvisor');
+
+export const findUser = Joi.object({
+  id: Joi.string(),
+  email: Joi.string()
+    .email()
+    .messages({
+      'string.empty': 'E-mail is required',
+      'string.email': "Invalid e-mail"
+    }),
+}).xor('id', 'email')
