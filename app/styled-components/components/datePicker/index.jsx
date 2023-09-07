@@ -11,6 +11,7 @@ import Popover from '../popover';
 import Dialog from '../dialog';
 import Calendar from '../calendar';
 import * as S from "./elements"
+import { AnimatePresence } from 'framer-motion';
 
 const DatePicker = (props) => {
   let state = useDatePickerState(props);
@@ -49,7 +50,7 @@ const DatePicker = (props) => {
         isFocused={state.isOpen}
       >
         <DateField {...fieldProps} name={props.name} />
-        
+
         {!props.isDisabled &&
           <Button {...buttonProps} buttonRef={buttonRef}>
             <FcCalendar />
@@ -57,20 +58,22 @@ const DatePicker = (props) => {
         }
       </S.Box>
 
-      {state.isOpen &&
-        (
-          <Popover
-            state={state}
-            popoverRef={popoverRef}
-            triggerRef={ref}
-            placement="bottom"
-            offset={10}
-          >
-            <Dialog {...dialogProps}>
-              <Calendar {...calendarProps} />
-            </Dialog>
-          </Popover>
-        )}
+      <AnimatePresence>
+        {state.isOpen &&
+          (
+            <Popover
+              state={state}
+              popoverRef={popoverRef}
+              triggerRef={ref}
+              placement="bottom"
+              offset={10}
+            >
+              <Dialog {...dialogProps}>
+                <Calendar {...calendarProps} />
+              </Dialog>
+            </Popover>
+          )}
+      </AnimatePresence>
 
       <input type="hidden" name={props.name} value={state.value ?? ""} />
     </>

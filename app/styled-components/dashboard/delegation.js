@@ -17,6 +17,9 @@ const begeBackground = "#FFEFE1"
 
 export const Wrapper = styled.div`
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 `
 export const Nav = styled(motion.div)`
   width: 100%;
@@ -24,7 +27,6 @@ export const Nav = styled(motion.div)`
   align-items: flex-end;
   justify-content: space-between;
   gap: 15px;
-  margin-bottom: 15px;
 
   @media screen and (max-width: 700px) {
     padding: 0 15px;
@@ -82,22 +84,62 @@ export const DialogTitle = styled(motion.div)`
 
   @media screen and (max-width: 700px) {
     font-size: 2rem;
-    font-weight: 500;
   }
 `
 export const DialogItem = styled(motion.div)`
-  position: relative;
-  margin-left: 10px;
-  background: transparent;
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
   font-weight: 400;
-  border-radius: 5px;
   color: #fff;
-  cursor: pointer;
-  transition: all .4s;
+
+  @media screen and (max-width: 700px) {
+    font-size: 2.2rem;
+  }
+`
+export const DialogLinkContainer = styled.div`
+  display: flex;
+  border: 1px solid #E6E6E6;
+  border-radius: 5px;
+  height: 4rem;
+  font-size: 1.5rem;
+
+  @media screen and (max-width: 700px) {
+    height: 5.2rem;
+    font-size: 1.8rem;
+  }
+`
+export const CopyButtonBox = styled.div`
+  height: 100%;
+  flex: 1 0 auto;
+  font-weight: 400;
+	font-size: inherit;
+  padding: 0 10px; 
+  background: ${p => p.isCopied ? verdeClaro : 'transparent'};
+  color: ${p => p.isCopied ? verdeBackground : '#fff'};
+
+  > * {
+    width: 100%;
+    height: 100%;
+  }
+`
+export const VerticalLine = styled.hr`
+  height: 100%;
+  width: 1px;
+  background-color: #E6E6E6;
+  border: none;
+`
+export const ReadOnlyInput = styled(motion.input)`
+  flex: 0 0 auto;
+  height: 100%;
+  border-radius: 5px;
+  outline: none;
+  padding: 0 10px;
+  font-size: 1.5rem;
+  background: transparent;
+  color: #fff;
 
   @media screen and (max-width: 700px) {
     font-size: 1.8rem;
@@ -107,13 +149,11 @@ export const Menu = styled.div`
   display: flex;
   position: relative;
   margin-left: 5px;
-  margin-bottom: 25px;
   z-index: 99;
   background: #fff;
 
   @media screen and (max-width: 700px) {
     position: sticky;
-    margin: 0 0 15px 0;
     padding: 10px 0 10px 15px;
     overflow-x: scroll;
     overflow-y: hidden;

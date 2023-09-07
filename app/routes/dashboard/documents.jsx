@@ -87,7 +87,7 @@ const documents = () => {
         Documentos
       </S.Title>
 
-      <S.Menu /* ref={stickyRef} isSticky={isSticky} */>
+      {/* <S.Menu ref={stickyRef} isSticky={isSticky}>
         <S.MenuItem active >
           Comprovante de Vacinação
           <S.UnderLine layoutId="vaccinationMenu" />
@@ -158,7 +158,7 @@ const documents = () => {
             onDrop={handleDrop}
             dragging={dragging}
           >
-            <input type="file" /* accept='image/*' */ hidden ref={inputRef} onChange={onFileChange} />
+            <input type="file" accept='image/*' hidden ref={inputRef} onChange={onFileChange} />
 
             {!file ?
               <>
@@ -188,7 +188,7 @@ const documents = () => {
             }
           </S.FileForm>
         </S.FileInputContainer>
-      }
+      } */}
     </S.Wrapper>
   )
 }

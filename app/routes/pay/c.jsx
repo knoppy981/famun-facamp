@@ -106,23 +106,7 @@ const PaymentForm = ({ WEBSITE_URL, paymentNames }) => {
 
 const CompletePayment = () => {
   const { paymentIntent, price, payments, WEBSITE_URL } = useLoaderData()
-
-  const delegatesPaymentsCount = payments.reduce((totalCount, payment) => {
-    if (payment.type === "delegate") {
-      return totalCount + 1;
-    }
-    return totalCount;
-  }, 0);
-
-  const advisorPaymentsCount = payments.reduce((totalCount, payment) => {
-    if (payment.type === "advisor") {
-      return totalCount + 1;
-    }
-    return totalCount;
-  }, 0);
-
-  const paymentNames = payments
-    .map(payment => payment.name);
+  const [delegatesPaymentsCount, advisorPaymentsCount, paymentNames] = usePaymentsData(payments)
 
   return (
     <S.PaymentWrapper>
@@ -180,6 +164,27 @@ const CompletePayment = () => {
       </S.Container>
     </S.PaymentWrapper>
   )
+}
+
+function usePaymentsData(payments) {
+  const delegatesPaymentsCount = payments.reduce((totalCount, payment) => {
+    if (payment.type === "delegate") {
+      return totalCount + 1;
+    }
+    return totalCount;
+  }, 0);
+
+  const advisorPaymentsCount = payments.reduce((totalCount, payment) => {
+    if (payment.type === "advisor") {
+      return totalCount + 1;
+    }
+    return totalCount;
+  }, 0);
+
+  const paymentNames = payments
+    .map(payment => payment.name);
+
+    return [delegatesPaymentsCount, advisorPaymentsCount, paymentNames]
 }
 
 export default CompletePayment

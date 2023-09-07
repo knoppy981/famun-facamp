@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import styled from "styled-components";
 
 const color1 = "#192638"
@@ -39,7 +40,19 @@ export const Arrow = styled.svg`
     transform: translateY(-50%) rotate(90deg);
   }
 `
-export const Wrapper = styled.div`
+export const Wrapper = styled(motion.div)`
   position: absolute;
   z-index: 1;
+  transform-origin: center 0;
+  background: ${color1};
+  box-shadow: 0px 3px 5px -2px #000000;
+  border-radius: 10px;
+
+  @media screen and (max-width: 700px) {
+    margin: 0 auto;
+    width: 90vw;
+    left: 50% !important;
+    transform: translateX(-50%);
+    display: flex;
+  }
 `

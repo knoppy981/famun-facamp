@@ -87,22 +87,6 @@ export const ButtonsContainer = styled.div`
     width: 100%;
   }
 `
-export const Button = styled.button`
-  height: 45px;
-  width: 205px;
-  background: ${azulClaro};
-  border-radius: 5px;
-	font-size: 1.5rem;
-  transition: .4s all ease;
-  box-shadow: 0px 2px 5px -2px #000000;
-
-  &:disabled {
-    color: #666666;
-  }
-  &:hover {
-    transform: translateY(-2px);
-  }
-`
 export const AccountLink = styled(Link)`
   height: 45px;
   width: 205px;

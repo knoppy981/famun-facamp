@@ -12,67 +12,8 @@ const color1 = "#1C2D38"
 const color2 = "#011E2B"
 
 export const Wrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-`
-export const BlurWrapper = styled(motion.div)`
-  position: fixed;
-  z-index: 998;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-`
-export const Aside = styled(motion.aside)`
-  position: fixed;
-  z-index: 999;
-  width: 65%;
-  height: 100%;
-  top: 0;
-  right: 0;
-  background: #FAFAFA;
-`
-export const AsideContainer = styled.div`
-  height: calc(100% - 100px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  margin: 50px 0;
-  padding: 0 15px;
-
-  a {
-    width: 100%;
-  }
-`
-export const AsideNavbar = styled.div`
-  width: 100%;
-	display: flex;
-  justify-content: space-between;
-  align-items: center;
-`
-export const AsideCloseIcon = styled.div`
-  color: #000;
-  cursor: pointer;
-  outline: none;
-
-  svg {
-    font-size: 2.4rem;
-  }
-`
-export const AsideLogout = styled.div`
-  width: 100%;
-  display: flex;
-  padding: 15px;
-	height: 40px;
-  margin: auto 0 0;
-`
-export const Container = styled.div`
   min-height: 85svh;
-  margin: 10vh 0 5vh;
+  margin: 10vh 10vw 5vh;
  	width: 80%;
   display: flex;
   flex-direction: column;
@@ -83,6 +24,32 @@ export const Container = styled.div`
     margin: 50px 0 50px;
     width: 100vw;
 	}
+`
+export const AsideContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 30px;
+  margin: 50px 15px auto 15px;
+
+  button {
+    padding: 0 15px;
+    font-size: 1.6rem;
+  }
+`
+export const AsideNavbar = styled.div`
+  width: 100%;
+	display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 3.6rem;
+  font-weight: 500;
+`
+export const AsideLinkContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 `
 export const TitleBox = styled.div`
   display: flex;
@@ -190,10 +157,6 @@ export const DisappearOnWidth = styled.div`
     display: ${p => p.reverse ? "block" : "none"};
   }
 `
-export const Button = styled.button`
-  border: none;
-  outline: none;
-`
 export const NavItem = styled.div`
   height: 100%;
   position: relative;
@@ -263,6 +226,7 @@ export const SidebarItem = styled.div`
   width: 100%;
   border-radius: 5px;
   transition: all .4s ease;
+	font-size: 1.6rem;
   transform: ${p => p.active && 'translateX(10px)'};
 
   --_p: ${p => p.active ? '#000' : undefined};
@@ -284,15 +248,6 @@ export const SidebarItem = styled.div`
     transition: background .3s;
     background: var(--_p, transparent);
   }
-`
-export const ItemIcon = styled.div`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	font-size: 1.8rem;
-`
-export const ItemTitle = styled.div`
-	font-size: 1.6rem;
 `
 export const OutletWrapper = styled.div`
   padding: 0 40px;

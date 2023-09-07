@@ -35,6 +35,10 @@ export const Input = styled.input`
   font-size: inherit;
   outline: none;
   border: none;
+
+  &:disabled {
+    opacity: 1;
+  }
 `
 export const ButtonContainer = styled.div`
   display: ${p => p.disabled ? "none" : "block"};

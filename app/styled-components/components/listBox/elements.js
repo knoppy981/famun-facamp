@@ -24,13 +24,17 @@ export const ListItem = styled.li`
   padding: 5px 20px;
   background: ${(props) => (props.isFocused ? '#fff' : "")};
   color: ${(props) => props.isFocused ? "#000" : "#fff"};
-  font-size: 14px;
+  font-size: 1.4rem;
   font-weight: ${(props) => (props.isSelected ? "600" : "normal")};
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
   outline: none;
+
+  @media screen and (max-width: 700px) {
+    font-size: 1.8rem;
+  }
 `;
 
 export const ItemContent = styled.div`

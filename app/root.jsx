@@ -8,6 +8,7 @@ import { getUser } from "./session.server";
 import { getUserType } from "./models/user.server";
 
 import styles from './styles.css'
+import LanguageMenu from "./styled-components/components/languageMenu";
 
 export function links() {
   return [
@@ -50,28 +51,6 @@ export default function App() {
 
   // const { i18n } = useTranslation()
 
-  // window size for mobile
-  useEffect(() => {
-    const setFullHeight = () => {
-      const windowHeight = window.visualViewport.height * 0.01;
-      document.documentElement.style.setProperty('--full-height', `${windowHeight}px`);
-
-      const windowWidth = window.visualViewport.width * 0.01;
-      document.documentElement.style.setProperty('--full-width', `${windowWidth}px`);
-    };
-
-    // Set the initial height
-    setFullHeight();
-
-    // Update the height on window resize
-    window.addEventListener('resize', setFullHeight);
-
-    // Clean up the event listener on unmount
-    return () => {
-      window.removeEventListener('resize', setFullHeight);
-    };
-  }, []);
-
   return (
     <html /* lang={i18n.language} */>
       <head>
@@ -83,6 +62,8 @@ export default function App() {
       </head>
 
       <body>
+        <LanguageMenu /* i18n={i18n} *//>
+
         <Outlet />
 
         <ScrollRestoration />

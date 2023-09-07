@@ -1,7 +1,4 @@
-import styled from 'styled-components'
-
-import { motion } from 'framer-motion'
-import { Form } from '@remix-run/react'
+import styled from "styled-components"
 
 const azulClaro = '#BDE8F5'
 const azul = '#01558A'
@@ -15,16 +12,7 @@ const verdeBackground = "#EBFDEE"
 const begeClaro = "#d57748"
 const begeBackground = "#FFEFE1"
 
-export const OverflowContainer = styled.div`
-  display: flex;
-  width: 100%;
-  overflow-x: scroll;
-
-  @media screen and (max-width: 700px) {
-    padding: 0 15px;
-  }
-`
-export const DelegatesTable = styled.table`
+export const PaymentsTable = styled.table`
   border-radius: 5px;
   flex: 1 0 auto;
   border-collapse: separate;
@@ -35,14 +23,10 @@ export const DelegatesTable = styled.table`
 export const TableRow = styled.tr`
   height: 4.5rem;
   background: ${p => p.example ? '#FAFAFA' : 'transparent'};
-  cursor: ${p => p.example ? 'auto' : 'pointer'};
+  cursor: ${p => p.example ? 'default' : 'pointer'};
 
   td {
     font-weight: ${p => p.example ? 500 : 400};
-  }
-
-  @media screen and (max-width: 700px) {
-    height: 5rem;
   }
 `
 export const TableCell = styled.td`
@@ -59,4 +43,13 @@ export const CellFlexBox = styled.div`
   align-items: center;
   gap: 10px;
   font-size: inherit;
+`
+export const NoPaymentsMessage = styled.div`
+  padding: 5px 0;
+  font-size: 1.4rem;
+
+  @media screen and (max-width: 700px) {
+    font-size: 1.5rem;
+    padding: 5px 30px;
+  }
 `

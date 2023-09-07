@@ -34,8 +34,6 @@ const Pay = () => {
         </Link>
       </S.GoBackLinkWrapper>
 
-      <LanguageMenu /* i18n={i18n} */ />
-
       <Outlet />
     </S.Wrapper>
   )

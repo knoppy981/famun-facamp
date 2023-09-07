@@ -7,6 +7,7 @@ import Button from '../button';
 import Popover from '../popover';
 import ListBox from '../listBox';
 import { FiChevronDown } from 'react-icons/fi';
+import { AnimatePresence } from 'framer-motion';
 
 export { Item, Section } from "react-stately";
 
@@ -63,22 +64,25 @@ export const Select = (props) => {
             </span>}
         </Button>
       </S.Box>
-      {state.isOpen &&
-        (
-          <Popover
-            state={state}
-            popoverRef={popoverRef}
-            triggerRef={buttonRef}
-            placement="bottom"
-            offset={20}
-          >
-            <ListBox
-              {...menuProps}
+
+      <AnimatePresence>
+        {state.isOpen &&
+          (
+            <Popover
               state={state}
-              listBoxRef={listBoxRef}
-            />
-          </Popover>
-        )}
+              popoverRef={popoverRef}
+              triggerRef={buttonRef}
+              placement="bottom"
+              offset={20}
+            >
+              <ListBox
+                {...menuProps}
+                state={state}
+                listBoxRef={listBoxRef}
+              />
+            </Popover>
+          )}
+      </AnimatePresence>
     </>
   );
 }

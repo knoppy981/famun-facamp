@@ -69,6 +69,8 @@ export async function handleWebHook(request) {
 
     const parsed = qs.parse(metadata.paidUsersIds)
     const paidUsersIds = Object.values(parsed)
+    console.log(event)
+    console.log(paidUsersIds)
 
     await updateUsersPaymentStatus({ paidUsersIds, stripePaymentId: id })
     await updateUserPayments({ userId: metadata.payerId, stripePaymentId: id })

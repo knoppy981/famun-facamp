@@ -170,9 +170,6 @@ export const Payment = styled.div`
   border-top: ${p => !p.last && '1px solid #e6e6e6'};
   opacity: ${p => p.disabled ? .6 : 1};
 `
-export const CheckBox = styled.input`
-  flex-shrink: 0;
-`
 export const OvrflowText = styled.span`
   font-size: 1.4rem;
   overflow: hidden;
@@ -183,21 +180,6 @@ export const RightContainer = styled.div`
   margin-left: auto;
   margin-right: 0;
   flex-shrink: 0;
-`
-export const ColorLabel = styled.div`
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  padding: 5px 15px;
-  border-radius: 15px;
-  gap: 5px;
-  color: ${p => p.color === 'red' ? begeClaro : p.color === 'green' ? verdeClaro : azulCeu};
-  background: ${p => p.color === 'red' ? begeBackground : p.color === 'green' ? verdeBackground : azulBackground};
-  font-size: 1.4rem;
-
-  svg {
-    transform: translateY(-1px);
-  }
 `
 export const Price = styled.div`
   width: 400px;

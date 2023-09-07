@@ -20,6 +20,7 @@ export const InputWrapper = styled.div`
     place-self: center end;
 
     @media screen and (max-width: 700px) {
+      place-self: center start;
       font-size: 1.6rem;
     }
   }

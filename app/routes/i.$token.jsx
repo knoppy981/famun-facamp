@@ -83,8 +83,6 @@ const invite = () => {
         </Link>
       </S.GoBackLinkWrapper>
 
-      <LanguageMenu /* i18n={i18n} */ />
-
       <S.Container>
         <S.Title>
           FAMUN 2023

@@ -62,76 +62,6 @@ export const SelectBoxAuxDiv = styled.div`
     margin-bottom: 15px;
 	}
 `
-export const Select = styled.select`
-  width: 120px;
-  height: 100%;
-  outline: none;
-  border-radius: 5px;
-  padding: 5px;
-  font-size: 1.4rem;
-
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background: url(http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png) no-repeat right transparent;
-  background-position-x: 95%;
-  background-size: 10px;
-
-  @media screen and (max-width: 500px) and (min-height: 700px) {
-    font-size: 1.8rem;
-	}
-`
-export const Option = styled.option`
-`
-export const Input = styled.input`
-  width: 100%;
-  height: 4.5rem;
-  border-bottom: 1px solid ${p => p.err ? '#d61f0a' : '#E6E6E6'};
-  outline: none;
-  padding: 0 10px; 
-  font-size: 1.6rem;
-  transition: all .4 ease;
-  color: #000;
-  background: transparent;
-  -webkit-text-fill-color: #000 !important;
-
-  &:focus, &:hover {
-    border-bottom: 1px solid ${p => p.err ? '#d61f0a' : azulCeu};
-
-    @media screen and (max-width: 500px) and (min-height: 700px) {
-      border: none;
-	  }
-  }
-  &::placeholder {
-    opacity: .6;
-    font-style: italic;
-  }
-
-  @media screen and (max-width: 500px) and (min-height: 700px) {
-    height: 5.2rem;
-    font-size: 1.8rem;
-    border: none;
-    padding: 0; 
-	}
-`
-export const Button = styled.button`
-  height: 100%;
-  width: 80px;
-  background: transparent;
-  border-radius: 5px;
-	font-size: 1.4rem;
-  transition: .4s all ease;
-  margin-left: auto;
-  margin-right: 0;
-
-  &:disabled {
-    color: #666666;
-  }
-
-  @media screen and (max-width: 500px) and (min-height: 700px) {
-    height: 5.2rem;
-    font-size: 1.4rem;
-	}
-`
 export const List = styled.ul`
 `
 export const SocialMedias = styled.li`
@@ -178,32 +108,5 @@ export const SMDeleteButton = styled.button`
   svg{
     height: 20px;
     width: 20px;
-  }
-`
-export const AdvisorRoleSelect = styled.select`
-  height: 3rem;
-  outline: none;
-  border: none;
-  font-size: 1.4rem;
-  padding: 0 30px 0 5px;
-  border-radius: 5px;
-  border: 1px solid ${p => p.err ? '#d61f0a' : '#E6E6E6'};
-  flex-grow: 2;
-  font-size: 1.4rem;
-  color: #000;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background: url(http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png) no-repeat right transparent;
-  background-position-x: 95%;
-  background-size: 10px;
-
-  &:focus, &:hover {
-    border: 1px solid ${p => p.err ? '#d61f0a' : azulCeu};
-  }
-
-  &:disabled {
-    border: 1px solid transparent;
-    background: transparent;
-    opacity: 1;
   }
 `

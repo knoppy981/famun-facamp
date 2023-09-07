@@ -31,6 +31,11 @@ import {
 
 import { useClickOutside } from "~/hooks/useClickOutside";
 import LanguageMenu from "~/styled-components/components/dropdown/languageMenu";
+import ModalTrigger from "~/styled-components/components/modalOverlay/modalTrigger";
+import Dialog from "~/styled-components/components/dialog";
+import Sidebar from "~/styled-components/components/modalOverlay/sidebar";
+import SidebarTrigger from "~/styled-components/components/modalOverlay/sidebarTrigger";
+import Button from "~/styled-components/components/button";
 
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
@@ -45,194 +50,123 @@ export const handle = {
   i18n: "dashboard"
 };
 
+const menuItems = [
+  { name: "Home", to: "home", icon: <FiHome />, prefetch: "none" },
+  { name: "Profile", to: "data", icon: <FiEdit />, prefetch: "render" },
+  { name: "Delegation", to: "delegation", icon: <FiFlag />, prefetch: "render" },
+  { name: "Payments", to: "payment", icon: <FiCreditCard />, prefetch: "render" },
+  { name: "Documents", to: "documents", icon: <FiFile />, prefetch: "none" },
+]
+
 const Dashboard = () => {
 
   const user = useUser()
-
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-  // cancel scroll when sidebar is open
-  useEffect(() => {
-    if (isSidebarOpen) {
-      document.body.classList.add('sidebar-open');
-    } else {
-      document.body.classList.remove('sidebar-open');
-    }
-  }, [isSidebarOpen])
-
-  const sidebarVariants = {
-    enter: {
-      x: "100%",
-      opacity: 0
-    },
-    center: {
-      x: 0,
-      opacity: 1
-    },
-    exit: {
-      x: "100%",
-      opacity: 0
-    }
-  };
-  const blurVariants = {
-    enter: {
-      opacity: 0
-    },
-    center: {
-      opacity: 1
-    },
-    exit: {
-      opacity: 0
-    }
-  };
 
   /* const { t, i18n } = useTranslation("dashboard") */
 
   return (
     <S.Wrapper>
-      <LanguageMenu /* i18n={i18n} */ />
+      <S.TitleBox>
+        <S.Title>
+          FAMUN 2023
+        </S.Title>
 
-      <AnimatePresence initial={false} mode="wait">
-        {isSidebarOpen && <S.BlurWrapper
-          key="blurWrapper"
-          variants={blurVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{ duration: .3, ease: "easeInOut" }}
-          onClick={toggleSidebar}
-        />}
+        <S.AuxDiv>
+          <S.ArrowIconBox />
 
-        {isSidebarOpen && <S.Aside
-          key="sidebar"
-          variants={sidebarVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{ duration: .3, ease: "easeInOut" }}
-        >
-          <S.AsideContainer>
-            <S.AsideNavbar>
-              <S.TitleBox>
-                <S.SubTitle>
+          <S.SubTitle>
+            Dashboard
+          </S.SubTitle>
+        </S.AuxDiv>
+      </S.TitleBox>
+
+      <S.Navbar>
+        <S.NavItem disabled>
+          <FiUser />
+
+          <span>
+            {user.name}
+          </span>
+        </S.NavItem>
+
+        <S.DisappearOnWidth>
+          <Form action='/logout' method='post'>
+            <Button type='submit'>
+              <S.NavItem>
+                <FiLogOut />
+                Log out
+              </S.NavItem>
+            </Button>
+          </Form>
+        </S.DisappearOnWidth>
+
+        <S.DisappearOnWidth reverse>
+          <SidebarTrigger label={<FiMenu style={{ fontSize: "2.4rem" }} />} isDismissable>
+            {close =>
+              <S.AsideContainer>
+                <S.AsideNavbar>
                   Menu
-                </S.SubTitle>
-              </S.TitleBox>
 
-              <S.AsideCloseIcon onClick={toggleSidebar}>
-                <FiX />
-              </S.AsideCloseIcon>
-            </S.AsideNavbar>
+                  <Button onPress={close}>
+                    <FiX />
+                  </Button>
+                </S.AsideNavbar>
 
-            {[
-              { name: "Home", to: "home", icon: <FiHome />, prefetch: "none" },
-              { name: "Profile", to: "data", icon: <FiEdit />, prefetch: "render" },
-              { name: "Delegation", to: "delegation", icon: <FiFlag />, prefetch: "render" },
-              { name: "Payments", to: "payment", icon: <FiCreditCard />, prefetch: "render" },
-              { name: "Documents", to: "documents", icon: <FiFile />, prefetch: "none" },
-            ].map((item, index) => (
-              <NavLink to={item.to} onClick={toggleSidebar} prefetch={item.prefetch} key={`${item.to}-link`}>
-                {({ isActive }) => (
-                  <S.SidebarItem active={isActive ? true : false}>
-                    <S.ItemIcon>
-                      {item.icon}
-                    </S.ItemIcon>
-                    <S.ItemTitle>
-                      {item.name}
-                    </S.ItemTitle>
-                  </S.SidebarItem>
-                )}
-              </NavLink>
-            ))}
+                <S.AsideLinkContainer>
+                  {menuItems.map((item, index) => (
+                    <NavLink
+                      key={index}
+                      tabIndex="0"
+                      role="link"
+                      aria-label={`${item.to}-link`}
+                      to={item.to}
+                      onClick={close}
+                      prefetch={item.prefetch}
+                    >
+                      {({ isActive }) => (
+                        <S.SidebarItem active={isActive ? true : false}>
+                          {item.icon} {item.name}
+                        </S.SidebarItem>
+                      )}
+                    </NavLink>
+                  ))}
+                </S.AsideLinkContainer>
 
-            <S.AsideLogout>
-              <Form action='/logout' method='post' onClick={toggleSidebar}>
-                <S.Button>
-                  <S.NavItem type='submit'>
+                <Form action='/logout' method='post' onClick={close}>
+                  <Button type='submit'>
                     <FiLogOut />
                     Log out
-                  </S.NavItem>
-                </S.Button>
-              </Form>
-            </S.AsideLogout>
-          </S.AsideContainer>
-        </S.Aside>}
-      </AnimatePresence>
+                  </Button>
+                </Form>
+              </S.AsideContainer>}
+          </SidebarTrigger>
+        </S.DisappearOnWidth>
+      </S.Navbar>
 
-      <S.Container>
-        <S.TitleBox>
-          <S.Title>
-            FAMUN 2023
-          </S.Title>
+      <S.DashboardContainer>
+        <S.Sidebar>
+          {menuItems.map((item, index) => (
+            <NavLink
+              key={index}
+              tabIndex="0"
+              role="link"
+              aria-label={`${item.to}-link`}
+              to={item.to}
+              prefetch={item.prefetch}
+            >
+              {({ isActive }) => (
+                <S.SidebarItem active={isActive ? true : false}>
+                  {item.icon} {item.name}
+                </S.SidebarItem>
+              )}
+            </NavLink>
+          ))}
+        </S.Sidebar>
 
-          <S.AuxDiv>
-            <S.ArrowIconBox />
-
-            <S.SubTitle>
-              Dashboard
-            </S.SubTitle>
-          </S.AuxDiv>
-        </S.TitleBox>
-
-        <S.Navbar>
-          <S.NavItem disabled>
-            <FiUser />
-
-            <span>
-              {user.name}
-            </span>
-          </S.NavItem>
-
-          <S.DisappearOnWidth>
-            <Form action='/logout' method='post'>
-              <S.Button type='submit'>
-                <S.NavItem>
-                  <FiLogOut />
-                  Log out
-                </S.NavItem>
-              </S.Button>
-            </Form>
-          </S.DisappearOnWidth>
-
-          <S.DisappearOnWidth reverse>
-            <S.NavItem onClick={toggleSidebar}>
-              <FiMenu style={{ fontSize: "2.4rem" }} />
-
-            </S.NavItem>
-          </S.DisappearOnWidth>
-        </S.Navbar>
-
-        <S.DashboardContainer>
-          <S.Sidebar>
-            {[
-              { name: "Home", to: "home", icon: <FiHome />, prefetch: "none" },
-              { name: "Profile", to: "data", icon: <FiEdit />, prefetch: "render" },
-              { name: "Delegation", to: "delegation", icon: <FiFlag />, prefetch: "render" },
-              { name: "Payments", to: "payment", icon: <FiCreditCard />, prefetch: "render" },
-              { name: "Documents", to: "documents", icon: <FiFile />, prefetch: "none" },
-            ].map((item, index) => (
-              <NavLink to={item.to} prefetch={item.prefetch} key={`${item.to}-link`}>
-                {({ isActive }) => (
-                  <S.SidebarItem active={isActive ? true : false}>
-                    <S.ItemIcon>
-                      {item.icon}
-                    </S.ItemIcon>
-                    <S.ItemTitle>
-                      {item.name}
-                    </S.ItemTitle>
-                  </S.SidebarItem>
-                )}
-              </NavLink>
-            ))}
-          </S.Sidebar>
-
-          <S.OutletWrapper>
-            <Outlet context={{ user }} />
-          </S.OutletWrapper>
-        </S.DashboardContainer>
-      </S.Container >
+        <S.OutletWrapper>
+          <Outlet context={{ user }} />
+        </S.OutletWrapper>
+      </S.DashboardContainer>
     </S.Wrapper >
   )
 }

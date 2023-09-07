@@ -6,6 +6,7 @@ import { FiChevronDown } from "react-icons/fi";
 import ListBox from '../listBox';
 import Popover from '../popover';
 import Button from '../button';
+import { AnimatePresence } from "framer-motion";
 
 export { Item, Section } from "react-stately";
 
@@ -67,23 +68,25 @@ export function ComboBox(props) {
           </Button>
         }
 
-        {state.isOpen &&
-          (
-            <Popover
-              state={state}
-              triggerRef={inputRef}
-              popoverRef={popoverRef}
-              isNonModal
-              placement="bottom"
-              offset={10}
-            >
-              <ListBox
-                {...listBoxProps}
-                listBoxRef={listBoxRef}
+        <AnimatePresence>
+          {state.isOpen &&
+            (
+              <Popover
                 state={state}
-              />
-            </Popover>
-          )}
+                triggerRef={inputRef}
+                popoverRef={popoverRef}
+                isNonModal
+                placement="bottom"
+                offset={10}
+              >
+                <ListBox
+                  {...listBoxProps}
+                  listBoxRef={listBoxRef}
+                  state={state}
+                />
+              </Popover>
+            )}
+        </AnimatePresence>
       </S.Container>
     </>
   );

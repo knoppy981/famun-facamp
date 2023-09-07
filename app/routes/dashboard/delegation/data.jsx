@@ -62,7 +62,7 @@ const DelegationData = () => {
   const [buttonRef, isRefVisible] = useOnScreen();
   const { readySubmission, userWantsToChangeData, handleUserWantsToChangeData, formData, setFormData, allowChangeParticipant } =
     useDelegationUpdate(delegation, fetcher)
-    const [selectedUserId, setSelectedUserId] = React.useState(formData.participants[0].id);
+  const [selectedUserId, setSelectedUserId] = React.useState(formData.participants[0].id);
   const [userDataRef] = useUserScroll(searchParams, delegation, setSelectedUserId)
   const [handleDelegationChange, handleChange, handleAddLanguage, handleRemoveLanguage] =
     useUpdateStateFunctions(formData, setFormData, selectedUserId)
@@ -82,7 +82,7 @@ const DelegationData = () => {
 
   return (
     <S.DataForm method="post">
-      <S.DataTitleBox>
+      <S.DataTitleBox style={{ marginTop: 0 }}>
         <S.DataTitle ref={buttonRef}>
           <ColorButtonBox color={buttonColor}>
             <Button onPress={handleSubmission}>
@@ -313,7 +313,7 @@ function useUpdateStateFunctions(formData, setFormData, selectedUserId) {
 function useUserScroll(searchParams, delegation, setSelectedUserId) {
   const userDataRef = React.useRef()
 
-  if (!searchParams) return 
+  if (!searchParams) return
   const name = searchParams.get("u")
 
   React.useEffect(() => {

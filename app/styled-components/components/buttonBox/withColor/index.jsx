@@ -1,12 +1,18 @@
 import React from 'react'
 import styled, { ThemeProvider } from "styled-components"
 
-const azul = '#14A7D8'
-const azulClaro = "#EDF9FC"
-const verde = "#51b85a"
-const verdeClaro = "#EBFDEE"
-const bege = "#d57748"
-const begeClaro = "#FFEFE1"
+const getColorStyles = (color, theme) => {
+  switch (color) {
+    case 'red':
+      return { font: theme.fontRed, background: theme.backgroundRed };
+    case 'green':
+      return { font: theme.fontGreen, background: theme.backgroundGreen };
+    case 'gray':
+      return { font: '#A7A7A7', background: '#e1e1e1' };
+    default:
+      return { font: theme.fontBlue, background: theme.backgroundBlue };
+  }
+}
 
 const lightTheme = {
   fontBlue: '#14A7D8',
@@ -33,25 +39,12 @@ export const ButtonWrapper = styled.div`
   padding: 5px 15px;
   border-radius: 15px;
   gap: 5px;
-  color: ${p => p.color === 'red' ?
-    p.theme.fontRed : p.color === 'green' ?
-      p.theme.fontGreen : p.color === 'gray' ?
-        '#A7A7A7' : p.theme.fontBlue
-  };
-  background: ${p => p.color === 'red' ?
-    p.theme.backgroundRed : p.color === 'green' ?
-      p.theme.backgroundGreen : p.color === 'gray' ?
-        '#e1e1e1' : p.theme.backgroundBlue
-  };
+  color: ${p => getColorStyles(p.color, p.theme).font};
+  background: ${p => getColorStyles(p.color, p.theme).background};
   font-size: 1.4rem;
   transition: all .4s ease;
   font-weight: 400;
-  box-shadow: ${p => p.boxShadow ? `0px 0px 15px 10px 
-  ${p.color === 'red' ?
-      p.theme.backgroundRed : p.color === 'green' ?
-        p.theme.backgroundGreen : p.color === 'gray' ?
-          '#e1e1e1' : p.theme.backgroundBlue}` :
-    'none'};
+  box-shadow: ${p => p.boxShadow ? `0px 0px 15px 10px ${getColorStyles(p.color, p.theme).background}}` : 'none'};
 
   svg {
     transform: translateY(-1px);
@@ -67,9 +60,10 @@ export const ButtonWrapper = styled.div`
   }
 `
 
-const ColorButtonBox = ({ children, ...props }) => {
+const ColorButtonBox = ({ children, theme, ...props }) => {
+
   return (
-    <ThemeProvider theme={props.theme === "dark" ? darkTheme : lightTheme}>
+    <ThemeProvider theme={theme === "dark" ? darkTheme : lightTheme}>
       <ButtonWrapper {...props}>
         {children}
       </ButtonWrapper >

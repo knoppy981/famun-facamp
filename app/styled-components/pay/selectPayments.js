@@ -90,17 +90,3 @@ export const ButtonContainer = styled.div`
   display: grid;
   gap: 15px;
 `
-export const Button = styled.button`
-  height: 45px;
-  min-width: 225px;
-  display: grid;
-  place-self: center;
-  place-content: center;
-  background: ${p => !p.prev ? azulClaro : "transparent"};
-  box-shadow: 0px 2px 5px -2px #000000;
-  border: 1px solid ${p => !p.prev ? 'transparent' : '#E6E6E6'};
-  color: #000;
-  border-radius: 5px;
-	font-size: 1.5rem;
-  transition: .4s all ease;
-`

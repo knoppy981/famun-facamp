@@ -29,6 +29,7 @@ export const DataTitle = styled.div`
 `
 export const InputWrapper = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   box-sizing: border-box;
   min-width: 0;
@@ -36,24 +37,10 @@ export const InputWrapper = styled.div`
   & > label {
     font-size: 1.4rem;
     white-space: nowrap;
-    place-self: center end;
+    place-self: center start;
 
     @media screen and (max-width: 700px) {
       font-size: 1.6rem;
-    }
-  }
-  input {
-    width: 100%;
-    min-width: 250px;
-    font-size: 1.4rem;
-    height: 3rem;
-    -webkit-text-fill-color: #000 !important;
-
-    @media screen and (max-width: 700px) {
-      min-width: 0;
-      height: 4rem;
-      font-size: 1.6rem;
-      opacity: 1;
     }
   }
   & > div {

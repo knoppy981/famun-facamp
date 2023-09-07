@@ -1,19 +1,17 @@
 import { useEffect, useState } from 'react'
-import { Form, useActionData, useFetcher, useLoaderData, useOutletContext, useSearchParams, useTransition } from '@remix-run/react'
+import { Form, useActionData, useLoaderData, useSearchParams, useTransition } from '@remix-run/react'
 import { json } from '@remix-run/node'
-import qs from 'qs'
 
 import { requireUser, requireDelegationId } from '~/session.server'
 import { ensureStripeCostumer } from '~/models/user.server'
 import { getRequiredPayments } from '~/models/payments.server'
-import { useUser } from '~/utils'
 
 import * as S from '~/styled-components/pay'
 import Spinner from '~/styled-components/components/spinner'
 import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
 import Button from '~/styled-components/components/button';
-
 import { CheckboxGroup, Checkbox } from '~/styled-components/components/checkbox/checkboxGroup'
+import ColorButtonBox from '~/styled-components/components/buttonBox/withColor'
 
 export const loader = async ({ request }) => {
   const user = await requireUser(request)
@@ -30,26 +28,8 @@ const SelectPayments = () => {
   const { payments } = useLoaderData()
   const actionData = useActionData()
   const err = actionData?.errors
-  
   const transition = useTransition()
-  const [searchParams] = useSearchParams();
-
-  const [selectedPaymentsNames, setSelectedPaymentsNames] = useState(searchParams.getAll("s"))
-  const [price, setPrice] = useState(0)
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false)
-
-  useEffect(() => {
-    const sumPrices = payments.reduce((sum, payment) => {
-      if (selectedPaymentsNames.includes(payment.name)) {
-        return sum + payment.price;
-      }
-      return sum;
-    }, 0);
-
-    setPrice(sumPrices)
-
-    setIsButtonDisabled(selectedPaymentsNames.length === 0)
-  }, [selectedPaymentsNames])
+  const [selectedPaymentsNames, setSelectedPaymentsNames, price, isButtonDisabled] = useSelectPayments(payments)
 
   return (
     <Form action="/pay/c" method="get">
@@ -92,9 +72,9 @@ const SelectPayments = () => {
                   </S.OvrflowText>
 
                   <S.RightContainer>
-                    <S.ColorLabel color={item.available ? 'green' : 'red'} >
+                    <ColorButtonBox color={item.available ? 'green' : 'red'} >
                       R$ {" "} {item.price / 100},00
-                    </S.ColorLabel>
+                    </ColorButtonBox>
                   </S.RightContainer>
                 </Checkbox>
               )
@@ -114,6 +94,29 @@ const SelectPayments = () => {
       </S.PaymentWrapper>
     </Form>
   )
+}
+
+function useSelectPayments(payments) {
+  const [searchParams] = useSearchParams();
+
+  const [selectedPaymentsNames, setSelectedPaymentsNames] = useState(searchParams.getAll("s"))
+  const [price, setPrice] = useState(0)
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false)
+
+  useEffect(() => {
+    const sumPrices = payments.reduce((sum, payment) => {
+      if (selectedPaymentsNames.includes(payment.name)) {
+        return sum + payment.price;
+      }
+      return sum;
+    }, 0);
+
+    setPrice(sumPrices)
+
+    setIsButtonDisabled(selectedPaymentsNames.length === 0)
+  }, [selectedPaymentsNames])
+
+  return [selectedPaymentsNames, setSelectedPaymentsNames, price, isButtonDisabled]
 }
 
 export default SelectPayments

@@ -7,6 +7,7 @@ export const Container = styled.div`
   border-radius: 10px;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 12px;
   padding: 20px;
   color: #fff;

@@ -37,21 +37,28 @@ export const Title = styled.div`
 `
 export const Menu = styled.div`
   display: flex;
-  gap: 25px;
+  position: relative;
   z-index: 99;
   background: #fff;
 
   @media screen and (max-width: 700px) {
     position: sticky;
-    padding: 10px 15px;
+    margin: 0 0 15px 0;
+    padding: 10px 0 10px 15px;
     overflow-x: scroll;
     overflow-y: hidden;
     top: 45px;
+    box-shadow: none;
     border-radius: 0;
 
     box-shadow: ${p => p.isSticky ? "1px 0 1px 1px #E6E6E6" : "none"};
   }
 
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `
 export const MenuItem = styled.div`
   height: 3rem;
@@ -62,13 +69,20 @@ export const MenuItem = styled.div`
   padding: 0 15px;
   transition: opacity .4s ease;
   cursor: pointer;
+  margin-right: 25px;
   white-space: nowrap;
 
   ${p => p.colorItem && "padding: 0;"}
 
   @media screen and (max-width: 700px) {
+    margin-right: 10px;
     border-radius: 25px;
     border: 1px solid #e6e6e6;
+    ${p => p.colorItem && "border: none;"}
+  }
+
+  & > a{
+    font-size: 1.3rem;
   }
 `
 export const UnderLine = styled(motion.div)`

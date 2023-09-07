@@ -13,14 +13,13 @@ import { useUser, useUserType, generatePassword, getCorrectErrorMessage } from "
 import * as S from "~/styled-components/dashboard/delegation/createUser"
 import EditUserData from '~/styled-components/components/dataBox/user';
 import Spinner from "~/styled-components/components/spinner";
-import { FiUserPlus } from "react-icons/fi";
+import { FiUserPlus, FiX } from "react-icons/fi";
 import { prismaUserSchema } from "~/schemas";
 import Modal from "~/styled-components/components/modalOverlay";
 import ColorButtonBox from "~/styled-components/components/buttonBox/withColor";
 import Button from "~/styled-components/components/button";
 import Dialog from "~/styled-components/components/dialog";
 import { Select, Item } from '~/styled-components/components/select';
-import DataChangeInputBox from "~/styled-components/components/inputBox/dataChange";
 
 export const action = async ({ request }) => {
   const formData = await request.formData()
@@ -32,7 +31,7 @@ export const action = async ({ request }) => {
   }
   userData = await formatUserData({
     data: userData,
-    childrenModification: "update",
+    childrenModification: "create",
     userType: userData.delegate ? "delegate" : "advisor"
   })
   let user
@@ -45,10 +44,11 @@ export const action = async ({ request }) => {
       document: { is: { value: userData.document.value ?? "" } }
     })
 
-    /* user = await createUser(userData)
+    user = await createUser(userData)
 
-    await joinDelegationById(delegationId, user.id) */
+    await joinDelegationById(delegationId, user.id)
   } catch (error) {
+    console.dir(error, { depth: null })
     const [label, msg] = getCorrectErrorMessage(error)
     return json(
       { errors: { [label]: msg } },
@@ -56,7 +56,7 @@ export const action = async ({ request }) => {
     );
   }
 
-  return json({ user: { name: "jorge", id: "1298371928379182723", email: "jorge@gmail.com" } })
+  return json({user})
 }
 
 const CreateUser = () => {
@@ -85,7 +85,19 @@ const CreateUser = () => {
       {state.isOpen &&
         <Modal state={state} isDismissable>
           <Dialog>
-            asdjalskdjasd
+            <S.DialogTitle>
+              Novo usuário criado!
+            </S.DialogTitle>
+
+            <S.DialogItem>
+              Será enviado um email para {modalContext?.email} <br /> avisando {modalContext?.name} sobre a sua inscrição!
+            </S.DialogItem>
+
+            <ColorButtonBox theme="dark">
+              <Button onPress={state.close}>
+                Fechar
+              </Button>
+            </ColorButtonBox>
           </Dialog>
         </Modal>
       }
@@ -104,7 +116,7 @@ const CreateUser = () => {
       </S.DataTitleBox>
 
       <S.DataTitleBox style={{ pointerEvents: allowCreation ? 'auto' : 'none', opacity: allowCreation ? 1 : 0.5, }}>
-        <DataChangeInputBox>
+        <S.InputWrapper>
           <Select
             label="Tipo do Participante"
             defaultSelectedKey={creatingUserType}
@@ -117,7 +129,7 @@ const CreateUser = () => {
           >
             {(item) => <Item>{item.name}</Item>}
           </Select>
-        </DataChangeInputBox>
+        </S.InputWrapper>
 
         {creatingUserType === "delegate" && allowCreation ?
           <S.DelegateCountdown>
@@ -161,7 +173,8 @@ const CreateUser = () => {
 
 function useUserCreation(user, userType, fetcher, delegatesCount) {
   const normalUser = {
-    /* email: '',
+    id: '',
+    email: '',
     name: '',
     document: { documentName: 'cpf', value: '' },
     phoneNumber: '',
@@ -180,10 +193,11 @@ function useUserCreation(user, userType, fetcher, delegatesCount) {
     },
     delegationAdvisor: {
       advisorRole: 'Professor',
-      Facebook: '',
-      Instagram: '',
-      Linkedin: ''
-    } */
+      facebook: '',
+      instagram: '',
+      linkedin: ''
+    }
+    /* id: '',
     email: 'lksad@gmail.com',
     name: 'lksad',
     document: { documentName: 'passport', value: '0928323' },
@@ -206,7 +220,7 @@ function useUserCreation(user, userType, fetcher, delegatesCount) {
       facebook: 'lkjsad',
       instagram: '',
       linkedin: ''
-    }
+    } */
   }
 
   const [creatingUserType, setCreatingUserType] = React.useState("delegate")
@@ -230,8 +244,13 @@ function useUserCreation(user, userType, fetcher, delegatesCount) {
 
   React.useEffect(() => {
     // setting data back to default after creating user
-    if (fetcher?.data?.name === formData.name) setFormData(normalUser)
-  }, [fetcher])
+    if (fetcher?.data?.user?.name === formData.name)
+      setFormData(() => {
+        let newUser = { ...normalUser }
+        newUser.id = fetcher.data.user.name
+        return newUser
+      })
+  }, [fetcher.data])
 
   const handleCreatingUserType = (userType) => {
     setFormData((prevState) => {
@@ -330,7 +349,7 @@ function useModalContext(fetcher) {
       state.open()
       setModalContext(fetcher.data?.user)
     }
-  }, [fetcher])
+  }, [fetcher.data])
 
   return [modalContext, state]
 }

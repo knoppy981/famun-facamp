@@ -2,8 +2,9 @@ import { useOverlayTrigger } from 'react-aria';
 import { useOverlayTriggerState } from 'react-stately';
 import Button from '~/styled-components/components/button';
 import Popover from './index';
+import { AnimatePresence } from 'framer-motion';
 
-const PopoverTrigger = ({ label, children, ...props }) => {
+const PopoverTrigger = ({ isNonModal, label, children, ...props }) => {
   let ref = React.useRef(null);
   let popoverRef = React.useRef(null);
 
@@ -17,19 +18,22 @@ const PopoverTrigger = ({ label, children, ...props }) => {
   return (
     <>
       <Button {...triggerProps} buttonRef={ref}>{label}</Button>
-      {true &&
-        (
-          <Popover
-            {...props}
-            triggerRef={ref} 
-            popoverRef={popoverRef}
-            state={true}
-            placement="bottom"
-            offset={10}
-          >
-            {React.cloneElement(children, overlayProps)}
-          </Popover>
-        )}
+      <AnimatePresence>
+        {state.isOpen &&
+          (
+            <Popover
+              {...props}
+              triggerRef={ref}
+              popoverRef={popoverRef}
+              state={state}
+              placement="bottom"
+              offset={10}
+              isNonModal={isNonModal}
+            >
+              {React.cloneElement(children, { open: state.isOpen, ...overlayProps })}
+            </Popover>
+          )}
+      </AnimatePresence>
     </>
   );
 }
