@@ -142,7 +142,7 @@ export async function formatDelegationData({
 		delete data.address.delegationId
 		address = { [addressModification]: data.address }
 	} else {
-		delegate = {
+		address = {
 			[addressModification]: {
 				address: data.address,
 				postalCode: data.postalCode,
@@ -155,7 +155,7 @@ export async function formatDelegationData({
 	}
 
 	// handle participants
-	if (data?.participants.length > 0 && usersIdFilter.length > 0) {
+	if (data?.participants?.length > 0 && usersIdFilter.length > 0) {
 		if (participantModification === "updateMany") {
 			let aux = await Promise.all(data.participants
 				.filter(participant => usersIdFilter.includes(participant.id))
@@ -184,6 +184,12 @@ export async function formatDelegationData({
 						userType: aux.delegate ? "delegate" : "advisor"
 					}),
 				}
+			}
+		}
+	} else if (participantModification === "connect" && usersIdFilter.length === 1) {
+		participants = {
+			[participantModification]: {
+				id: usersIdFilter[0],
 			}
 		}
 	} else {

@@ -45,7 +45,7 @@ export function ComboBox(props) {
     <>
       <S.Label {...labelProps} err={err} >{err ?? props.label}</S.Label>
 
-      <S.Container isFocused={state.isFocused} disabled={props.isDisabled}>
+      <S.Container isFocused={state.isFocused} err={err} disabled={props.isDisabled}>
         {props.leftItem}
 
         <S.Input

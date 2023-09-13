@@ -32,16 +32,6 @@ const JoinDelegation = ({ data, transition, isNextButtonClicked, setIsNextButton
     if (value.length !== 6) setReadySubmission(false)
   }, [value])
 
-  /* useEffect(() => {
-    setLabel(
-      searchDelegation.state !== "idle" ?
-        "Procurando..." : searchDelegation?.data?.delegation && inputRef.current.value.length === 6 ?
-          "Delegação do " + searchDelegation?.data?.delegation.school : searchDelegation?.data?.errors ?
-            searchDelegation?.data?.errors["delegation" || "code"] : "Exemplo : A1B2C3"
-    )
-    setValid((searchDelegation?.data?.delegation && inputRef.current.value.length === 6) ? true : false)
-  }, [searchDelegation, value]) */
-
   return (
     <>
       <S.Title>
@@ -54,15 +44,11 @@ const JoinDelegation = ({ data, transition, isNextButtonClicked, setIsNextButton
 
       <S.Wrapper>
         <S.Container>
-          {/* <S.Label>
-            Código :
-          </S.Label> */}
-
           <DefaultInputBox>
             <TextField
               label="Código da Delegação"
               value={value}
-              onChange={e => { setValue(e.target.value); handleChange(e.target.value) }}
+              onChange={e => { setValue(e.target.value.toUpperCase()); handleChange(e.target.value) }}
               name="delegationCode"
               type="text"
               placeholder='Insira o código'
@@ -71,10 +57,6 @@ const JoinDelegation = ({ data, transition, isNextButtonClicked, setIsNextButton
               aria-autoComplete="none"
             />
           </DefaultInputBox>
-
-          {/* <S.StatusIcon color={searchDelegation?.data?.errors ? "#A7A7A7" : "green"}>
-            {searchDelegation?.data?.errors ? <FiX /> : (searchDelegation?.data?.delegation && value.length === 6) ? <FiCheck /> : null}
-          </S.StatusIcon> */}
 
           <DefaultButtonBox isDisabled={!readySubmission}>
             <Button

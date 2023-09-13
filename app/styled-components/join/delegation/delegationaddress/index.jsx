@@ -50,6 +50,7 @@ const index = ({ data, actionData }) => {
               leftItem={<S.NacionalityFlag className={`flag-icon flag-icon-${isoCountries[country]?.toLowerCase()}`} />}
               onSelectionChange={setCountry}
               defaultInputValue={country}
+              defaultSelectedKey={country}
             >
               {(item) => <Item>{item.id}</Item>}
             </ComboBox>

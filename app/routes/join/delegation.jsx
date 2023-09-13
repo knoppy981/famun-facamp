@@ -74,11 +74,12 @@ export const action = async ({ request }) => {
         userId: userId,
         code: generateString(6),
       }
-
-      delegationData = await formatDelegationData({ data: delegationData })
-      console.dir(delegationData, { depth: null })
+      delegationData = await formatDelegationData({
+        data: delegationData,
+        addressModification: "create",
+        usersIdFilter: [userId],
+      })
       let delegation
-
       try {
         await prismaDelegationSchema.validateAsync(delegationData)
         delegation = await createDelegation(delegationData, userId)
@@ -89,7 +90,6 @@ export const action = async ({ request }) => {
           { status: 400 }
         );
       }
-
       return createUserSession({
         request,
         userId: userId,
