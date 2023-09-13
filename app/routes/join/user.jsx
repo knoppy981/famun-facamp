@@ -69,7 +69,6 @@ export const action = async ({ request }) => {
         await prismaUserSchema.validateAsync(userData)
         user = await createUser(userData)
       } catch (e) {
-        console.dir(e, { depth: null })
         return json(
           { errors: e },
           { status: 400 }
@@ -101,7 +100,8 @@ export const loader = async ({ request }) => {
 
   const session = await getSession(request)
 
-  const { userType, step } = {
+  const { termsAndConditions, userType, step } = {
+    ...session.get("user-data-1"),
     ...session.get("current-step"),
     ...session.get("user-type"),
   }
@@ -112,16 +112,16 @@ export const loader = async ({ request }) => {
       ...session.get("user-data-4"),
       ...session.get("user-data-6"),
     } ?? {}
-    return json({ data, step, userType })
+    return json({ data, step, userType, termsAndConditions })
   } else if (step === 4) {
     const data = {
       ...session.get(`user-data-2`),
       ...session.get(`user-data-4`),
     } ?? {}
-    return json({ data, step, userType })
+    return json({ data, step, userType, termsAndConditions })
   } else {
     const data = session.get(`user-data-${step}`) ?? {}
-    return json({ data, step, userType })
+    return json({ data, step, userType, termsAndConditions })
   }
 }
 
@@ -129,17 +129,11 @@ const user = () => {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "";
   const transition = useTransition()
-
-  const [isNextButtonClicked, setIsNextButtonClicked] = useState(false)
-  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false)
-
-  useEffect(() => {
-    transition.state === 'idle' && setIsNextButtonClicked(false)
-  }, [transition])
-
   const actionData = useActionData()
-  let { userType, step, data } = useLoaderData()
+  let { userType, step, data, termsAndConditions } = useLoaderData()
   if (!step) step = 1
+  const [buttonLabel, isButtonDisabled, setIsButtonDisabled, handleButtonPress, buttonSpinner] = useButtonState(
+    step, termsAndConditions, transition)
 
   return (
     <S.SubscriptionForm noValidate method='post'>
@@ -148,20 +142,18 @@ const user = () => {
           FAMUN 2023
         </S.Title>
 
-        <S.AuxDiv>
-          <S.ArrowIconBox />
+        <FiChevronRight size={25} />
 
-          <S.SubTitle>
-            Inscrição
-          </S.SubTitle>
-        </S.AuxDiv>
+        <S.SubTitle>
+          Delegação
+        </S.SubTitle>
       </S.TitleBox>
 
       <input type="hidden" name="step" value={step} />
       <input type="hidden" name="redirectTo" value={redirectTo} />
 
       <S.Container>
-        {step === 1 && <TermsAndConditions setIsNextButtonDisabled={setIsNextButtonDisabled} />}
+        {step === 1 && <TermsAndConditions setIsButtonDisabled={setIsButtonDisabled} />}
         {step === 2 && <Nacionality data={data} actionData={actionData} />}
         {step === 3 && <CreateUser data={data} actionData={actionData} />}
         {step === 4 && <UserData data={data} actionData={actionData} />}
@@ -173,18 +165,17 @@ const user = () => {
         {step === 7 && <ConfirmData data={data} userType={userType} />}
       </S.Container>
 
-      <S.ControlButtonsContainer>
+      <S.ControlButtonsContainer style={{ pointerEvents: transition.state === 'idle' ? 'auto' : 'none' }}>
         {step !== 5 &&
-          <DefaultButtonBox isDisabled={isNextButtonDisabled}>
+          <DefaultButtonBox isDisabled={isButtonDisabled}>
             <Button
               name="action"
               value="next"
               type="submit"
-              isDisabled={isNextButtonDisabled}
-              onPress={() => setIsNextButtonClicked(true)}
+              isDisabled={isButtonDisabled}
+              onPress={handleButtonPress}
             >
-              {step === 7 ? 'Cadastrar' : 'Próximo'}
-              {transition.state !== 'idle' && isNextButtonClicked && <Spinner dim={18} />}
+              {buttonLabel} {buttonSpinner}
             </Button>
           </DefaultButtonBox>
         }
@@ -203,6 +194,27 @@ const user = () => {
       </S.ControlButtonsContainer>
     </S.SubscriptionForm>
   )
+}
+
+function useButtonState(step, termsAndConditions, transition) {
+  const [buttonLabel, setButtonLabel] = React.useState("Próximo")
+  const [buttonSpinner, setButtonSpinner] = React.useState(null)
+  const [isButtonClicked, setIsButtonClicked] = React.useState(false)
+  const [isButtonDisabled, setIsButtonDisabled] = React.useState(termsAndConditions !== "on")
+
+  const handleButtonPress = () => {
+    setIsButtonClicked(true)
+  }
+
+  React.useEffect(() => {
+    setButtonLabel(step === 7 ? 'Cadastrar' : 'Próximo')
+    setButtonSpinner(transition.state !== 'idle' && isButtonClicked ?
+      <Spinner dim={18} /> :
+      null
+    )
+  }, [step, transition])
+
+  return [buttonLabel, isButtonDisabled, setIsButtonDisabled, handleButtonPress, buttonSpinner]
 }
 
 export default user

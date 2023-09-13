@@ -48,7 +48,6 @@ export const action = async ({ request }) => {
 
     await joinDelegationById(delegationId, user.id)
   } catch (error) {
-    console.dir(error, { depth: null })
     const [label, msg] = getCorrectErrorMessage(error)
     return json(
       { errors: { [label]: msg } },

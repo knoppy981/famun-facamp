@@ -26,7 +26,6 @@ export const action = async ({ request }) => {
   try {
     await loginSchema.validateAsync({ email, password })
   } catch (error) {
-    console.dir(error, { depth: null })
     const [label, msg] = getCorrectErrorMessage(error)
     return json(
       { errors: { [label]: msg } },

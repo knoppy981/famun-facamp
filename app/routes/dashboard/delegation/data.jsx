@@ -40,7 +40,6 @@ export const action = async ({ request }) => {
     await getExistingDelegation({ school: data.school ?? "", delegationId: id })
     await prismaDelegationSchema.validateAsync(data)
   } catch (error) {
-    console.dir(error, { depth: null })
     const [label, msg] = getCorrectErrorMessage(error)
     return json(
       { errors: { [label]: msg } },

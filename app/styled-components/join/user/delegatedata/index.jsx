@@ -57,7 +57,7 @@ const DelegateData = ({ data, actionData }) => {
                 items={list.items}
                 onReorder={onReorder}
               >
-                {(item) => <Item>{item.id}</Item>}
+                {(item) => <Item>{item.id.replace(/_/g, " ")}</Item>}
               </ReorderableListBox>
             </S.ReorderableListContainer>
 

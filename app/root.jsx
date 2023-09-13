@@ -35,7 +35,7 @@ export const meta = () => ({
 
 export const loader = async ({ request }) => {
   const locale = await i18next.getLocale(request);
-  const user = await getUser(request).catch(error => console.log(error))
+  const user = await getUser(request)
   return json({
     user,
     userType: await getUserType(user?.id),

@@ -9,28 +9,10 @@ import DefaultButtonBox from '~/styled-components/components/buttonBox/default'
 import DefaultInputBox from '~/styled-components/components/inputBox/default'
 import TextField from '~/styled-components/components/textField';
 
-const JoinDelegation = ({ data, transition, isNextButtonClicked, setIsNextButtonClicked }) => {
-  const [value, setValue] = React.useState("")
-  const [readySubmission, setReadySubmission] = React.useState(false)
-
-  const searchDelegation = useFetcher()
-
-  const handleChange = (value) => {
-    if (value.length === 6) {
-      searchDelegation.submit(
-        { delegationCode: value },
-        { method: "post", action: "/api/delegationCode" }
-      )
-    }
-  }
-
-  React.useEffect(() => {
-    setReadySubmission(searchDelegation.data?.delegation && value.length === 6)
-  }, [searchDelegation.data])
-
-  React.useEffect(() => {
-    if (value.length !== 6) setReadySubmission(false)
-  }, [value])
+const JoinDelegation = ({ transition }) => {
+  const fetcher = useFetcher()
+  const [readySubmission, value, handleChange] = useJoinDelegation(fetcher)
+  const [buttonLabel, handleButtonPress, buttonSpinner] = useButtonState(fetcher, transition)
 
   return (
     <>
@@ -48,11 +30,11 @@ const JoinDelegation = ({ data, transition, isNextButtonClicked, setIsNextButton
             <TextField
               label="Código da Delegação"
               value={value}
-              onChange={e => { setValue(e.target.value.toUpperCase()); handleChange(e.target.value) }}
+              onChange={handleChange}
               name="delegationCode"
               type="text"
               placeholder='Insira o código'
-              err={searchDelegation.data?.errors?.code}
+              err={fetcher.data?.errors?.code}
               autoComplete={false}
               aria-autoComplete="none"
             />
@@ -64,27 +46,69 @@ const JoinDelegation = ({ data, transition, isNextButtonClicked, setIsNextButton
               value="next"
               type="submit"
               isDisabled={!readySubmission}
-              onPress={() => setIsNextButtonClicked(true)}
+              onPress={handleButtonPress}
             >
-              {searchDelegation.state === 'submitting' ?
-                <>Procurando...</> :
-                <>Entrar {transition.state !== 'idle' && isNextButtonClicked && <Spinner dim={18} />}</>
-              }
+              {buttonLabel} {buttonSpinner}
             </Button>
           </DefaultButtonBox>
         </S.Container>
 
-        <S.Status err={searchDelegation.data?.errors?.delegation}>
-          {searchDelegation.data?.errors?.delegation ?
-            searchDelegation.data?.errors?.delegation :
-            (searchDelegation.data?.delegation?.school && readySubmission) ?
-              `Você está entrando na delegação do ${searchDelegation.data?.delegation?.school}` :
+        {<S.Status err={fetcher.data?.errors?.delegation}>
+          {fetcher.data?.errors?.delegation ?
+            fetcher.data?.errors?.delegation :
+            (fetcher.data?.delegation?.school && readySubmission) ?
+              `Você está entrando na delegação do ${fetcher.data?.delegation?.school}` :
               null
           }
-        </S.Status>
+        </S.Status>}
       </S.Wrapper>
     </>
   )
+}
+
+function useJoinDelegation(fetcher) {
+  const [value, setValue] = React.useState("")
+  const [readySubmission, setReadySubmission] = React.useState(false)
+
+  const handleChange = (e) => {
+    const delegationCode = e.target.value.toUpperCase()
+    setValue(delegationCode)
+    if (delegationCode.length === 6) {
+      fetcher.submit(
+        { delegationCode },
+        { method: "post", action: "/api/delegationCode" }
+      )
+    } else {
+      setReadySubmission(false)
+    }
+  }
+
+  React.useEffect(() => {
+    setReadySubmission(fetcher.data?.delegation && value.length === 6)
+  }, [fetcher.data])
+
+  return [readySubmission, value, handleChange]
+}
+
+function useButtonState(fetcher, transition) {
+  const [buttonLabel, setButtonLabel] = React.useState("Entrar")
+  const [buttonSpinner, setButtonSpinner] = React.useState(null)
+  const [isButtonClicked, setIsButtonClicked] = React.useState(false)
+
+  const handleButtonPress = () => {
+    setIsButtonClicked(true)
+  }
+
+  React.useEffect(() => {
+    transition.state === 'idle' && setIsButtonClicked(false)
+    setButtonLabel(fetcher.state === 'submitting' ? 'Procurando...' : 'Entrar')
+    setButtonSpinner(transition.state !== 'idle' && isButtonClicked ?
+      <Spinner dim={18} /> :
+      null
+    )
+  }, [fetcher.state, transition])
+
+  return [buttonLabel, handleButtonPress, buttonSpinner]
 }
 
 export default JoinDelegation

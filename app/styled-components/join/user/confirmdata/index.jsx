@@ -74,7 +74,7 @@ const ConfirmData = ({ data, userType }) => {
           <>
             <S.Item>
               <S.Label>Posição</S.Label>
-              {data.role}
+              {data.advisorRole}
             </S.Item>
 
             {[

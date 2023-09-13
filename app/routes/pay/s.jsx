@@ -32,8 +32,6 @@ const SelectPayments = () => {
   const transition = useTransition()
   const [selectedPaymentsNames, setSelectedPaymentsNames, price, isButtonDisabled] = useSelectPayments(payments)
 
-  console.log(payments)
-
   return (
     <Form action="/pay/c" method="get">
       <S.PaymentWrapper>

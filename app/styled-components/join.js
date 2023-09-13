@@ -35,7 +35,6 @@ export const SubscriptionForm = styled(Form)`
     padding: 0 15px;
 	}
 `
-
 export const TitleBox = styled.div`
   display: flex;
   align-items: center;
@@ -53,16 +52,16 @@ export const TitleBox = styled.div`
     width: auto;
     margin-left: 0;
     margin-right: auto;
+
+    svg {
+      display: none;
+    }
   }
 
   @media screen and (max-width: 350px) {
     height: auto;
     width: 100vw;
   }
-`
-export const AuxDiv = styled.div`
-  align-items: center;
-  display: flex;
 `
 export const Title = styled.div`
   font-size: 3.6rem;
@@ -103,17 +102,6 @@ export const SubTitle = styled.div`
   @media screen and (max-width: 350px) {
     font-size: 3rem;
   }
-`
-export const ArrowIconBox = styled(FiChevronRight)`
-  height: 25px;
-  width: 25px;
-  color: #000;
-  display: flex;
-  align-items: bottom;
-
-  @media screen and (max-width: 500px) and (min-height: 700px) {
-    display: none;
-	}
 `
 export const Container = styled.div`
   width: 100%;

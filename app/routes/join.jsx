@@ -2,7 +2,6 @@ import { Outlet, useSearchParams } from "@remix-run/react";
 
 import * as S from '~/styled-components/join'
 import { FiArrowLeft } from "react-icons/fi";
-import LanguageMenu from "~/styled-components/components/dropdown/languageMenu";
 import Link from "~/styled-components/components/link";
 import { useTranslation } from "react-i18next";
 

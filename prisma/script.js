@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 async function seed() {
 
-	await prisma.user.delete({ where: { email: "andre.knopp8@gmail.com" } }).catch(err => { console.log('no user found') })
+	/* await prisma.user.delete({ where: { email: "andre.knopp8@gmail.com" } }).catch(err => { console.log('no user found') })
 	await prisma.user.delete({ where: { email: "teste@gmail.com" } }).catch(err => { console.log('no user found') })
 
 	await prisma.delegation.delete({ where: { code: "123456" } }).catch(err => { console.log('no delegation found') })
@@ -108,7 +108,7 @@ async function seed() {
 				]
 			}
 		}
-	})
+	}) */
 
 	await prisma.user.update({
 		where: {

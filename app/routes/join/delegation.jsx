@@ -19,6 +19,7 @@ import CreateDelegation from "~/styled-components/join/delegation/createdelegati
 import DelegationAddress from "~/styled-components/join/delegation/delegationaddress"
 import ConfirmDelegation from "~/styled-components/join/delegation/confirmdelegation"
 import { prismaDelegationSchema } from "~/schemas/objects/delegation";
+import { FiChevronRight } from "react-icons/fi";
 
 
 export const action = async ({ request }) => {
@@ -57,7 +58,6 @@ export const action = async ({ request }) => {
         school: data.school ?? ""
       })
     } catch (error) {
-      console.dir(error, { depth: null })
       const [label, msg] = getCorrectErrorMessage(error)
       return json(
         { errors: { [label]: msg } },
@@ -77,7 +77,7 @@ export const action = async ({ request }) => {
       delegationData = await formatDelegationData({
         data: delegationData,
         addressModification: "create",
-        usersIdFilter: [userId],
+        participantModification: "connect",
       })
       let delegation
       try {
@@ -139,16 +139,12 @@ const delegation = () => {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "";
   const transition = useTransition()
-  const [isNextButtonClicked, setIsNextButtonClicked] = useState(false)
-
-  useEffect(() => {
-    transition.state === 'idle' && setIsNextButtonClicked(false)
-  }, [transition])
-
   const actionData = useActionData()
-
   let { data, step, joinMethod } = useLoaderData()
   if (!step) step = 1
+
+  const [buttonLabel, handleButtonPress, buttonSpinner] = useButtonState(
+    step, transition)
 
   return (
     <S.SubscriptionForm type="submit" noValidate method='post' >
@@ -157,13 +153,11 @@ const delegation = () => {
           FAMUN 2023
         </S.Title>
 
-        <S.AuxDiv>
-          <S.ArrowIconBox />
+        <FiChevronRight size={25} />
 
-          <S.SubTitle>
-            Delegação
-          </S.SubTitle>
-        </S.AuxDiv>
+        <S.SubTitle>
+          Delegação
+        </S.SubTitle>
       </S.TitleBox>
 
       <input type="hidden" name="step" value={step} />
@@ -173,31 +167,24 @@ const delegation = () => {
         {step === 1 && <JoinMethod />}
         {step === 2 && (joinMethod === "create" ?
           <CreateDelegation data={data} actionData={actionData} /> :
-          <JoinDelegation
-            data={data}
-            actionData={actionData}
-            transition={transition}
-            isNextButtonClicked={isNextButtonClicked}
-            setIsNextButtonClicked={setIsNextButtonClicked}
-          />
+          <JoinDelegation transition={transition} />
         )}
         {step === 3 && joinMethod === "create" && <DelegationAddress data={data} actionData={actionData} />}
         {step === 4 && joinMethod === "create" && <ConfirmDelegation data={data} />}
       </S.Container>
 
-      <S.ControlButtonsContainer>
+      <S.ControlButtonsContainer style={{ pointerEvents: transition.state === 'idle' ? 'auto' : 'none' }}>
         {step > 1 && joinMethod === "create" &&
           <DefaultButtonBox>
             <Button
               name="action"
               value="next"
               type="submit"
-              onPress={() => setIsNextButtonClicked(true)}
+              onPress={handleButtonPress}
             >
-              Próximo  {transition.state !== 'idle' && isNextButtonClicked && <Spinner dim={18} />}
+              {buttonLabel} {buttonSpinner}
             </Button>
           </DefaultButtonBox>
-
         }
 
         {step !== 1 &&
@@ -214,6 +201,27 @@ const delegation = () => {
       </S.ControlButtonsContainer>
     </S.SubscriptionForm >
   )
+}
+
+function useButtonState(step, transition) {
+  const [buttonLabel, setButtonLabel] = React.useState("Próximo")
+  const [buttonSpinner, setButtonSpinner] = React.useState(null)
+  const [isButtonClicked, setIsButtonClicked] = React.useState(false)
+
+  const handleButtonPress = () => {
+    setIsButtonClicked(true)
+  }
+
+  React.useEffect(() => {
+    transition.state === 'idle' && setIsButtonClicked(false)
+    setButtonLabel(step === 4 ? 'Criar' : 'Próximo')
+    setButtonSpinner(transition.state !== 'idle' && isButtonClicked ?
+      <Spinner dim={18} /> :
+      null
+    )
+  }, [step, transition])
+
+  return [buttonLabel, handleButtonPress, buttonSpinner]
 }
 
 export default delegation

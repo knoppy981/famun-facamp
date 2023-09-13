@@ -1,15 +1,9 @@
 
-import { useEffect } from 'react'
 import termsAndConditions from '~/data/termsAndConditions'
 import * as S from './elements'
 import Checkbox from '~/styled-components/components/checkbox'
 
-const TermsAndConditions = ({ setIsNextButtonDisabled }) => {
-
-  useEffect(() => {
-    setIsNextButtonDisabled(true)
-  }, [])
-
+const TermsAndConditions = ({ setIsButtonDisabled }) => {
   return (
     <>
       <S.Title>
@@ -23,7 +17,7 @@ const TermsAndConditions = ({ setIsNextButtonDisabled }) => {
       <Checkbox
         name="termsAndConditions"
         required
-        onChange={value => setIsNextButtonDisabled(!value)}
+        onChange={value => setIsButtonDisabled(!value)}
       >
         Eu li e aceito os Termos e Condições do evento Famun.
       </Checkbox>

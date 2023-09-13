@@ -1,19 +1,17 @@
-import React from 'react'
 import { useLoaderData, useCatch, Form, useMatches, useSearchParams } from '@remix-run/react'
 import invariant from 'tiny-invariant';
-import { json, redirect } from '@remix-run/node';
+import { json } from '@remix-run/node';
 
 import { decodeInviteLink, getDelegationByCode, joinDelegation } from '~/models/delegation.server'
-import { logout, getUserId, requireUserId, createUserSession, getUser } from "~/session.server";
+import { requireUserId, createUserSession, getUser } from "~/session.server";
 import { safeRedirect } from '~/utils';
 
 import * as S from '~/styled-components/invite'
 import * as E from '~/styled-components/error'
-import { FiHelpCircle, FiArrowLeft, } from "react-icons/fi";
+import { FiArrowLeft } from "react-icons/fi";
 import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
 import Button from '~/styled-components/components/button';
 import Link from "~/styled-components/components/link";
-import LanguageMenu from '~/styled-components/components/dropdown/languageMenu';
 /* import { useTranslation } from 'react-i18next'; */
 
 export const action = async ({ request }) => {

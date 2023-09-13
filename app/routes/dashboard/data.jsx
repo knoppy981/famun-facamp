@@ -23,8 +23,6 @@ export const action = async ({ request }) => {
   const formData = await request.formData();
   let { id, ...userData } = qs.parse(formData.get("data"))
 
-  console.log(userData.birthDate)
-
   userData = await formatUserData({
     data: userData,
     childrenModification: "update",

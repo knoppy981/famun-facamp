@@ -62,10 +62,7 @@ const PersonalData = (props) => {
           isRequired
           maxValue={today(getLocalTimeZone())}
           defaultValue={formData.birthDate ? parseDate(formData.birthDate) : ""}
-          onChange={value => {
-            handleChange({ target: { name: "birthDate", value: value ? value.toString() : null } })
-            console.log(value ? value.toString() : null)
-          }}
+          onChange={value => handleChange({ target: { name: "birthDate", value: value ? value.toString() : null } })}
           isDisabled={isDisabled}
           err={actionData?.errors?.birthDate}
         />

@@ -186,10 +186,10 @@ export async function formatDelegationData({
 				}
 			}
 		}
-	} else if (participantModification === "connect" && usersIdFilter.length === 1) {
+	} else if (participantModification === "connect" && typeof data.userId === "string") {
 		participants = {
 			[participantModification]: {
-				id: usersIdFilter[0],
+				id: data.userId,
 			}
 		}
 	} else {
