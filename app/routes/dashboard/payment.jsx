@@ -1,4 +1,3 @@
-import { useState, useRef, useEffect } from 'react'
 import { json, redirect } from '@remix-run/node'
 import { useLoaderData, useCatch, useMatches, NavLink, Outlet } from '@remix-run/react'
 
@@ -6,7 +5,6 @@ import { getDelegationId, requireUser } from '~/session.server'
 import { getRequiredPayments } from '~/models/payments.server'
 import { getUserPayments } from '~/stripe.server'
 import { safeRedirect } from '~/utils'
-
 import { ensureStripeCostumer } from '~/models/user.server';
 
 import * as S from '~/styled-components/dashboard/payment'

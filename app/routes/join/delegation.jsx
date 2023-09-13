@@ -1,26 +1,23 @@
-import { useRef, useState, useEffect } from "react";
 import { redirect, json } from "@remix-run/node";
-import { useSearchParams, useFetcher, useLoaderData, useActionData, useTransition } from "@remix-run/react";
+import { useSearchParams, useLoaderData, useActionData, useTransition } from "@remix-run/react";
 import qs from "qs"
 
 import { createUserSession, sessionStorage, getSession, requireUserId } from "~/session.server";
-import { joinDelegation, createDelegation, generateDelegationInviteLink, formatDelegationData, getExistingDelegation } from "~/models/delegation.server";
+import { joinDelegation, createDelegation, formatDelegationData, getExistingDelegation } from "~/models/delegation.server";
 import { safeRedirect, generateString, getCorrectErrorMessage } from "~/utils";
-import { delegationStepValidation, delegationSchema } from "~/schemas";
+import { delegationStepValidation } from "~/schemas";
+import { prismaDelegationSchema } from "~/schemas/objects/delegation";
 
 import * as S from '~/styled-components/join'
 import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
 import Button from '~/styled-components/components/button';
 import Spinner from "~/styled-components/components/spinner";
-
 import JoinMethod from "~/styled-components/join/delegation/joinmethod"
 import JoinDelegation from "~/styled-components/join/delegation/joindelegation"
 import CreateDelegation from "~/styled-components/join/delegation/createdelegation"
 import DelegationAddress from "~/styled-components/join/delegation/delegationaddress"
 import ConfirmDelegation from "~/styled-components/join/delegation/confirmdelegation"
-import { prismaDelegationSchema } from "~/schemas/objects/delegation";
 import { FiChevronRight } from "react-icons/fi";
-
 
 export const action = async ({ request }) => {
   const text = await request.text()

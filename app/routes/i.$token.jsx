@@ -12,7 +12,6 @@ import { FiArrowLeft } from "react-icons/fi";
 import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
 import Button from '~/styled-components/components/button';
 import Link from "~/styled-components/components/link";
-/* import { useTranslation } from 'react-i18next'; */
 
 export const action = async ({ request }) => {
   const userId = await requireUserId(request)

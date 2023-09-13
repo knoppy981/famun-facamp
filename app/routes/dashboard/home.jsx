@@ -2,8 +2,7 @@ import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
 
 import { useUser } from '~/utils'
-import { getDelegationId, requireUser } from '~/session.server'
-import { getRequiredPayments, getUserPayments } from '~/models/payments.server'
+import { getDelegationId } from '~/session.server'
 
 import * as S from '~/styled-components/dashboard/home'
 import ColorButtonBox from '~/styled-components/components/buttonBox/withColor'

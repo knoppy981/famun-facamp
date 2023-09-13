@@ -1,9 +1,8 @@
 import { json } from "@remix-run/node"
 import { useFetcher, useOutletContext } from "@remix-run/react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import qs from "qs"
 import { useOverlayTriggerState } from "react-stately";
-import { useOverlayTrigger } from "react-aria";
 
 import { createUser, formatUserData, getExistingUser } from "~/models/user.server"
 import { joinDelegationById } from "~/models/delegation.server"
@@ -13,7 +12,7 @@ import { useUser, useUserType, generatePassword, getCorrectErrorMessage } from "
 import * as S from "~/styled-components/dashboard/delegation/createUser"
 import EditUserData from '~/styled-components/components/dataBox/user';
 import Spinner from "~/styled-components/components/spinner";
-import { FiUserPlus, FiX } from "react-icons/fi";
+import { FiUserPlus } from "react-icons/fi";
 import { prismaUserSchema } from "~/schemas";
 import Modal from "~/styled-components/components/modalOverlay";
 import ColorButtonBox from "~/styled-components/components/buttonBox/withColor";

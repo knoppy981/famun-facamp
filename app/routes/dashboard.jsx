@@ -19,7 +19,6 @@ import {
 } from "react-icons/fi";
 import SidebarTrigger from "~/styled-components/components/modalOverlay/sidebarTrigger";
 import Button from "~/styled-components/components/button";
-import LanguageMenu from "~/styled-components/components/languageMenu";
 
 export const loader = async ({ request }) => {
   const url = new URL(request.url);

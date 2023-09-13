@@ -3,7 +3,6 @@ import { Outlet, useSearchParams } from "@remix-run/react";
 import * as S from '~/styled-components/join'
 import { FiArrowLeft } from "react-icons/fi";
 import Link from "~/styled-components/components/link";
-import { useTranslation } from "react-i18next";
 
 export const handle = {
   i18n: "translation"

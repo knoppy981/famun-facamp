@@ -1,4 +1,3 @@
-import { useState, useEffect, useRef } from 'react'
 import { useActionData, useLoaderData, useSearchParams, useTransition } from '@remix-run/react'
 import { json, redirect } from '@remix-run/node'
 import qs from 'qs'
@@ -13,7 +12,6 @@ import * as S from '~/styled-components/join'
 import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
 import Button from '~/styled-components/components/button';
 import Spinner from '~/styled-components/components/spinner';
-
 import AdvisorData from "~/styled-components/join/user/advisordata"
 import ConfirmData from "~/styled-components/join/user/confirmdata"
 import CreateUser from "~/styled-components/join/user/createuser"
@@ -22,6 +20,7 @@ import Nacionality from "~/styled-components/join/user/nacionality"
 import UserData from "~/styled-components/join/user/userdata"
 import UserType from "~/styled-components/join/user/usertype"
 import TermsAndConditions from '~/styled-components/join/user/termsAndConditions';
+import { FiChevronRight } from 'react-icons/fi';
 
 export const action = async ({ request }) => {
   const text = await request.text()
