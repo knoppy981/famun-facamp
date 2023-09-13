@@ -21,12 +21,36 @@ export const CheckboxGroupLabel = styled.span`
   color: ${props => props.err ? '#d61f0a' : '#000'};
 `
 export const Label = styled.label`
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 1.4rem;
   cursor: pointer;
   color: #000;
+  
+  span {
+    font-size: 1.4rem;
+  }
+
+  ${({ isDisabled }) => isDisabled && `
+    cursor: default;
+
+    * {
+      cursor: default !important;
+      opacity: .6;
+    }
+  `}
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {    
+    span {
+      font-size: 1.8rem;
+    }
+
+    input {
+      -webkit-tap-highlight-color: transparent;
+    }
+	}
 `
 export const Input = styled.input`
   margin-top: 3px;

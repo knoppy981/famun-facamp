@@ -1,13 +1,9 @@
 {
   "title": "Dashboard",
-  "help": "Help",
   "home": "Home",
-  "data": "Subscription Data",
+  "data": "Profile",
   "delegation": "Delegation",
   "payments": "Payments",
   "documents": "Documents",
-  "changeLng": "Change Language",
-  "preferences": "User Preferences",
-  "logOut": "Log out",
-  "return": "Return"
+  "log out": "Log out"
 }

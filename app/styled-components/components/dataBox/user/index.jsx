@@ -18,6 +18,7 @@ const EditUserData = ({
   handleAddLanguage,
   handleRemoveLanguage,
   userType,
+  style
 }) => {
   const [containerRef, isWrapped] = useWrapChange();
 
@@ -27,6 +28,7 @@ const EditUserData = ({
       isWrapped={isWrapped}
       isDisabled={isDisabled}
       key={formData.id}
+      style={style}
     >
       <S.Column>
         <PersonalData

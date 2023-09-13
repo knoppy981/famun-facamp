@@ -71,8 +71,6 @@ const step4 = Joi.object({
 }).xor('cpf', 'passport')
 
 export async function userStepValidation(step, data) {
-  console.log(data)
-  console.log(step)
   switch (step) {
     case 1: {
       return step1.validateAsync(data)

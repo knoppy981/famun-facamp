@@ -9,11 +9,12 @@ import { createPaymentIntent } from '~/stripe.server'
 import { requireDelegationId, requireUser } from "~/session.server"
 import { getRequiredPayments } from "~/models/payments.server"
 
-import * as S from '~/styled-components/pay'
+import * as S from '~/styled-components/pay/completePayment'
 import Spinner from "~/styled-components/components/spinner"
 import Link from "~/styled-components/components/link"
 import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
 import Button from '~/styled-components/components/button';
+import { FiChevronRight } from "react-icons/fi"
 
 const stripePromise = loadStripe("pk_test_51Lwc6CG8QBKHSgkGKn1eEavFX2wS75qcPXAhIf6a1FKhiTb3En4rlawvC5xohEmhIzvWn4C8gw3FcV2N59V7CKll00YmZnlrcw")
 
@@ -27,7 +28,7 @@ export const loader = async ({ request }) => {
   let payments = await getRequiredPayments({ user, delegationId: delegationId })
 
   // with the array of available payments, select the Id for the users that are gonna get their payment paid
-  payments = payments.filter(payment => namesForPayments.includes(payment.name))
+  payments = payments.filter(payment => namesForPayments.includes(payment.name) && payment.available)
   const usersIdsThatWillBePaid = payments
     .filter(payment => payment.available === true)
     .map(payment => payment.id);
@@ -115,13 +116,11 @@ const CompletePayment = () => {
           FAMUN 2023
         </S.Title>
 
-        <S.AuxDiv>
-          <S.ArrowIconBox />
+        <FiChevronRight size={25} />
 
-          <S.SubTitle>
-            Payments
-          </S.SubTitle>
-        </S.AuxDiv>
+        <S.SubTitle>
+          Payments
+        </S.SubTitle>
       </S.TitleBox>
 
       <S.Container>
@@ -184,7 +183,7 @@ function usePaymentsData(payments) {
   const paymentNames = payments
     .map(payment => payment.name);
 
-    return [delegatesPaymentsCount, advisorPaymentsCount, paymentNames]
+  return [delegatesPaymentsCount, advisorPaymentsCount, paymentNames]
 }
 
 export default CompletePayment

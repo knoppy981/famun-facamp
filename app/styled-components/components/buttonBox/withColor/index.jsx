@@ -37,7 +37,7 @@ export const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   padding: 5px 15px;
-  border-radius: 15px;
+  border-radius: 1.5rem;
   gap: 5px;
   color: ${p => getColorStyles(p.color, p.theme).font};
   background: ${p => getColorStyles(p.color, p.theme).background};

@@ -110,7 +110,7 @@ const CreateUser = () => {
                 {buttonIcon} {buttonLabel}
               </Button>
             </ColorButtonBox> :
-            "Somente o líder da delegação e os orientadores podem adicionar participantes manualmente"
+            "Somente os líderes e os orientadores podem adicionar participantes manualmente"
           }
         </S.DataTitle>
       </S.DataTitleBox>
@@ -149,6 +149,7 @@ const CreateUser = () => {
         handleAddLanguage={handleAddLanguage}
         handleRemoveLanguage={handleRemoveLanguage}
         userType={creatingUserType}
+        style={{ pointerEvents: allowCreation ? 'auto' : 'none', opacity: allowCreation ? 1 : 0.5, }}
       />
 
       <AnimatePresence>

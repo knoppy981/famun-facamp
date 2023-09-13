@@ -99,8 +99,6 @@ export async function formatUserData({
 	} else {
 		delegate = {
 			create: {
-				id: undefined,
-				userId: undefined,
 				councilPreference: Object.values(qs.parse(data?.councilPreference))/* .map(function (item) { return item.replace(/ /g, "_")}) */,
 				languagesSimulates: data?.languagesSimulates,
 				emergencyContactName: data.emergencyContactName,

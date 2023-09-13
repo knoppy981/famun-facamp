@@ -36,6 +36,30 @@ export const Item = styled.div`
   border-radius: 5px;
   color: #fff;
   cursor: pointer;
+  transition: all ease .5s;
+
+  ${({ isSelected }) => isSelected && `
+    --_p: #fff;
+    transform: translateX(10px);
+  `}
+
+  &:hover {
+    --_p: #fff; 
+    transform: translateX(10px);
+  }
+
+  &::before {
+    position: absolute;
+    content: '';
+    top: 50%;
+    left: -15px;
+    transform: translateY(-50%);
+    height: 4px;
+    width: 4px;
+    border-radius: 2px;
+    transition: all ease .4s;
+    background: var(--_p, transparent);
+  }
 
   @media screen and (max-width: 700px) {
     font-size: 1.8rem;

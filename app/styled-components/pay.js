@@ -198,7 +198,7 @@ export const PaymentCountList = styled.ul`
   padding: 0 25px;
 `
 export const PaymentsCount = styled.li`
-  height: 30px;
+  height: 3rem;
   gap: 15px;
   font-size: 1.6rem;
 `

@@ -1,8 +1,9 @@
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
-import remixI18n from '~/i18n/i18n.server'
 import { useTranslation } from 'react-i18next'
-import { useEffect } from "react";
+import { useChangeLanguage } from "remix-i18next";
+
+import i18next from '~/i18n/i18n.server'
 
 import { getUser } from "./session.server";
 import { getUserType } from "./models/user.server";
@@ -33,13 +34,12 @@ export const meta = () => ({
 });
 
 export const loader = async ({ request }) => {
-  // const t = await remixI18n.getFixedT(request, 'translation')
-  // const title = t('headTitle')
+  const locale = await i18next.getLocale(request);
   const user = await getUser(request).catch(error => console.log(error))
   return json({
     user,
     userType: await getUserType(user?.id),
-    // title
+    locale,
   });
 };
 
@@ -48,11 +48,17 @@ export const handle = {
 };
 
 export default function App() {
+  // Get the locale from the loader
+  let { locale } = useLoaderData();
 
-  // const { i18n } = useTranslation()
+  let { i18n } = useTranslation();
+
+  React.useEffect(() => { 
+    i18n.changeLanguage(locale); 
+  }, [locale, i18n]); 
 
   return (
-    <html /* lang={i18n.language} */>
+    <html lang={locale} dir={i18n.dir()}>
       <head>
         <Meta />
 
@@ -62,7 +68,7 @@ export default function App() {
       </head>
 
       <body>
-        <LanguageMenu /* i18n={i18n} *//>
+        <LanguageMenu i18n={i18n} />
 
         <Outlet />
 

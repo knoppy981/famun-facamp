@@ -2,11 +2,11 @@ import Backend from 'i18next-fs-backend';
 import { resolve } from 'node:path';
 import { RemixI18Next } from 'remix-i18next';
 import { i18nCookie } from '~/cookies';
-import i18n from './i18nextOptions'; // your i18n configuration file
+import i18n from '.'; // your i18n configuration file
 
 let i18next = new RemixI18Next({
   detection: {
-    cookie: i18nCookie,
+    /* cookie: i18nCookie, */
     supportedLanguages: i18n.supportedLngs,
     fallbackLanguage: i18n.fallbackLng,
   },
@@ -21,7 +21,7 @@ let i18next = new RemixI18Next({
   // The backend you want to use to load the translations
   // Tip: You could pass `resources` to the `i18next` configuration and avoid
   // a backend here
-  backend: Backend,
+  plugins: [Backend],
 });
 
 export default i18next;

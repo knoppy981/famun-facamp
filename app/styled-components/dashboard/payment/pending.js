@@ -28,6 +28,10 @@ export const TableRow = styled.tr`
   td {
     font-weight: ${p => p.example ? 500 : 400};
   }
+
+  @media screen and (max-width: 700px) {
+    height: 5rem;
+  }
 `
 export const TableCell = styled.td`
   padding: 0 15px;

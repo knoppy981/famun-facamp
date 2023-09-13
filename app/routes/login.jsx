@@ -1,16 +1,13 @@
-import { useState, useRef } from 'react'
-import { useActionData, useSearchParams, useTransition, useFetcher, Form } from '@remix-run/react'
+import { useSearchParams, useFetcher } from '@remix-run/react'
 import { json, redirect } from '@remix-run/node';
 import { useTranslation } from 'react-i18next'
-import qs from 'qs'
 
 import { getUserId, createUserSession } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
-import { safeRedirect } from "~/utils";
-import { i18nCookie } from '~/cookies';
+import { getCorrectErrorMessage, safeRedirect } from "~/utils";
+import { loginSchema } from '~/schemas/login';
 
 import * as S from '~/styled-components/login'
-import LanguageMenu from '~/styled-components/components/dropdown/languageMenu';
 import Spinner from '~/styled-components/components/spinner';
 import DefaultInputBox from '~/styled-components/components/inputBox/default';
 import TextField from '~/styled-components/components/textField';
@@ -27,17 +24,12 @@ export const action = async ({ request }) => {
   const remember = formData.get("remember");
 
   try {
+    await loginSchema.validateAsync({ email, password })
   } catch (error) {
-    error = qs.parse(error.message)
+    console.dir(error, { depth: null })
+    const [label, msg] = getCorrectErrorMessage(error)
     return json(
-      { errors: { [error.key]: error.msg } },
-      { status: 400 }
-    );
-  }
-
-  if (typeof password !== "string" || password.length === 0) {
-    return json(
-      { errors: { password: "Password is required" } },
+      { errors: { [label]: msg } },
       { status: 400 }
     );
   }
@@ -72,7 +64,7 @@ export const handle = {
 
 const LoginPage = () => {
 
-  /* const { t, i18n } = useTranslation("login") */
+  const { t } = useTranslation("login")
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/dashboard/home";
@@ -91,27 +83,29 @@ const LoginPage = () => {
           <S.FormContainer>
             <DefaultInputBox>
               <TextField
-                label="e-mail"
+                label={t("email")}
                 name="email"
                 type="email"
                 err={actionData?.errors?.email}
+                action={actionData}
               />
             </DefaultInputBox>
 
             <DefaultInputBox>
               <TextField
-                label="password"
+                label={t("password")}
                 name="password"
                 type="password"
                 defaultValue={null}
                 err={actionData?.errors?.password}
+                action={actionData}
               />
             </DefaultInputBox>
 
             <Checkbox
               name="rememeber"
             >
-              Remember me
+              {t("remember")}
             </Checkbox>
 
             <S.LinkBox>
@@ -119,7 +113,7 @@ const LoginPage = () => {
                 to=/* "/resetPassword" */ "/"
                 underline={1}
               >
-                Forgot Password?
+                {t("forgotPassword")}
               </Link>
             </S.LinkBox>
 
@@ -131,7 +125,7 @@ const LoginPage = () => {
                   type="submit"
                   disabled={transition !== "idle"}
                 >
-                  Log in {transition !== 'idle' && <Spinner dim={18} />}
+                  {t("login")} {transition !== 'idle' && <Spinner dim={18} />}
                 </Button>
               </DefaultButtonBox>
             </S.ButtonContainer>
@@ -139,7 +133,7 @@ const LoginPage = () => {
         </fetcher.Form>
 
         <S.LinkBox center={true}>
-          Don't have an account?
+          {t("acc")}
           <Link
             to={{
               pathname: "/join/user",
@@ -147,7 +141,7 @@ const LoginPage = () => {
             }}
             underline={1}
           >
-            Sign in
+            {t("join")}
           </Link>
         </S.LinkBox>
       </S.Container >

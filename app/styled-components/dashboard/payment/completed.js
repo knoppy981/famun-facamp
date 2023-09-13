@@ -37,6 +37,10 @@ export const TableCell = styled.td`
   ${({ user }) => user && `
     border-left: 2px solid ${azulCeu};
   `}
+
+  @media screen and (max-width: 700px) {
+    height: 5rem;
+  }
 `
 export const CellFlexBox = styled.div`
   display: flex;

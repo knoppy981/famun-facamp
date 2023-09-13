@@ -4,7 +4,7 @@ import { json, redirect } from '@remix-run/node'
 import qs from 'qs'
 
 import { sessionStorage, getSession, createUserSession, getUserId, logout } from "~/session.server";
-import { safeRedirect } from "~/utils";
+import { getCorrectErrorMessage, safeRedirect } from "~/utils";
 import { createUser, formatUserData, getExistingUser } from '~/models/user.server';
 import { userStepValidation } from '~/schemas/steps/user';
 import { prismaUserSchema } from '~/schemas';
@@ -40,8 +40,9 @@ export const action = async ({ request }) => {
         document: { is: { value: data.cpf ?? data.passport ?? "" } }
       })
     } catch (error) {
+      const [label, msg] = getCorrectErrorMessage(error)
       return json(
-        { errors: { [error.details[0].context.key]: error.details[0].message } },
+        { errors: { [label]: msg } },
         { status: 400 }
       );
     }
@@ -56,7 +57,11 @@ export const action = async ({ request }) => {
         ...session.get("user-type"),
       }
 
-      userData = await formatUserData(userData)
+      userData = await formatUserData({
+        data: userData,
+        childrenModification: "create",
+        userType: userData.userType
+      })
 
       let user
 
@@ -64,6 +69,7 @@ export const action = async ({ request }) => {
         await prismaUserSchema.validateAsync(userData)
         user = await createUser(userData)
       } catch (e) {
+        console.dir(e, { depth: null })
         return json(
           { errors: e },
           { status: 400 }

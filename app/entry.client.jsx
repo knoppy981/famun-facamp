@@ -5,16 +5,16 @@ import { I18nextProvider, initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import Backend from 'i18next-http-backend'
 import { getInitialNamespaces } from 'remix-i18next'
-import i18nextOptions from './i18n/i18nextOptions'
+import i18n from './i18n'
 
-/* // initialize i18next using initReactI18next and configuring it
+// initialize i18next using initReactI18next and configuring it
 if (!i18next.isInitialized) // prevent i18next to be initialized multiple times
   i18next
     .use(initReactI18next) // Tell i18next to use the react-i18next plugin
     .use(LanguageDetector) // Setup a client-side language detector
     .use(Backend) // Setup your backend
     .init({
-      ...i18nextOptions,
+      ...i18n,
       backend: { loadPath: '/locales/{{lng}}/{{ns}}.json' },
       // This function detects the namespaces your routes rendered while SSR use
       // and pass them here to load the translations
@@ -36,6 +36,6 @@ if (!i18next.isInitialized) // prevent i18next to be initialized multiple times
           <RemixBrowser />
         </I18nextProvider>,
       )
-    }) */
+    })
 
-hydrateRoot(document, <RemixBrowser />);
+/* hydrateRoot(document, <RemixBrowser />); */

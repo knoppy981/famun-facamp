@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from '@remix-run/react'
+import { useLoaderData } from '@remix-run/react'
 import { json } from '@remix-run/node'
 
 import { useUser } from '~/utils'
@@ -6,6 +6,8 @@ import { getDelegationId, requireUser } from '~/session.server'
 import { getRequiredPayments, getUserPayments } from '~/models/payments.server'
 
 import * as S from '~/styled-components/dashboard/home'
+import ColorButtonBox from '~/styled-components/components/buttonBox/withColor'
+import Link from "~/styled-components/components/link";
 
 export const loader = async ({ request }) => {
   const delegationId = await getDelegationId(request)
@@ -27,65 +29,53 @@ const home = () => {
   return (
     <S.Wrapper>
       <S.Title>
-        Inscrição <S.Item color={completed() ? 'green' : 'red'}> {completed() ? "Concluída" : "Incompleta"} </S.Item>
+        Inscrição
+        <ColorButtonBox color={completed() ? 'green' : 'red'}> {completed() ? "Concluída" : "Incompleta"} </ColorButtonBox>
       </S.Title>
 
       <S.Container>
-        <S.Grid>
-          <S.GridItem first={1} to={delegationId ? '/dashboard/delegation' : "/join/delegation"}>
-            <S.GridItemTitle>
+        <Link to={delegationId ? '/dashboard/delegation' : "/join/delegation"}>
+          <S.Item first={1}>
+            <S.ItemTitle>
               Delegação
-            </S.GridItemTitle>
+            </S.ItemTitle>
 
-            <S.GridList>
-              <S.GridListItem>
-                Entrar para uma delegação
-              </S.GridListItem>
+            Entrar para uma delegação
 
-              <S.GridListItem>
-                <S.Item color={delegationId ? 'green' : 'red'}>
-                  {delegationId ? 'Concluído' : 'Entrar'}
-                </S.Item>
-              </S.GridListItem>
-            </S.GridList>
-          </S.GridItem>
+            <ColorButtonBox color={delegationId ? 'green' : 'red'}>
+              {delegationId ? 'Concluído' : 'Entrar'}
+            </ColorButtonBox>
+          </S.Item>
+        </Link>
 
-          <S.GridItem to="/dashboard/payment">
-            <S.GridItemTitle>
+        <Link to="/dashboard/payment">
+          <S.Item>
+            <S.ItemTitle>
               Pagamentos
-            </S.GridItemTitle>
+            </S.ItemTitle>
 
-            <S.GridList>
-              <S.GridListItem>
-                Pagar taxa de Inscrição
-              </S.GridListItem>
+            Pagar taxa de Inscrição
 
-              <S.GridListItem>
-                <S.Item color={paymentSucceed ? 'green' : 'blue'}>
-                  {paymentSucceed ? 'Concluído' : 'Pendente'}
-                </S.Item>
-              </S.GridListItem>
-            </S.GridList>
-          </S.GridItem>
+            <ColorButtonBox color={paymentSucceed ? 'green' : 'blue'}>
+              {paymentSucceed ? 'Concluído' : 'Pendente'}
+            </ColorButtonBox>
+          </S.Item>
+        </Link>
 
-          <S.GridItem to="/dashboard/documents">
-            <S.GridItemTitle>
+        <Link to="/dashboard/documents">
+          <S.Item>
+            <S.ItemTitle>
               Documentos
-            </S.GridItemTitle>
+            </S.ItemTitle>
 
-            <S.GridList>
-              <S.GridListItem>
-                Comprovante de Vacinação
-              </S.GridListItem>
+            Comprovante de Vacinação
 
-              <S.GridListItem>
-                <S.Item color={document ? 'green' : 'blue'}>
-                  {document ? 'Concluído' : 'Pendente'}
-                </S.Item>
-              </S.GridListItem>
-            </S.GridList>
-          </S.GridItem>
-        </S.Grid>
+            <ColorButtonBox color={document ? 'green' : 'blue'}>
+              {document ? 'Concluído' : 'Pendente'}
+            </ColorButtonBox>
+          </S.Item>
+        </Link>
+
       </S.Container>
 
       {/* <S.Title>

@@ -1,41 +1,25 @@
-import { useEffect, useRef, useState } from "react";
 import { json, redirect } from "@remix-run/node";
-import { Form, NavLink, Outlet, useFetcher, useLocation } from "@remix-run/react";
+import { Form, NavLink, Outlet } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
-import { AnimatePresence, motion } from "framer-motion";
 
 import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
 
 import * as S from '~/styled-components/dashboard'
-import * as D from '~/styled-components/components/dropdown/elements'
 import {
   FiMenu,
-  FiShoppingBag,
-  FiGlobe,
   FiLogOut,
   FiUser,
-  FiUsers,
   FiCreditCard,
-  FiBookmark,
-  FiSettings,
-  FiArchive,
-  FiEdit,
   FiFlag,
   FiHome,
-  FiHelpCircle,
   FiFile,
-  FiArrowLeft,
+  FiEdit,
   FiX,
 } from "react-icons/fi";
-
-import { useClickOutside } from "~/hooks/useClickOutside";
-import LanguageMenu from "~/styled-components/components/dropdown/languageMenu";
-import ModalTrigger from "~/styled-components/components/modalOverlay/modalTrigger";
-import Dialog from "~/styled-components/components/dialog";
-import Sidebar from "~/styled-components/components/modalOverlay/sidebar";
 import SidebarTrigger from "~/styled-components/components/modalOverlay/sidebarTrigger";
 import Button from "~/styled-components/components/button";
+import LanguageMenu from "~/styled-components/components/languageMenu";
 
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
@@ -50,19 +34,17 @@ export const handle = {
   i18n: "dashboard"
 };
 
-const menuItems = [
-  { name: "Home", to: "home", icon: <FiHome />, prefetch: "none" },
-  { name: "Profile", to: "data", icon: <FiEdit />, prefetch: "render" },
-  { name: "Delegation", to: "delegation", icon: <FiFlag />, prefetch: "render" },
-  { name: "Payments", to: "payment", icon: <FiCreditCard />, prefetch: "render" },
-  { name: "Documents", to: "documents", icon: <FiFile />, prefetch: "none" },
-]
-
 const Dashboard = () => {
 
   const user = useUser()
-
-  /* const { t, i18n } = useTranslation("dashboard") */
+  const { t } = useTranslation("dashboard")
+  const menuItems = [
+    { name: t("home"), to: "home", icon: <FiHome />, prefetch: "none" },
+    { name: t("data"), to: "data", icon: <FiEdit />, prefetch: "render" },
+    { name: t("delegation"), to: "delegation", icon: <FiFlag />, prefetch: "render" },
+    { name: t("payments"), to: "payment", icon: <FiCreditCard />, prefetch: "render" },
+    { name: t("documents"), to: "documents", icon: <FiFile />, prefetch: "none" },
+  ]
 
   return (
     <S.Wrapper>
@@ -94,7 +76,7 @@ const Dashboard = () => {
             <Button type='submit'>
               <S.NavItem>
                 <FiLogOut />
-                Log out
+                {t("log out")}
               </S.NavItem>
             </Button>
           </Form>
@@ -138,7 +120,8 @@ const Dashboard = () => {
                     Log out
                   </Button>
                 </Form>
-              </S.AsideContainer>}
+              </S.AsideContainer>
+            }
           </SidebarTrigger>
         </S.DisappearOnWidth>
       </S.Navbar>

@@ -43,7 +43,6 @@ export const Menu = styled.div`
 
   @media screen and (max-width: 700px) {
     position: sticky;
-    margin: 0 0 15px 0;
     padding: 10px 0 10px 15px;
     overflow-x: scroll;
     overflow-y: hidden;

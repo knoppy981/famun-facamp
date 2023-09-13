@@ -82,15 +82,17 @@ const DelegationData = () => {
 
   return (
     <S.DataForm method="post">
-      <S.DataTitleBox style={{ marginTop: 0 }}>
-        <S.DataTitle ref={buttonRef}>
-          <ColorButtonBox color={buttonColor}>
-            <Button onPress={handleSubmission}>
-              {buttonIcon} {buttonLabel}
-            </Button>
-          </ColorButtonBox>
-        </S.DataTitle>
-      </S.DataTitleBox>
+      {allowChanges &&
+        <S.DataTitleBox style={{ marginTop: 0 }}>
+          <S.DataTitle ref={buttonRef}>
+            <ColorButtonBox color={buttonColor}>
+              <Button onPress={handleSubmission} isDisabled={!allowChanges}>
+                {buttonIcon} {buttonLabel}
+              </Button>
+            </ColorButtonBox>
+          </S.DataTitle>
+        </S.DataTitleBox>
+      }
 
       <EditDelegationData
         isDisabled={!userWantsToChangeData}
@@ -126,7 +128,7 @@ const DelegationData = () => {
       />
 
       <AnimatePresence>
-        {!isRefVisible && (
+        {allowChanges && !isRefVisible && (
           <S.StickyButton
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -189,7 +191,7 @@ function useDelegationUpdate(delegation, fetcher) {
 function useButtonState(userWantsToChangeData, readySubmission, transition, allowChanges) {
   const [buttonLabel, setButtonLabel] = React.useState("Editar Dados")
   const [buttonIcon, setButtonIcon] = React.useState(<FiEdit />)
-  const [buttonColor, setButtonColor] = React.useState("blue")
+  const [buttonColor, setButtonColor] = React.useState("gray")
 
   React.useEffect(() => {
     setButtonLabel(transition !== 'idle' ?

@@ -68,8 +68,6 @@ const step3 = Joi.object({
 })
 
 export async function delegationStepValidation(step, data) {
-  console.log(data)
-  console.log(step)
   switch (step) {
     case 1: {
       return step1.validateAsync(data)

@@ -2,6 +2,7 @@
   "title": "Login",
   "email": "Email",
   "password": "Contraseña",
+  "remember": "Recuardáme",
   "forgotPassword": "Olvido la contraseña?",
   "login": "Acceso",
   "acc": "No estas registrado?",

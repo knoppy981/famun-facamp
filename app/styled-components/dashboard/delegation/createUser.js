@@ -33,8 +33,8 @@ export const DataTitleBox = styled.div`
   }
 `
 export const DataTitle = styled.div`
-  font-size: 1.6rem;
-  font-weight: 500;
+  font-size: 1.5rem;
+  font-weight: 400;
 
   @media screen and (max-width: 700px) {
     font-size: 1.8rem;

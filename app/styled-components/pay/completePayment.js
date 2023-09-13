@@ -13,31 +13,150 @@ const verdeBackground = "#EBFDEE"
 const begeClaro = "#d57748"
 const begeBackground = "#FFEFE1"
 
-export const Wrapper = styled.div`
-  display: grid;
-  gap: 15px;
-  padding: 5px;
+export const PaymentWrapper = styled.div`
+  min-height: 70svh;
+  margin: 15vh 0;
+ 	width: 600px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 40px;
+  
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    gap: 20px;
+    margin: 100px 0 50px;
+    width: 100vw;
+    padding: 0 15px;
+	}
 `
-export const Title = styled.h3`
-  font-size: 1.8rem;
-  color: #000;
-  width: 426px;
+export const TitleBox = styled.div`
+  display: flex;
+  align-items: center;
+  height: 40px;
+  width: 400px;
+  
+  @media screen and (max-width: 800px) {
+    height: auto;
+  }
+
+  @media screen and (max-width: 500px) {
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    width: auto;
+    margin-left: 0;
+    margin-right: auto;
+
+    svg {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 350px) {
+    height: auto;
+    width: 100vw;
+  }
 `
-export const PaymentList = styled.ul`
-  list-style-type: disc;
-  padding: 0 15px;
-`
-export const PaymentsCount = styled.li`
-  height: 30px;
-  gap: 15px;
-  font-size: 1.4rem;
-`
-export const Price = styled.div`
+export const Title = styled.div`
   font-size: 3.6rem;
   font-weight: 900;
-  margin-left: 10px;
+  color: #183567;
+  margin-right: 5px;
+
+  @media screen and (max-width: 800px) {
+    font-size: 4.2rem;
+  }
+
+  @media screen and (max-width: 500px) {
+    font-size: 4.8rem;
+  }
+
+  @media screen and (max-width: 350px) {
+    font-size: 3rem;
+  }
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    display: none;
+	}
+`
+export const SubTitle = styled.div`
+  font-size: 2.4rem;
+  font-weight: 500;
+  color: #000;
+  transform: translate(0, 1px);
+
+  @media screen and (max-width: 800px) {
+    font-size: 2.8rem;
+  }
+
+  @media screen and (max-width: 500px) {
+    font-size: 3.2rem;
+  }
+
+  @media screen and (max-width: 350px) {
+    font-size: 3rem;
+  }
+`
+export const Container = styled.div`
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+
+  @media screen and (max-width: 500px) {
+    width: 100%;
+  }
+`
+export const PageTitle = styled.h3`
+  width: 400px;
+  font-size: 1.6rem;
+  color: #000;
+
+  @media screen and (max-width: 500px) {
+    width: 100%;
+  }
+`
+export const PaymentCountList = styled.ul`
+  width: 100%;
+  list-style-type: disc;
+  padding: 0 25px;
+`
+export const PaymentsCount = styled.li`
+  height: 3rem;
+  gap: 15px;
+  font-size: 1.6rem;
+`
+export const StripeElementsWrapper = styled.div`
+  display: grid;
+  gap: 40px;
+  width: 100%;
+`
+export const ButtonWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  place-items: stretch;
+  margin-top: 10px;
+  `
+export const LinkContainer = styled.div`
+  place-self: center;
+  font-size: 1.4rem;
+`
+export const ButtonContainer = styled.div`
+  gap: 15px;
+  min-width: 150px;
+`
+export const Price = styled.div`
+  width: 400px;
+  margin: auto 0 0;
+  font-size: 3.6rem;
+  font-weight: 900;
   color: ${azulEscuro};
-  min-width: 426px;
+
+  @media screen and (max-width: 500px) and (min-height: 700px) {
+    width: 100%;
+  }
 `
 export const PayButtonContainer = styled.div`
   display: grid;

@@ -1,5 +1,8 @@
-import { useCheckboxGroupState, useToggleState } from 'react-stately';
+import { useCheckboxGroupState, } from 'react-stately';
 import { useCheckboxGroup, useCheckboxGroupItem } from 'react-aria';
+import { useTooltipTriggerState } from 'react-stately';
+import { mergeProps, useTooltipTrigger } from 'react-aria';
+import Tooltip from '../tooltip';
 
 import * as S from "./elements"
 
@@ -11,16 +14,27 @@ export const Checkbox = (props) => {
   let ref = React.useRef(null);
   let { inputProps } = useCheckboxGroupItem(props, state, ref);
 
+  let tooltipState = useTooltipTriggerState(props);
+  let tooltipRef = React.useRef(null);
+  let { triggerProps, tooltipProps } = useTooltipTrigger({}, tooltipState, tooltipRef);
+
   let isDisabled = state.isDisabled || props.isDisabled;
   let isSelected = state.isSelected(props.value);
 
   return (
     <S.Label
+      ref={tooltipRef}
+      {...triggerProps}
       isDisabled={isDisabled}
       isSelected={isSelected}
     >
       <S.Input {...inputProps} ref={ref} />
+
       {children}
+
+      {props.tooltip && isDisabled && tooltipState.isOpen && (
+        <Tooltip state={tooltipState} {...tooltipProps}>{props.tooltip}</Tooltip>
+      )}
     </S.Label>
   );
 }

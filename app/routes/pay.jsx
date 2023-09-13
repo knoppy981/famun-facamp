@@ -10,18 +10,11 @@ import { getRequiredPayments } from '~/models/payments.server'
 import { useUser } from '~/utils'
 
 import * as S from "~/styled-components/pay"
-import LanguageMenu from '~/styled-components/components/dropdown/languageMenu'
 import { FiArrowLeft} from 'react-icons/fi'
 import Link from '~/styled-components/components/link'
-/* import { useTranslation } from 'react-i18next' */
-
-/* export const handle = {
-  i18n: "translation"
-}; */
+import LanguageMenu from '~/styled-components/components/languageMenu'
 
 const Pay = () => {
-  /* const { t, i18n } = useTranslation("translation") */
-
   return (
     <S.Wrapper>
       <S.GoBackLinkWrapper>

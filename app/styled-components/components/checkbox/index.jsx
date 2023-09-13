@@ -9,10 +9,19 @@ const Checkbox = (props) => {
   let ref = React.useRef(null);
   let { inputProps } = useCheckbox(props, state, ref);
 
+  let isDisabled = state.isDisabled || props.isDisabled;
+  let isSelected = state.isSelected && !props.isIndeterminate;
+
   return (
-    <S.Label>
+    <S.Label
+      isDisabled={isDisabled}
+      isSelected={isSelected}
+    >
       <S.Input {...inputProps} ref={ref} />
-      {children}
+
+      <span>
+        {children}
+      </span>
     </S.Label>
   );
 }

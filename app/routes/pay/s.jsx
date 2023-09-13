@@ -6,12 +6,13 @@ import { requireUser, requireDelegationId } from '~/session.server'
 import { ensureStripeCostumer } from '~/models/user.server'
 import { getRequiredPayments } from '~/models/payments.server'
 
-import * as S from '~/styled-components/pay'
+import * as S from '~/styled-components/pay/selectPayments'
 import Spinner from '~/styled-components/components/spinner'
 import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
 import Button from '~/styled-components/components/button';
 import { CheckboxGroup, Checkbox } from '~/styled-components/components/checkbox/checkboxGroup'
 import ColorButtonBox from '~/styled-components/components/buttonBox/withColor'
+import { FiAlertTriangle, FiChevronRight } from 'react-icons/fi'
 
 export const loader = async ({ request }) => {
   const user = await requireUser(request)
@@ -31,6 +32,8 @@ const SelectPayments = () => {
   const transition = useTransition()
   const [selectedPaymentsNames, setSelectedPaymentsNames, price, isButtonDisabled] = useSelectPayments(payments)
 
+  console.log(payments)
+
   return (
     <Form action="/pay/c" method="get">
       <S.PaymentWrapper>
@@ -39,13 +42,11 @@ const SelectPayments = () => {
             FAMUN 2023
           </S.Title>
 
-          <S.AuxDiv>
-            <S.ArrowIconBox />
+          <FiChevronRight size={25} />
 
-            <S.SubTitle>
-              Payments
-            </S.SubTitle>
-          </S.AuxDiv>
+          <S.SubTitle>
+            Payments
+          </S.SubTitle>
         </S.TitleBox>
 
         <S.PageTitle>
@@ -66,10 +67,12 @@ const SelectPayments = () => {
                 <Checkbox
                   key={index}
                   value={item.name}
+                  isDisabled={!item.available}
+                  tooltip="Somente líderes e orientadores podem realizar pagamentos de outros participantes"
                 >
-                  <S.OvrflowText>
+                  <S.OverflowText>
                     Taxa de inscrição de {item.name}
-                  </S.OvrflowText>
+                  </S.OverflowText>
 
                   <S.RightContainer>
                     <ColorButtonBox color={item.available ? 'green' : 'red'} >
@@ -98,8 +101,14 @@ const SelectPayments = () => {
 
 function useSelectPayments(payments) {
   const [searchParams] = useSearchParams();
+  function getNamesWithAvailablePayments(names) {
+    return names.filter(name => {
+      return payments.some(p => p.name === name && p.available);
+    });
+  }
 
-  const [selectedPaymentsNames, setSelectedPaymentsNames] = useState(searchParams.getAll("s"))
+  const [selectedPaymentsNames, setSelectedPaymentsNames] = useState(
+    getNamesWithAvailablePayments(searchParams.getAll('s')))
   const [price, setPrice] = useState(0)
   const [isButtonDisabled, setIsButtonDisabled] = useState(false)
 

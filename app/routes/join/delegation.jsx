@@ -5,7 +5,7 @@ import qs from "qs"
 
 import { createUserSession, sessionStorage, getSession, requireUserId } from "~/session.server";
 import { joinDelegation, createDelegation, generateDelegationInviteLink, formatDelegationData, getExistingDelegation } from "~/models/delegation.server";
-import { safeRedirect, generateString } from "~/utils";
+import { safeRedirect, generateString, getCorrectErrorMessage } from "~/utils";
 import { delegationStepValidation, delegationSchema } from "~/schemas";
 
 import * as S from '~/styled-components/join'
@@ -58,8 +58,9 @@ export const action = async ({ request }) => {
       })
     } catch (error) {
       console.dir(error, { depth: null })
+      const [label, msg] = getCorrectErrorMessage(error)
       return json(
-        { errors: { [error.details[0].context.key]: error.details[0].message } },
+        { errors: { [label]: msg } },
         { status: 400 }
       );
     }
@@ -74,7 +75,7 @@ export const action = async ({ request }) => {
         code: generateString(6),
       }
 
-      delegationData = await formatDelegationData({data: delegationData})
+      delegationData = await formatDelegationData({ data: delegationData })
       console.dir(delegationData, { depth: null })
       let delegation
 
