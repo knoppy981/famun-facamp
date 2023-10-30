@@ -53,6 +53,7 @@ export function ComboBox(props) {
           {...inputProps}
           ref={inputRef}
         />
+        <S.Border />
 
         {!props.isDisabled &&
           <Button

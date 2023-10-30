@@ -66,8 +66,12 @@ const DelegateData = ({ data, actionData }) => {
         </S.Container>
 
         <S.Container>
+          <S.ContainerTitle>
+            Idiomas que pode simular
+          </S.ContainerTitle>
+
           <CheckboxGroup
-            label="Idiomas que pode simular"
+            aria-label="Idiomas que pode simular"
             name="languagesSimulates"
             defaultValue={data.languagesSimulates}
             err={actionData?.errors.languagesSimulates}

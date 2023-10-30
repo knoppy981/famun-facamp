@@ -6,6 +6,7 @@ import * as S from "./elements"
 
 const DateField = (props) => {
   let { locale } = useLocale();
+  const { setIsFocused } = props
   let state = useDateFieldState({
     ...props,
     locale,
@@ -20,7 +21,7 @@ const DateField = (props) => {
       <span {...labelProps}>{props.label}</span>
       <S.Container {...fieldProps} ref={ref} className="field">
         {state.segments.map((segment, i) => (
-          <DateSegment key={i} segment={segment} state={state} />
+          <DateSegment key={i} segment={segment} state={state} setIsFocused={setIsFocused}/>
         ))}
         {state.validationState === 'invalid' &&
           <span aria-hidden="true">🚫</span>}
@@ -29,7 +30,7 @@ const DateField = (props) => {
   );
 }
 
-const DateSegment = ({ segment, state }) => {
+const DateSegment = ({ segment, state, setIsFocused }) => {
   let ref = React.useRef(null);
   let { segmentProps } = useDateSegment(segment, state, ref);
 
@@ -38,6 +39,8 @@ const DateSegment = ({ segment, state }) => {
       {...segmentProps}
       ref={ref}
       isPlaceholder={segment.isPlaceholder}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
     >
       {segment.text}
     </S.DataSegment>

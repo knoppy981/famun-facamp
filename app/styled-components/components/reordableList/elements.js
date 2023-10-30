@@ -52,7 +52,7 @@ export const StyledOption = styled.li`
     border-color: ${azulCeu};
   }
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     font-size: 1.6rem;
     height: 4.8rem
 	}

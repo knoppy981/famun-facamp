@@ -50,7 +50,7 @@ export const InputWrapper = styled.div`
     font-size: 1.4rem;
     border-radius: 5px;
     padding: 0 5px;
-    @media screen and (max-width: 500px) and (min-height: 700px) {
+    @media screen and (max-width: 700px) {
       height: 4rem;
       font-size: 1.6rem;
 	  }

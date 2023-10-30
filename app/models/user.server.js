@@ -70,10 +70,11 @@ export async function getExistingUser({ userId, ...values }) {
 	throw new ValidationError(errorMsg, errorDetails)
 }
 
-export async function updateUser({ userId, values }) {
+export async function updateUser({ email, userId, values }) {
 	return prisma.user.update({
 		where: {
-			id: userId
+			id: userId,
+			email: email,
 		},
 		data: values,
 		include: {
@@ -237,4 +238,60 @@ export async function getUserType(userId) {
 	})
 
 	return user.delegate ? "delegate" : "advisor"
+}
+
+export async function updateConfirmationCode(email, code, minutesToExpire) {
+	const expirationTime = new Date()
+	expirationTime.setMinutes(expirationTime.getMinutes() + minutesToExpire)
+
+	let user = await prisma.user.update({
+		where: {
+			email: email
+		},
+		data: {
+			confirmationCode: {
+				set: {
+					code: code,
+					expiresAt: expirationTime
+				}
+			}
+		}
+	})
+
+	return user
+}
+
+export async function unsetConfirmationCode(email) {
+	let user = await prisma.user.update({
+		where: {
+			email
+		},
+		data: {
+			confirmationCode: {
+				unset: true
+			}
+		}
+	})
+
+	return user
+}
+
+export async function getConfirmationCode(email) {
+	let user = await prisma.user.findFirstOrThrow({
+		where: {
+			email: email
+		},
+		select: {
+			confirmationCode: {
+				select: {
+					code: true,
+					expiresAt: true,
+				}
+			}
+		}
+	})
+
+	if (!user.confirmationCode) throw new Error("Invalid code")
+
+	return user
 }

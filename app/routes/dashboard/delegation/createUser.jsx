@@ -54,7 +54,7 @@ export const action = async ({ request }) => {
     );
   }
 
-  return json({user})
+  return json({ user })
 }
 
 const CreateUser = () => {
@@ -231,7 +231,7 @@ function useUserCreation(user, userType, fetcher, delegatesCount) {
     setAllowCreation(() => {
       if (creatingUserType === "delegate" && delegatesCount > 10) {
         return false
-      } else if (userType === "delegationAdvisor" || user.leader) {
+      } else if (userType === "advisor" || user.leader) {
         return true
       } else {
         return false

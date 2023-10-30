@@ -30,6 +30,25 @@ export const Title = styled.div`
   color: ${azulEscuro};
   margin-right: 5px;
 `
+export const Subtitle = styled.h2`
+  gap: 10px;
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+export const ErrorBox = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  @media screen and (max-width: 700px) {
+    padding: 0 15px;
+  }
+`
 export const Message = styled.div`
   display: flex;
   gap: 15px;

@@ -22,7 +22,7 @@ export const PaymentWrapper = styled.div`
   flex-direction: column;
   gap: 40px;
   
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     gap: 20px;
     margin: 100px 0 50px;
     width: 100vw;
@@ -75,7 +75,7 @@ export const Title = styled.div`
     font-size: 3rem;
   }
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     display: none;
 	}
 `
@@ -154,7 +154,7 @@ export const Price = styled.div`
   font-weight: 900;
   color: ${azulEscuro};
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     width: 100%;
   }
 `

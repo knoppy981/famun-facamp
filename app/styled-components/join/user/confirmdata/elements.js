@@ -17,7 +17,7 @@ export const List = styled.div`
   margin-top: 20px;
   gap: 10px 40px;
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     margin: 20px 15px 0;
@@ -35,4 +35,8 @@ export const Item = styled.div`
 export const Label = styled.div`
   font-size: 1.2rem;
   color: #666666;
+
+  @media screen and (max-width: 700px) {
+    font-size: 1.5rem;
+	}
 `

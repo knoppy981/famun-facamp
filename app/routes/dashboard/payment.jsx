@@ -78,10 +78,10 @@ export function CatchBoundary() {
 
   if (caught.data.errors.delegation === "No delegation found") {
     return (
-      <S.Wrapper>
-        <S.Title>
+      <E.ErrorBox>
+        <E.Subtitle>
           Delegação
-        </S.Title>
+        </E.Subtitle>
 
         <E.Message>
           Para realizar os pagamentos é necessário entrar em uma delegação
@@ -90,8 +90,7 @@ export function CatchBoundary() {
             Entrar em uma delegação
           </E.GoBacklink>
         </E.Message>
-
-      </S.Wrapper>
+      </E.ErrorBox>
     );
   }
 
@@ -101,15 +100,15 @@ export function CatchBoundary() {
 export function ErrorBoundary({ error }) {
   if (error instanceof Error) {
     return (
-      <S.Wrapper>
-        <S.Title>
+      <E.ErrorBox>
+        <E.Subtitle>
           Unknown error
-        </S.Title>
+        </E.Subtitle>
 
         <E.Message>
           {error.message} <E.GoBacklink to='/'>Voltar para página inicial</E.GoBacklink>
         </E.Message>
-      </S.Wrapper>
+      </E.ErrorBox>
     );
   }
   return <E.Message>Oops, algo deu errado!</E.Message>;

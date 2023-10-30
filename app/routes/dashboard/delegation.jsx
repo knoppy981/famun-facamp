@@ -142,12 +142,12 @@ export function CatchBoundary() {
 
   if (caught.data.errors.delegation === "No delegation found") {
     return (
-      <S.Wrapper>
-        <S.Title>
+      <E.ErrorBox>
+        <E.Subtitle>
           Delegação
-        </S.Title>
+        </E.Subtitle>
 
-        <E.Message style={{ marginTop: '25px' }}>
+        <E.Message>
           Parece que você ainda nao entrou para uma delegação
 
           <E.GoBacklink to={`/join/delegation?${new URLSearchParams([["redirectTo", safeRedirect(matches[1].pathname)]])}`}>
@@ -155,7 +155,7 @@ export function CatchBoundary() {
           </E.GoBacklink>
         </E.Message>
 
-      </S.Wrapper>
+      </E.ErrorBox>
     );
   }
 
@@ -165,15 +165,15 @@ export function CatchBoundary() {
 export function ErrorBoundary({ error }) {
   if (error instanceof Error) {
     return (
-      <S.Wrapper>
-        <S.Title>
+      <E.ErrorBox>
+        <E.Subtitle>
           Unknown error
-        </S.Title>
+        </E.Subtitle>
 
         <E.Message>
           {error.message} <E.GoBacklink to='/'>Voltar para página inicial</E.GoBacklink>
         </E.Message>
-      </S.Wrapper>
+      </E.ErrorBox>
     );
   }
   return <E.Message>Oops, algo deu errado!</E.Message>;

@@ -42,7 +42,7 @@ export const Label = styled.label`
     }
   `}
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {    
+  @media screen and (max-width: 700px) {    
     span {
       font-size: 1.8rem;
     }

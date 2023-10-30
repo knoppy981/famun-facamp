@@ -60,7 +60,6 @@ const UserData = ({ data, actionData }) => {
                 action={actionData}
                 maxValue={today(getLocalTimeZone())}
                 defaultValue={data.birthDate ? parseDate(data.birthDate) : undefined}
-              /* defaultValue={today(getLocalTimeZone())} */
               />
             </DefaultInputBox>
 

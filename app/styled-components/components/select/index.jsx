@@ -47,6 +47,7 @@ export const Select = (props) => {
           label={props.label}
           name={props.name}
         />
+        <S.InputBorder isActive={state.isOpen} err={error} />
         <Button
           {...triggerProps}
           buttonRef={buttonRef}

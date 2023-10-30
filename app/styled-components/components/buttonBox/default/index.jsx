@@ -20,7 +20,7 @@ const ButtonWrapper = styled.div`
     height: 100%;
   }
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     height: 5.2rem;
     font-size: 1.8rem;
 	}

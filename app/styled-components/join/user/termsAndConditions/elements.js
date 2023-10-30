@@ -29,7 +29,7 @@ export const TextContainer = styled.div`
   /* Opera doesn't support this in the shorthand */
   background-attachment: local, local, scroll, scroll;
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     gap: 20px;
 	}
 `

@@ -13,7 +13,7 @@ export const Wrapper = styled.div`
   padding: 5px;
   padding-right: 10px;
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     gap: 10px;
 	}
 `
@@ -21,7 +21,7 @@ export const InputContainer = styled.div`
   display: grid;
   gap: 10px;
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     min-width: auto;
 	}
 `

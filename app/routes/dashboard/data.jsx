@@ -103,7 +103,7 @@ const data = () => {
             transition={{ duration: 0.3 }}
           >
             <ColorButtonBox color={buttonColor} boxShadow={1}>
-              <Button onClick={handleSubmission}>
+              <Button onPress={handleSubmission}>
                 {buttonIcon} {buttonLabel}
               </Button>
             </ColorButtonBox>

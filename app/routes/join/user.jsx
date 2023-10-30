@@ -207,6 +207,7 @@ function useButtonState(step, termsAndConditions, transition) {
 
   React.useEffect(() => {
     setButtonLabel(step === 7 ? 'Cadastrar' : 'Próximo')
+    setIsButtonClicked(transition.state === 'idle' ? false : isButtonClicked)
     setButtonSpinner(transition.state !== 'idle' && isButtonClicked ?
       <Spinner dim={18} /> :
       null

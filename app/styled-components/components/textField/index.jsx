@@ -26,17 +26,21 @@ const TextField = (props) => {
         {err ?? label}
       </S.Label>
 
-      <S.Input
-        {...inputProps}
-        required={props.required ?? false}
-        inputRef={setRef}
-        autoComplete={autoComplete ? name : "off"}
-        onChange={e => { setErr(null); onChange ? onChange(e) : null }}
-        err={err}
-        mask={props.mask ?? undefined}
-        formatChars={props.formatChars ?? undefined}
-        maskChar="_"
-      />
+      <S.Container err={err} disabled={inputProps.disabled}>
+        <S.Input
+          {...inputProps}
+          required={props.required ?? false}
+          inputRef={setRef}
+          autoComplete={autoComplete ? name : "off"}
+          onChange={e => { setErr(null); onChange ? onChange(e) : null }}
+          err={err}
+          mask={props.mask ?? undefined}
+          formatChars={props.formatChars ?? undefined}
+          maskChar="_"
+          letterSpacing={props.letterSpacing}
+        />
+        <S.InputBorder />
+      </S.Container>
     </>
   )
 }

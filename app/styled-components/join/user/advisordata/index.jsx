@@ -16,14 +16,14 @@ const AdvisorData = ({ data, actionData }) => {
             <Select
               name="advisorRole"
               label="Posição do(a) Professor(a) Orientador(a)"
-              defaultSelectedKey={data?.role}
+              defaultSelectedKey={data?.advisorRole}
               items={[
                 { id: "Professor" },
                 { id: "Coordenador" },
                 { id: "Diretor" },
                 { id: "Outro" }
               ]}
-              err={actionData?.errors?.role}
+              err={actionData?.errors?.advisorRole}
             >
               {(item) => <Item>{`${item.id}${item.id !== "Outro" ? "(a)" : ""}`}</Item>}
             </Select>

@@ -109,7 +109,7 @@ const LoginPage = () => {
 
             <S.LinkBox>
               <Link
-                to=/* "/resetPassword" */ "/"
+                to="/requestPasswordReset"
                 underline={1}
               >
                 {t("forgotPassword")}
@@ -122,7 +122,7 @@ const LoginPage = () => {
               <DefaultButtonBox>
                 <Button
                   type="submit"
-                  disabled={transition !== "idle"}
+                  isDisabled={transition !== "idle"}
                 >
                   {t("login")} {transition !== 'idle' && <Spinner dim={18} />}
                 </Button>

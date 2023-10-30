@@ -15,7 +15,7 @@ export const Wrapper = styled.div`
   padding: 5px;
   padding-right: 10px;
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     gap: 20px;
 	}
 `
@@ -28,8 +28,12 @@ export const Container = styled.div`
     max-width: calc((var(--full-width, 1vh) * 94) - 15px);
 	}
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     min-width: auto;
+
+    label {
+      font-size: 1.6rem;
+    }
 	}
 `
 export const ContainerTitle = styled.div`

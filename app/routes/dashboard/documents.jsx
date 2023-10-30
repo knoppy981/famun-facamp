@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
-import { useFetcher, useLoaderData } from '@remix-run/react';
+import { useCatch, useFetcher, useLoaderData, useMatches } from '@remix-run/react';
 import { json } from '@remix-run/node';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { getDelegationParticipantsFilesById } from '~/models/file.server';
 import { getDelegationId, requireUserId } from '~/session.server';
-import { prioritizeUser } from '~/utils';
+import { prioritizeUser, safeRedirect } from '~/utils';
 
 import * as S from '~/styled-components/dashboard/documents'
+import * as E from '~/styled-components/error'
 import { FiCheck, FiTrash, FiUpload, FiX } from 'react-icons/fi';
 import { MdCloudUpload } from 'react-icons/md';
 
@@ -191,6 +192,48 @@ const documents = () => {
       } */}
     </S.Wrapper>
   )
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+  const matches = useMatches()
+
+  if (caught.data.errors.delegation === "No delegation found") {
+    return (
+      <E.ErrorBox>
+        <E.Subtitle>
+          Documentos
+        </E.Subtitle>
+
+        <E.Message>
+          Para enviar documentos, antes, voce deve entrar em uma delegação!
+
+          <E.GoBacklink to={`/join/delegation?${new URLSearchParams([["redirectTo", safeRedirect(matches[1].pathname)]])}`}>
+            Entrar em uma delegação
+          </E.GoBacklink>
+        </E.Message>
+      </E.ErrorBox>
+    );
+  }
+
+  throw new Error(`Unsupported thrown response status code: ${caught.status}`);
+}
+
+export function ErrorBoundary({ error }) {
+  if (error instanceof Error) {
+    return (
+      <E.ErrorBox>
+        <E.Subtitle>
+          Unknown error
+        </E.Subtitle>
+
+        <E.Message>
+          {error.message} <E.GoBacklink to='/'>Voltar para página inicial</E.GoBacklink>
+        </E.Message>
+      </E.ErrorBox>
+    );
+  }
+  return <E.Message>Oops, algo deu errado!</E.Message>;
 }
 
 export default documents

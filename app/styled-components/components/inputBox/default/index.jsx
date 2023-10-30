@@ -10,30 +10,17 @@ export const InputWrapper = styled.div`
 
   & > label {
     font-size: 1.4rem;
-    @media screen and (max-width: 500px) and (min-height: 700px) {
+    align-self: flex-start;
+    @media screen and (max-width: 700px) {
       font-size: 1.6rem;
 	  }
-  }
-  & > input {
-    height: 4.5rem;
-    font-size: 1.6rem;
-    padding: 0 10px;
-    border-radius: 5px;
-    @media screen and (max-width: 500px) and (min-height: 700px) {
-      height: 5.2rem;
-      font-size: 1.8rem;
-	  }
-
-    &::placeholder {
-      font-style: italic;
-      opacity: 0.6;
-    }
   }
   & > div {
     height: 4.5rem;
     font-size: 1.6rem;
+    border-radius: 5px;
     padding: 0 10px;
-    @media screen and (max-width: 500px) and (min-height: 700px) {
+    @media screen and (max-width: 700px) {
       height: 5.2rem;
       font-size: 1.8rem;
 	  }

@@ -15,8 +15,8 @@ const PhoneNumberField = (props) => {
 
   const [value, setValue] = useState(props._defaultValue)
   useEffect(() => {
-    onChange ? 
-      onChange(formatPhoneNumberIntl(value)) : 
+    onChange ?
+      onChange(formatPhoneNumberIntl(value)) :
       null
     setErr(null);
   }, [value])
@@ -24,7 +24,7 @@ const PhoneNumberField = (props) => {
   // use error like this so I can remove the error when user starts to correct it
   const [err, setErr] = useState(props.err)
   useEffect(() => {
-    ref?.focus()
+    if (props.err) ref?.focus()
     setErr(props.err)
   }, [props.err, props.action]);
 
@@ -38,17 +38,20 @@ const PhoneNumberField = (props) => {
         {err ?? label}
       </S.Label>
 
-      <S.PhoneNumberInput
-        className={`${err ? 'err' : ""}`}
-        {...inputProps}
-        ref={setRef}
-        required={props.required ?? false}
-        name={name}
-        autoComplete={name}
-        value={value}
-        err={err}
-        onChange={setValue}
-      />
+      <S.Container err={err} disabled={inputProps.disabled}>
+        <S.PhoneNumberInput
+          className={`${err ? 'err' : ""}`}
+          {...inputProps}
+          ref={setRef}
+          required={props.required ?? false}
+          name={name}
+          autoComplete={name}
+          value={value}
+          err={err}
+          onChange={setValue}
+        />
+        <S.InputBorder />
+      </S.Container>
     </>
   )
 }

@@ -19,7 +19,7 @@ export const Wrapper = styled.div`
   flex-direction: column;
   gap: 40px;
   
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     gap: 20px;
     margin: 50px 0 50px;
     width: 100vw;
@@ -97,7 +97,7 @@ export const Title = styled.div`
     font-size: 3rem;
   }
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     display: none;
 	}
 `
@@ -126,7 +126,7 @@ export const ArrowIconBox = styled(FiChevronRight)`
   display: flex;
   align-items: bottom;
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     display: none;
 	}
 `
@@ -142,7 +142,7 @@ export const Navbar = styled.div`
   padding: 0 15px;
   background: #fff;
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     min-height: 45px;
     top: 0;
     position: sticky;

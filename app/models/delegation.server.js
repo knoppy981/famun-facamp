@@ -233,16 +233,6 @@ export async function generateDelegationInviteLink(delegationCode) {
 	return `${WEBSITE_URL}/i/${token}`
 }
 
-export async function decodeInviteLink(token) {
-	const { JSON_WEB_TOKEN_SECRET } = process.env;
-
-	try {
-		return jwt.verify(token, JSON_WEB_TOKEN_SECRET, { complete: true })
-	} catch (err) {
-		return { err }
-	}
-}
-
 export async function updateInviteLink(delegationCode) {
 	const link = await generateDelegationInviteLink(delegationCode)
 

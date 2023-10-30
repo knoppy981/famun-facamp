@@ -2,7 +2,7 @@ import { useLoaderData, useCatch, Form, useMatches, useSearchParams } from '@rem
 import invariant from 'tiny-invariant';
 import { json } from '@remix-run/node';
 
-import { decodeInviteLink, getDelegationByCode, joinDelegation } from '~/models/delegation.server'
+import { getDelegationByCode, joinDelegation } from '~/models/delegation.server'
 import { requireUserId, createUserSession, getUser } from "~/session.server";
 import { safeRedirect } from '~/utils';
 
@@ -12,6 +12,7 @@ import { FiArrowLeft } from "react-icons/fi";
 import DefaultButtonBox from '~/styled-components/components/buttonBox/default';
 import Button from '~/styled-components/components/button';
 import Link from "~/styled-components/components/link";
+import { decodeJwt } from '~/challenges.server';
 
 export const action = async ({ request }) => {
   const userId = await requireUserId(request)
@@ -39,7 +40,7 @@ export const loader = async ({ request, params }) => {
   const user = await getUser(request);
   const { token } = params
   invariant(token, "token is required")
-  const decoded = await decodeInviteLink(token)
+  const decoded = await decodeJwt(token)
 
   if (decoded.err) throw json(decoded.err, { status: 404 });
 

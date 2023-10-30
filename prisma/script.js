@@ -26,7 +26,7 @@ async function seed() {
 					hash: await bcrypt.hash("dede5562", 10)
 				}
 			},
-			nacionality: "Brasil",
+			nacionality: "Brazil",
 			leader: true,
 			delegate: {
 				create: {
@@ -63,7 +63,7 @@ async function seed() {
 					hash: await bcrypt.hash("teste123", 10)
 				}
 			},
-			nacionality: "Brasil",
+			nacionality: "Brazil",
 			delegationAdvisor: {
 				create: {
 					advisorRole: "Professor",
@@ -110,19 +110,20 @@ async function seed() {
 		}
 	}) */
 
-	await prisma.user.update({
+	const user = await prisma.user.update({
 		where: {
 			email: "andre.knopp8@gmail.com"
 		},
 		data: {
-			file: {
-				create: {
-					url: "https://www.hhsjjd.com/djkhsjjjs3298923",
-					fileName: "ComprovanteVacinacaoAndreKnoppGuimaraes_2023_11_10.jpeg",
+			password: {
+				update: {
+					hash: await bcrypt.hash("Caralho123", 10)
 				}
 			}
 		}
 	})
+
+	console.log(user)
 
 	console.log(`Database has been seeded. 🌱`);
 }

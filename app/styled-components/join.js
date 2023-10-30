@@ -28,7 +28,7 @@ export const SubscriptionForm = styled(Form)`
   flex-direction: column;
   gap: 40px;
   
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     gap: 20px;
     margin: 100px 0 50px;
     width: 100vw;
@@ -81,7 +81,7 @@ export const Title = styled.div`
     font-size: 3rem;
   }
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     display: none;
 	}
 `
@@ -108,7 +108,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
 	}
 `
 export const ControlButtonsContainer = styled.div`

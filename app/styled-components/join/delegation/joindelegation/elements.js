@@ -21,7 +21,7 @@ export const Wrapper = styled.div`
   padding: 5px;
   padding-right: 10px;
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     gap: 10px;
 	}
 `
@@ -46,7 +46,7 @@ export const InputBox = styled.div`
   border-radius: 5px;
   display: flex;
 
-  @media screen and (max-width: 500px) and (min-height: 700px) {
+  @media screen and (max-width: 700px) {
     height: 5.2rem;
 	}
 `

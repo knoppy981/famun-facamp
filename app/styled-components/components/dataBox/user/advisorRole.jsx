@@ -27,7 +27,7 @@ const AdvisorRoleData = (props) => {
             { id: "Diretor" },
             { id: "Outro" }
           ]}
-          err={actionData?.errors?.name}
+          err={actionData?.errors?.advisorRole}
         >
           {(item) => <Item>{`${item.id}${item.id !== "Outro" ? "(a)" : ""}`}</Item>}
         </Select>

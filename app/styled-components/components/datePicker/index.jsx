@@ -38,6 +38,8 @@ const DatePicker = (props) => {
     setErr(null)
   }, [state.value])
 
+  const [isFocused, setIsFocused] = useState(false)
+
   return (
     <>
       <S.Label {...labelProps} err={err} >{err ?? props.label}</S.Label>
@@ -49,7 +51,9 @@ const DatePicker = (props) => {
         disabled={props.isDisabled}
         isFocused={state.isOpen}
       >
-        <DateField {...fieldProps} name={props.name} />
+        <DateField {...fieldProps} name={props.name} setIsFocused={setIsFocused} />
+
+        <S.InputBorder isActive={state.isOpen || isFocused} err={err} />
 
         {!props.isDisabled &&
           <Button {...buttonProps} buttonRef={buttonRef}>
