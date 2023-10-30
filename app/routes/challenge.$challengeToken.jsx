@@ -13,7 +13,6 @@ import DefaultButtonBox from '~/styled-components/components/buttonBox/default'
 import { FiArrowLeft } from 'react-icons/fi'
 import Link from '~/styled-components/components/link'
 import Spinner from '~/styled-components/components/spinner'
-import { unsetConfirmationCode } from '~/models/user.server'
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
