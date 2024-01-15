@@ -1,0 +1,97 @@
+@import "../abstracts/colors";
+
+.pay-error {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1.5rem;
+  color: #d61f0a;
+}
+
+.pay-list {
+  @media screen and (max-width: 600px) {
+    width: 100%;
+  }
+}
+
+.pay-item-container {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 5px;
+  box-sizing: border-box;
+  min-width: 0;
+
+  & > label {
+    font-size: 2.2rem;
+    font-weight: 500;
+    color: #000;
+    margin-left: 5px;
+  }
+  & > p {
+    font-size: 1.4rem;
+    @media screen and (max-width: 700px) {
+      font-size: 1.6rem;
+    }
+  }
+}
+
+.pay-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  box-sizing: border-box;
+
+  & > label {
+    flex: 3;
+  }
+}
+
+.pay-item-overflow-text {
+  font-size: 1.4rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pay-item-right-container {
+  margin-left: auto;
+  margin-right: 0;
+  flex-shrink: 0;
+}
+
+.pay-price {
+  width: 400px;
+  margin: auto 0 0;
+  font-size: 3.6rem;
+  font-weight: 900;
+  color: $azulEscuro;
+
+  @media screen and (max-width: 700px) {
+    width: 100%;
+  }
+}
+
+.pay-button-container {
+  gap: 15px;
+  min-width: 150px;
+}
+
+.pay-confirm-payments-list {
+  width: 100%;
+  list-style-type: disc;
+  padding: 0 25px;
+}
+
+.pay-confirm-payments-list-item {
+  height: 3rem;
+  gap: 15px;
+  font-size: 1.6rem;
+}
+
+.pay-confirm-payments-button-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 5px;
+  font-size: 1.6rem
+}

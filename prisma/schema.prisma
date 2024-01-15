@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+  email               String              @unique
+  // personal info
+  name                String
+  password            Password?
+  cpf                 String?
+  rg                  String?
+  passport            String?
+  phoneNumber         String
+  birthDate           String
+  nacionality         String
+  files               File[]
+  foodRestrictions    FoodRestrictions?
+  participationMethod ParticipationMethod
+  // useful info
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  userPreferences     UserPreferences?
+  // delegation
+  delegation          Delegation?         @relation(fields: [delegationId], references: [id])
+  delegationId        String?             @db.ObjectId
+  leader              Boolean             @default(false)
+  // participation type
+  delegate            Delegate?
+  delegationAdvisor   DelegationAdvisor?
+  // stripe
+  stripeCustomerId    String?
+  stripePaydId        String?
+  stripePaymentsId    String[]
+  // 
+  confirmationCode    ConfirmationCode?
+}
+
+type ConfirmationCode {
+  code      String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model FoodRestrictions {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId             String   @unique @db.ObjectId
+  diet               String?
+  allergy            Boolean?
+  allergyDescription String?
+}
+
+model File {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  url       String?  
+  name      String
+  fileName  String
+  stream    Bytes
+  size      Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+
+  @@unique([name, userId])
+}
+
+model Password {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  hash   String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique @db.ObjectId
+}
+
+model UserPreferences {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  user         User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId       String  @unique @db.ObjectId
+  emailUpdates Boolean
+}
+
+model Delegate {
+  id                          String      @id @default(auto()) @map("_id") @db.ObjectId
+  user                        User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId                      String      @unique @db.ObjectId
+  emergencyContactName        String
+  emergencyContactPhoneNumber String
+  educationLevel              String
+  currentYear                 String
+  councilPreference           Council[]
+  languagesSimulates          Languages[]
+}
+
+model DelegationAdvisor {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId      String      @unique @db.ObjectId
+  advisorRole AdvisorRole @default(Professor)
+  facebook    String?
+  instagram   String?
+  linkedin    String?
+}
+
+model Delegation {
+  id                    String              @id @default(auto()) @map("_id") @db.ObjectId
+  code                  String              @unique
+  inviteLink            String
+  school                String              @unique
+  schoolPhoneNumber     String
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  paymentExpirationDate DateTime
+  participationMethod   ParticipationMethod
+  address               Address?
+  participants          User[]
+}
+
+model Address {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  delegation   Delegation @relation(fields: [delegationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  delegationId String     @unique @db.ObjectId
+  address      String
+  city         String
+  state        String
+  postalCode   String?
+  country      String
+}
+
+enum AdvisorRole {
+  Professor
+  Coordenador
+  Diretor
+  Outro
+}
+
+enum Council {
+  Assembleia_Geral_da_ONU
+  Rio_92
+  Conselho_de_Juventude_da_ONU
+  Conselho_de_Seguranca_da_ONU
+}
+
+enum ParticipationMethod {
+  Faculdade
+  Escola
+}
+
+enum Languages {
+  Portugues
+  Ingles
+  Espanhol
+}

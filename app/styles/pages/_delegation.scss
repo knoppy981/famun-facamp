@@ -1,0 +1,57 @@
+.delegation-nav {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 15px;
+
+  @media screen and (max-width: 700px) {
+    padding: 0 15px;
+  }
+}
+
+.delegation-nav-container {
+  font-size: 1.8rem;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.delegation-title-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  font-size: 1.8rem;
+  flex: 1 0;
+  min-width: 0;
+}
+
+.delegation-title {
+  gap: 10px;
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.delegation-subtitle {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #666666;
+}
+
+.delegation-popover-container {
+  & button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: #000;
+    white-space: nowrap;
+  }
+}

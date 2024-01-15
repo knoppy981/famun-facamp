@@ -1,0 +1,89 @@
+@import "../abstracts/colors";
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.checkbox-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: #000;
+  min-width: 0;
+  box-sizing: border-box;
+
+  span {
+    font-size: 1.4rem;
+  }
+
+  &.error {
+    color: $error;
+  }
+
+  &.disabled {
+    cursor: default;
+    outline: none;
+    border: none;
+  }
+
+  @media screen and (max-width: 700px) {
+    span {
+      font-size: 2rem;
+    }
+
+    input {
+      -webkit-tap-highlight-color: transparent;
+    }
+  }
+}
+
+.checkbox-input {
+  margin-top: 3px;
+  outline: none;
+  appearance: none;
+  background-color: #fff;
+  margin: 0;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 1px solid #e6e6e6;
+  border-radius: 5px;
+  display: grid;
+  place-content: center;
+  box-shadow: 0px 1px 3px -1px #000000;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:checked {
+    border-color: $azulClaro;
+    background: $azulClaro;
+  }
+  &::before {
+    content: "";
+    width: 1.8rem;
+    height: 1.8rem;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em #000;
+    transform-origin: center;
+    clip-path: polygon(25% 40%, 41% 59%, 77.03% 26.91%, 86% 38%, 40% 78%, 15% 50%);
+  }
+  &:checked::before {
+    transform: scale(0.9);
+  }
+
+  &.error {
+    box-shadow: 0px 0px 4px 1px $error;
+    border-color: transparent;
+  }
+
+  &.disabled {
+    cursor: default;
+    outline: none;
+    border: none;
+  }
+}

@@ -1,0 +1,56 @@
+@import "../abstracts/colors";
+
+.modal-background {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-blur-background {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  -moz-backdrop-filter: blur(5px);
+  -o-backdrop-filter: blur(5px);
+}
+
+.modal-container {
+  transform-origin: center 0;
+  box-shadow: 0px 3px 5px -2px #000000;
+  border-radius: 10px;
+
+  @media screen and (max-width: 700px) {
+    max-width: none;
+    width: 90vw;
+    display: flex;
+  }
+
+  &.max-width {
+    max-width: 300px;
+  }
+}
+
+.sidebar-aside {
+  position: fixed;
+  z-index: 101;
+  width: 65%;
+  height: 100%;
+  top: 0;
+  right: 0;
+  background: #fafafa;
+}

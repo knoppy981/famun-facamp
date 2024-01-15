@@ -1,0 +1,143 @@
+@import "../abstracts/mixins";
+@import "../abstracts/colors";
+
+.default-button {
+  position: relative;
+  outline: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.5rem;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.primary-button-box {
+  border-radius: 5px;
+  height: 4.5rem;
+  background: $azulClaro;
+  gap: 15px;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px -2px #000000;
+  cursor: pointer;
+  transition: 0.4s all ease;
+  color: #000;
+  font-weight: 400;
+  font-size: 1.5rem;
+  border: none;
+  outline: 2px solid transparent;
+
+  > * {
+    width: 100%;
+    height: 100%;
+  }
+
+  &[data-pressed="true"] {
+    transform: scale(0.94);
+  }
+
+  // &[data-hovered="true"] { }
+
+  &.transparent {
+    background: transparent;
+  }
+
+  &[data-focus-visible="true"] {
+    outline: 2px solid transparent;
+  }
+
+  @media screen and (max-width: 700px) {
+    height: 5.2rem;
+    font-size: 1.8rem;
+  }
+
+  &:disabled {
+    background: transparent;
+    color: #666666;
+  }
+
+  @media screen and (max-width: 700px) {
+    font-size: 2rem;
+  }
+}
+
+.secondary-button-box {
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  border-radius: 1.5rem;
+  gap: 5px;
+  font-size: 1.4rem;
+  transition: all 0.4s ease;
+  font-weight: 400;
+
+  & > button,
+  div {
+    width: 100%;
+    padding: 5px 15px;
+  }
+
+  & > div {
+    position: relative;
+    outline: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.5rem;
+  }
+
+  &.red-light {
+    @include getColorStyles("red", $light-theme);
+  }
+  &.red-dark {
+    @include getColorStyles("red", $dark-theme);
+  }
+  &.blue-light {
+    @include getColorStyles("blue", $light-theme);
+  }
+  &.blue-dark {
+    @include getColorStyles("blue", $dark-theme);
+  }
+  &.green-light {
+    @include getColorStyles("green", $light-theme);
+  }
+  &.green-dark {
+    @include getColorStyles("green", $dark-theme);
+  }
+  &.gray-light {
+    @include getColorStyles("gray", $light-theme);
+  }
+  &.gray-dark {
+    @include getColorStyles("gray", $dark-theme);
+  }
+  &.default-light {
+    @include getColorStyles("default", $light-theme);
+  }
+  &.default-dark {
+    @include getColorStyles("default", $dark-theme);
+  }
+
+  &.box-shadow {
+    box-shadow: 0px 0px 6px 1px currentColor;
+  }
+
+  svg {
+    transform: translateY(-1px);
+  }
+
+  @media screen and (max-width: 700px) {
+    height: 4rem;
+    font-size: 1.6rem;
+    border-radius: 2rem;
+    gap: 7px;
+    opacity: 1;
+    font-weight: 500;
+  }
+}

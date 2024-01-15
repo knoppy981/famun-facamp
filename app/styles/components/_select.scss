@@ -1,0 +1,78 @@
+.select-input-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+  min-width: 0;
+
+  @media screen and (max-width: 700px) {
+    gap: 4px;
+  }
+
+  & > label,
+  p {
+    font-size: 1.4rem;
+    white-space: nowrap;
+
+    @media screen and (max-width: 700px) {
+      place-self: center start;
+      font-size: 1.6rem;
+    }
+  }
+
+  & > div {
+    height: 3rem;
+    font-size: 1.4rem;
+    border-radius: 5px;
+    padding: 0 5px;
+    place-self: flex-start;
+    @media screen and (max-width: 700px) {
+      height: 4rem;
+      font-size: 1.6rem;
+    }
+  }
+}
+
+.select-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  border: 1px solid #e6e6e6;
+  outline: none;
+  color: #000;
+  background: transparent;
+  transition: all 0.2s ease-in-out;
+  -webkit-text-fill-color: #000 !important;
+  padding: 0 10px;
+
+  & .default-button {
+    height: 100%;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  & span {
+    font-size: inherit;
+  }
+
+  &:focus-within .input-border {
+    opacity: 1;
+  }
+
+  &.error {
+    // Modifier class for error state
+    .input-border {
+      box-shadow: 0 0 5px 1px $error;
+      opacity: 1;
+    }
+  }
+
+  &.disabled {
+    border-color: transparent;
+
+    .input-border {
+      box-shadow: none;
+    }
+  }
+}

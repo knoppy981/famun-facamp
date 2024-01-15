@@ -1,0 +1,57 @@
+@import "../abstracts/colors";
+
+.table {
+  border-radius: 5px;
+  flex: 1 0 auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid #e6e6e6;
+}
+
+.table-row {
+  height: 4.5rem;
+  background: transparent;
+  cursor: default;
+
+  &.example {
+    background: #fafafa;
+  }
+
+  &.cursor {
+    cursor: pointer;
+  }
+
+  td {
+    font-weight: 400;
+
+    &.example {
+      font-weight: 500;
+    }
+  }
+
+  @media screen and (max-width: 700px) {
+    height: 5rem;
+  }
+}
+
+.table-cell {
+  padding: 0 15px;
+  font-size: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+
+  &.user {
+    border-left: 2px solid $azulCeu;
+  }
+}
+
+.table-flex-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: inherit;
+
+  &.error {
+    color: $error;
+  }
+}

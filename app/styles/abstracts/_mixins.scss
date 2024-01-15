@@ -1,0 +1,20 @@
+@import "./colors";
+
+@mixin getColorStyles($color, $theme) {
+  @if $color == "red" {
+    color: map-get($theme, fontRed);
+    background: map-get($theme, backgroundRed);
+  } @else if $color == "green" {
+    color: map-get($theme, fontGreen);
+    background: map-get($theme, backgroundGreen);
+  } @else if $color == "gray" {
+    color: map-get($theme, fontGray);
+    background: map-get($theme, backgroundGray);
+  } @else if $color == "blue" {
+    color: map-get($theme, fontBlue);
+    background: map-get($theme, backgroundBlue);
+  } @else {
+    color: map-get($theme, fontBlue);
+    background: map-get($theme, backgroundBlue);
+  }
+}

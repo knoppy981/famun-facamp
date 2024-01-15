@@ -1,0 +1,111 @@
+@import "../abstracts/colors";
+
+.textarea-container {
+  position: relative;
+  border: 1px solid #e6e6e6;
+  display: flex;
+  transition: all 0.2s ease-in-out;
+
+  &:focus-within .input-border {
+    opacity: 1;
+  }
+
+  &.error {
+    // Modifier class for error state
+    .input-border {
+      box-shadow: 0 0 5px 1px $error;
+      opacity: 1;
+    }
+  }
+
+  &.disabled {
+    border-color: transparent;
+
+    .input-border {
+      box-shadow: none;
+    }
+  }
+}
+
+.textarea-input {
+  resize: vertical;
+  min-width: 100%;
+  min-height: inherit;
+  max-height: 10rem;
+  outline: none;
+  border: none;
+  color: #000;
+  background: transparent;
+  letter-spacing: normal;
+  -webkit-text-fill-color: #000 !important;
+
+  &.disabled {
+    resize: none;
+    opacity: 1 !important;
+  }
+}
+
+.textarea-input-box {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 5px;
+
+  & > label,
+  p {
+    font-size: 1.4rem;
+    align-self: flex-start;
+    @media screen and (max-width: 700px) {
+      font-size: 1.6rem;
+    }
+  }
+  & > div {
+    min-height: 4.5rem;
+    font-size: 1.6rem;
+    border-radius: 5px;
+    @media screen and (max-width: 700px) {
+      height: 5.2rem;
+      font-size: 1.8rem;
+    }
+  }
+
+  & textarea {
+    padding: 10px 10px 0;
+  }
+}
+
+.textarea-secondary-input-box {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 5px;
+
+  & > label,
+  p {
+    font-size: 1.4rem;
+    white-space: nowrap;
+    @media screen and (max-width: 700px) {
+      font-size: 1.6rem;
+    }
+  }
+  & > div {
+    min-height: 3rem;
+    max-height: 10rem;
+    width: 100%;
+    min-width: 250px;
+    font-size: 1.4rem;
+    padding: 5px 0 0 5px;
+    border-radius: 5px;
+    -webkit-text-fill-color: #000 !important;
+
+    &::placeholder {
+      font-style: italic;
+      opacity: 0.6;
+    }
+
+    @media screen and (max-width: 700px) {
+      min-width: 0;
+      height: 4rem;
+      font-size: 1.6rem;
+      opacity: 1;
+    }
+  }
+}

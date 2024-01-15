@@ -1,0 +1,91 @@
+@import "../abstracts/colors";
+
+.primary-reordable-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  @media screen and (max-width: 700px) {
+    min-width: auto;
+
+    label {
+      font-size: 1.6rem;
+    }
+  }
+}
+
+.reordable-lsit-wrapper {
+  display: flex;
+  gap: 10px;
+}
+
+.reordable-list-title {
+  font-size: 1.4rem;
+  gap: 5px;
+  color: #000;
+  word-break: normal;
+}
+
+.reordable-list-indexes {
+  display: grid;
+
+  div {
+    display: grid;
+    align-self: center;
+    font-size: 1.4rem;
+  }
+}
+
+.reordable-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.reordable-list-indicator {
+  width: 100%;
+  margin-left: 0;
+  height: 2px;
+  margin-bottom: -2px;
+  outline: none;
+  background: transparent;
+
+  &:last-child {
+    margin-bottom: 0;
+    margin-top: -2px;
+  }
+
+  &.drop-target {
+    background: $azulCeu;
+  }
+}
+.reordable-list-option {
+  display: flex;
+  align-items: center;
+  height: 4rem;
+  padding: 0 5px;
+  outline: $azulClaro;
+  background: #fff;
+  border-radius: 5px;
+  transition: 0.3s all ease;
+  font-size: 1.4rem;
+  cursor: grab;
+  box-shadow: 0px 2px 5px -2px #000000;
+
+  .disabled {
+    box-shadow: none;
+  }
+
+  &[aria-selected="true"] {
+    background: $azulPlanoFundo;
+  }
+
+  &.drop-target .focus-visible {
+    border: 2px solid $azulCeu
+  }
+
+  @media screen and (max-width: 700px) {
+    font-size: 1.6rem;
+    height: 4.8rem;
+  }
+}

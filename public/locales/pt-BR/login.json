@@ -1,0 +1,10 @@
+{
+  "title": "Login",
+  "email": "Email",
+  "password": "Senha",
+  "remember": "Continuar conectado",
+  "forgotPassword": "Esqueceu a senha?",
+  "login": "Entrar",
+  "acc": "Ainda não tem uma conta?",
+  "join": "Cadastrar"
+}

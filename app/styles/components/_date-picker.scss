@@ -1,0 +1,39 @@
+.date-picker-container {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  border-radius: 5px;
+  border: 1px solid #E6E6E6;
+  padding: 0 10px;
+  font-size: 1.6rem;
+  color: #000;
+  background: transparent;
+  font-size: inherit;
+  transition: all 0.2s ease-in-out;
+
+  & > button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translate(0, -50%);
+  }
+
+  &:focus-within .input-border {
+    opacity: 1;
+  }
+
+  &.error { // Modifier class for error state
+    .input-border {
+      box-shadow: 0 0 5px 1px $error;
+      opacity: 1;
+    }
+  }
+
+  &.disabled {
+    border-color: transparent;
+
+    .input-border {
+      box-shadow: none;
+    }
+  }
+}

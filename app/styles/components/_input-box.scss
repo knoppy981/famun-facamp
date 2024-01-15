@@ -1,0 +1,100 @@
+.primary-input-box {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 5px;
+
+  & > label,
+  p {
+    margin-left: 5px;
+    font-size: 1.4rem;
+    align-self: flex-start;
+    @media screen and (max-width: 700px) {
+      font-size: 1.6rem;
+    }
+  }
+  & > div {
+    height: 4.5rem;
+    font-size: 1.6rem;
+    border-radius: 5px;
+    @media screen and (max-width: 700px) {
+      height: 5.2rem;
+      font-size: 1.8rem;
+    }
+  }
+
+  & input {
+    padding: 0 10px;
+  }
+
+  & textarea {
+    padding: 10px 10px 0;
+  }
+
+  & input[type="checkbox"],
+  input[type="radio"] {
+    padding: 0;
+  }
+
+  &.combo-box {
+    &:first-child {
+      margin-left: 10px;
+    }
+
+    & > input {
+      margin-left: 10px;
+    }
+  }
+}
+
+.secondary-input-box {
+  display: contents;
+  box-sizing: border-box;
+  min-width: 0;
+
+  @media screen and (max-width: 700px) {
+    gap: 4px;
+  }
+
+  & > label,
+  p {
+    font-size: 1.4rem;
+    white-space: nowrap;
+    place-self: center end;
+
+    @media screen and (max-width: 700px) {
+      place-self: center start;
+      font-size: 1.6rem;
+    }
+  }
+  & > input {
+    width: 100%;
+    min-width: 250px;
+    font-size: 1.4rem;
+    height: 3rem;
+    padding: 0 5px;
+    border-radius: 5px;
+    -webkit-text-fill-color: #000 !important;
+
+    &::placeholder {
+      font-style: italic;
+      opacity: 0.6;
+    }
+
+    @media screen and (max-width: 700px) {
+      min-width: 0;
+      height: 4rem;
+      font-size: 1.6rem;
+      opacity: 1;
+    }
+  }
+  & > div {
+    height: 3rem;
+    font-size: 1.4rem;
+    border-radius: 5px;
+    padding: 0 5px;
+    @media screen and (max-width: 700px) {
+      height: 4rem;
+      font-size: 1.6rem;
+    }
+  }
+}

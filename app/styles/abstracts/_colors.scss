@@ -1,0 +1,31 @@
+$azulClaro: #BDE8F5;
+$azulCeu: #14A7D8;
+$azulPlanoFundo: #EDF9FC;
+$azulEscuro: #192638;
+$azulTitulo: #183567;
+$error: #d61f0a;
+$vermelho: #c32b19;
+$vermelhoClaro: #d55748;
+$verdeClaro: #51b85a;
+
+$light-theme: (
+  fontBlue: #14A7D8,
+  backgroundBlue: #EDF9FC,
+  fontGreen: $verdeClaro,
+  backgroundGreen: #EBFDEE,
+  fontRed: $vermelhoClaro,
+  backgroundRed: #FFEFE1,
+  fontGray: #A7A7A7,
+  backgroundGray: #e1e1e1,
+);
+
+$dark-theme: (
+  fontBlue: #EDF9FC,
+  backgroundBlue: #14A7D8,
+  fontGreen: #EBFDEE,
+  backgroundGreen: $verdeClaro,
+  fontRed: #FFEFE1,
+  backgroundRed: $vermelhoClaro,
+  fontGray: #A7A7A7,
+  backgroundGray: #e1e1e1,
+);
