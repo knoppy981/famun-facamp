@@ -25,7 +25,6 @@
   ],
   "dependencies": {
     "@internationalized/date": "^3.5.0",
-    "@isaacs/express-prometheus-middleware": "^1.2.1",
     "@prisma/client": "^4.16.2",
     "@react-aria/textfield": "^3.12.2",
     "@remix-run/css-bundle": "*",

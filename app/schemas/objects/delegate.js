@@ -30,6 +30,9 @@ export const delegateSchema = Joi.object({
     .messages({
       'string.empty': 'Current year is required',
       'alternatives.match': `Current year is required`,
+      'alternatives.all': `Current year is required`,
+      'alternatives.any': `Current year is required`,
+      'any.required': `Current year is required`,
     }),
 
   councilPreference: Joi.alternatives()
