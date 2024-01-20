@@ -1,12 +1,11 @@
-
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node'
+import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node';
 
 import { safeRedirect } from '~/utils';
 import { loginSchema } from '~/schemas/login';
 import { getCorrectErrorMessage } from '~/utils/error';
 import { verifyLogin } from '~/models/user.server';
-import { createUserSession, getUserId } from '~/session.server';
+import { createAdminSession, createUserSession, getUserId } from '~/session.server';
 import { useFetcher, useSearchParams } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,6 +14,7 @@ import TextField from '~/components/textfield';
 import Checkbox from '~/components/checkbox';
 import DefaultLink from '~/components/link';
 import Spinner from '~/components/spinner';
+import { verifyAdmin } from '~/models/admin.server';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await getUserId(request)
@@ -38,27 +38,31 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   }
 
-  const user = await verifyLogin(email, password);
+  const user = await verifyLogin(email, password)
+  const admin = await verifyAdmin(email, password)
 
-  if (!user) {
+  if (!user && !admin) {
     return json(
       { errors: { password: "Invalid email or password" } },
       { status: 400 }
     );
   }
 
-  return createUserSession({
-    request,
-    userId: user.id,
-    delegationId: user?.delegation?.id,
-    remember: remember === "on" ? true : false,
-    redirectTo,
-  });
+  return admin ?
+    createAdminSession({
+      request,
+      adminId: admin.id
+    }) :
+    createUserSession({
+      request,
+      userId: user?.id as string,
+      delegationId: user?.delegation?.id,
+      remember: remember === "on" ? true : false,
+      redirectTo,
+    })
 }
 
 export const handle = { i18n: "login" };
-
-export const meta: MetaFunction = () => [{ title: "Login" }];
 
 interface ActionData {
   errors?: {

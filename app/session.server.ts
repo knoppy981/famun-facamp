@@ -5,6 +5,7 @@ import type { UserType } from "~/models/user.server";
 import { getUserById } from "~/models/user.server";
 import type { Delegation } from "~/models/delegation.server";
 import { getDelegationById } from "~/models/delegation.server"
+import { getAdminById } from "./models/admin.server";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
@@ -21,6 +22,7 @@ export const sessionStorage = createCookieSessionStorage({
 
 const USER_SESSION_KEY = "userId";
 const DELEGATION_SESSION_KEY = "delegationId";
+const ADMIN_SESSION_KEY = "adminId";
 
 export async function getSession(request: Request) {
   const cookie = request.headers.get("Cookie");
@@ -93,14 +95,54 @@ export async function createUserSession({
   });
 }
 
-export async function logout(request: Request) {
+// admin
+
+export async function getAdminId(
+  request: Request,
+): Promise<UserType["id"] | undefined> {
   const session = await getSession(request);
-  return redirect("/", {
+  const adminId = session.get(ADMIN_SESSION_KEY);
+  return adminId;
+}
+
+export async function requireAdminId(
+  request: Request,
+) {
+  const adminId = await getAdminId(request);
+  if (!adminId) {
+    throw redirect("/login");
+  }
+  return adminId;
+}
+
+export async function requireAdmin(request: Request) {
+  const adminId = await requireAdminId(request);
+
+  const admin = await getAdminById(adminId);
+  if (admin) return admin;
+
+  throw await logout(request);
+}
+
+export async function createAdminSession({
+  request,
+  adminId,
+}: {
+  request: Request;
+  adminId: string;
+}) {
+  const session = await getSession(request);
+  session.set(ADMIN_SESSION_KEY, adminId);
+  return redirect("/admin", {
     headers: {
-      "Set-Cookie": await sessionStorage.destroySession(session),
+      "Set-Cookie": await sessionStorage.commitSession(session, {
+        maxAge: undefined
+      }),
     },
   });
 }
+
+// delegation
 
 export async function getDelegationId(request: Request) {
   const session = await getSession(request);
@@ -127,4 +169,15 @@ export async function requireDelegation(request: Request) {
   if (delegation) return delegation;
 
   throw await logout(request);
+}
+
+// logout
+
+export async function logout(request: Request) {
+  const session = await getSession(request);
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": await sessionStorage.destroySession(session),
+    },
+  });
 }

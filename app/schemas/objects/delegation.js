@@ -19,7 +19,7 @@ export const delegationSchema = Joi.object({
     .required(),
 
   participationMethod: Joi.string()
-    .valid('Escola', 'Faculdade')
+    .valid('Escola', 'Universidade')
     .required()
     .messages({
       'any.only': 'Participation method is required',
@@ -50,7 +50,7 @@ export const prismaDelegationSchema = Joi.object({
     .required(),
 
   participationMethod: Joi.string()
-    .valid('Escola', 'Faculdade')
+    .valid('Escola', 'Universidade')
     .required()
     .messages({
       'any.only': 'Participation method is required',

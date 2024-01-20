@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { UserType, formatUserData, updateUser } from "./user.server";
 import { ValidationError } from "~/utils/error";
 
-import { Prisma, type Delegation, DelegationPayload, UserPayload, User, Delegate, DelegationAdvisor, Address } from "@prisma/client";
+import { Prisma, type Delegation, DelegationPayload, UserPayload, User, Delegate, DelegationAdvisor, Address, ParticipationMethod } from "@prisma/client";
 export type { Delegation } from "@prisma/client";
 
 export type DelegationType = Delegation & {
@@ -89,6 +89,44 @@ export async function countDelegates(id: Delegation["id"]): Promise<number> {
 	});
 
 	return res?._count.participants as number
+}
+
+export async function adminDelegationsList(index: number, participationMethod: ParticipationMethod) {
+	return prisma.delegation.findMany({
+		skip: index * 12,
+		take: 12,
+		where: {
+			participationMethod: "Escola"
+		},
+		select: {
+			school: true,
+			participants: {
+				select: {
+					name: true,
+					_count: {
+						select: {
+							files: {
+								where: {
+									name: "Liability Waiver"
+								}
+							}
+						}
+					}
+				}
+			},
+			_count: {
+				select: {
+					participants: {
+						where: {
+							stripePaydId: {
+								not: null
+							}
+						}
+					}
+				}
+			}
+		}
+	})
 }
 
 export async function joinDelegation(data: { code: string; userId: string }) {

@@ -22,7 +22,7 @@ const step2 = Joi.object({
     .required(),
 
   participationMethod: Joi.string()
-    .valid('Escola', 'Faculdade')
+    .valid('Escola', 'Universidade')
     .required()
     .messages({
       'any.only': 'Participation method is required',

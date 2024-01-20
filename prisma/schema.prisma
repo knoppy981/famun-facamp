@@ -58,7 +58,7 @@ model FoodRestrictions {
 
 model File {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  url       String?  
+  url       String?
   name      String
   fileName  String
   stream    Bytes
@@ -131,6 +131,12 @@ model Address {
   country      String
 }
 
+model Admin {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  email    String @unique
+  password String
+}
+
 enum AdvisorRole {
   Professor
   Coordenador
@@ -146,7 +152,7 @@ enum Council {
 }
 
 enum ParticipationMethod {
-  Faculdade
+  Universidade
   Escola
 }
 

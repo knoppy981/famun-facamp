@@ -1,5 +1,5 @@
 import React from "react";
-import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Links,
@@ -21,6 +21,8 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
   { as: "style", rel: "stylesheet preload prefetch", href: "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" }
 ];
+
+export const meta: MetaFunction = () => [{ title: "Famun 2024" }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const locale = await i18next.getLocale(request);

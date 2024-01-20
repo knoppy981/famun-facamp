@@ -43,7 +43,7 @@ const Dashboard = () => {
     <div className='dashboard-wrapper'>
       <div className='dashboard-title-box'>
         <h2 className='dashboard-title'>
-          FAMUN 2023
+          FAMUN 2024
         </h2>
 
         <div className='dashboard-aux-div'>

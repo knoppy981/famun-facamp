@@ -67,7 +67,7 @@ export const userSchema = Joi.object({
   }),
 
   participationMethod: Joi.string()
-    .valid("Escola", "Faculdade")
+    .valid("Escola", "Universidade")
     .required(),
 
   foodRestriction: foodRestrictionsSchema,
@@ -139,7 +139,7 @@ export const prismaUserSchema = Joi.object({
 
 
   participationMethod: Joi.string()
-    .valid("Escola", "Faculdade")
+    .valid("Escola", "Universidade")
     .required(),
 
   foodRestrictions: Joi.alternatives().try(

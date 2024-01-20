@@ -1,0 +1,43 @@
+.admin-wrapper {
+  min-height: 85vh;
+  margin: 10vh 10vw 5vh;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  @media screen and (max-width: 700px) {
+    gap: 20px;
+    margin: 50px 0 50px;
+    width: 100vw;
+  }
+}
+
+.admin-title-box {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  margin-bottom: 20px;
+
+  @media screen and (max-width: 800px) {
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    width: auto;
+    margin-left: 0;
+    margin-right: auto;
+    padding: 0 15px;
+  }
+}
+
+.admin-title-select {
+  font-size: 1.8rem;
+
+  & > div {
+    border: transparent !important;
+  }
+
+  & button {
+    font-size: 1.8rem;
+  }
+}

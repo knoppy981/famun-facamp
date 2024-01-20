@@ -194,7 +194,7 @@ async function delegationWith2Users() {
 
 async function postponePaymentExpiration() {
 	await prisma.delegation.update({
-		where:{
+		where: {
 			code: "123456"
 		},
 		data: {
@@ -203,12 +203,61 @@ async function postponePaymentExpiration() {
 	})
 }
 
+async function createAdmin() {
+	const admin = await prisma.admin.create({
+		data: {
+			email: "admin@famun.com",
+			password: "Dede5562"
+		}
+	})
+}
+
+async function createXDelegations(max) {
+	const { JSON_WEB_TOKEN_SECRET } = process.env;
+
+	for (let i = 0; i < max; i++) {
+		await prisma.delegation.delete({ where: { school: `teste ${i}` } }).catch(err => { console.log('no delegation found') })
+
+		const delegationCode = i > 9 ? `${i}1331` : `${i}12331`
+
+		const token = jwt.sign(
+			{ delegationCode },
+			JSON_WEB_TOKEN_SECRET,
+			{ expiresIn: 90 * 24 * 60 * 60 }
+		);
+
+		await prisma.delegation.create({
+			data: {
+				code: delegationCode,
+				inviteLink: `http://localhost:3000/i/${token}`,
+				school: `teste ${i}`,
+				schoolPhoneNumber: "+55 19 97866 7676",
+				participationMethod: i % 2 === 0 ? "Escola" : "Universidade",
+				paymentExpirationDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
+				address: {
+					create: {
+						city: "Campinas",
+						state: "SP",
+						address: "Rua Elviro",
+						postalCode: "12099522",
+						country: "Brasil",
+					}
+				},
+			}
+		})
+	}
+}
+
 async function seed() {
-	await delegationWith2Users()
+	// await delegationWith2Users()
 
 	// await delegationWith10Delegates()
 
 	// await postponePaymentExpiration()
+
+	// await createAdmin()
+
+	// await createXDelegations(20)
 
 	console.log(`Database has been seeded. 🌱`);
 }
