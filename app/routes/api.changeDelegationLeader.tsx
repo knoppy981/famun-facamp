@@ -4,14 +4,16 @@ import { getUserById } from "~/models/user.server"
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData()
-  const participantId = formData.get("participantId") as string
-  const delegationId = formData.get("delegationId") as string
-  const leaderId = formData.get("leaderId") as string
+  const participantId = formData.get("participantId")
+  const delegationId = formData.get("delegationId")
+  const leaderId = formData.get("leaderId")
+
+  if (!participantId || !delegationId || !leaderId) throw json({})
 
   let delegation
   try {
     delegation = await updateDelegation({
-      delegationId: delegationId,
+      delegationId: delegationId as string,
       values: {
         participants: {
           updateMany: [
@@ -38,7 +40,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   } catch (error) {
     console.log(error)
     return json(
-      { errors: { changeLeader: "Failed updating leade" } },
+      { errors: { changeLeader: "Failed updating leader" } },
       { status: 400 }
     )
   }

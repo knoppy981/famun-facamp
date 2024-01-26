@@ -904,6 +904,37 @@ input:-webkit-autofill:active {
   font-size: 1.8rem;
 }
 
+.admin-dialog-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.admin-dialog-title {
+  font-size: 2.2rem;
+  min-width: 500px;
+}
+@media screen and (max-width: 700px) {
+  .admin-dialog-title {
+    min-width: auto;
+  }
+}
+
+.admin-dialog-item {
+  font-size: 1.6rem;
+  vertical-align: middle;
+}
+.admin-dialog-item span {
+  font-size: 2.2rem;
+}
+
+.admin-dialog-list-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 1.6rem;
+}
+
 .dashboard-wrapper {
   min-height: 85vh;
   margin: 10vh 10vw 5vh;

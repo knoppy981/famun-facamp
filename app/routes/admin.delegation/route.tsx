@@ -1,23 +1,32 @@
-import { FetcherWithComponents, useFetcher, useOutletContext } from '@remix-run/react'
-import React, { useEffect } from 'react'
+import React from 'react'
+import { useFetcher, useOutletContext } from '@remix-run/react'
 import Button from '~/components/button'
 import Spinner from '~/components/spinner'
 
 import { FiCheckCircle, FiXCircle } from "react-icons/fi/index.js";
+import { ParticipationMethod } from '@prisma/client';
+import { useDelegationData } from './useDelegationData';
+import { useDelegationsList } from './useDelegationsList';
+import DelegationData from './delegationData';
+import { delegationAoo } from '~/sheets/data';
 
 const Delegation = () => {
   const fetcher = useFetcher<any>()
-  const { participationMethod } = useOutletContext<{ participationMethod: "Escolas" | "Universidades" }>()
-  const [searchIndex, setSearchIndex, delegations] = useDelegationList(fetcher, participationMethod)
+  const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
+  const [searchIndex, setSearchIndex, delegations] = useDelegationsList(fetcher, participationMethod)
+  const delegationFetcher = useFetcher<any>()
+  const [delegation, state, openModal, aoo] = useDelegationData(delegationFetcher)
 
   return (
     <>
+      <DelegationData delegation={delegation} state={state} aoo={aoo} />
+
       <div className='overflow-container'>
         <table className='table'>
           <thead>
             <tr className="table-row example">
               <td className='table-cell'>
-                {participationMethod.slice(0, -1)}
+                {participationMethod}
               </td>
 
               <td className='table-cell' style={{ paddingLeft: "30px" }}>
@@ -39,22 +48,30 @@ const Delegation = () => {
               const participantsCount = item.participants.length
               const info = true
               const payments = item._count.participants === participantsCount
-              const documents = item.participants.filter(participant => participant._count.files > 0).length === participantsCount
+              let necessaryDocumentsCount = item.participants.reduce((accumulator, participant) => {
+                if (participant.delegate) {
+                  accumulator += 2;
+                } else if (participant.delegationAdvisor) {
+                  accumulator += 1;
+                }
+                return accumulator;
+              }, 0);
+              const documents = item.participants.filter(participant => participant._count.files > 0).length === necessaryDocumentsCount
 
-              return participantsCount > 0 ? (
+              return participantsCount > 0 ?
                 <tr
                   className="table-row cursor"
                   key={index}
-                  /* onClick={() => handleUserClick(item.name)} */
+                  onClick={() => openModal(item)}
                   tabIndex={0}
                   role="link"
                   aria-label={`Details for delegation ${item.school}`}
-                /* onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === 'Space') {
-                    handleUserClick(item.name);
-                    event.preventDefault();
-                  }
-                }} */
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === 'Space') {
+                      openModal(item);
+                      event.preventDefault();
+                    }
+                  }}
                 >
                   <td className='table-cell'>
                     <div className='table-flex-cell'>
@@ -92,7 +109,7 @@ const Delegation = () => {
                     </div>
                   </td>
                 </tr>
-              ) :
+                :
                 <tr className="table-row" key={index}>
                   <td className='table-cell'>
                     <div className='table-flex-cell'>
@@ -122,59 +139,6 @@ const Delegation = () => {
       }
     </>
   )
-}
-
-function useDelegationList(fetcher: FetcherWithComponents<any>, participationMethod: "Escolas" | "Universidades"): [
-  number | null,
-  React.Dispatch<React.SetStateAction<number | null>>,
-  {
-    school: string;
-    participants: {
-      name: string;
-      _count: {
-        files: number;
-      };
-    }[];
-    _count: {
-      participants: number;
-    };
-  }[]] {
-  const [searchIndex, setSearchIndex] = React.useState<number | null>(0)
-  const [delegations, setDelegations] = React.useState<{
-    school: string;
-    participants: {
-      name: string;
-      _count: {
-        files: number;
-      };
-    }[];
-    _count: {
-      participants: number;
-    };
-  }[]>([])
-
-  const handleSubmission = (searchIndex: number, participationMethod: "Escolas" | "Universidades") => {
-    fetcher.load(`/api/adminDelegationList?i=${searchIndex}&pm=${participationMethod}`)
-  }
-
-  useEffect(() => {
-    setSearchIndex(0)
-  }, [participationMethod])
-
-  useEffect(() => {
-    console.log(searchIndex)
-    if (searchIndex !== null) handleSubmission(searchIndex, participationMethod)
-  }, [searchIndex])
-
-  useEffect(() => {
-    if (fetcher.data?.delegations) {
-      console.log(fetcher.data?.delegations.length)
-      setDelegations(prevState => [...prevState, ...fetcher.data?.delegations])
-      if (fetcher.data?.delegations.length < 12) setSearchIndex(null)
-    }
-  }, [fetcher.data])
-
-  return [searchIndex, setSearchIndex, delegations]
 }
 
 export default Delegation

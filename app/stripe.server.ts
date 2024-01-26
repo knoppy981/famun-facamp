@@ -5,6 +5,7 @@ import qs from "qs"
 import { getUserByCustomerId, getUserById, type UserType } from '~/models/user.server';
 import { sendEmail } from "./nodemailer.server";
 import { paymentCompletedEmail } from "./lib/emails";
+import { DelegationType } from "./models/delegation.server";
 
 if (typeof process.env.STRIPE_SECRET_KEY === 'undefined') {
   throw new Error('stripe secret key is not defined in the environment variables');
@@ -63,6 +64,21 @@ export async function createPaymentIntent({
       payerId: userId,
       paidUsersIds: qs.stringify(usersIdsThatWillBePaid),
     },
+  });
+}
+
+export async function getDelegationCharges(delegation: DelegationType) {
+  let query = ""
+  delegation.participants?.map(participant => participant?.stripeCustomerId)?.forEach((customerId, index) => {
+    if (customerId !== null) {
+      query += `${index !== 0 ? " OR " : ""}customer:"${customerId}"`
+    }
+  })
+
+  if (query === "") return
+
+  return stripe.charges.search({
+    query
   });
 }
 

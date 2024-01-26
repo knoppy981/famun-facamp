@@ -20,7 +20,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 const AdminPage = () => {
   const matches = useMatches()
   const [stickyRef, isSticky] = useStickyContainer()
-  const [participationMethod, setParticipationMethod] = React.useState<Key>("Escolas")
+  const [participationMethod, setParticipationMethod] = React.useState<Key>("Escola")
 
   const menuItems = [
     { name: "Delegações e Pagamentos", to: "delegation", active: "/admin/delegation" },
@@ -54,11 +54,11 @@ const AdminPage = () => {
             selectedKey={participationMethod}
             onSelectionChange={setParticipationMethod}
             items={[
-              { id: "Escolas" },
-              { id: "Universidades" },
+              { id: "Escola" },
+              { id: "Universidade" },
             ]}
           >
-            {(item) => <Item>{item.id}</Item>}
+            {(item) => <Item>{item.id + "s"}</Item>}
           </Select>
         </div>
 

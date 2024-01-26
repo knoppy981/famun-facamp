@@ -107,13 +107,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         );
       }
 
-      /* return createUserSession({
+      return createUserSession({
         request,
         userId: user.id,
         delegationId: delegation.id,
         remember: false,
         redirectTo: redirectTo ? safeRedirect(redirectTo) : `/dashboard/home`,
-      }); */
+      });
 
       return json({})
     }

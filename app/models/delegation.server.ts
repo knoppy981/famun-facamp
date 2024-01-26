@@ -96,18 +96,24 @@ export async function adminDelegationsList(index: number, participationMethod: P
 		skip: index * 12,
 		take: 12,
 		where: {
-			participationMethod: "Escola"
+			participationMethod: participationMethod
 		},
 		select: {
+			id: true,
 			school: true,
 			participants: {
 				select: {
 					name: true,
+					delegate: true,
+					delegationAdvisor: true,
 					_count: {
 						select: {
 							files: {
 								where: {
-									name: "Liability Waiver"
+									OR: [
+										{ name: "Liability Waiver" },
+										{ name: "Position Paper" }
+									]
 								}
 							}
 						}
@@ -125,6 +131,32 @@ export async function adminDelegationsList(index: number, participationMethod: P
 					}
 				}
 			}
+		}
+	})
+}
+
+export async function adminDelegationData(delegationId: Delegation["id"]) {
+	return prisma.delegation.findUnique({
+		where: {
+			id: delegationId,
+		},
+		include: {
+			address: true,
+			participants: {
+				include: {
+					delegate: true,
+					delegationAdvisor: true,
+					foodRestrictions: true,
+					files: {
+						select: {
+							name: true,
+							size: true,
+							createdAt: true,
+							fileName: true,
+						}
+					}
+				}
+			},
 		}
 	})
 }
