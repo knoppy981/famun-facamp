@@ -26,6 +26,7 @@ import Dialog from "~/components/dialog";
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   let userId = formData.get("userId")
+  console.log("userId: " + userId)
   let { id, ...data } = qs.parse(formData.get("data") as string) as any
 
   data = await formatDelegationData({

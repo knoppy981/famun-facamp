@@ -257,7 +257,7 @@ async function seed() {
 
 	// await createAdmin()
 
-	 await createXDelegations(20)
+	// await createXDelegations(20)
 
 	console.log(`Database has been seeded. 🌱`);
 }

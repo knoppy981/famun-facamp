@@ -20,7 +20,9 @@ export function useUserUpdate(user: UserType, fetcher: FetcherWithComponents<any
   React.useEffect(() => {
     // if input values are different than user data allow form submission
     setReadySubmission(!_.isEqual(formData, user) && userWantsToChangeData)
+    console.log(formData)
   }, [formData])
+
   React.useEffect(() => {
     // if loading back data and no errors, set every state back to default
     if (fetcher.state === 'loading' && !fetcher.data?.errors) {

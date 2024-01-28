@@ -27,7 +27,13 @@ export function useDelegationUpdate(
     if (!_.isEqual(delegation, formData) && userWantsToChangeData) {
       //different data
       setReadySubmission(true)
-      setAllowChangeParticipant(false)
+      if (_.isEqual(delegation.participants?.find(participant => participant.id === selectedUserId), formData.participants?.find(participant => participant.id === selectedUserId))) {
+        // only block participant change if participants are different
+        console.log("participants are equal")
+        setAllowChangeParticipant(true)
+      } else {
+        setAllowChangeParticipant(false)
+      }
     } else {
       setReadySubmission(false)
       setAllowChangeParticipant(true)
@@ -50,13 +56,15 @@ export function useDelegationUpdate(
     if (!allowChanges) return
     if (readySubmission) {
       fetcher.submit(
-        { data: qs.stringify(formData), userId: selectedUserId },
+        { data: qs.stringify(formData), userId: allowChangeParticipant ? "" : selectedUserId },
         { method: "post", preventScrollReset: true, navigate: false }
       )
     } else {
       setUserWantsToChangeData(!userWantsToChangeData)
     }
   }
+
+  // --------------------------------------------------------------------------------- //
 
   const handleRemoveParticipant = (participantId: string) => {
     removeParticipantFetcher.submit(

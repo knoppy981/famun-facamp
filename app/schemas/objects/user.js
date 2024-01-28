@@ -122,16 +122,16 @@ export const prismaUserSchema = Joi.object({
   rg: Joi.string().when('nacionality', {
     is: "Brazil",
     then: Joi.required(),
-    otherwise: Joi.string().allow('').optional(),
+    otherwise: Joi.string().allow('', null).optional(),
   }).messages({
     'string.empty': 'RG is required',
   }),
 
-  cpf: customCpf.cpf().optional().allow(''),
+  cpf: customCpf.cpf().optional().allow('', null),
 
   passport: Joi.string().when('nacionality', {
     is: "Brazil",
-    then: Joi.string().allow('').optional(),
+    then: Joi.string().allow('', null).optional(),
     otherwise: Joi.required(),
   }).messages({
     'string.empty': 'Passport is required',

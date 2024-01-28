@@ -77,6 +77,8 @@ export async function getExistingUser({ userId, ...values }: { userId?: User["id
 
 	let user
 
+	console.log(checkableValues)
+
 	try {
 		user = await prisma.user.findFirstOrThrow({
 			where: {
@@ -84,6 +86,7 @@ export async function getExistingUser({ userId, ...values }: { userId?: User["id
 				NOT: { id: userId }
 			}
 		})
+		console.log(user)
 	} catch (e) {
 		return {}
 	}
@@ -220,9 +223,9 @@ export async function formatUserData({
 				hash: await bcrypt.hash(data.password, 10)
 			}
 		} : undefined,
-		cpf: data.cpf ? data.cpf : "",
-		rg: data.rg ? data.rg : "",
-		passport: data.passport ? data.passport : "",
+		cpf: data.cpf ? data.cpf : null,
+		rg: data.rg ? data.rg : null,
+		passport: data.passport ? data.passport : null,
 		phoneNumber: data.phoneNumber,
 		birthDate: data.birthDate,
 		nacionality: data.nacionality,

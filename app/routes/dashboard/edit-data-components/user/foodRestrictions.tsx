@@ -19,7 +19,7 @@ const FoodRestrictions = (props: any) => {
           onChange={e => handleChange({
             target: {
               name: "foodRestrictions.diet",
-              value: e.length === 1 ? e[0] : e.length === 0 ? undefined : e
+              value: e
             }
           })
           }

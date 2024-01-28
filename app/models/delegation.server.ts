@@ -356,7 +356,7 @@ export async function formatDelegationData({
 			participants = {
 				[participantModification]: aux
 			}
-		} else if (participantModification === "update" && usersIdFilter.length === 1) {
+		} else if (participantModification === "update" && usersIdFilter.length === 1 && usersIdFilter[0] !== "") {
 			// check
 			let aux = data.participants.find((participant: UserWithDelegateAndAdvisor) => participant.id === usersIdFilter[0])
 			participants = {

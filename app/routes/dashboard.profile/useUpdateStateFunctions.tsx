@@ -35,9 +35,9 @@ export function useUpdateStateFunctions(formData: UserType, setFormData: React.D
       }
 
       if (name === "nacionality") {
-        newData.passport = ""
-        newData.rg = ""
-        newData.cpf = ""
+        newData.passport = null
+        newData.rg = null
+        newData.cpf = null
       }
 
       // Return the updated state
