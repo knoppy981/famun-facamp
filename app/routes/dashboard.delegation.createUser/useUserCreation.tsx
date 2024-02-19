@@ -1,57 +1,34 @@
 import React from "react"
 import { Council, Languages, ParticipationMethod } from "@prisma/client"
 import { FetcherWithComponents } from "@remix-run/react"
+import _ from "lodash"
 import qs from "qs"
 
 import { UserType } from "~/models/user.server"
+import { defaultUser } from "./defaultUserData"
 
-export function useUserCreation(
-  user: UserType,
-  userType: "delegate" | "advisor" | undefined,
-  fetcher: FetcherWithComponents<any>,
-  delegatesCount: number,
-  delegationId: string,
-  participationMethod: string
-): [
-    string,
-    (userType: "delegate" | "advisor") => void,
-    { allowed: boolean, type: string } | undefined,
-    UserType,
-    React.Dispatch<React.SetStateAction<UserType>>,
-    () => void
-  ] {
-  const normalUser = {
-    id: '',
-    email: '',
-    name: '',
-    rg: '',
-    cpf: '',
-    passport: '',
-    phoneNumber: '',
-    birthDate: '',
-    nacionality: 'Brazil',
-    delegate: {
-      emergencyContactName: '',
-      emergencyContactPhoneNumber: '',
-      councilPreference: [
-        'Conselho_de_Seguranca_da_ONU',
-        'Rio_92',
-        'Assembleia_Geral_da_ONU',
-        'Conselho_de_Juventude_da_ONU'
-      ] as Council[],
-      languagesSimulates: [] as Languages[]
-    },
-    delegationAdvisor: {
-      advisorRole: 'Professor',
-      facebook: '',
-      instagram: '',
-      linkedin: ''
-    }
-  } as UserType
+const newUserDataDefaultValues = {
+  "delegate.councilPreference": ['Conselho_de_Seguranca_da_ONU', 'Rio_92', 'Assembleia_Geral_da_ONU', 'Conselho_de_Juventude_da_ONU'],
+  nacionality: "Brazil"
+}
 
+export function useUserCreation(user: UserType, userType: "delegate" | "advisor" | undefined, fetcher: FetcherWithComponents<any>, delegatesCount: number, delegationId: string, participationMethod: string): {
+  creatingUserType: string,
+  changeCreatingUserType: (userType: "delegate" | "advisor") => void,
+  creationPermission: { allowed: boolean, type: string } | undefined,
+  handleChange: (e: any) => void,
+  handleSubmission: () => void,
+  editUserDataId: boolean
+} {
   const [creatingUserType, setCreatingUserType] = React.useState("delegate")
   const [creationPermission, setCreationPermission] = React.useState<{ allowed: boolean, type: string } | undefined>(undefined)
-  const [formData, setFormData] = React.useState(normalUser)
+  const [newUserData, setNewUserData] = React.useState<{ [key: string]: any }>(newUserDataDefaultValues)
+  const [editUserDataId, setEditUserDataId] = React.useState(false)
+
+  React.useEffect(() => {
+    console.log("newUserData: ")
+    console.log(newUserData)
+  }, [newUserData])
 
   React.useEffect(() => {
     // update the variable that decides if the user can create a user
@@ -68,44 +45,57 @@ export function useUserCreation(
         return { allowed: false, type: "userType" }
       }
     })
-    // update the default value for the user being created
-
   }, [creatingUserType])
 
   React.useEffect(() => {
     // setting data back to default after creating user
-    if (fetcher?.data?.user?.name === formData.name)
-      setFormData(() => {
-        let newUser = { ...normalUser }
-        newUser.id = fetcher.data.user.name
-        return newUser
-      })
+    console.log(fetcher?.data)
+    if (fetcher?.data?.newUser?.name) {
+      console.log("entered")
+      setNewUserData(newUserDataDefaultValues)
+      setEditUserDataId(prevValue => !prevValue)
+    }
   }, [fetcher.data])
 
   const changeCreatingUserType = (userType: "delegate" | "advisor") => {
-    setFormData((prevState: any) => {
+    setNewUserData((prevState: any) => {
       let newData = { ...prevState }
-      newData.delegate = userType === "delegate" ? normalUser.delegate : undefined
-      newData.delegationAdvisor = userType === "advisor" ? normalUser.delegationAdvisor : undefined
+      Object.keys(newData).forEach(key => {
+        // Check if the current key includes the substring 'xab'
+        if (key.includes(userType === "advisor" ? "delegate" : "delegationAdvisor")) {
+          // If so, delete this key from the object
+          delete newData[key];
+        }
+      });
+      if (userType === "delegate") {
+        newData["delegate.councilPreference"] = ['Conselho_de_Seguranca_da_ONU', 'Rio_92', 'Assembleia_Geral_da_ONU', 'Conselho_de_Juventude_da_ONU']
+      }
       return newData
     })
     setCreatingUserType(userType)
   }
 
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+    setNewUserData((prevState: { [key: string]: any }) => {
+      return { ...prevState, [name]: value }
+    })
+  }
+
   const handleSubmission = () => {
     if (!creationPermission?.allowed) return
     fetcher.submit(
-      { data: qs.stringify(formData), delegationId: delegationId, participationMethod },
+      { newUserData: qs.stringify(newUserData) },
       { method: "post", preventScrollReset: true, navigate: false }
     )
   }
 
-  return [
+  return {
     creatingUserType,
     changeCreatingUserType,
     creationPermission,
-    formData,
-    setFormData,
-    handleSubmission
-  ]
+    handleChange,
+    handleSubmission,
+    editUserDataId
+  }
 }

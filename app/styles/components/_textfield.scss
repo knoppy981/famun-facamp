@@ -3,6 +3,10 @@
 .label {
   color: #000;
 
+  &.dark {
+    color: #fff;
+  }
+
   &.error {
     color: $vermelho;
   }
@@ -59,6 +63,11 @@
   background: transparent;
   letter-spacing: normal;
   -webkit-text-fill-color: #000 !important;
+
+  &.dark {
+    color: #fff;
+    -webkit-text-fill-color: #fff !important;
+  }
 
   &:disabled {
     opacity: 1 !important;

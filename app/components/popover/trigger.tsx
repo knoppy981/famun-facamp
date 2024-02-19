@@ -5,7 +5,7 @@ import Popover from './index';
 import { AnimatePresence } from 'framer-motion';
 import Button from '../button';
 
-const PopoverTrigger = ({ isNonModal, label, children, ...props }: any) => {
+const PopoverTrigger = ({ isNonModal, label, children, buttonClassName, ...props }: any) => {
   let ref = React.useRef(null);
   let popoverRef = React.useRef(null);
 
@@ -18,7 +18,7 @@ const PopoverTrigger = ({ isNonModal, label, children, ...props }: any) => {
 
   return (
     <>
-      <Button {...triggerProps} ref={ref}>{label}</Button>
+      <Button {...triggerProps} ref={ref} className={buttonClassName}>{label}</Button>
       
       <AnimatePresence>
         {state.isOpen &&

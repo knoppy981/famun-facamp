@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-export function iterateObject(obj: { [key: string]: any }, callback: (key:  { [key: string]: any }, value: any, path: string) => void, basePath: string = ''): void {
+export function iterateObject(obj: { [key: string]: any }, callback: (key: string, value: any, path: string) => void, basePath: string = ''): void {
   Object.entries(obj).forEach(([key, value]) => {
     const currentPath = basePath ? `${basePath}.${key}` : key;
 
@@ -9,7 +9,7 @@ export function iterateObject(obj: { [key: string]: any }, callback: (key:  { [k
       iterateObject(value, callback, currentPath);
     } else {
       // Call the callback for every non-object value
-      callback(obj, key, currentPath);
+      callback(key, value, currentPath);
     }
   });
 }

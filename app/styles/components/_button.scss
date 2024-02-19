@@ -3,7 +3,6 @@
 
 .default-button {
   position: relative;
-  outline: none;
   border: none;
   display: flex;
   align-items: center;
@@ -18,7 +17,6 @@
 }
 
 .primary-button-box {
-  border-radius: 5px;
   height: 4.5rem;
   background: $azulClaro;
   gap: 15px;
@@ -27,7 +25,6 @@
   cursor: pointer;
   transition: 0.4s all ease;
   color: #000;
-  font-weight: 400;
   font-size: 1.5rem;
   border: none;
   outline: 2px solid transparent;
@@ -53,16 +50,12 @@
 
   @media screen and (max-width: 700px) {
     height: 5.2rem;
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
 
   &:disabled {
     background: transparent;
     color: #666666;
-  }
-
-  @media screen and (max-width: 700px) {
-    font-size: 2rem;
   }
 }
 

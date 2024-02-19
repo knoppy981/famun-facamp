@@ -3,14 +3,12 @@
   gap: 5px;
   align-items: center;
   justify-content: center;
-  outline: none;
   border: none;
   font-size: inherit;
   text-decoration: none;
 
   svg {
     font-size: 2rem;
-    transform: translateY(1px);
   }
 
   &.underline {

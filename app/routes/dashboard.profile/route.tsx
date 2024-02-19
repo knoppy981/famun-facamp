@@ -8,59 +8,58 @@ import { motion } from 'framer-motion'
 
 import { useUser, useUserType } from '~/utils'
 import { getCorrectErrorMessage } from '~/utils/error'
-import { formatUserData, getExistingUser, updateUser } from '~/models/user.server';
+import { getExistingUser, updateUser } from '~/models/user.server';
 import { useOnScreen } from '~/hooks/useOnScreen'
-import { prismaUserSchema } from '~/schemas'
+import { updateUserSchema } from '~/schemas'
 
 import Button from '~/components/button'
 import EditUserData from '../dashboard/edit-data-components/user'
 import { useUserUpdate } from './useUserUpdate'
-import { useUpdateStateFunctions } from './useUpdateStateFunctions'
 import { useButtonState } from './useButtonState'
 import { requireUser } from '~/session.server'
-import { findDifferences, iterateObject } from '../dashboard/utils/findDiffrences'
+import { iterateObject } from '../dashboard/utils/findDiffrences'
+import { createUserChangeNotification } from '~/models/notifications.server'
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const user = await requireUser(request)
   const formData = await request.formData();
-  const data = formData.get("data") as string
-  let { id, ...userData } = qs.parse(data) as any
+  let changes = qs.parse(formData.get("changes") as string)
+  let data: any = {}
 
-  iterateObject(userData, (currentObj, key, path) => {
-    if (currentObj[key] === "true") {
-      currentObj[key] = true; // Update the value to boolean true
-    }
-
-    if (currentObj[key] === "") {
-      currentObj[key] = null; // Update the value to null
+  iterateObject(changes, (key, value, path) => {
+    if (value === "false" || value === "true") value = value === "true"
+    if (key.includes('.')) {
+      const [field, nestedField] = key.split('.')
+      if (typeof data[field] === 'object' && data[field] !== null) {
+        if (field === "foodRestrictions") {
+          data[field]["upsert"]["create"][nestedField] = value ?? null;
+          data[field]["upsert"]["update"][nestedField] = value ?? null;
+        } else {
+          data[field]["update"][nestedField] = value ?? null;
+        }
+      } else {
+        if (field === "foodRestrictions") {
+          data[field] = { upsert: { create: { [nestedField]: value ?? null }, update: { [nestedField]: value ?? null } } };
+        } else {
+          data[field] = { update: { [nestedField]: value ?? null } };
+        }
+      }
+    } else {
+      data[key] = value
     }
   });
 
-  const differences = findDifferences(user, userData);
-  console.log(user)
-  console.log(userData)
-  console.log(differences);
-
-  return json(user)
-
-/*   userData = await formatUserData({
-    data: userData,
-    childrenModification: "update",
-    userType: userData.delegate ? "delegate" : "advisor",
-    participationMethod: userData.participationMethod
-  }) as any
-
-  if (userData === undefined) return json({ errors: { data: "Unknown error" } }, { status: 404 })
+  console.dir(data, { depth: null })
 
   try {
-    await prismaUserSchema.validateAsync(userData)
+    await updateUserSchema.validateAsync(data)
     await getExistingUser({
-      name: userData.name ?? "",
-      email: userData.email ?? "",
-      cpf: userData.cpf === "" ? undefined : userData.cpf,
-      rg: userData.rg === "" ? undefined : userData.rg,
-      passport: userData.passport === "" ? undefined : userData.passport,
-      userId: id as string
+      name: data.name ?? "",
+      email: data.email ?? "",
+      cpf: data.cpf === "" ? undefined : data.cpf,
+      rg: data.rg === "" ? undefined : data.rg,
+      passport: data.passport === "" ? undefined : data.passport,
+      userId: user.id
     })
   } catch (error) {
     console.log(error)
@@ -71,7 +70,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   }
 
-  return updateUser({ userId: id as string, values: userData }) */
+  await createUserChangeNotification(user.id, qs.stringify(data), user.id, `Changed ${user.name} data`)
+
+  return updateUser({ userId: user.id, values: data })
 }
 
 const Profile = () => {
@@ -80,10 +81,8 @@ const Profile = () => {
   const [buttonRef, isRefVisible] = useOnScreen();
   const user = useUser()
   const userType = useUserType()
-  const { readySubmission, userWantsToChangeData, handleSubmission, formData, setFormData, } =
+  const { readySubmission, userWantsToChangeData, handleSubmission, handleChange, } =
     useUserUpdate(user, fetcher)
-  const [handleChange, handleAddLanguage, handleRemoveLanguage] =
-    useUpdateStateFunctions(formData, setFormData)
   const [buttonLabel, buttonIcon, buttonColor] = useButtonState(userWantsToChangeData, readySubmission, fetcher.state)
 
   return (
@@ -102,10 +101,9 @@ const Profile = () => {
       <EditUserData
         isDisabled={!userWantsToChangeData}
         actionData={actionData}
-        formData={formData}
+        defaultValues={user}
+        id={""}
         handleChange={handleChange}
-        handleAddLanguage={handleAddLanguage}
-        handleRemoveLanguage={handleRemoveLanguage}
         userType={userType}
       />
 

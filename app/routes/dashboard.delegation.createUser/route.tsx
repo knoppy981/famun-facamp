@@ -5,30 +5,36 @@ import { AnimatePresence } from "framer-motion";
 import qs from "qs"
 import { motion } from "framer-motion";
 
-import { createUser, formatUserData, getExistingUser } from "~/models/user.server"
-import { DelegationType, countDelegates, joinDelegationById } from "~/models/delegation.server"
+import { createUser, getExistingUser } from "~/models/user.server"
+import { DelegationType } from "~/models/delegation.server"
 import { useOnScreen } from "~/hooks/useOnScreen";
 import { useUser, useUserType, generatePassword } from "~/utils";
 import { getCorrectErrorMessage } from "~/utils/error";
-import { prismaUserSchema } from "~/schemas";
+import { createUserSchema } from "~/schemas";
 import { useUserCreation } from "./useUserCreation";
-import { useUpdateStateFunctions } from "./useUpdateStateFunctions";
 import { useButtonState } from "./useButtonState";
 import { useModalContext } from "./useModalContext";
+import { requireDelegation, requireUser } from "~/session.server";
 
 import EditUserData from "../dashboard/edit-data-components/user";
 import Modal from "~/components/modalOverlay";
 import Button from "~/components/button";
 import Dialog from "~/components/dialog";
 import { Select, Item } from "~/components/select";
+import { defaultUser } from "./defaultUserData";
+import { iterateObject } from "../dashboard/utils/findDiffrences";
+import { createDelegationChangeNotification } from "~/models/notifications.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
+  const user = await requireUser(request)
+  const delegation = await requireDelegation(request)
   const formData = await request.formData()
-  const delegationId = formData.get("delegationId") as string
-  const participationMethod = formData.get("participationMethod") as string
-  const data = formData.get("data") as string
+  const newUserData = qs.parse(formData.get("newUserData") as string)
 
-  const count = await countDelegates(delegationId)
+  const count = delegation.participants?.reduce((accumulator, participant) => {
+    if (participant.delegate) accumulator += 1
+    return accumulator
+  }, 0) as number
   if (count > 10) {
     return json(
       { errors: { participants: "Maximum delegates reached" } },
@@ -36,28 +42,34 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     )
   }
 
-  let userData = {
-    ...qs.parse(data) as any,
-    password: generatePassword(),
+  let data: any = {
+    participationMethod: delegation.participationMethod
   }
 
-  userData = await formatUserData({
-    data: userData,
-    childrenModification: "create",
-    userType: userData.delegate ? "delegate" : "advisor",
-    participationMethod: participationMethod
-  })
+  iterateObject(newUserData, (key, value, path) => {
+    if (value === "false" || value === "true") value = value === "true"
+    if (key.includes('.')) {
+      const [field, nestedField] = key.split('.')
+      if (typeof data[field] === 'object' && data[field] !== null) {
+        data[field]["create"][nestedField] = value ?? null;
+      } else {
+        data[field] = { create: { [nestedField]: value ?? null } };
+      }
+    } else {
+      data[key] = value
+    }
+  });
 
-  let user
+  console.dir(data, { depth: null })
 
   try {
-    await prismaUserSchema.validateAsync(userData)
+    await createUserSchema.validateAsync(data)
     await getExistingUser({
-      name: userData.name === "" ? undefined : userData.name,
-      email: userData.email === "" ? undefined : userData.email,
-      cpf: userData.cpf === "" ? undefined : userData.cpf,
-      rg: userData.rg === "" ? undefined : userData.rg,
-      passport: userData.passport === "" ? undefined : userData.passport,
+      name: data.name === "" ? undefined : data.name,
+      email: data.email === "" ? undefined : data.email,
+      cpf: data.cpf === "" ? undefined : data.cpf,
+      rg: data.rg === "" ? undefined : data.rg,
+      passport: data.passport === "" ? undefined : data.passport,
     })
   } catch (error) {
     console.log(error)
@@ -68,14 +80,23 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   }
 
+  let newUser
+
   try {
-    user = await createUser(userData)
-    await joinDelegationById(delegationId, user.id)
+    newUser = await createUser({
+      ...data,
+      delegation: {
+        connect: {
+          id: delegation.id
+        }
+      }
+    })
+    /* await createDelegationChangeNotification(user.id, qs.stringify(data), newUser.id, "delegation", `Created ${newUser.name}, and joined ${delegation.school} delegation`) */
   } catch (e) {
     console.log(e)
   }
 
-  return json({ user })
+  return json({ newUser })
 }
 
 const CreateUser = () => {
@@ -85,10 +106,8 @@ const CreateUser = () => {
   const user = useUser()
   const userType = useUserType()
   const fetcher = useFetcher()
-  const [creatingUserType, changeCreatingUserType, creationPermission, formData, setFormData, handleSubmission] =
+  const { creatingUserType, changeCreatingUserType, creationPermission, handleChange, handleSubmission, editUserDataId } =
     useUserCreation(user, userType, fetcher, delegatesCount, delegation.id, delegation.participationMethod)
-  const [handleChange, handleAddLanguage, handleRemoveLanguage] =
-    useUpdateStateFunctions(formData, setFormData)
   const [buttonLabel, buttonIcon, buttonColor] = useButtonState(creationPermission?.allowed, fetcher.state)
   const [modalContext, state] = useModalContext(fetcher)
 
@@ -160,10 +179,9 @@ const CreateUser = () => {
       <EditUserData
         isDisabled={!creationPermission?.allowed}
         actionData={fetcher.data}
-        formData={formData}
+        defaultValues={defaultUser}
         handleChange={handleChange}
-        handleAddLanguage={handleAddLanguage}
-        handleRemoveLanguage={handleRemoveLanguage}
+        id={editUserDataId}
         userType={creatingUserType}
       />
 

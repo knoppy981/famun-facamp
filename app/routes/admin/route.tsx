@@ -2,29 +2,39 @@ import React, { Key, useRef } from 'react'
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { requireAdmin } from '~/session.server';
 import { FiChevronRight, FiLogOut, FiMenu, FiX } from "react-icons/fi/index.js";
-import { Form, NavLink, Outlet, useMatches } from '@remix-run/react';
+import { Form, NavLink, Outlet, useMatches, useNavigate, useSearchParams } from '@remix-run/react';
 import Button from '~/components/button';
 import { SidebarTrigger } from '../dashboard/sidebar';
 import { Select, Item } from './select';
 import { motion } from 'framer-motion';
 import { useStickyContainer } from '~/hooks/useStickyContainer';
+import Link from '~/components/link';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
-  if (url.pathname === "/admin") return redirect("/admin/delegation")
+  if (url.pathname === "/admin") return redirect("/admin/delegations")
 
   const adminId = await requireAdmin(request)
-  return json({ adminId })
+  return json({})
 };
 
 const AdminPage = () => {
   const matches = useMatches()
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [stickyRef, isSticky] = useStickyContainer()
-  const [participationMethod, setParticipationMethod] = React.useState<Key>("Escola")
+  const [participationMethod, setParticipationMethod] = React.useState<Key>(searchParams.get("pm") ?? "Escola")
+
+  React.useEffect(() => {
+    setSearchParams(prev => {
+      prev.set("pm", participationMethod as string)
+      return prev
+    })
+  }, [participationMethod])
 
   const menuItems = [
-    { name: "Delegações e Pagamentos", to: "delegation", active: "/admin/delegation" },
-    { name: "Designação e Position Paper", to: "participants", active: "/admin/participants" },
+    { name: "Delegações e Pagamentos", to: "delegations", active: "/admin/delegations" },
+    { name: "Designação e Position Paper", to: "comittees", active: "/admin/comittees" },
     { name: "Credenciamento", to: "credentials", active: "/admin/credentials" },
   ]
 
@@ -48,7 +58,7 @@ const AdminPage = () => {
         <div className='dashboard-nav-item'>
           <Select
             className="admin-title-select"
-            name="advisorRole"
+            name="pm"
             aria-label="Posição do(a) Professor(a) Orientador(a)"
             hideLabel={true}
             selectedKey={participationMethod}
@@ -58,7 +68,7 @@ const AdminPage = () => {
               { id: "Universidade" },
             ]}
           >
-            {(item) => <Item>{item.id + "s"}</Item>}
+            {(item) => <Item textValue={item.id}>{item.id + "s"}</Item>}
           </Select>
         </div>
 
@@ -119,7 +129,10 @@ const AdminPage = () => {
               role="link"
               prefetch='render'
               aria-label={`${item.to}-link`}
-              to={item.to}
+              to={{
+                pathname: item.to,
+                search: searchParams.toString(),
+              }}
               ref={ref}
             >
               {({ isActive }) => (

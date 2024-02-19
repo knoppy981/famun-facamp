@@ -1,15 +1,25 @@
 @import "../abstracts/colors";
 
 .data-box-wrapper {
-  width: 100%;
   grid-gap: 8px;
   display: flex;
   flex-wrap: wrap;
-  opacity: 1;
-  
-  &.wrapped {
-    & > div {
-      flex-basis: 100%;
+  flex-direction: column;
+  max-height: 600px;
+
+  @media screen and (max-width: 1600px) {
+    max-height: 800px;
+  }
+
+  @media screen and (max-width: 1100px) {
+    max-height: none;
+  }
+
+  &.d {
+    max-height: 300px;
+
+    @media screen and (max-width: 1100px) {
+      max-height: none;
     }
   }
 }
@@ -27,9 +37,10 @@
   gap: 10px;
   padding: 15px;
   border-radius: 5px;
-  border: 1px solid #E6E6E6;
+  border: 1px solid #e6e6e6;
 
-  &.error { // Modifier class for error state
+  &.error {
+    // Modifier class for error state
     .data-box-border {
       box-shadow: 0 0 5px 1px $error;
       opacity: 1;
@@ -38,7 +49,7 @@
 }
 
 .data-box-border {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -54,10 +65,10 @@
 .data-box-container-title {
   font-size: 1.5rem;
   font-weight: 500;
-  border-bottom: 1px solid #A7A7A7;
+  border-bottom: 1px solid #a7a7a7;
 
   &.red-border {
-    border-color: $vermelho
+    border-color: $vermelho;
   }
 
   &.green-border {
@@ -90,7 +101,7 @@
 }
 .data-box-secondary-input-container {
   display: grid;
-  gap: 10px
+  gap: 10px;
 }
 .data-box-checkbox-button {
   height: 2.5rem;
@@ -98,25 +109,25 @@
   align-items: center;
   border: none;
   outline: none;
-  cursor: pointer; 
-  
+  cursor: pointer;
+
   &:hover {
     color: red;
   }
 
   &.disabled {
-    cursor: default; 
-  
+    cursor: default;
+
     &:hover {
       color: #000;
     }
-  };
+  }
 }
 
 .data-box-checkbox-label {
   padding: 0 5px;
   font-size: 1.4rem;
-  transition: .2s all ease-in-out;
+  transition: 0.2s all ease-in-out;
 
   @media screen and (max-width: 700px) {
     font-size: 1.6rem;
@@ -125,12 +136,12 @@
 .data-box-checkbox-icon {
   display: grid;
   place-content: center;
-  transition: .2s all ease-in-out;
+  transition: 0.2s all ease-in-out;
 
-  &.disabled{
-    display: none; 
-  };
-  
+  &.disabled {
+    display: none;
+  }
+
   svg {
     height: 1.5rem;
     width: 1.5rem;

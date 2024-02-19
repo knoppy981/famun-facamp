@@ -4,7 +4,7 @@ import { DelegationType } from "~/models/delegation.server"
 export function useUserScroll(
   searchParams: URLSearchParams,
   delegation: DelegationType,
-  setSelectedUserId: React.Dispatch<React.SetStateAction<string>>
+  setSelectedUserId: React.Dispatch<React.SetStateAction<string | undefined>>
 ): React.MutableRefObject<any> {
   const userDataRef = React.useRef<any>()
 

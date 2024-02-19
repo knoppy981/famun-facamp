@@ -13,6 +13,13 @@
   }
 }
 
+.admin-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
 .admin-title-box {
   display: flex;
   align-items: center;
@@ -49,8 +56,14 @@
 }
 
 .admin-dialog-title {
-  font-size: 2.2rem;
   min-width: 500px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    font-size: 2.2rem;
+  }
 
   @media screen and (max-width: 700px) {
     min-width: auto;
@@ -71,4 +84,41 @@
   gap: 8px;
   align-items: center;
   font-size: 1.6rem;
+}
+
+.admin-dialog-spinner-container {
+  place-self: center;
+}
+
+.admin-search-container {
+  @media screen and (max-width: 700px) {
+    padding: 0 15px;
+  }
+}
+
+.admin-navigation-button-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-end;
+  justify-self: end;
+  font-size: 1.6rem;
+  padding: 0 15px;
+}
+
+.admin-search-input-box {
+  display: flex;
+
+  & > div {
+    height: 4.5rem;
+    font-size: 1.6rem;
+    border-radius: 5px;
+    @media screen and (max-width: 700px) {
+      height: 5.2rem;
+      font-size: 1.8rem;
+    }
+  }
+  & input {
+    padding: 0 10px;
+  }
 }

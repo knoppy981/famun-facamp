@@ -1,38 +1,33 @@
 import React from 'react'
 
-import { useWrapChange } from '~/hooks/useWrapChange'
 import { DelegationType } from '~/models/delegation.server'
 
 import AddressData from './address'
 import DelegationData from './information'
 
-const EditDelegationData = ({ isDisabled, actionData, formData, handleChange }: {
+const EditDelegationData = ({ isDisabled, actionData, defaultValues, handleChange, id }: {
   isDisabled: boolean,
   actionData: any,
-  formData: DelegationType,
-  handleChange: (e: any) => void,
+  defaultValues?: DelegationType,
+  handleChange: (e: any) => void | ((type: "delegation" | "participant") => (e: any) => void),
+  id: any
 }) => {
-  const [containerRef, isWrapped] = useWrapChange();
 
   return (
-    <div ref={containerRef} className={`data-box-wrapper ${isWrapped ? "wrapped" : ""}  ${isDisabled ? "disabled" : ""}`}>
-      <div className='data-box-column'>
-        <AddressData
-          formData={formData}
-          handleChange={handleChange}
-          actionData={actionData}
-          isDisabled={isDisabled}
-        />
-      </div>
+    <div className="data-box-wrapper d">
+      <AddressData
+        defaultValues={defaultValues}
+        handleChange={handleChange}
+        actionData={actionData}
+        isDisabled={isDisabled}
+      />
 
-      <div className='data-box-column'>
-        <DelegationData
-          formData={formData}
-          handleChange={handleChange}
-          actionData={actionData}
-          isDisabled={isDisabled}
-        />
-      </div>
+      <DelegationData
+        defaultValues={defaultValues}
+        handleChange={handleChange}
+        actionData={actionData}
+        isDisabled={isDisabled}
+      />
     </div>
   )
 }

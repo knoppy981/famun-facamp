@@ -1,7 +1,7 @@
 import Joi from "joi";
 
-import { delegateSchema } from "./delegate";
-import { advisorSchema } from "./advisor";
+import { createDelegateSchema } from "./delegate";
+import { createAdvisorSchema } from "./advisor";
 import { foodRestrictionsSchema } from "./foodRestrictions";
 import { customPhoneNumber } from "../keys/phoneNumber";
 import { customCpf } from "../keys/cpf";
@@ -72,9 +72,9 @@ export const userSchema = Joi.object({
 
   foodRestriction: foodRestrictionsSchema,
 
-  delegate: delegateSchema,
+  delegate: createDelegateSchema,
 
-  delegationAdvisor: advisorSchema,
+  delegationAdvisor: createAdvisorSchema,
 }).xor('delegate', 'delegationAdvisor');
 
 export const prismaUserSchema = Joi.object({
@@ -159,19 +159,19 @@ export const prismaUserSchema = Joi.object({
 
   delegate: Joi.alternatives().try(
     Joi.object({
-      create: delegateSchema
+      create: createDelegateSchema
     }),
     Joi.object({
-      update: delegateSchema
+      update: createDelegateSchema
     }),
   ),
 
   delegationAdvisor: Joi.alternatives().try(
     Joi.object({
-      create: advisorSchema
+      create: createAdvisorSchema
     }),
     Joi.object({
-      update: advisorSchema
+      update: createAdvisorSchema
     }),
   ),
 }).xor('delegate', 'delegationAdvisor');

@@ -1,9 +1,7 @@
 import { DelegationType } from "~/models/delegation.server";
-import { getDelegationCharges } from "~/stripe.server";
-import qs from 'qs'
-import Stripe from "stripe";
+import { ComitteeType } from "~/routes/admin.comittees.$comittee/route";
 
-export type delegationAoo = {
+export type DelegationAooType = {
   "Number of Delegation"?: string,
   "Head Delegate"?: string,
   "School and city"?: string,
@@ -20,7 +18,18 @@ export type delegationAoo = {
   "comments"?: string
 }[]
 
-export const delegationAoo = async (delegation: DelegationType, amountPaid: number) => {
+export type ComitteeAooType = {
+  "Representation"?: string,
+  "School"?: string,
+  "Delegate"?: string,
+  "Head Delegate"?: string,
+  "Position Paper"?: number,
+  "Male"?: number,
+  "Female"?: number,
+}[]
+
+export function delegationAoo(delegation: DelegationType, amountPaid: number) {
+  console.log(delegation)
   const delegates = delegation?.participants?.filter((participant) => participant.delegate !== null && participant.id)
   const advisors = delegation?.participants?.filter((participant) => participant.delegationAdvisor !== null && participant.id)
 
@@ -39,7 +48,7 @@ export const delegationAoo = async (delegation: DelegationType, amountPaid: numb
     return accumulator
   }, 0) as number
 
-  const aoo: delegationAoo = [
+  const aoo: DelegationAooType = [
     {
       "Number of Delegation": delegation.id,
       "Head Delegate": delegation.participants?.find(participant => participant.leader)?.name,
@@ -52,7 +61,7 @@ export const delegationAoo = async (delegation: DelegationType, amountPaid: numb
       "Waiver": participantsWithLiabilityWaiverSent,
       "Amount Paid": amountPaid,
       "Status": "",
-      "Registration date": delegation.createdAt.toLocaleDateString("pt-BR"),
+      "Registration date": typeof delegation.createdAt === "string" ? new Date(delegation.createdAt).toLocaleDateString("pt-BR") : delegation.createdAt.toLocaleDateString("pt-BR"),
       "Second deadline": "",
       "comments": ""
     },
@@ -65,7 +74,7 @@ export const delegationAoo = async (delegation: DelegationType, amountPaid: numb
       "Waiver": participant.files?.find(file => file.name === "Liability Waiver") ? 1 : 0,
       "Amount Paid": participant.stripePaydId ? 150 : 0,
       "Status": participant.stripePaydId ? "Pago" : "Não pago",
-      "Registration date": delegation.createdAt.toLocaleDateString("pt-BR"),
+      "Registration date": typeof participant.createdAt === "string" ? new Date(participant.createdAt).toLocaleDateString("pt-BR") : participant.createdAt.toLocaleDateString("pt-BR"),
     })
   })
 
@@ -76,7 +85,25 @@ export const delegationAoo = async (delegation: DelegationType, amountPaid: numb
       "Waiver": participant.files?.find(file => file.name === "Liability Waiver") ? 1 : 0,
       "Amount Paid": participant.stripePaydId ? 30 : 0,
       "Status": participant.stripePaydId ? "Pago" : "Não pago",
-      "Registration date": delegation.createdAt.toLocaleDateString("pt-BR"),
+      "Registration date": typeof participant.createdAt === "string" ? new Date(participant.createdAt).toLocaleDateString("pt-BR") : participant.createdAt.toLocaleDateString("pt-BR"),
+    })
+  })
+
+  return aoo
+}
+
+export function comitteeAoo(comittee: ComitteeType) {
+  const aoo: ComitteeAooType = []
+
+  comittee.delegates.forEach(delegate => {
+    aoo.push({
+      "Representation": delegate.country ?? "",
+      "School": delegate.user.delegation?.school,
+      "Delegate": delegate.user.name,
+      "Head Delegate": delegate.user.delegation?.participants[0].name,
+      "Position Paper": delegate.user._count.files > 0 ? 1 : 0,
+      "Male": 1,
+      "Female": 0,
     })
   })
 

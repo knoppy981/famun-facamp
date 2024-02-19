@@ -15,6 +15,7 @@ interface ComboBoxProps extends AriaComboBoxProps<any> {
   leftItem?: ReactNode;
   className?: string;
   action: any;
+  theme?: string
 }
 
 const ComboBox = (props: ComboBoxProps) => {
@@ -49,7 +50,7 @@ const ComboBox = (props: ComboBoxProps) => {
           {error}
         </p>
         :
-        <label {...labelProps} className="label">
+        <label {...labelProps} className={`label ${props.theme ?? ""}`}>
           {props.label}
         </label>
       }
@@ -60,7 +61,7 @@ const ComboBox = (props: ComboBoxProps) => {
         <input
           {...inputProps}
           ref={inputRef}
-          className="combo-box-input"
+          className={`combo-box-input ${props.theme ?? ""}`}
         />
 
         <div className="input-border" />
@@ -74,7 +75,7 @@ const ComboBox = (props: ComboBoxProps) => {
             <span
               aria-hidden="true"
             >
-              <FiChevronDown className="icon"/>
+              <FiChevronDown className="icon" color="#fff"/>
             </span>
           </Button>
         }

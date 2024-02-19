@@ -47,4 +47,9 @@
   &:disabled {
     opacity: 1;
   }
+
+  &.dark {
+    color: #fff;
+    -webkit-text-fill-color: #fff !important;
+  }
 }

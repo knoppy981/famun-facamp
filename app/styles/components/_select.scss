@@ -46,6 +46,11 @@
   -webkit-text-fill-color: #000 !important;
   padding: 0 10px;
 
+  &.dark {
+    color: #fff;
+    -webkit-text-fill-color: #fff !important;
+  }
+
   & .default-button {
     height: 100%;
     width: 100%;
@@ -54,6 +59,10 @@
 
   & span {
     font-size: inherit;
+
+    &.dark {
+      color: #fff;
+    }
   }
 
   &:focus-within .input-border {

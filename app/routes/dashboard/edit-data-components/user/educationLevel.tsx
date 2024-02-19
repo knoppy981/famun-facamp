@@ -3,7 +3,7 @@ import { Radio, RadioGroup } from '~/components/radioGroup'
 import TextArea from '~/components/textfield/textArea'
 
 const EducationLevel = (props: any) => {
-  const { formData, handleChange, actionData, isDisabled, error } = props
+  const { defaultValues, handleChange, actionData, isDisabled, error } = props
 
   return (
     <div className="data-box-container">
@@ -17,7 +17,7 @@ const EducationLevel = (props: any) => {
           aria-label="Nível de Escolaridade"
           name="delegate.educationLevel"
           onChange={e => handleChange({ target: { name: "delegate.educationLevel", value: e } })}
-          defaultValue={formData?.delegate?.educationLevel}
+          defaultValue={defaultValues?.delegate?.educationLevel}
           errorMessage={actionData?.errors?.educationLevel}
           action={actionData}
           isDisabled={isDisabled}
@@ -33,7 +33,7 @@ const EducationLevel = (props: any) => {
           label="Ano em que está cursando:"
           aria-label="Ano em que está cursando"
           onChange={handleChange}
-          defaultValue={formData?.delegate?.currentYear}
+          defaultValue={defaultValues?.delegate?.currentYear}
           errorMessage={actionData?.errors?.currentYear}
           action={actionData}
           isDisabled={isDisabled}

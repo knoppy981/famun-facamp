@@ -1,7 +1,7 @@
 import TextField from "~/components/textfield"
 
 const SocialMediaData = (props: any) => {
-  const { formData, handleChange, isDisabled, actionData, error } = props
+  const { defaultValues, handleChange, isDisabled, actionData, error } = props
 
   return (
     <div className={`data-box-container ${error ? "error" : ""}`}>
@@ -17,7 +17,7 @@ const SocialMediaData = (props: any) => {
             name={`delegationAdvisor.${socialMedia}`}
             label={socialMedia.charAt(0).toUpperCase() + socialMedia.slice(1)}
             type="text"
-            defaultValue={formData?.delegationAdvisor?.[socialMedia]}
+            defaultValue={defaultValues?.delegationAdvisor?.[socialMedia]}
             onChange={handleChange}
             isDisabled={isDisabled}
             placeholder="adicionar"

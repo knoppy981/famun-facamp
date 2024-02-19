@@ -1,25 +1,31 @@
+import React from "react";
 import { Item, ReorderableListBox } from "~/components/reordableList";
 
 const CouncilPreference = (props: any) => {
-  const { formData, isDisabled, handleChange, error } = props
+  const { defaultValues, isDisabled, handleChange, error } = props
+
+  const [arr, setArr] = React.useState(defaultValues?.delegate?.councilPreference.map((item: string) => ({ id: item })))
 
   const onReorder = (e: any) => {
     if (isDisabled) return
-    const array = formData?.delegate?.councilPreference
+    setArr((prevValue: any) => {
+      const array = prevValue.map((item: any) => item.id)
 
-    let key = [...e.keys][0]
+      let key = [...e.keys][0]
 
-    const keyIndex = array.indexOf(key);
-    const targetIndex = array.indexOf(e.target.key);
+      const keyIndex = array.indexOf(key);
+      const targetIndex = array.indexOf(e.target.key);
 
-    array.splice(keyIndex, 1);
-    if (e.target.dropPosition === 'before') {
-      array.splice(targetIndex, 0, key);
-    } else if (e.target.dropPosition === 'after') {
-      array.splice(targetIndex + 1, 0, key);
-    }
+      array.splice(keyIndex, 1);
+      if (e.target.dropPosition === 'before') {
+        array.splice(targetIndex, 0, key);
+      } else if (e.target.dropPosition === 'after') {
+        array.splice(targetIndex + 1, 0, key);
+      }
+      handleChange({ target: { name: "delegate.councilPreference", value: array } })
 
-    handleChange({ target: { name: "delegate.councilPreference", value: array } })
+      return array.map((item: string) => ({ id: item }))
+    })
   };
 
   return (
@@ -28,17 +34,18 @@ const CouncilPreference = (props: any) => {
         Comitê/Conselho que pode simular
       </h3>
 
-      {formData?.delegate?.councilPreference &&
+      {defaultValues?.delegate?.councilPreference ?
         <ReorderableListBox
           aria-label="Preferencia de conselho"
           selectionMode="multiple"
           selectionBehavior="replace"
-          items={formData?.delegate?.councilPreference?.map((item: string) => ({ id: item }))}
+          items={arr}
           onReorder={onReorder}
           isDisabled={isDisabled}
         >
           {(item: { id: string }) => <Item>{item.id.replace(/_/g, " ")}</Item>}
-        </ReorderableListBox>
+        </ReorderableListBox> :
+        null
       }
 
       <div className='data-box-border' />

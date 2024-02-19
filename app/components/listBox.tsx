@@ -57,8 +57,8 @@ const Option = ({ item, state }: { item: any; state: ListState<any> }) => {
     <li
       {...mergeProps(optionProps, focusProps)}
       ref={ref}
-      data-focus-visible={isFocusVisible}
-      className='list-box-item'
+      /* data-focus-visible={isFocusVisible} */
+      className={`list-box-item ${isFocused ? "focused" : ""} ${isSelected ? "selected" : ""}`}
     >
       {item.rendered}
     </li>

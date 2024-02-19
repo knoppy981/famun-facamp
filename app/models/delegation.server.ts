@@ -91,12 +91,16 @@ export async function countDelegates(id: Delegation["id"]): Promise<number> {
 	return res?._count.participants as number
 }
 
-export async function adminDelegationsList(index: number, participationMethod: ParticipationMethod) {
+export async function adminDelegationsList(index: number, participationMethod: ParticipationMethod, searchQuery?: string) {
 	return prisma.delegation.findMany({
 		skip: index * 12,
 		take: 12,
 		where: {
-			participationMethod: participationMethod
+			participationMethod: participationMethod,
+			school: searchQuery ? {
+				contains: searchQuery,
+				mode: "insensitive"
+			} : undefined
 		},
 		select: {
 			id: true,

@@ -77,8 +77,6 @@ export async function getExistingUser({ userId, ...values }: { userId?: User["id
 
 	let user
 
-	console.log(checkableValues)
-
 	try {
 		user = await prisma.user.findFirstOrThrow({
 			where: {
@@ -86,7 +84,6 @@ export async function getExistingUser({ userId, ...values }: { userId?: User["id
 				NOT: { id: userId }
 			}
 		})
-		console.log(user)
 	} catch (e) {
 		return {}
 	}
@@ -237,9 +234,7 @@ export async function formatUserData({
 }
 
 export async function createUser(data: any) {
-	const user = await prisma.user.create({ data: data })
-
-	await ensureStripeCostumer(user)
+	const user = await prisma.user.create({ data })
 
 	return user
 }

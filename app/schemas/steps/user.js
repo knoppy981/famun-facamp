@@ -1,7 +1,7 @@
 import Joi from "joi"
 
-import { delegateSchema } from "../objects/delegate"
-import { advisorSchema } from "../objects/advisor"
+import { createDelegateSchema } from "../objects/delegate"
+import { createAdvisorSchema } from "../objects/advisor"
 import { customPassword } from "../keys/password";
 import { customPhoneNumber } from "../keys/phoneNumber";
 import { customCpf } from "../keys/cpf";
@@ -109,7 +109,7 @@ export async function userStepValidation(step, data) {
     }
     case 7: {
       return data.userType === "delegate" ?
-        delegateSchema.validateAsync(data) : advisorSchema.validateAsync(data)
+        createDelegateSchema.validateAsync(data) : createAdvisorSchema.validateAsync(data)
     }
   }
 }

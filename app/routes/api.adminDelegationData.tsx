@@ -19,7 +19,5 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return accumulator
   }, 0) as number
 
-  const aoo = await delegationAoo(delegation as DelegationType, amountPaid)
-
-  return json({ delegation: { ...delegation, amountPaid }, aoo })
+  return json({ delegation: { ...delegation, amountPaid } })
 }

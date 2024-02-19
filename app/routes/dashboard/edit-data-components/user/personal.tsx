@@ -7,8 +7,7 @@ import PhoneNumberField from '~/components/textfield/phoneNumberField';
 import { isoCountries } from '~/lib/ISO-3661-1';
 
 const PersonalData = (props: any) => {
-  const { formData, handleChange, actionData, isDisabled, error } = props
-
+  const { defaultValues, handleChange, actionData, isDisabled, error } = props
   function createCountryArray(countries: object) {
     return Object.keys(countries).map(countryName => {
       return {
@@ -16,8 +15,11 @@ const PersonalData = (props: any) => {
       };
     });
   }
-
   const countryArray = createCountryArray(isoCountries)
+  const [country, setCountry] = React.useState(defaultValues?.nacionality)
+  const rgRef = React.useRef<any>()
+  const cpfRef = React.useRef<any>()
+  const passportRef = React.useRef<any>()
 
   return (
     <div className={`data-box-container ${error ? "error" : ""}`}>
@@ -37,7 +39,7 @@ const PersonalData = (props: any) => {
             label={item[0]}
             type={item[2]}
             onChange={handleChange}
-            defaultValue={formData?.[item[1]]}
+            defaultValue={defaultValues?.[item[1]]}
             isDisabled={isDisabled}
             errorMessage={actionData?.errors?.[item[1]]}
             action={actionData}
@@ -49,7 +51,7 @@ const PersonalData = (props: any) => {
           name="phoneNumber"
           label="Phone Number"
           isRequired
-          _defaultValue={formData?.phoneNumber}
+          _defaultValue={defaultValues?.phoneNumber}
           onChange={value => handleChange({ target: { name: "phoneNumber", value: value } })}
           isDisabled={isDisabled}
           errorMessage={actionData?.errors?.phoneNumber}
@@ -62,7 +64,7 @@ const PersonalData = (props: any) => {
           label="Birth Date"
           isRequired
           maxValue={today(getLocalTimeZone())}
-          defaultValue={formData.birthDate ? parseDate(formData.birthDate) : undefined}
+          defaultValue={defaultValues?.birthDate ? parseDate(defaultValues.birthDate) : undefined}
           onChange={value => handleChange({ target: { name: "birthDate", value: value ? value.toString() : null } })}
           isDisabled={isDisabled}
           errorMessage={actionData?.errors?.birthDate}
@@ -75,8 +77,20 @@ const PersonalData = (props: any) => {
           label="Nacionality"
           isRequired
           defaultItems={countryArray}
-          onSelectionChange={value => handleChange({ target: { name: "nacionality", value: value } })}
-          defaultSelectedKey={formData?.nacionality}
+          onSelectionChange={value => {
+            setCountry(value)
+            handleChange({ target: { name: "nacionality", value: value } })
+            if (value === "Brazil") {
+              handleChange({ target: { name: "rg", value: rgRef?.current?.value ?? defaultValues?.rg ?? "" } })
+              handleChange({ target: { name: "cpf", value: cpfRef?.current?.value ?? defaultValues?.cpf ?? "" }, delete: !defaultValues?.cpf })
+              handleChange({ target: { name: "passport", value: null }, delete: value === defaultValues?.nacionality })
+            } else {
+              handleChange({ target: { name: "passport", value: passportRef?.current?.value ?? defaultValues?.passport ?? "" } })
+              handleChange({ target: { name: "rg", value: null }, delete: value === defaultValues?.nacionality })
+              handleChange({ target: { name: "cpf", value: null }, delete: value === defaultValues?.nacionality })
+            }
+          }}
+          defaultSelectedKey={defaultValues?.nacionality}
           isDisabled={isDisabled}
           errorMessage={actionData?.errors?.nacionality}
           action={actionData}
@@ -84,14 +98,15 @@ const PersonalData = (props: any) => {
           {(item) => <Item>{item.id}</Item>}
         </ComboBox>
 
-        {formData?.nacionality !== "Brazil" ?
+        {country !== "Brazil" ?
           <TextField
+            ref={passportRef}
             className="secondary-input-box"
             name="passport"
             label="Passport"
             type="text"
             isRequired
-            value={formData?.passport ?? ""}
+            defaultValue={defaultValues?.passport ?? ""}
             onChange={handleChange}
             isDisabled={isDisabled}
             errorMessage={actionData?.errors?.passport}
@@ -100,32 +115,33 @@ const PersonalData = (props: any) => {
           :
           <>
             <TextField
+              ref={rgRef}
               className="secondary-input-box"
               name="rg"
               label="RG"
               type="text"
               isRequired
-              value={formData?.rg}
+              defaultValue={defaultValues?.rg}
               onChange={handleChange}
               isDisabled={isDisabled}
               errorMessage={actionData?.errors?.rg}
               action={actionData}
             />
 
-            {formData.cpf !== null ?
-              <TextField
-                className="secondary-input-box"
-                name="cpf"
-                label="CPF"
-                type="text"
-                isRequired
-                value={formData?.cpf}
-                onChange={handleChange}
-                isDisabled={isDisabled}
-                errorMessage={actionData?.errors?.cpf}
-                action={actionData}
-                placeholder='CPF opcional'
-              /> : null}
+            <TextField
+              ref={cpfRef}
+              className="secondary-input-box"
+              name="cpf"
+              label="CPF"
+              type="text"
+              isRequired
+              defaultValue={defaultValues?.cpf}
+              onChange={handleChange}
+              isDisabled={isDisabled}
+              errorMessage={actionData?.errors?.cpf}
+              action={actionData}
+              placeholder='CPF opcional'
+            />
           </>
         }
       </div>

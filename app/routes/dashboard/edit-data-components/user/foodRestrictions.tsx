@@ -4,7 +4,8 @@ import _Checkbox from '~/components/checkbox';
 import TextArea from '~/components/textfield/textArea';
 
 const FoodRestrictions = (props: any) => {
-  const { formData, handleChange, actionData, isDisabled, error } = props
+  const { defaultValues, handleChange, actionData, isDisabled, error } = props
+  const [showTextarea, setShowTextarea] = React.useState(defaultValues?.foodRestrictions?.allergy)
 
   return (
     <div className={`data-box-container ${error ? "error" : ""}`}>
@@ -14,19 +15,12 @@ const FoodRestrictions = (props: any) => {
 
       <div className='data-box-secondary-input-container' style={{ gap: 10 }}>
         <CheckboxGroup
-          label="Restrições alimentares"
           aria-label="Restrições alimentares"
-          onChange={e => handleChange({
-            target: {
-              name: "foodRestrictions.diet",
-              value: e
-            }
-          })
-          }
+          onChange={e => handleChange({ target: { name: "foodRestrictions.diet", value: e.length === 1 ? e[0] : e.length > 1 ? e : null } })}
           name="foodRestriction"
           isDisabled={isDisabled}
           errorMessage={actionData?.errors?.diet}
-          defaultValue={formData?.foodRestrictions?.diet ? [formData?.foodRestrictions?.diet] : []}
+          defaultValue={defaultValues?.foodRestrictions?.diet ? [defaultValues?.foodRestrictions?.diet] : []}
           action={actionData}
         >
           <Checkbox value='vegetarian' isDisabled={isDisabled}>Vegetariano(a)</Checkbox>
@@ -37,22 +31,30 @@ const FoodRestrictions = (props: any) => {
           <_Checkbox
             name="foodRestrictions.allergy"
             aria-label="Alergias"
-            onChange={e => handleChange({ target: { name: "foodRestrictions.allergy", value: e } })}
-            defaultSelected={formData?.foodRestrictions?.allergy}
+            onChange={e => {
+              console.log("food " + e)
+              handleChange({ target: { name: "foodRestrictions.allergy", value: e } })
+              handleChange({ target: { name: "foodRestrictions.allergyDescription", value: e ? defaultValues?.foodRestrictions?.allergyDescription ?? "" : null }, delete: !e && !defaultValues.foodRestrictions.allergy })
+              setShowTextarea(e)
+            }}
+            defaultSelected={defaultValues?.foodRestrictions?.allergy}
             isDisabled={isDisabled}
           >
             Alergias Alimentares
           </_Checkbox>
         </div>
 
-        {formData?.foodRestrictions?.allergy ?
+        {showTextarea ?
           <TextArea
             className='textarea-secondary-input-box'
             name="foodRestrictions.allergyDescription"
             label="Descrição da(s) alergia(s):"
             type="text"
-            onChange={handleChange}
-            defaultValue={formData?.foodRestrictions?.allergyDescription}
+            onChange={e => {
+              handleChange({ target: { name: "foodRestrictions.allergy", value: showTextarea } })
+              handleChange(e)
+            }}
+            defaultValue={defaultValues?.foodRestrictions?.allergyDescription}
             errorMessage={actionData?.errors?.allergyDescription}
             action={actionData}
             isDisabled={isDisabled}

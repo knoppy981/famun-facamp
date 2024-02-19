@@ -4,7 +4,7 @@ import TextField from '~/components/textfield'
 import PhoneNumberField from '~/components/textfield/phoneNumberField'
 
 const DelegationData = (props: any) => {
-  const { formData, isDisabled, handleChange, actionData } = props
+  const { defaultValues, isDisabled, handleChange, actionData } = props
 
   return (
     <div className='data-box-container'>
@@ -20,7 +20,7 @@ const DelegationData = (props: any) => {
           label="School / University"
           type="text"
           isRequired
-          defaultValue={formData?.school}
+          defaultValue={defaultValues?.school}
           onChange={handleChange}
           isDisabled={isDisabled}
           autoComplete="off"
@@ -33,7 +33,7 @@ const DelegationData = (props: any) => {
           name="schoolPhoneNumber"
           label="Contact Number"
           isRequired
-          _defaultValue={formData?.schoolPhoneNumber}
+          _defaultValue={defaultValues?.schoolPhoneNumber}
           onChange={value => handleChange({ target: { name: "schoolPhoneNumber", value: value } })}
           isDisabled={isDisabled}
           errorMessage={actionData?.errors?.schoolPhoneNumber}
@@ -44,7 +44,7 @@ const DelegationData = (props: any) => {
           className='secondary-input-box'
           name="participationMethod"
           label="Participação"
-          defaultSelectedKey={formData?.participationMethod}
+          defaultSelectedKey={defaultValues?.participationMethod}
           onSelectionChange={value => handleChange({ target: { name: "participationMethod", value: value } })}
           items={[
             { id: "Presencial" },

@@ -25,7 +25,6 @@ model User {
   // useful info
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
-  userPreferences     UserPreferences?
   // delegation
   delegation          Delegation?         @relation(fields: [delegationId], references: [id])
   delegationId        String?             @db.ObjectId
@@ -39,7 +38,8 @@ model User {
   stripePaymentsId    String[]
   // 
   confirmationCode    ConfirmationCode?
-  notifications       Notifications?
+  changesMade         Notifications[]
+  notifications       Notifications[]     @relation("user_change")
 }
 
 type ConfirmationCode {
@@ -59,14 +59,14 @@ model FoodRestrictions {
 
 model File {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    String   @db.ObjectId
   url       String?
   name      String
   fileName  String
   stream    Bytes
   size      Int
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String   @db.ObjectId
 
   @@unique([name, userId])
 }
@@ -78,20 +78,18 @@ model Password {
   userId String @unique @db.ObjectId
 }
 
-model UserPreferences {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
-  user         User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId       String  @unique @db.ObjectId
-  emailUpdates Boolean
-}
-
 model Notifications {
-  id     String   @id @default(auto()) @map("_id") @db.ObjectId
-  user   User?    @relation(fields: [userId], references: [id])
-  userId String   @unique @db.ObjectId
-  type   String
-  seen   Boolean
-  ids    String[]
+  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
+  user               User        @relation(fields: [userId], references: [id])
+  userId             String      @db.ObjectId
+  seen               Boolean     @default(false)
+  data               String
+  description        String?
+  type               String
+  targetUser         User?       @relation("user_change", fields: [targetUserId], references: [id])
+  targetUserId       String?     @db.ObjectId
+  targetDelegation   Delegation? @relation("delegation_change", fields: [targetDelegationId], references: [id])
+  targetDelegationId String?     @db.ObjectId
 }
 
 model Delegate {
@@ -104,6 +102,18 @@ model Delegate {
   currentYear                 String
   councilPreference           Council[]
   languagesSimulates          Languages[]
+  Committee                   Committee?  @relation(fields: [committeeId], references: [id])
+  committeeId                 String?     @db.ObjectId
+  country                     String?
+}
+
+model Committee {
+  id        String              @id @default(auto()) @map("_id") @db.ObjectId
+  delegates Delegate[]
+  council   Council
+  type      ParticipationMethod
+  name      String              @unique
+  createdAt DateTime            @default(now())
 }
 
 model DelegationAdvisor {
@@ -128,6 +138,7 @@ model Delegation {
   participationMethod   ParticipationMethod
   address               Address?
   participants          User[]
+  notifications         Notifications[]     @relation("delegation_change")
 }
 
 model Address {

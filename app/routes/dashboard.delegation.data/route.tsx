@@ -6,14 +6,12 @@ import _ from 'lodash';
 import qs from "qs"
 
 import { useOnScreen } from "~/hooks/useOnScreen";
-import { UserType } from "~/models/user.server";
-import { DelegationType, formatDelegationData, getExistingDelegation, updateDelegation } from "~/models/delegation.server";
+import { UserType, getExistingUser } from "~/models/user.server";
+import { DelegationType, getExistingDelegation, updateDelegation } from "~/models/delegation.server";
 import { useUser, useUserType } from "~/utils";
 import { getCorrectErrorMessage } from "~/utils/error";
-import { prismaDelegationSchema } from "~/schemas/objects/delegation";
 import { useDelegationUpdate } from "./useDelegationUpdate";
 import { useButtonState } from "./useButtonState";
-import { useUpdateStateFunctions } from "./useUpdateStateFunctions";
 import { useUserScroll } from "./useUserScroll";
 
 import Button from "~/components/button";
@@ -22,25 +20,93 @@ import EditDelegationData from "../dashboard/edit-data-components/delegation";
 import EditUserData from "../dashboard/edit-data-components/user";
 import ModalTrigger from "~/components/modalOverlay/trigger";
 import Dialog from "~/components/dialog";
+import { iterateObject } from "../dashboard/utils/findDiffrences";
+import { requireDelegationId, requireUserId } from "~/session.server";
+import { updateDelegationSchema } from "~/schemas";
+import PopoverTrigger from "~/components/popover/trigger";
+import { createDelegationChangeNotification, createUserChangeNotification } from "~/models/notifications.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  let userId = formData.get("userId")
-  console.log("userId: " + userId)
-  let { id, ...data } = qs.parse(formData.get("data") as string) as any
+  const userId = await requireUserId(request)
+  const delegationId = await requireDelegationId(request)
+  let delegationChanges = qs.parse(formData.get("delegationChanges") as string)
+  let participantChanges = qs.parse(formData.get("participantChanges") as string)
+  let selectedUserId = formData.get("selectedUserId") as string
+  let data: any = {}
+  let participantsData: any = {}
 
-  data = await formatDelegationData({
-    data,
-    addressModification: "update",
-    participantModification: "update",
-    usersIdFilter: [userId]
-  })
+  const hasDelegationChanges = Object.keys(delegationChanges).length > 0
+  const hasParticipantsChanges = Object.keys(participantChanges).length > 0
 
-  if (data === undefined) return json({ errors: { data: "Unknown error" } }, { status: 404 })
+  if (hasDelegationChanges) {
+    iterateObject(delegationChanges, (key, value, path) => {
+      if (value === "false" || value === "true") value = value === "true"
+      if (key.includes('.')) {
+        const [field, nestedField] = key.split('.')
+        if (typeof data[field] === 'object' && data[field] !== null) {
+          data[field]["update"][nestedField] = value ?? null;
+        } else {
+          data[field] = { update: { [nestedField]: value ?? null } };
+        }
+      } else {
+        data[key] = value
+      }
+    })
+  }
+
+  if (hasParticipantsChanges) {
+    iterateObject(participantChanges, (key, value, path) => {
+      if (value === "false" || value === "true") value = value === "true"
+      if (key.includes('.')) {
+        const [field, nestedField] = key.split('.')
+        if (typeof participantsData[field] === 'object' && participantsData[field] !== null) {
+          if (field === "foodRestrictions") {
+            participantsData[field]["upsert"]["create"][nestedField] = value ?? null;
+            participantsData[field]["upsert"]["update"][nestedField] = value ?? null;
+          } else {
+            participantsData[field]["update"][nestedField] = value ?? null;
+          }
+        } else {
+          if (field === "foodRestrictions") {
+            participantsData[field] = { upsert: { create: { [nestedField]: value ?? null }, update: { [nestedField]: value ?? null } } };
+          } else {
+            participantsData[field] = { update: { [nestedField]: value ?? null } };
+          }
+        }
+      } else {
+        participantsData[key] = value
+      }
+    })
+
+    data.participants = {
+      update: {
+        where: {
+          id: selectedUserId
+        },
+        data: participantsData
+      }
+    }
+  }
+
+  let delegation
 
   try {
-    await getExistingDelegation({ school: data.school ?? "", delegationId: id })
-    await prismaDelegationSchema.validateAsync(data)
+    await getExistingDelegation({ school: data.school ?? "", delegationId: delegationId })
+    if (hasParticipantsChanges) {
+      await getExistingUser({
+        name: participantsData.name ?? "",
+        email: participantsData.email ?? "",
+        cpf: participantsData.cpf === "" ? undefined : participantsData.cpf,
+        rg: participantsData.rg === "" ? undefined : participantsData.rg,
+        passport: participantsData.passport === "" ? undefined : participantsData.passport,
+        userId: selectedUserId
+      })
+    }
+    await updateDelegationSchema.validateAsync(data)
+    delegation = await updateDelegation({ delegationId: delegationId, values: data })
+    if (hasDelegationChanges) await createDelegationChangeNotification(userId, qs.stringify(delegationChanges), delegationId)
+    if (hasParticipantsChanges) await createUserChangeNotification(userId, qs.stringify(participantChanges), selectedUserId)
   } catch (error) {
     console.log(error)
     const [label, msg] = getCorrectErrorMessage(error)
@@ -50,7 +116,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   }
 
-  return updateDelegation({ delegationId: id, values: data })
+  return delegation
 }
 
 export type FetcherType = DelegationType & {
@@ -66,22 +132,11 @@ const DelegationData = () => {
   const userType = useUserType()
   const [searchParams] = useSearchParams();
   const [buttonRef, isRefVisible] = useOnScreen();
-  const allowChanges = userType === "advisor" || user.leader // only allow changes to advisor or delegation leader
-  const [selectedUserId, setSelectedUserId] = React.useState<UserType["id"]>(delegation.participants?.[0].id as string);
-  const { readySubmission, userWantsToChangeData, handleSubmission, formData, setFormData, allowChangeParticipant, handleRemoveParticipant, handleChangeLeader } =
-    useDelegationUpdate(
-      selectedUserId,
-      setSelectedUserId,
-      allowChanges,
-      delegation,
-      fetcher as FetcherWithComponents<FetcherType>,
-      removeParticipantFetcher,
-      changeLeaderFetcher
-    )
+  const allowChanges = userType === "advisor" || user.leader // only allow advisors or delegation leader to make changes
+  const { selectedUserId, setSelectedUserId, readySubmission, userWantsToChangeData, allowChangeParticipant, handleSubmission, handleChange, handleRemoveParticipant, handleChangeLeader } =
+    useDelegationUpdate(allowChanges, delegation, fetcher as FetcherWithComponents<FetcherType>, removeParticipantFetcher, changeLeaderFetcher)
   const userDataRef =
     useUserScroll(searchParams, delegation, setSelectedUserId)
-  const [handleDelegationChange, handleChange, handleAddLanguage, handleRemoveLanguage] =
-    useUpdateStateFunctions(formData, setFormData, selectedUserId)
   const [buttonLabel, buttonIcon, buttonColor, removeParticipantButtonIcon, removeParticipantButtonLabel, changeLeaderButtonIcon, changeLeaderButtonLabel] =
     useButtonState(userWantsToChangeData, readySubmission, fetcher.state, removeParticipantFetcher.state, changeLeaderFetcher.state, allowChanges)
 
@@ -103,12 +158,13 @@ const DelegationData = () => {
 
       <EditDelegationData
         isDisabled={!userWantsToChangeData}
-        formData={formData}
+        defaultValues={delegation}
         actionData={fetcher.data}
-        handleChange={handleDelegationChange}
+        handleChange={handleChange("delegation")}
+        id={"a"}
       />
 
-      {formData.participants?.find((participant) => participant?.id === selectedUserId) ?
+      {delegation.participants?.find((participant) => participant?.id === selectedUserId) ?
         <>
           <div className="delegation-data-title-box" ref={userDataRef}>
             <Select
@@ -125,13 +181,10 @@ const DelegationData = () => {
             </Select>
           </div>
 
-          {allowChanges && userWantsToChangeData &&
-            <div className="delegation-data-title-box">
-              {selectedUserId !== user.id &&
-                <ModalTrigger
-                  buttonClassName=""
-                  label={<>{removeParticipantButtonIcon} {removeParticipantButtonLabel}</>}
-                >
+          <div className={`animate-height-container ${allowChanges && userWantsToChangeData ? "animate" : ""}`}>
+            <div className="delegation-data-participant-options-box">
+              {selectedUserId !== user.id ?
+                <ModalTrigger buttonClassName="" label={<>{removeParticipantButtonIcon} {removeParticipantButtonLabel}</>} >
                   {(close: () => void) =>
                     <Dialog maxWidth>
                       <div className="dialog-title">
@@ -156,72 +209,80 @@ const DelegationData = () => {
                         className="secondary-button-box red-dark"
                         onPress={() => {
                           close()
-                          handleRemoveParticipant(selectedUserId)
+                          handleRemoveParticipant(selectedUserId as string)
                         }}
                       >
                         Excluír
                       </Button>
                     </Dialog>
                   }
-                </ModalTrigger>
+                </ModalTrigger> :
+                <PopoverTrigger buttonClassName="opacity" label={<>{removeParticipantButtonIcon} {removeParticipantButtonLabel}</>}>
+                  <Dialog maxWidth>
+                    <div className="dialog-title">
+                      Você não pode excluir a própria conta
+                    </div>
+                  </Dialog>
+                </PopoverTrigger>
               }
 
-              {!formData.participants?.find((participant) => participant?.id === selectedUserId)?.leader ?
-                <>
-                  <div className="vertical-line" />
+              <div className="vertical-line" />
 
-                  <ModalTrigger
-                    buttonClassName=""
-                    label={<>{changeLeaderButtonIcon} {changeLeaderButtonLabel}</>}
-                  >
-                    {(close: () => void) =>
-                      <Dialog maxWidth>
-                        <div className="dialog-title">
-                          Tem certeza que deseja nomear {delegation.participants?.find(el => el.id === selectedUserId)?.name} o líder da delegação?
-                        </div>
+              {!delegation.participants?.find((participant) => participant?.id === selectedUserId)?.leader ?
+                <ModalTrigger
+                  buttonClassName=""
+                  label={<>{changeLeaderButtonIcon} {changeLeaderButtonLabel}</>}
+                >
+                  {(close: () => void) =>
+                    <Dialog maxWidth>
+                      <div className="dialog-title">
+                        Tem certeza que deseja nomear {delegation.participants?.find(el => el.id === selectedUserId)?.name} o líder da delegação?
+                      </div>
 
-                        <div className="dialog-subitem">
-                          Obs: Quando você deixa de ser o líder da delegação você perde o privilégio de alterar dados da sua delegação e de seus participantes e
-                          de realizar pagamentos e enviar documentos para a delegação toda
-                        </div>
+                      <div className="dialog-subitem">
+                        Obs: Quando você deixa de ser o líder da delegação você perde o privilégio de alterar dados da sua delegação e de seus participantes e
+                        de realizar pagamentos e enviar documentos para a delegação toda
+                      </div>
 
-                        <Button
-                          className="secondary-button-box red-dark"
-                          onPress={() => {
-                            close()
-                          }}
-                        >
-                          Cancelar
-                        </Button>
+                      <Button
+                        className="secondary-button-box red-dark"
+                        onPress={() => {
+                          close()
+                        }}
+                      >
+                        Cancelar
+                      </Button>
 
-                        <Button
-                          className="secondary-button-box blue-dark"
-                          onPress={() => {
-                            close()
-                            handleChangeLeader(selectedUserId)
-                          }}
-                        >
-                          Trocar o Líder
-                        </Button>
-                      </Dialog>
-                    }
-                  </ModalTrigger>
-
-                </>
-                :
-                null
+                      <Button
+                        className="secondary-button-box blue-dark"
+                        onPress={() => {
+                          close()
+                          handleChangeLeader(selectedUserId as string)
+                        }}
+                      >
+                        Trocar o Líder
+                      </Button>
+                    </Dialog>
+                  }
+                </ModalTrigger> :
+                <PopoverTrigger buttonClassName="opacity" label={<>{changeLeaderButtonIcon} {changeLeaderButtonLabel}</>}>
+                  <Dialog maxWidth>
+                    <div className="dialog-title">
+                      Este participante já é o Líder da delegação!
+                    </div>
+                  </Dialog>
+                </PopoverTrigger>
               }
             </div>
-          }
+          </div>
 
           <EditUserData
             isDisabled={!userWantsToChangeData}
             actionData={fetcher.data}
-            formData={formData.participants?.find((participant) => participant?.id === selectedUserId) as UserType}
-            handleChange={handleChange}
-            handleAddLanguage={handleAddLanguage}
-            handleRemoveLanguage={handleRemoveLanguage}
-            userType={formData.participants?.find((participant) => participant?.id === selectedUserId)?.delegate ? 'delegate' : 'delegationAdvisor'}
+            defaultValues={delegation.participants?.find((participant) => participant?.id === selectedUserId) as UserType}
+            handleChange={handleChange("participant")}
+            id={selectedUserId}
+            userType={delegation.participants?.find((participant) => participant?.id === selectedUserId)?.delegate ? 'delegate' : 'delegationAdvisor'}
           />
         </>
         :

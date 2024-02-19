@@ -476,6 +476,10 @@ input:-webkit-autofill:active {
   }
 }
 
+.opacity {
+  opacity: 0.6;
+}
+
 .text {
   font-size: 1.4rem;
   font-weight: 400;
@@ -509,6 +513,21 @@ input:-webkit-autofill:active {
 
 .vertical-line {
   width: 1px;
+  height: 100%;
   background: transparent;
-  border-left: 1px solid #E6E6E6;
+  border-left: 1px solid #e6e6e6;
+}
+
+.animate-height-container {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.5s;
+
+  & > div {
+    overflow: hidden;
+  }
+
+  &.animate {
+    grid-template-rows: 1fr;
+  }
 }

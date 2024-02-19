@@ -2,7 +2,7 @@ import TextField from "~/components/textfield"
 import PhoneNumberField from "~/components/textfield/phoneNumberField"
 
 const EmergencyContactData = (props: any) => {
-  const { formData, isDisabled, handleChange, actionData, error } = props
+  const { defaultValues, isDisabled, handleChange, actionData, error } = props
 
   return (
     <div className={`data-box-container ${error ? "error" : ""}`}>
@@ -17,7 +17,7 @@ const EmergencyContactData = (props: any) => {
           label="Name"
           type="text"
           isRequired
-          defaultValue={formData?.delegate?.emergencyContactName}
+          defaultValue={defaultValues?.delegate?.emergencyContactName}
           onChange={handleChange}
           isDisabled={isDisabled}
           errorMessage={actionData?.errors?.emergencyContactName}
@@ -30,7 +30,7 @@ const EmergencyContactData = (props: any) => {
           label="Phone Number"
           type="text"
           isRequired
-          _defaultValue={formData?.delegate?.emergencyContactPhoneNumber}
+          _defaultValue={defaultValues?.delegate?.emergencyContactPhoneNumber}
           onChange={value => handleChange({ target: { name: "delegate.emergencyContactPhoneNumber", value: value } })}
           isDisabled={isDisabled}
           errorMessage={actionData?.errors?.emergencyContactPhoneNumber}

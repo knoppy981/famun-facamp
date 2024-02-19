@@ -43,6 +43,14 @@
   &.user {
     border-left: 2px solid $azulCeu;
   }
+
+  &.border-left-yellow {
+    border-left: 2px solid rgb(255, 255, 0);
+  }
+
+  &.border-left-green {
+    border-left: 2px solid $verdeClaro;
+  }
 }
 
 .table-flex-cell {

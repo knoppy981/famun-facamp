@@ -2,7 +2,7 @@ import { Item, Select } from "~/components/select"
 import { action } from "~/routes/api.delegationCode"
 
 const AdvisorRoleData = (props: any) => {
-  const { formData, isDisabled, handleChange, actionData, error } = props
+  const { defaultValues, isDisabled, handleChange, actionData, error } = props
 
   return (
     <div className={`data-box-container ${error ? "error" : ""}`}>
@@ -14,7 +14,7 @@ const AdvisorRoleData = (props: any) => {
         className="secondary-input-box"
         name="advisorRole"
         aria-label="Posição do(a) Professor(a) Orientador(a)"
-        defaultSelectedKey={formData?.delegationAdvisor?.advisorRole}
+        defaultSelectedKey={defaultValues?.delegationAdvisor?.advisorRole}
         onSelectionChange={value => handleChange({ target: { name: "delegationAdvisor.advisorRole", value: value } })}
         isDisabled={isDisabled}
         hideLabel={true}
@@ -26,7 +26,6 @@ const AdvisorRoleData = (props: any) => {
         ]}
         errorMessage={actionData?.errors?.advisorRole}
         action={actionData}
-        onChangeUpdateError={formData}
       >
         {(item) => <Item>{`${item.id}${item.id !== "Outro" ? "(a)" : ""}`}</Item>}
       </Select>

@@ -16,6 +16,7 @@ type SelectProps<T> = AriaSelectProps<T> & {
   className?: string,
   action?: any,
   onChangeUpdateError?: any,
+  theme?: string,
 }
 
 export const Select = <T extends object>(props: SelectProps<T>) => {
@@ -44,12 +45,12 @@ export const Select = <T extends object>(props: SelectProps<T>) => {
         </p>
         :
         !props.hideLabel &&
-        <label {...labelProps} className="label">
+        <label {...labelProps} className={`label ${props.theme ?? ""}`}>
           {props.label}
         </label>
       }
 
-      <div className={`select-container ${error ? "error" : ""} ${props.isDisabled ? "disabled" : ""}`}>
+      <div className={`select-container ${props.theme ?? ""} ${error ? "error" : ""} ${props.isDisabled ? "disabled" : ""}`}>
         <HiddenSelect
           isDisabled={props.isDisabled}
           state={state}
@@ -65,7 +66,7 @@ export const Select = <T extends object>(props: SelectProps<T>) => {
           {...triggerProps}
           ref={buttonRef}
         >
-          <span {...valueProps}>
+          <span {...valueProps} style={{color: props.theme === "dark" ? "#fff" : ""}}>
             {state.selectedItem
               ? state.selectedItem.rendered
               : props.placeholder}
@@ -74,7 +75,7 @@ export const Select = <T extends object>(props: SelectProps<T>) => {
             <span
               aria-hidden="true"
             >
-              <FiChevronDown className='icon' />
+              <FiChevronDown className='icon' style={{color: props.theme === "dark" ? "#fff" : ""}}/>
             </span>}
         </Button>
       </div>

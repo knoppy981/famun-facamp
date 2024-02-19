@@ -10,32 +10,80 @@ export function useUserUpdate(user: UserType, fetcher: FetcherWithComponents<any
   readySubmission: boolean,
   userWantsToChangeData: boolean,
   handleSubmission: () => void,
-  formData: UserType,
-  setFormData: React.Dispatch<React.SetStateAction<UserType>>
+  handleChange: (e: any) => void,
 } {
   const [readySubmission, setReadySubmission] = React.useState<boolean>(false)
   const [userWantsToChangeData, setUserWantsToChangeData] = React.useState<boolean>(false)
-  const [formData, setFormData] = React.useState<UserType>(_.cloneDeep(user));
+  const [changes, setChanges] = React.useState<{ [key: string]: any }>({});
 
   React.useEffect(() => {
     // if input values are different than user data allow form submission
-    setReadySubmission(!_.isEqual(formData, user) && userWantsToChangeData)
-    console.log(formData)
-  }, [formData])
+    setReadySubmission(Object.keys(changes).length > 0)
+    console.log("changes: ")
+    console.log(changes)
+  }, [changes])
 
   React.useEffect(() => {
     // if loading back data and no errors, set every state back to default
     if (fetcher.state === 'loading' && !fetcher.data?.errors) {
-      setFormData(_.cloneDeep(fetcher.data))
+      setChanges({})
       setReadySubmission(false)
       setUserWantsToChangeData(false)
     }
   }, [fetcher])
 
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+    let defaultValue: any = undefined
+
+    function isKeyOfUserType(key: any): key is keyof UserType {
+      return key in user;
+    }
+
+    if (name.includes('.')) {
+      const [field, nestedField] = name.split('.')
+
+      if (isKeyOfUserType(field)) {
+        let aux: any = user?.[field]
+        defaultValue = aux?.[nestedField]
+      }
+    } else if (isKeyOfUserType(name)) {
+      defaultValue = user?.[name]
+    }
+
+    console.log(name, value)
+
+    setChanges((prevState: typeof changes) => {
+      if (e?.delete) {
+        delete prevState[name]
+        return { ...prevState }
+      }
+
+      if (prevState.nacionality && (name === "passport" || name === "rg" || name === "cpf")) {
+        return { ...prevState, [name]: value }
+      }
+
+      if (name === "foodRestrictions.allergyDescription" && !user.foodRestrictions?.allergy) {
+        return { ...prevState, [name]: value }
+      }
+
+      if (name === "foodRestrictions.allergyDescription" && value === "") {
+        return { ...prevState, [name]: value, ["foodRestrictions.allergy"]: true }
+      }
+
+      if (_.isEqual(defaultValue, value)) {
+        delete prevState[name]
+        return { ...prevState }
+      } else {
+        return { ...prevState, [name]: value }
+      }
+    })
+  }
+
   const handleSubmission = () => {
     if (readySubmission) {
       fetcher.submit(
-        { data: qs.stringify(formData) },
+        { changes: qs.stringify(changes) },
         { method: "post", preventScrollReset: true, navigate: false }
       )
     } else {
@@ -47,7 +95,6 @@ export function useUserUpdate(user: UserType, fetcher: FetcherWithComponents<any
     readySubmission,
     userWantsToChangeData,
     handleSubmission,
-    formData,
-    setFormData,
+    handleChange,
   }
 }

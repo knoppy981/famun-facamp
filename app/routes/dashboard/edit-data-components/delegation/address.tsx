@@ -5,7 +5,7 @@ import TextField from '~/components/textfield';
 import { isoCountries } from '~/lib/ISO-3661-1';
 
 const AddressData = (props: any) => {
-  const { formData, isDisabled, handleChange, actionData } = props
+  const { defaultValues, isDisabled, handleChange, actionData } = props
 
   function createCountryArray(countries: object) {
     return Object.keys(countries).map(countryName => {
@@ -27,11 +27,11 @@ const AddressData = (props: any) => {
         <ComboBox
           className='secondary-input-box'
           name="address.country"
-          label="Coutnry"
+          label="Country"
           isRequired
           defaultItems={countryArray}
           onSelectionChange={value => handleChange({ target: { name: "address.country", value: value } })}
-          defaultInputValue={formData?.address?.country}
+          defaultInputValue={defaultValues?.address?.country}
           isDisabled={isDisabled}
           errorMessage={actionData?.errors?.country}
           action={actionData}
@@ -45,7 +45,7 @@ const AddressData = (props: any) => {
           label="Código Postal"
           type="text"
           isRequired
-          defaultValue={formData.address?.postalCode}
+          defaultValue={defaultValues.address?.postalCode}
           onChange={handleChange}
           isDisabled={isDisabled}
           errorMessage={actionData?.errors?.postalCode}
@@ -64,7 +64,7 @@ const AddressData = (props: any) => {
             label={item[0]}
             type={item[2]}
             isRequired
-            defaultValue={formData.address[item[1].split('.')[1]]}
+            defaultValue={defaultValues.address[item[1].split('.')[1]]}
             onChange={handleChange}
             isDisabled={isDisabled}
             errorMessage={actionData?.errors?.[item[1].split('.')[1]]}

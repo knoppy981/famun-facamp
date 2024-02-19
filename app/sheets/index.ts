@@ -1,7 +1,7 @@
 import XLSX from "xlsx";
 import { delegationAoo } from "./data";
 
-export function exportAoo(aoo: { [key: string]: string | undefined; }[]) {
+export function exportAoo(aoo: { [key: string]: string | undefined | number; }[], fileName: string) {
   var ws = XLSX.utils.json_to_sheet(aoo);
   var wb = XLSX.utils.book_new();
 
@@ -24,5 +24,5 @@ export function exportAoo(aoo: { [key: string]: string | undefined; }[]) {
   ws["!cols"] = Object.keys(maxWidths).map(key => ({ wch: Math.max(maxWidths[key], minWidth) }));
 
   XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-  XLSX.writeFile(wb, "SheetJSExportAOO.xlsx");
+  XLSX.writeFile(wb, `${fileName}.xlsx`);
 }

@@ -9,9 +9,11 @@ export function useModalContext(fetcher: FetcherWithComponents<any>): [
   const state = useOverlayTriggerState({});
 
   React.useEffect(() => {
-    if (fetcher.data?.user) {
+    console.log("fetcher")
+    console.log(fetcher.data)
+    if (fetcher.data?.newUser) {
       state.open()
-      setModalContext(fetcher.data?.user)
+      setModalContext(fetcher.data?.newUser)
     }
   }, [fetcher.data])
 
