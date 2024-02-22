@@ -5,10 +5,12 @@ import { prisma } from "~/db.server";
 import { ValidationError } from "~/utils/error";
 import { stripe } from "~/stripe.server";
 
-import type { Password, User, Delegate, DelegationAdvisor, File, FoodRestrictions } from "@prisma/client";
+import type { Password, User, Delegate, DelegationAdvisor, File, FoodRestrictions, ParticipationMethod, Committee } from "@prisma/client";
 
 export type UserType = User & {
-	delegate?: Delegate,
+	delegate?: Delegate & {
+		Comittee: Committee
+	},
 	delegationAdvisor?: DelegationAdvisor,
 	files?: File[],
 	foodRestrictions?: FoodRestrictions
@@ -18,7 +20,11 @@ export async function getUserById(id: User["id"]) {
 	return prisma.user.findUnique({
 		where: { id },
 		include: {
-			delegate: true,
+			delegate: {
+				include: {
+					Committee: true
+				}
+			},
 			delegationAdvisor: true,
 			files: {
 				select: {
@@ -117,6 +123,34 @@ export async function getExistingUser({ userId, ...values }: { userId?: User["id
 	];
 
 	throw new ValidationError(errorMsg, errorDetails)
+}
+
+export async function adminParticipantList(index: number, participationMethod: ParticipationMethod, searchQuery?: string) {
+	return prisma.user.findMany({
+		skip: index * 12,
+		take: 12,
+		where: {
+			participationMethod: participationMethod,
+			name: searchQuery ? {
+				contains: searchQuery,
+				mode: "insensitive"
+			} : undefined
+		},
+		select: {
+			id: true,
+			name: true,
+			delegation: {
+				select: {
+					school: true
+				}
+			}
+		},
+		orderBy: {
+			delegation: {
+				school: 'asc'
+			}
+		},
+	})
 }
 
 export async function updateUser({

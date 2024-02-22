@@ -49,8 +49,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
   });
 
-  console.dir(data, { depth: null })
-
   try {
     await updateUserSchema.validateAsync(data)
     await getExistingUser({
@@ -105,6 +103,7 @@ const Profile = () => {
         id={""}
         handleChange={handleChange}
         userType={userType}
+        actionType="edit"
       />
 
       <AnimatePresence>

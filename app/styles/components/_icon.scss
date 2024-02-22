@@ -12,3 +12,23 @@
     color: $error;
   }
 }
+
+.notification {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::before {
+    z-index: 2;
+    position: absolute;
+    content: "";
+    top: 0;
+    right: 0;
+    height: 8px;
+    width: 8px;
+    border-radius: 4px;
+    transition: background 0.3s;
+    background: blue;
+  }
+}

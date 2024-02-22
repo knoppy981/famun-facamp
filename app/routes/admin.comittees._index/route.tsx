@@ -33,8 +33,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const comittee = await createComittee(data as any)
 
-  console.log(comittee)
-
   return json({ comittee })
 }
 

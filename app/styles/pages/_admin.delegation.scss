@@ -1,0 +1,19 @@
+.admin-delegation-subtitle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 0 15px;
+}
+
+.admin-delegation-subtitle-item {
+  font-size: 1.6rem;
+  vertical-align: middle;
+
+  span {
+    font-size: 2.2rem;
+  }
+}
+
+.admin-delegation-modal-button-container {
+  display: flex;
+}

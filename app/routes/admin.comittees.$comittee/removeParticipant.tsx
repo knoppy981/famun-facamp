@@ -25,7 +25,7 @@ const RemoveParticipant = ({ state, comittee }: { state: OverlayTriggerState, co
           <Dialog>
             <div className="admin-dialog-title">
               <h2>
-                Remover participantes
+                Remover delegados
               </h2>
 
               <Button onPress={state.close}>
@@ -36,7 +36,7 @@ const RemoveParticipant = ({ state, comittee }: { state: OverlayTriggerState, co
             <ComboBox
               className='primary-input-box'
               name="user-search"
-              label="Procurar participantes"
+              label="Procurar delegados"
               items={fieldState.items}
               selectedKey={fieldState.selectedKey}
               inputValue={fieldState.inputValue}

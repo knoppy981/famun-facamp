@@ -133,7 +133,7 @@ const Comittee = () => {
         {comittee.name}
 
         <Button className='secondary-button-box blue-light' onPress={addUserState.toggle}>
-          <FiUserPlus className='icon' /> Adicionar Participantes
+          <FiUserPlus className='icon' /> Adicionar Delegados
         </Button>
       </div>
 
@@ -251,13 +251,13 @@ const Comittee = () => {
 
       <div className='comittee-title'>
         <Button className='secondary-button-box red-light' onPress={() => removeParticipantState.toggle()}>
-          <FiUserMinus className='icon' /> Remover Participantes
+          <FiUserMinus className='icon' /> Remover Delegados
         </Button>
       </div>
 
       <div className='comittee-title'>
         <Button className='secondary-button-box red-light' onPress={() => deleteComitteeState.toggle()}>
-          <FiTrash2 className='icon' /> Deletar Conferência
+          <FiTrash2 className='icon' /> Escluír Conferência
         </Button>
       </div>
     </div >

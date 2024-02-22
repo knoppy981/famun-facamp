@@ -4,11 +4,11 @@ import _Checkbox from '~/components/checkbox';
 import TextArea from '~/components/textfield/textArea';
 
 const FoodRestrictions = (props: any) => {
-  const { defaultValues, handleChange, actionData, isDisabled, error } = props
+  const { defaultValues, handleChange, actionData, isDisabled, theme } = props
   const [showTextarea, setShowTextarea] = React.useState(defaultValues?.foodRestrictions?.allergy)
 
   return (
-    <div className={`data-box-container ${error ? "error" : ""}`}>
+    <div className={`data-box-container ${theme ?? ""}`} style={{ placeSelf: "auto", alignSelf: "normal" }}>
       <h3 className="data-box-container-title blue-border">
         Restrições Alimentares
       </h3>
@@ -32,9 +32,8 @@ const FoodRestrictions = (props: any) => {
             name="foodRestrictions.allergy"
             aria-label="Alergias"
             onChange={e => {
-              console.log("food " + e)
               handleChange({ target: { name: "foodRestrictions.allergy", value: e } })
-              handleChange({ target: { name: "foodRestrictions.allergyDescription", value: e ? defaultValues?.foodRestrictions?.allergyDescription ?? "" : null }, delete: !e && !defaultValues.foodRestrictions.allergy })
+              handleChange({ target: { name: "foodRestrictions.allergyDescription", value: e ? defaultValues?.foodRestrictions?.allergyDescription ?? "" : null }, delete: !e && !defaultValues?.foodRestrictions?.allergy })
               setShowTextarea(e)
             }}
             defaultSelected={defaultValues?.foodRestrictions?.allergy}

@@ -21,7 +21,11 @@ export async function getDelegationById(id: Delegation["id"]) {
 			address: true,
 			participants: {
 				include: {
-					delegate: true,
+					delegate: {
+						include: {
+							Committee: true
+						}
+					},
 					delegationAdvisor: true,
 					foodRestrictions: true,
 				}
@@ -62,6 +66,28 @@ export async function getDelegationByCode(code: Delegation["code"]) {
 					}
 				}
 			}
+		}
+	})
+}
+
+export async function getDelegationBySchool(school: string) {
+	return prisma.delegation.findFirst({
+		where: {
+			school: school
+		},
+		include: {
+			address: true,
+			participants: {
+				include: {
+					delegate: {
+						include: {
+							Committee: true
+						}
+					},
+					delegationAdvisor: true,
+					foodRestrictions: true,
+				}
+			},
 		}
 	})
 }
@@ -110,6 +136,7 @@ export async function adminDelegationsList(index: number, participationMethod: P
 					name: true,
 					delegate: true,
 					delegationAdvisor: true,
+					stripePaydId: true,
 					_count: {
 						select: {
 							files: {
@@ -128,8 +155,10 @@ export async function adminDelegationsList(index: number, participationMethod: P
 				select: {
 					participants: {
 						where: {
-							stripePaydId: {
-								not: null
+							notifications: {
+								some: {
+									seen: false
+								}
 							}
 						}
 					}
@@ -139,18 +168,27 @@ export async function adminDelegationsList(index: number, participationMethod: P
 	})
 }
 
-export async function adminDelegationData(delegationId: Delegation["id"]) {
-	return prisma.delegation.findUnique({
+export async function adminDelegationData(school: Delegation["school"]) {
+	return prisma.delegation.findFirst({
 		where: {
-			id: delegationId,
+			school
 		},
 		include: {
 			address: true,
 			participants: {
 				include: {
-					delegate: true,
+					delegate: {
+						include: {
+							Committee: true
+						}
+					},
 					delegationAdvisor: true,
 					foodRestrictions: true,
+					notifications: {
+						where: {
+							seen: false
+						}
+					},
 					files: {
 						select: {
 							name: true,

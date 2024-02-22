@@ -192,10 +192,10 @@ async function delegationWith2Users() {
 	})
 }
 
-async function postponePaymentExpiration() {
+async function postponePaymentExpiration(code) {
 	await prisma.delegation.update({
 		where: {
-			code: "123456"
+			code: code
 		},
 		data: {
 			paymentExpirationDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
@@ -253,11 +253,22 @@ async function seed() {
 
 	// await delegationWith10Delegates()
 
-	// await postponePaymentExpiration()
+	// await postponePaymentExpiration("111111")
 
 	// await createAdmin()
 
 	// await createXDelegations(20)
+
+	await prisma.paymentConfiguration.update({
+		where: {
+			name: "default"
+		},
+		data: {
+			coupons: {
+				push: { code: "TESTE123#", type: "Escola" }
+			}
+		}
+	})
 
 	console.log(`Database has been seeded. 🌱`);
 }

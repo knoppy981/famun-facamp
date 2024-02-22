@@ -158,6 +158,23 @@ model Admin {
   password String
 }
 
+model PaymentConfiguration {
+  id                         String      @id @default(auto()) @map("_id") @db.ObjectId
+  name                       String      @unique
+  updatedAt                  DateTime    @updatedAt
+  precoDelegadoEnsinoMedio   Int
+  precoDelegadoUniversidade  Int
+  precoProfessorOrientador   Int
+  precoDelegadoInternacional Int
+  precoFacultyAdvisors       Int
+  coupons                     CouponType[]
+}
+
+type CouponType {
+  code String
+  type ParticipationMethod
+}
+
 enum AdvisorRole {
   Professor
   Coordenador

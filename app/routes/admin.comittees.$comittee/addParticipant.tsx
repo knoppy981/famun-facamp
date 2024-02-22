@@ -15,7 +15,6 @@ import { ComitteeType } from './route';
 
 const AddParticipant = ({ state, comittee, participationMethod }: { state: OverlayTriggerState, comittee: ComitteeType, participationMethod: ParticipationMethod }) => {
   const fetcher = useFetcher<any>()
-  const navigate = useNavigate()
   const formRef = React.useRef<HTMLFormElement>(null)
   const [delegatesList, selectedDelegates, handleDelegateSelection, clearSelectedDelegates, handleSubmission] = useAddParticipant(fetcher, comittee, state, formRef)
   const [fieldState, onSelectionChange, onInputChange, onOpenChange] = useComboBox(delegatesList, handleDelegateSelection)
@@ -27,7 +26,7 @@ const AddParticipant = ({ state, comittee, participationMethod }: { state: Overl
           <Dialog>
             <div className="admin-dialog-title">
               <h2>
-                Adicionar Delegado
+                Adicionar Delegados
               </h2>
 
               <Button onPress={state.close}>

@@ -1,11 +1,9 @@
 import React from "react"
-import { Council, Languages, ParticipationMethod } from "@prisma/client"
 import { FetcherWithComponents } from "@remix-run/react"
 import _ from "lodash"
 import qs from "qs"
 
 import { UserType } from "~/models/user.server"
-import { defaultUser } from "./defaultUserData"
 
 const newUserDataDefaultValues = {
   "delegate.councilPreference": ['Conselho_de_Seguranca_da_ONU', 'Rio_92', 'Assembleia_Geral_da_ONU', 'Conselho_de_Juventude_da_ONU'],
@@ -49,11 +47,10 @@ export function useUserCreation(user: UserType, userType: "delegate" | "advisor"
 
   React.useEffect(() => {
     // setting data back to default after creating user
-    console.log(fetcher?.data)
     if (fetcher?.data?.newUser?.name) {
-      console.log("entered")
       setNewUserData(newUserDataDefaultValues)
       setEditUserDataId(prevValue => !prevValue)
+      changeCreatingUserType("delegate")
     }
   }, [fetcher.data])
 
@@ -69,6 +66,8 @@ export function useUserCreation(user: UserType, userType: "delegate" | "advisor"
       });
       if (userType === "delegate") {
         newData["delegate.councilPreference"] = ['Conselho_de_Seguranca_da_ONU', 'Rio_92', 'Assembleia_Geral_da_ONU', 'Conselho_de_Juventude_da_ONU']
+      } else if (userType === "advisor") {
+        newData["delegationAdvisor.advisorRole"] = "Professor"
       }
       return newData
     })

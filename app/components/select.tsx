@@ -45,7 +45,7 @@ export const Select = <T extends object>(props: SelectProps<T>) => {
         </p>
         :
         !props.hideLabel &&
-        <label {...labelProps} className={`label ${props.theme ?? ""}`}>
+        <label {...labelProps} className={`label ${props.theme ?? undefined}`}>
           {props.label}
         </label>
       }
@@ -66,7 +66,7 @@ export const Select = <T extends object>(props: SelectProps<T>) => {
           {...triggerProps}
           ref={buttonRef}
         >
-          <span {...valueProps} style={{color: props.theme === "dark" ? "#fff" : ""}}>
+          <span {...valueProps} style={{ color: props.theme === "dark" ? "#fff" : undefined }}>
             {state.selectedItem
               ? state.selectedItem.rendered
               : props.placeholder}
@@ -75,7 +75,7 @@ export const Select = <T extends object>(props: SelectProps<T>) => {
             <span
               aria-hidden="true"
             >
-              <FiChevronDown className='icon' style={{color: props.theme === "dark" ? "#fff" : ""}}/>
+              <FiChevronDown className='icon' style={{ color: props.theme === "dark" ? "#fff" : undefined }} />
             </span>}
         </Button>
       </div>

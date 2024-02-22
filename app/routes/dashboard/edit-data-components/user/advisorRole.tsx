@@ -2,10 +2,10 @@ import { Item, Select } from "~/components/select"
 import { action } from "~/routes/api.delegationCode"
 
 const AdvisorRoleData = (props: any) => {
-  const { defaultValues, isDisabled, handleChange, actionData, error } = props
+  const { defaultValues, isDisabled, handleChange, actionData, theme } = props
 
   return (
-    <div className={`data-box-container ${error ? "error" : ""}`}>
+    <div className={`data-box-container ${theme ?? ""}`} style={{ placeSelf: "auto", alignSelf: "normal" }}>
       <h3 className="data-box-container-title blue-border">
         Posição do orientador
       </h3>

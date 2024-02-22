@@ -117,9 +117,6 @@ export async function handleWebHook(request: Request) {
     const parsed = qs.parse(metadata.paidUsersIds)
     const paidUsersIds: Array<string> = Object.values(parsed).filter((value): value is string => typeof value === 'string');
 
-    /* console.dir(event, { depth: null })
-    console.log(paidUsersIds) */
-
     const user = await getUserById(metadata.payerId)
     const paidUsers = await getPaidUsersIds(paidUsersIds)
 
@@ -128,14 +125,16 @@ export async function handleWebHook(request: Request) {
     await updateUsersPaymentStatus({ paidUsersIds, stripePaymentId: id })
     await updateUserPayments({ userId: metadata.payerId, stripePaymentId: id })
 
+    console.log("\n")
+    console.log("sending email !!!!!!!!")
+    console.log("\n")
+
     const info = await sendEmail({
       to: user.email,
       subject: "Pagamento Confirmado!",
       html: paymentCompletedEmail(user as UserType, paidUsers as UserType[], event.data.object?.charges?.data[0].receipt_url as string, new Date(event.data.object.created * 1000).toLocaleDateString("pt-BR"))
     })
   }
-
-  console.log('\n')
 
   return {}
 }

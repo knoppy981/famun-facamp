@@ -7,7 +7,7 @@ import PhoneNumberField from '~/components/textfield/phoneNumberField';
 import { isoCountries } from '~/lib/ISO-3661-1';
 
 const PersonalData = (props: any) => {
-  const { defaultValues, handleChange, actionData, isDisabled, error } = props
+  const { defaultValues, handleChange, actionData, isDisabled, theme } = props
   function createCountryArray(countries: object) {
     return Object.keys(countries).map(countryName => {
       return {
@@ -22,7 +22,7 @@ const PersonalData = (props: any) => {
   const passportRef = React.useRef<any>()
 
   return (
-    <div className={`data-box-container ${error ? "error" : ""}`}>
+    <div className={`data-box-container ${theme ?? ""}`}>
       <h3 className="data-box-container-title blue-border">
         Dados Pessoais
       </h3>

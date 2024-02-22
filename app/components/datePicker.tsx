@@ -16,7 +16,8 @@ import { useError } from '~/hooks/useError';
 
 type DatePickerProps = AriaDatePickerProps<DateValue> & {
   className?: string,
-  action: any
+  action: any,
+  theme?: "dark" | "light"
 }
 
 const DatePicker = (props: DatePickerProps) => {

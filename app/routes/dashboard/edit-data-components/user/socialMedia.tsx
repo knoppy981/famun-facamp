@@ -1,10 +1,10 @@
 import TextField from "~/components/textfield"
 
 const SocialMediaData = (props: any) => {
-  const { defaultValues, handleChange, isDisabled, actionData, error } = props
+  const { defaultValues, handleChange, isDisabled, actionData, theme } = props
 
   return (
-    <div className={`data-box-container ${error ? "error" : ""}`}>
+    <div className={`data-box-container ${theme ?? ""}`} style={{ placeSelf: "auto", alignSelf: "normal" }}>
       <h3 className="data-box-container-title blue-border">
         Redes Sociais
       </h3>

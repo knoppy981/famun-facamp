@@ -2,7 +2,7 @@ import React from "react";
 import { Item, ReorderableListBox } from "~/components/reordableList";
 
 const CouncilPreference = (props: any) => {
-  const { defaultValues, isDisabled, handleChange, error } = props
+  const { defaultValues, isDisabled, handleChange, theme } = props
 
   const [arr, setArr] = React.useState(defaultValues?.delegate?.councilPreference.map((item: string) => ({ id: item })))
 
@@ -29,7 +29,7 @@ const CouncilPreference = (props: any) => {
   };
 
   return (
-    <div className={`data-box-container ${error ? "error" : ""}`}>
+    <div className={`data-box-container ${theme ?? ""}`}>
       <h3 className="data-box-container-title blue-border">
         Comitê/Conselho que pode simular
       </h3>

@@ -31,6 +31,14 @@ const DelegationParticipants = () => {
             </td>
 
             <td className='table-cell'>
+              Conselho
+            </td>
+
+            <td className='table-cell'>
+              Representação
+            </td>
+
+            <td className='table-cell'>
               Entrou em
             </td>
           </tr>
@@ -39,6 +47,8 @@ const DelegationParticipants = () => {
         <tbody>
           {participants?.map((item, index) => {
             const leader = item.leader
+            const delegate = item.delegate as any
+
             return (
               <tr
                 className="table-row cursor"
@@ -69,6 +79,14 @@ const DelegationParticipants = () => {
                       </div>
                     </div>
                   </div>
+                </td>
+
+                <td className='table-cell'>
+                  {item.delegate ? delegate?.Committee?.council.replace(/_/g, " ") ?? <p className='text italic'>Não definido</p> : ""}
+                </td>
+
+                <td className='table-cell'>
+                  {item.delegate ? item.delegate.country ?? <p className='text italic'>Não definido</p> : ""}
                 </td>
 
                 <td className='table-cell'>

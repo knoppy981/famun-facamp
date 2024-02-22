@@ -283,6 +283,7 @@ const DelegationData = () => {
             handleChange={handleChange("participant")}
             id={selectedUserId}
             userType={delegation.participants?.find((participant) => participant?.id === selectedUserId)?.delegate ? 'delegate' : 'delegationAdvisor'}
+            actionType="edit"
           />
         </>
         :

@@ -5,10 +5,10 @@ import { Item, Select } from '~/components/select'
 import { Checkbox, CheckboxGroup } from '~/components/checkbox/checkbox-group';
 
 const LanguageData = (props: any) => {
-  const { defaultValues, isDisabled, handleChange, actionData, error } = props
+  const { defaultValues, isDisabled, handleChange, actionData, theme } = props
 
   return (
-    <div className={`data-box-container ${error ? "error" : ""}`}>
+    <div className={`data-box-container ${theme ?? ""}`}>
       <h3 className="data-box-container-title blue-border">
 
         Idiomas que pode simular

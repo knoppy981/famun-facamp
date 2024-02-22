@@ -5,7 +5,6 @@ import qs from "qs"
 
 import { UserType } from "~/models/user.server";
 
-
 export function useUserUpdate(user: UserType, fetcher: FetcherWithComponents<any>): {
   readySubmission: boolean,
   userWantsToChangeData: boolean,
@@ -19,8 +18,6 @@ export function useUserUpdate(user: UserType, fetcher: FetcherWithComponents<any
   React.useEffect(() => {
     // if input values are different than user data allow form submission
     setReadySubmission(Object.keys(changes).length > 0)
-    console.log("changes: ")
-    console.log(changes)
   }, [changes])
 
   React.useEffect(() => {
@@ -50,8 +47,6 @@ export function useUserUpdate(user: UserType, fetcher: FetcherWithComponents<any
     } else if (isKeyOfUserType(name)) {
       defaultValue = user?.[name]
     }
-
-    console.log(name, value)
 
     setChanges((prevState: typeof changes) => {
       if (e?.delete) {

@@ -29,7 +29,6 @@ export type ComitteeAooType = {
 }[]
 
 export function delegationAoo(delegation: DelegationType, amountPaid: number) {
-  console.log(delegation)
   const delegates = delegation?.participants?.filter((participant) => participant.delegate !== null && participant.id)
   const advisors = delegation?.participants?.filter((participant) => participant.delegationAdvisor !== null && participant.id)
 

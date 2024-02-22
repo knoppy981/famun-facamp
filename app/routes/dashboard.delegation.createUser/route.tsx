@@ -153,7 +153,7 @@ const CreateUser = () => {
         <Select
           className="delegation-data-input-wrapper"
           label="Tipo do Participante"
-          defaultSelectedKey={creatingUserType}
+          selectedKey={creatingUserType}
           onSelectionChange={(key: Key) => changeCreatingUserType(key as "delegate" | "advisor")}
           items={[
             { id: "delegate", name: "Delegado" },
@@ -183,6 +183,7 @@ const CreateUser = () => {
         handleChange={handleChange}
         id={editUserDataId}
         userType={creatingUserType}
+        actionType="add"
       />
 
       <AnimatePresence>

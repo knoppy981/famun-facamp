@@ -39,10 +39,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (data.userType) session.set('user-type', { userType: data.userType })
   if (data.participationMethod) session.set('user-participationMethod', { participationMethod: data.participationMethod })
 
-/*   console.log(data)
-  console.log(step)
-  console.log(action) */
-
   if (action === 'next') {
     try {
       await userStepValidation(Number(step), data)

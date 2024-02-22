@@ -2,10 +2,10 @@ import TextField from "~/components/textfield"
 import PhoneNumberField from "~/components/textfield/phoneNumberField"
 
 const EmergencyContactData = (props: any) => {
-  const { defaultValues, isDisabled, handleChange, actionData, error } = props
+  const { defaultValues, isDisabled, handleChange, actionData, theme } = props
 
   return (
-    <div className={`data-box-container ${error ? "error" : ""}`}>
+    <div className={`data-box-container ${theme ?? ""}`}>
       <h3 className="data-box-container-title blue-border">
         Contato de Emergencia
       </h3>

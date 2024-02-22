@@ -33,8 +33,9 @@ const AdminPage = () => {
   }, [participationMethod])
 
   const menuItems = [
-    { name: "Delegações e Pagamentos", to: "delegations", active: "/admin/delegations" },
-    { name: "Designação e Position Paper", to: "comittees", active: "/admin/comittees" },
+    { name: "Delegações", to: "delegations", active: "/admin/delegations" },
+    { name: "Designação", to: "comittees", active: "/admin/comittees" },
+    { name: "Participantes", to: "participants", active: "/admin/participants" },
     { name: "Credenciamento", to: "credentials", active: "/admin/credentials" },
   ]
 

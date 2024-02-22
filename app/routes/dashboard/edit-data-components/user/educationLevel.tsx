@@ -3,10 +3,10 @@ import { Radio, RadioGroup } from '~/components/radioGroup'
 import TextArea from '~/components/textfield/textArea'
 
 const EducationLevel = (props: any) => {
-  const { defaultValues, handleChange, actionData, isDisabled, error } = props
+  const { defaultValues, handleChange, actionData, isDisabled, theme } = props
 
   return (
-    <div className="data-box-container">
+    <div className={`data-box-container ${theme ?? ""}`} style={{ placeSelf: "auto", alignSelf: "normal" }}>
       <h3 className="data-box-container-title blue-border">
         Nível Educacional
       </h3>

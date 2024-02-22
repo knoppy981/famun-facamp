@@ -35,9 +35,6 @@ export function useDelegationUpdate(
     // if input values are different than user data allow form submission
     setReadySubmission(Object.keys(delegationChanges).length > 0 || Object.keys(participantChanges).length > 0)
     setAllowChangeParticipant(Object.keys(participantChanges).length === 0)
-    console.log("changes: ")
-    console.log(delegationChanges)
-    console.log(participantChanges)
   }, [delegationChanges, participantChanges])
 
   React.useEffect(() => {

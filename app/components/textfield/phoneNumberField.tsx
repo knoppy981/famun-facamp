@@ -10,6 +10,7 @@ type TextFieldProps = AriaTextFieldProps &
   React.InputHTMLAttributes<HTMLInputElement> & {
     action?: any;
     _defaultValue: string;
+    theme?: "dark" | "light"
   }
 
 const PhoneNumberField = forwardRef<HTMLInputElement, TextFieldProps>((props, forwardedRef) => {
@@ -29,16 +30,19 @@ const PhoneNumberField = forwardRef<HTMLInputElement, TextFieldProps>((props, fo
 
   return (
     <div className={className}>
-      <label
-        {...labelProps}
-        className={`label ${error ? "error" : ""}`}
-      >
-        {error ? error : label}
-      </label>
+      {error ?
+        <p {...errorMessageProps} className="label error">
+          {error}
+        </p>
+        :
+        <label {...labelProps} className={`label ${props.theme ?? ""}`}>
+          {label}
+        </label>
+      }
 
       <div className={`textfield-container ${error ? "error" : ""} ${props.isDisabled ? "disabled" : ""}`}>
         <PhoneInput
-          className='textfield-input'
+          className={`textfield-input ${props.theme ?? ""}`}
           {...inputProps}
           ref={mergeRefs([ref, forwardedRef])}
           required={props.required ?? false}
