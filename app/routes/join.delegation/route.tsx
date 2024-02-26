@@ -36,8 +36,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   if (data.joinMethod) session.set('join-method', { joinMethod: data.joinMethod })
 
-  console.log(data)
-
   if (action === "next") {
     if (data.delegationCode) {
       // join delegation

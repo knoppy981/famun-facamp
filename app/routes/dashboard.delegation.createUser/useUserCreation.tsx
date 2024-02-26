@@ -24,11 +24,6 @@ export function useUserCreation(user: UserType, userType: "delegate" | "advisor"
   const [editUserDataId, setEditUserDataId] = React.useState(false)
 
   React.useEffect(() => {
-    console.log("newUserData: ")
-    console.log(newUserData)
-  }, [newUserData])
-
-  React.useEffect(() => {
     // update the variable that decides if the user can create a user
     setCreationPermission(() => {
       if (userType === "advisor" || user.leader) {

@@ -42,10 +42,6 @@ export function handlePaymentsSelection(payments: PaymentType[] | undefined): [
   const [isButtonDisabled, setIsButtonDisabled] = React.useState(false)
 
   React.useEffect(() => {
-    console.log(selectedPayments)
-  }, [selectedPayments])
-
-  React.useEffect(() => {
     const totalPrice = selectedPayments.reduce((acc, payment) => acc + payment.price, 0)
     setPrice([totalPrice, selectedPayments[0]?.currency ?? ""])
     setIsButtonDisabled(selectedPayments.length === 0)

@@ -65,8 +65,6 @@ const CompletePayments = () => {
   const [delegatesPaymentsCount, advisorPaymentsCount, paymentNames] = usePaymentsData(payments)
   const locale = getCurrentLocale()
 
-  console.log(paymentIntent)
-
   return (
     <div className='auth-container' style={{ gap: "15px" }}>
       <h1 className='auth-title'>

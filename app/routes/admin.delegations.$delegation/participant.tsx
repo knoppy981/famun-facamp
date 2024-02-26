@@ -129,9 +129,6 @@ function useUserUpdate(
     if (name.includes('.')) {
       const [field, nestedField, nested2Field] = name.split('.')
 
-      console.log(field, nestedField, nested2Field)
-      console.log(value)
-
       if (isKeyOfUserType(field)) {
         let aux: any = user?.[field]
         defaultValue = nested2Field ? aux?.[nestedField]?.[nested2Field] : aux?.[nestedField]
@@ -139,8 +136,6 @@ function useUserUpdate(
     } else if (isKeyOfUserType(name)) {
       defaultValue = user?.[name]
     }
-
-    console.log(defaultValue)
 
     setChanges((prevState: typeof changes) => {
       if (e?.delete) {

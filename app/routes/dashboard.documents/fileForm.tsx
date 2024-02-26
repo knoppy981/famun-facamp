@@ -21,10 +21,6 @@ const FileForm = ({ state, user, selectedFiles, actionData }:
   const [file, setFile, selectedFileName, setSelectedFileName, isImageUploaded, imagePreview, isDragging, onDragOver, onDragLeave, handleDrop, onFileChange] =
     useFileSubmission(actionData, state, ref)
 
-  React.useEffect(() => {
-    console.log(navigation)
-  }, [navigation])
-
   return (
     <AnimatePresence>
       {state.isOpen &&
