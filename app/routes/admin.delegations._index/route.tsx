@@ -7,9 +7,6 @@ import { adminDelegationsList } from '~/models/delegation.server';
 import { FiBell, FiCheckCircle, FiChevronLeft, FiChevronRight, FiXCircle } from "react-icons/fi/index.js";
 import { ParticipationMethod } from '@prisma/client';
 import Button from '~/components/button'
-import Spinner from '~/components/spinner'
-import DelegationData from './delegationData';
-import Link from '~/components/link';
 import TextField from '~/components/textfield';
 import { adminDelegationType } from './types';
 
@@ -185,10 +182,6 @@ function useDelegationsList(fetcher: FetcherWithComponents<any>, participationMe
   adminDelegationType[]] {
   const [searchIndex, setSearchIndex] = React.useState<number>(0)
   const [delegations, setDelegations] = React.useState(_delegations)
-
-  React.useEffect(() => {
-    console.log(delegations)
-  }, [delegations])
 
   React.useEffect(() => {
     setDelegations(fetcher.data?.delegations ? fetcher.data?.delegations : _delegations)

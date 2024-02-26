@@ -1,25 +1,26 @@
 import React from 'react'
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from '@remix-run/node'
-import { useLoaderData, useOutletContext, useSearchParams } from '@remix-run/react'
-import qs, { ParsedQs } from 'qs'
+import { useLoaderData, useOutletContext, useSearchParams, useSubmit } from '@remix-run/react'
+import qs from 'qs'
 import { ParticipationMethod } from '@prisma/client';
 import { useOverlayTriggerState } from 'react-stately';
 
-import { addDelegatesToComittee, getComitteeByName, removeDelegates } from '~/models/committee.server';
 import { requireAdminId } from '~/session.server';
 
 import Button from '~/components/button';
 import Link from '~/components/link';
-import { FiArrowLeft, FiDollarSign, FiDownload, FiFile, FiTrash2, FiUserMinus, FiUserPlus } from "react-icons/fi/index.js";
-import { comitteeAoo, delegationAoo } from '~/sheets/data';
+import { FiArrowLeft, FiBell, FiDollarSign, FiDownload, FiFile, FiTrash2 } from "react-icons/fi/index.js";
+import { delegationAoo } from '~/sheets/data';
 import { exportAoo } from '~/sheets';
-import { adminDelegationData, getDelegationBySchool } from '~/models/delegation.server';
+import { DelegationType, adminDelegationData } from '~/models/delegation.server';
 import { getDelegationCharges } from '~/stripe.server';
 import ParticipantModal from './participant';
 import { iterateObject } from '../dashboard/utils/findDiffrences';
 import { updateUserSchema } from '~/schemas';
 import { getExistingUser, updateUser } from '~/models/user.server';
 import { getCorrectErrorMessage } from '~/utils/error';
+import ModalTrigger from '~/components/modalOverlay/trigger';
+import Dialog from '~/components/dialog';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
@@ -33,17 +34,21 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   iterateObject(changes, (key, value, path) => {
     if (value === "false" || value === "true") value = value === "true"
     if (key.includes('.')) {
-      const [field, nestedField] = key.split('.')
+      const [field, nestedField, nested2Field] = key.split('.')
       if (typeof data[field] === 'object' && data[field] !== null) {
         if (field === "foodRestrictions") {
           data[field]["upsert"]["create"][nestedField] = value ?? null;
           data[field]["upsert"]["update"][nestedField] = value ?? null;
+        } else if (nestedField === "Committee" && nested2Field === "id") {
+          data[field]["update"][nestedField] = { connect: { id: value ?? null } }
         } else {
           data[field]["update"][nestedField] = value ?? null;
         }
       } else {
         if (field === "foodRestrictions") {
           data[field] = { upsert: { create: { [nestedField]: value ?? null }, update: { [nestedField]: value ?? null } } };
+        } else if (nestedField === "Committee" && nested2Field === "id") {
+          data[field] = { update: { [nestedField]: { connect: { id: value ?? null } } } }
         } else {
           data[field] = { update: { [nestedField]: value ?? null } };
         }
@@ -78,16 +83,21 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const participationMethod = url.searchParams.get("pm") as ParticipationMethod
-  if (!params.delegation) return redirect(`/admin/comittees?pm=${participationMethod}`)
+  if (!params.delegation) return redirect(`/admin/delegations?pm=${participationMethod}`)
 
   const delegation = await adminDelegationData(params.delegation as string)
+
+  if (!delegation) {
+    return redirect(`/admin/delegations?pm=${participationMethod}`)
+  }
+
   const delegationCharges = await getDelegationCharges(delegation as any)
   let amountPaid = delegationCharges?.data.reduce((accumulator, charge) => {
     accumulator += charge.amount
     return accumulator
   }, 0) as number
 
-  if (!delegation || (participationMethod && delegation?.participationMethod !== participationMethod)) return redirect(`/admin/comittees?pm=${participationMethod}`)
+  if (!delegation || (participationMethod && delegation?.participationMethod !== participationMethod)) return redirect(`/admin/delegations?pm=${participationMethod}`)
 
   return json({ delegation: { ...delegation, amountPaid } })
 }
@@ -111,6 +121,7 @@ const Delegation = () => {
     if (participant.stripePaydId) accumulator += 1
     return accumulator
   }, 0) as number
+  const [handleRemoveParticipant] = useDeleteDelegation()
 
   return (
     <div className='admin-container'>
@@ -135,8 +146,8 @@ const Delegation = () => {
         </div>
 
         <div className="admin-delegation-subtitle-item">
-          <span>{paidParticipants}</span> inscriç{paidParticipants !== 1 ? "ões" : "ão"} paga{paidParticipants !== 1 ? "s" : ""}
-          (Total pago: {(delegation?.amountPaid / 100).toLocaleString("pt-BR", { style: "currency", currency: "brl" })})
+          <span>{paidParticipants}</span> inscriç{paidParticipants !== 1 ? "ões" : "ão"} paga{paidParticipants !== 1 ? "s, " : ", "}
+          total pago: {(delegation?.amountPaid / 100).toLocaleString("pt-BR", { style: "currency", currency: "brl" })}
         </div>
 
         <div className="admin-delegation-subtitle-item">
@@ -204,6 +215,9 @@ const Delegation = () => {
                           <FiFile className='icon' color={isDocumentsSent ? "green" : "red"} />
                           <FiDollarSign className='icon' color={isPaid ? "green" : "red"} />
                           {participant.name}
+                          {participant.notifications.filter(notification => !notification.seen).length > 0 ?
+                            <div className='notification'><FiBell className='icon notification' /></div> : null
+                          }
                         </div>
                       </td>
 
@@ -266,12 +280,58 @@ const Delegation = () => {
       </div>
 
       <div className='comittee-title'>
-        <Button className='secondary-button-box red-light' onPress={() => []}>
-          <FiTrash2 className='icon' /> Excluír Delegação
-        </Button>
+        <ModalTrigger
+          buttonClassName='secondary-button-box red-light'
+          label={<><FiTrash2 className='icon' /> Excluír Delegação</>}
+        >
+          {(close: () => void) =>
+            <Dialog maxWidth>
+              <div className="dialog-title">
+                Tem certeza que deseja excluír essa delegação?
+              </div>
+
+              <div className="dialog-subitem">
+                Obs: Todos os participantes presentes nesta delegação ficaram sem delegação, os dados da delegação como o endereço e número para contato seram perdidos. <br />
+                É importante ressaltar que delegados presentes nessa delegação que já foram designados para algum comitê/conselho continuaram designados.
+              </div>
+
+              <Button
+                className="secondary-button-box red-dark"
+                onPress={() => {
+                  close()
+                }}
+              >
+                Cancelar
+              </Button>
+
+              <Button
+                className="secondary-button-box blue-dark"
+                onPress={() => {
+                  close()
+                  handleRemoveParticipant(delegation.id)
+                }}
+              >
+                <FiTrash2 className='icon' /> Excluír Delegação
+              </Button>
+            </Dialog>
+          }
+        </ModalTrigger>
       </div>
     </div >
   )
+}
+
+function useDeleteDelegation() {
+  const submit = useSubmit()
+
+  const handleRemoveParticipant = (delegationId: string) => {
+    submit(
+      { delegationId },
+      { method: "post", action: "/api/adminDeleteDelegation", navigate: false }
+    )
+  }
+
+  return [handleRemoveParticipant]
 }
 
 export default Delegation

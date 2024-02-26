@@ -735,13 +735,12 @@ input:-webkit-autofill:active {
 }
 
 .pay-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   gap: 50px;
 }
 @media screen and (max-width: 1000px) {
   .pay-grid {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 }
 
@@ -976,6 +975,12 @@ input:-webkit-autofill:active {
   }
 }
 
+.admin-search-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
 @media screen and (max-width: 700px) {
   .admin-search-container {
     padding: 0 15px;
@@ -1027,6 +1032,56 @@ input:-webkit-autofill:active {
 
 .admin-delegation-modal-button-container {
   display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.admin-delegation-notification {
+  max-width: 500px;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.admin-delegation-notification.border {
+  border-top: 1px solid #e6e6e6;
+}
+
+.admin-delegation-notification-date {
+  position: relative;
+  width: fit-content;
+}
+.admin-delegation-notification-date.not-seen::before {
+  z-index: 2;
+  position: absolute;
+  content: "";
+  top: 0;
+  right: -8px;
+  height: 8px;
+  width: 8px;
+  border-radius: 4px;
+  transition: background 0.3s;
+  background: blue;
+}
+
+.admin-delegation-notification-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-left: 5px;
+}
+
+.admin-delegation-notification-item {
+  font-size: 1.4rem;
+  display: flex;
+  gap: 5px;
+}
+.admin-delegation-notification-item.array {
+  flex-direction: column;
+}
+.admin-delegation-notification-item.array ul {
+  margin-left: 20px;
+  list-style: disc;
 }
 
 .comittee-container {
@@ -1149,9 +1204,14 @@ input:-webkit-autofill:active {
 
 .comittee-selected-delegates {
   max-width: 500px;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-style: italic;
   word-break: normal;
+}
+@media screen and (max-width: 700px) {
+  .comittee-selected-delegates {
+    font-size: 1.6rem;
+  }
 }
 .comittee-selected-delegates span {
   font-size: inherit;
@@ -1580,7 +1640,7 @@ input:-webkit-autofill:active {
   flex-direction: column;
   align-items: flex-start;
   place-content: start;
-  max-height: 600px;
+  max-height: 650px;
 }
 @media screen and (max-width: 1450px) {
   .data-box-wrapper {
@@ -2069,7 +2129,6 @@ input:-webkit-autofill:active {
 .delegation-data-participant-options-box {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   gap: 15px;
   padding-left: 5px;
 }
@@ -2113,15 +2172,21 @@ input:-webkit-autofill:active {
 .default-button {
   position: relative;
   border: none;
+  outline: none;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 }
 .default-button:disabled {
   opacity: 0.6;
   cursor: default;
+}
+@media screen and (max-width: 700px) {
+  .default-button {
+    font-size: 1.6rem;
+  }
 }
 
 .primary-button-box {
@@ -2596,7 +2661,7 @@ input:-webkit-autofill:active {
 }
 @media screen and (max-width: 700px) {
   .checkbox-label span {
-    font-size: 2rem;
+    font-size: 1.6rem;
   }
   .checkbox-label input {
     -webkit-tap-highlight-color: transparent;
@@ -2737,6 +2802,9 @@ input:-webkit-autofill:active {
 }
 .combo-box-input:disabled {
   opacity: 1;
+}
+.combo-box-input::placeholder {
+  font-style: italic;
 }
 .combo-box-input.dark {
   color: #fff;
@@ -2982,6 +3050,7 @@ input:-webkit-autofill:active {
   color: #fff;
   border: none;
   outline: none;
+  overflow: clip auto;
 }
 .dialog.max-width {
   max-width: 300px;
@@ -3100,6 +3169,15 @@ input:-webkit-autofill:active {
     height: 4rem;
     font-size: 1.6rem;
   }
+}
+
+.select-button-container {
+  width: 100%;
+}
+.select-button-container button {
+  opacity: 1 !important;
+  display: "flex";
+  align-items: "center";
 }
 
 .select-container {
@@ -3382,13 +3460,12 @@ input:-webkit-autofill:active {
 }
 
 .modal-container {
-  transform-origin: center 0;
+  transform-origin: center;
   box-shadow: 0px 3px 5px -2px #000000;
   border-radius: 10px;
   max-height: 90vh;
-  overflow-y: scroll;
-  overflow-x: hidden;
   background: #192638;
+  overflow: clip;
 }
 @media screen and (max-width: 700px) {
   .modal-container {

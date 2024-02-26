@@ -1,3 +1,6 @@
+@import "../abstracts/mixins";
+@import "../abstracts/colors";
+
 .admin-delegation-subtitle {
   display: flex;
   flex-wrap: wrap;
@@ -16,4 +19,60 @@
 
 .admin-delegation-modal-button-container {
   display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.admin-delegation-notification {
+  max-width: 500px;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  &.border {
+    border-top: 1px solid #e6e6e6;
+  }
+}
+
+.admin-delegation-notification-date {
+  position: relative;
+  width: fit-content;
+
+  &.not-seen {
+    &::before {
+      z-index: 2;
+      position: absolute;
+      content: "";
+      top: 0;
+      right: -8px;
+      height: 8px;
+      width: 8px;
+      border-radius: 4px;
+      transition: background 0.3s;
+      background: blue;
+    }
+  }
+}
+
+.admin-delegation-notification-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-left: 5px;
+}
+
+.admin-delegation-notification-item {
+  font-size: 1.4rem;
+  display: flex;
+  gap: 5px;
+
+  &.array {
+    flex-direction: column;
+
+    ul {
+      margin-left: 20px;
+      list-style: disc;
+    }
+  }
 }

@@ -257,7 +257,7 @@ const Comittee = () => {
 
       <div className='comittee-title'>
         <Button className='secondary-button-box red-light' onPress={() => deleteComitteeState.toggle()}>
-          <FiTrash2 className='icon' /> Escluír Conferência
+          <FiTrash2 className='icon' /> Excluír Conferência
         </Button>
       </div>
     </div >

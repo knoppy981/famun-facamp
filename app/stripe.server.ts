@@ -49,14 +49,15 @@ export async function createPaymentIntent({
   price,
   userId,
   stripeCustomerId,
-  usersIdsThatWillBePaid
+  usersIdsThatWillBePaid,
+  currency
 }: {
-  price: number; userId: UserType["id"]; stripeCustomerId: Stripe.Customer["id"], usersIdsThatWillBePaid: Array<string>
+  price: number; userId: UserType["id"]; stripeCustomerId: Stripe.Customer["id"], usersIdsThatWillBePaid: Array<string>, currency: string
 }) {
   return stripe.paymentIntents.create({
     customer: stripeCustomerId,
     amount: price,
-    currency: 'brl',
+    currency: currency,
     automatic_payment_methods: {
       enabled: true,
     },

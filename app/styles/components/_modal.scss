@@ -30,13 +30,12 @@
 }
 
 .modal-container {
-  transform-origin: center 0;
+  transform-origin: center;
   box-shadow: 0px 3px 5px -2px #000000;
   border-radius: 10px;
   max-height: 90vh;
-  overflow-y: scroll;
-  overflow-x: hidden;
   background: $azulEscuro;
+  overflow: clip;
 
   @media screen and (max-width: 700px) {
     max-height: 90svh;

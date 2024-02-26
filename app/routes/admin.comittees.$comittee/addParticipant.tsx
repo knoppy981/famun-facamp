@@ -15,8 +15,7 @@ import { ComitteeType } from './route';
 
 const AddParticipant = ({ state, comittee, participationMethod }: { state: OverlayTriggerState, comittee: ComitteeType, participationMethod: ParticipationMethod }) => {
   const fetcher = useFetcher<any>()
-  const formRef = React.useRef<HTMLFormElement>(null)
-  const [delegatesList, selectedDelegates, handleDelegateSelection, clearSelectedDelegates, handleSubmission] = useAddParticipant(fetcher, comittee, state, formRef)
+  const [delegatesList, selectedDelegates, handleDelegateSelection, clearSelectedDelegates, handleSubmission] = useAddParticipant(fetcher, comittee, state)
   const [fieldState, onSelectionChange, onInputChange, onOpenChange] = useComboBox(delegatesList, handleDelegateSelection)
 
   return (
@@ -54,7 +53,7 @@ const AddParticipant = ({ state, comittee, participationMethod }: { state: Overl
             {selectedDelegates.length > 0 ?
               <>
                 <div className='comittee-selected-delegates'>
-                  Delegados selecionados: {selectedDelegates.map((item, index) => <span key={index}>{index !== 0 ? ", " : ""} {item.name}</span>)}
+                  Delegados selecionados: {selectedDelegates?.map((item, index) => <span key={index}>{index !== 0 ? ", " : ""} {item.name}</span>)}
                 </div>
 
                 <Button className='text italic' onPress={clearSelectedDelegates}>
@@ -73,7 +72,7 @@ const AddParticipant = ({ state, comittee, participationMethod }: { state: Overl
   )
 }
 
-function useAddParticipant(fetcher: FetcherWithComponents<any>, comittee: any, state: OverlayTriggerState, formRef: React.RefObject<HTMLFormElement>): [
+function useAddParticipant(fetcher: FetcherWithComponents<any>, comittee: any, state: OverlayTriggerState): [
   any[], { id: string; name: string; }[], (delegate: { id: string; name: string; }) => void, () => void, () => void
 ] {
   const listDelegatesFetcher = useFetcher<any>()
@@ -84,14 +83,14 @@ function useAddParticipant(fetcher: FetcherWithComponents<any>, comittee: any, s
     if (delegate === undefined) return
 
     setSelectedDelegates((prevSelectedDelegates) => {
-      const isAlreadySelected = prevSelectedDelegates.some((d) => d.id === delegate.id);
+      const isAlreadySelected = prevSelectedDelegates.some((d) => d.id === delegate.id)
 
       if (isAlreadySelected) {
-        return prevSelectedDelegates.filter((d) => d.id !== delegate.id);
+        return prevSelectedDelegates.filter((d) => d.id !== delegate.id)
       } else {
-        return [...prevSelectedDelegates, delegate];
+        return [...prevSelectedDelegates, delegate]
       }
-    });
+    })
   }
 
   const clearSelectedDelegates = () => setSelectedDelegates([])

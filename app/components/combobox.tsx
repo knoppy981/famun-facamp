@@ -40,8 +40,9 @@ const ComboBox = (props: ComboBoxProps) => {
     state
   );
 
-  const [error, handleInputErrorChange] = useError({ 
-    errorMessage: props.errorMessage, action: props.action, ref: inputRef })
+  const [error, handleInputErrorChange] = useError({
+    errorMessage: props.errorMessage, action: props.action, ref: inputRef
+  })
 
   return (
     <div className={props.className}>
@@ -75,7 +76,7 @@ const ComboBox = (props: ComboBoxProps) => {
             <span
               aria-hidden="true"
             >
-              <FiChevronDown className="icon" color="#fff"/>
+              <FiChevronDown className="icon" color={props.theme === "dark" ? "#fff" : "#000"} />
             </span>
           </Button>
         }

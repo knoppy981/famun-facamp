@@ -65,6 +65,11 @@
 }
 
 .admin-search-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+
   @media screen and (max-width: 700px) {
     padding: 0 15px;
   }

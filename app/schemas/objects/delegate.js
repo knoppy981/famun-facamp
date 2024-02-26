@@ -52,6 +52,13 @@ export const updateDelegateSchema = Joi.object({
       'alternatives.types': 'At least one language required'
     }),
 
+  country: Joi.string()
+    .messages({
+      'string.empty': 'Please select a nacionality'
+    }),
+
+  Committee: Joi.any(),
+
   advisorRole: Joi.forbidden(),
   Facebook: Joi.forbidden(),
   Instagram: Joi.forbidden(),

@@ -87,7 +87,7 @@ const CompletedPayments = () => {
           </table>
         </div>
         :
-        <h2 className="text w500">
+        <h2 className="payments-warning text w500">
           Ainda não recebemos nenhum pagamento :(
         </h2>
       }

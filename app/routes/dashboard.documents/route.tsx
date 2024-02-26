@@ -12,6 +12,8 @@ import ModalTrigger from '~/components/modalOverlay/trigger';
 import { FiFilePlus } from 'react-icons/fi/index.js'
 import FileForm from './fileForm';
 import { useUser, useUserType } from '~/utils';
+import { useOverlayTriggerState } from 'react-stately';
+import Button from '~/components/button';
 
 export type filesType = "Position Paper" | "Liability Waiver" | "Payment Voucher"
 export type selectedFilesType = {
@@ -97,11 +99,12 @@ const Documents = () => {
   const user = useUser()
   const actionData = useActionData<typeof action>();
   const { delegation } = useLoaderData<typeof loader>()
-  const [selectedUserId, setSelectedUserId] = React.useState<UserType["id"]>(user.id);
+  const [selectedUserId, setSelectedUserId] = React.useState<UserType["id"]>(actionData?.userId ? actionData.userId as string : user.id);
   const selectedUser = delegation?.participants.find(el => el.id === selectedUserId)
   const selectedFiles = handleSelectedFiles(delegation, selectedUserId)
   const userType = useUserType()
   const allowOtherUsersChanges = userType === "advisor" || user.leader
+  const state = useOverlayTriggerState({})
 
   return (
     <div className='section-wrapper padding'>
@@ -125,15 +128,21 @@ const Documents = () => {
           null
         }
 
+        <i className='text'>
+          Observações:
+          <br />
+          Se você fez o upload do arquivo e ele não está aparecendo, espere um pouco e recarregue a página
+        </i>
+
         {documentsType.map((item, index) => {
           if (selectedUser?.delegate && item.type === "advisor") return
           if (selectedUser?.delegationAdvisor && item.type === "delegate") return
           const file = selectedFiles[item.key]
           return (
             <div className='documents-file-wrapper' key={index}>
-              <h2>
+              <p className='text w500'>
                 {item.value}
-              </h2>
+              </p>
 
               <div className='documents-file-container'>
                 {file ?
@@ -151,28 +160,23 @@ const Documents = () => {
           )
         })}
 
-        <ModalTrigger
-          isDismissable
-          buttonClassName="secondary-button-box blue-light"
-          label={<><FiFilePlus className='icon' /> Enviar Arquivos</>}
-        >
-          {(close: () => void) =>
-            <FileForm
-              close={close}
-              user={selectedUser}
-              selectedFiles={selectedFiles}
-              actionData={actionData}
-            />
-          }
-        </ModalTrigger>
+        <Button className="secondary-button-box blue-light" onPress={state.toggle}>
+          <FiFilePlus className='icon' /> Enviar Arquivos
+        </Button>
+
+        <FileForm
+          state={state}
+          user={selectedUser}
+          selectedFiles={selectedFiles}
+          actionData={actionData}
+        />
       </div>
     </div>
   );
 }
 
 function handleSelectedFiles(delegation: any, selectedUserId: string) {
-  const [selectedFiles, setSelectedFiles] = React.useState<selectedFilesType>(
-    { "Position Paper": false, "Liability Waiver": false, "Payment Voucher": false })
+  const [selectedFiles, setSelectedFiles] = React.useState<selectedFilesType>({ "Position Paper": false, "Liability Waiver": false, "Payment Voucher": false })
   React.useEffect(() => {
     setSelectedFiles(() => {
       const aux: any = { "Position Paper": false, "Liability Waiver": false, "Payment Voucher": false }

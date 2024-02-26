@@ -30,6 +30,9 @@ const Modal = ({ state, children, ...props }: ModalType) => {
       >
         <motion.div
           className='modal-container'
+          layout="preserve-aspect"
+          layoutScroll
+          key={"container"}
           {...modalProps as any}
           ref={ref}
         >

@@ -114,7 +114,7 @@ const PendingPayments = () => {
           </table>
         </div>
         :
-        <h2 className="text w500">
+        <h2 className="payments-warning text w500">
           Voce ja realizou todos os pagamentos necessários
         </h2>
       }

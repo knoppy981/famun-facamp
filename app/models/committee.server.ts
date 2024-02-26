@@ -46,6 +46,9 @@ export async function getComitteeByName(name: string) {
               }
             }
           }
+        },
+        orderBy: {
+          country: "asc"
         }
       }
     }

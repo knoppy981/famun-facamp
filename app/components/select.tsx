@@ -62,14 +62,14 @@ export const Select = <T extends object>(props: SelectProps<T>) => {
         <div className='input-border' style={{ opacity: props.isDisabled ? 0 : state.isOpen || error ? 1 : 0 }} />
 
         <Button
-          className='default-button'
           {...triggerProps}
           ref={buttonRef}
+          className='select-button-container'
         >
           <span {...valueProps} style={{ color: props.theme === "dark" ? "#fff" : undefined }}>
             {state.selectedItem
               ? state.selectedItem.rendered
-              : props.placeholder}
+              : <i className='text opacity'>{props.placeholder}</i>}
           </span>
           {!props.isDisabled &&
             <span

@@ -48,6 +48,10 @@
     opacity: 1;
   }
 
+  &::placeholder {
+    font-style: italic;
+  }
+
   &.dark {
     color: #fff;
     -webkit-text-fill-color: #fff !important;

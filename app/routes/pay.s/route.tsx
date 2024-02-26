@@ -33,7 +33,7 @@ const SelectPayments = () => {
   const err = actionData?.errors
   const transition = useNavigation()
   const locale = getCurrentLocale()
-  const [selectedPaymentsNames, setSelectedPaymentsNames, price, isButtonDisabled] = handlePaymentsSelection(payments)
+  const [selectedPaymentsNames, handlePaymentSelection, price, currency, isButtonDisabled] = handlePaymentsSelection(payments)
 
   return (
     <Form action="/pay/c" method="get" className='pay-container'>
@@ -43,7 +43,7 @@ const SelectPayments = () => {
 
       <div className='pay-grid'>
         <div className='pay-grid-container'>
-          <h2 className='join-title'>
+          <h2 className='join-title' style={{ margin: 0 }}>
             Selecione os pagamentos a serem realizados
           </h2>
 
@@ -52,18 +52,18 @@ const SelectPayments = () => {
               className='pay-item-container'
               name="s"
               aria-label="Pagamento Selecionados"
-              value={selectedPaymentsNames}
-              onChange={setSelectedPaymentsNames}
+              value={selectedPaymentsNames?.map(selectedPayment => selectedPayment.name)}
               errorMessage={err}
               action={actionData}
             >
               {payments?.map((item, index: number) => {
-                const isDisabled = !item.available || item.expired
+                const isDisabled = !item.available || item.expired || (currency !== "" && item.currency !== currency)
                 return (
                   <div className='pay-item' key={index}>
                     <Checkbox
                       value={item.name}
                       isDisabled={isDisabled}
+                      onChange={e => handlePaymentSelection(e, item.name, item.currency)}
                     >
                       <span className='pay-item-overflow-text' style={{ opacity: isDisabled ? .2 : 1 }}>
                         Inscrição de {item.name}
@@ -82,13 +82,17 @@ const SelectPayments = () => {
                       <PopoverTrigger label={<FiAlertCircle className='icon error' />}>
                         <Dialog maxWidth>
                           {item.expired ?
-                            <div className='dialog-title'>
+                            <div className='text'>
                               O prazo para realizar o pagamento do(a) {item.name} se encerrou, entre em contato com a nossa equipe para ajustá-lo
                             </div>
-                            :
-                            <div className='dialog-title'>
-                              Somente líderes e orientadores podem realizar pagamentos de outros participantes
-                            </div>
+                            : !item.available ?
+                              <div className='text'>
+                                Somente líderes e orientadores podem realizar pagamentos de outros participantes
+                              </div>
+                              :
+                              <div className='text'>
+                                Não é possível realizar pagamentos em moedas diferentes juntos
+                              </div>
                           }
                         </Dialog>
                       </PopoverTrigger>
@@ -104,7 +108,7 @@ const SelectPayments = () => {
 
         <div className='pay-grid-container'>
           <div className='pay-price'>
-            {(price / 100).toLocaleString(locale, { style: "currency", currency: "BRL" })}
+            {(price / 100).toLocaleString(locale, { style: "currency", currency: currency ? currency : "brl" })}
           </div>
 
           <TextField

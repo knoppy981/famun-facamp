@@ -27,20 +27,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   // with the array of available payments, select the Id for the users that are gonna get their payment paid
   payments = payments?.filter(payment => namesForPayments.includes(payment.name) && payment.available && !payment.expired)
 
-  if (payments?.length === 0) return redirect("/pay/s")
+  if (payments?.length === 0 || payments === undefined) return redirect("/pay/s")
   const isCouponValid = await checkCuponCode(coupon as string, user.participationMethod)
 
-  console.log("\n")
-  console.log(coupon)
-  console.log("coupon: " + isCouponValid)
-  console.log("\n")
-
   const usersIdsThatWillBePaid = payments
-    ?.filter(payment => payment.available === true)
+    .filter(payment => payment.available === true)
     .map(payment => payment.id) as string[];
 
   // get the total price
-  const price = payments?.reduce((sum, item) => {
+  const price = payments.reduce((sum, item) => {
     if (item.available) {
       return isCouponValid ? sum + item.price / 2 : sum + item.price;
     }
@@ -51,7 +46,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   let paymentIntent
   try {
     paymentIntent = await createPaymentIntent(
-      { price, userId: user.id, stripeCustomerId: user.stripeCustomerId as string, usersIdsThatWillBePaid }
+      { price, userId: user.id, stripeCustomerId: user.stripeCustomerId as string, usersIdsThatWillBePaid, currency: payments[0].currency }
     )
   } catch (error) {
     console.log(error)
@@ -69,6 +64,8 @@ const CompletePayments = () => {
   const { paymentIntent, price, payments, WEBSITE_URL } = useLoaderData<any>()
   const [delegatesPaymentsCount, advisorPaymentsCount, paymentNames] = usePaymentsData(payments)
   const locale = getCurrentLocale()
+
+  console.log(paymentIntent)
 
   return (
     <div className='auth-container' style={{ gap: "15px" }}>
@@ -97,7 +94,7 @@ const CompletePayments = () => {
       </ul>
 
       <div className='pay-price' style={{ margin: 0 }}>
-        {(price / 100).toLocaleString(locale, { style: "currency", currency: "BRL" })}
+        {(price / 100).toLocaleString(locale, { style: "currency", currency: paymentIntent.currency })}
       </div>
 
       <Elements

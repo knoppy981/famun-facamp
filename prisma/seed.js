@@ -259,13 +259,19 @@ async function seed() {
 
 	// await createXDelegations(20)
 
-	await prisma.paymentConfiguration.update({
+	const x = await prisma.user.update({
 		where: {
-			name: "default"
+			email: "andre.knopp8@gmail.com"
 		},
 		data: {
-			coupons: {
-				push: { code: "TESTE123#", type: "Escola" }
+			delegate: {
+				update: {
+					Committee: {
+						connect: {
+							id: ""
+						}
+					}
+				}
 			}
 		}
 	})

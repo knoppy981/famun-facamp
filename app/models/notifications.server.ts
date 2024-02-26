@@ -39,3 +39,14 @@ export async function createDelegationChangeNotification(userId: string, data: s
     }
   })
 }
+
+export async function seeNotification(id: string) {
+  return prisma.notifications.update({
+    where: {
+      id
+    },
+    data: {
+      seen: true
+    }
+  })
+}

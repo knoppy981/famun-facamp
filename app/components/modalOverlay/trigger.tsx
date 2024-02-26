@@ -18,11 +18,11 @@ function ModalTrigger({ label, children, buttonClassName, ...props }: any) {
       <Button {...triggerProps} className={buttonClassName} >{label}</Button>
 
       <AnimatePresence>
-        {state.isOpen && (
+        {state.isOpen && 
           <Modal {...props} state={state} isDismissable={props.isDismissable}>
             {React.cloneElement(children(state.close), overlayProps)}
           </Modal>
-        )}
+        }
       </AnimatePresence>
     </>
   );

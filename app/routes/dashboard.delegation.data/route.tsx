@@ -219,7 +219,7 @@ const DelegationData = () => {
                 </ModalTrigger> :
                 <PopoverTrigger buttonClassName="opacity" label={<>{removeParticipantButtonIcon} {removeParticipantButtonLabel}</>}>
                   <Dialog maxWidth>
-                    <div className="dialog-title">
+                    <div className="text">
                       Você não pode excluir a própria conta
                     </div>
                   </Dialog>
@@ -267,7 +267,7 @@ const DelegationData = () => {
                 </ModalTrigger> :
                 <PopoverTrigger buttonClassName="opacity" label={<>{changeLeaderButtonIcon} {changeLeaderButtonLabel}</>}>
                   <Dialog maxWidth>
-                    <div className="dialog-title">
+                    <div className="text">
                       Este participante já é o Líder da delegação!
                     </div>
                   </Dialog>

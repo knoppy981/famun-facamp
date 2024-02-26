@@ -4,15 +4,20 @@
 .default-button {
   position: relative;
   border: none;
+  outline: none;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 
   &:disabled {
     opacity: 0.6;
     cursor: default;
+  }
+
+  @media screen and (max-width: 700px) {
+    font-size: 1.6rem;
   }
 }
 

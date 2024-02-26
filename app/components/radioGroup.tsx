@@ -48,7 +48,7 @@ export function RadioGroup(props: RadioGroupType) {
           {error}
         </p>
         :
-        <label {...labelProps} className="label">
+        label && <label {...labelProps} className="label">
           {label}
         </label>
       }

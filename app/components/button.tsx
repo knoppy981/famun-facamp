@@ -5,7 +5,7 @@ import { AriaButtonProps, mergeProps, useButton, useFocusRing, useHover } from '
 
 type ButtonProps = AriaButtonProps &
   React.ButtonHTMLAttributes<HTMLButtonElement> &
-{ loading?: boolean }
+{ loading?: boolean; style?: any }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, forwardedRef) => {
   const { className, children, loading, name, value, ...rest } =
@@ -24,9 +24,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, forwardedRef) 
     >
       <button
         ref={mergeRefs([ref, forwardedRef])}
+        style={props.style}
         className="default-button"
         {...mergeProps(buttonProps, focusProps, hoverProps)}
-        name={name} 
+        name={name}
         value={value}
       >
         {children}

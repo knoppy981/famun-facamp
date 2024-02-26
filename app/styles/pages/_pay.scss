@@ -16,12 +16,11 @@
 }
 
 .pay-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   gap: 50px;
 
   @media screen and (max-width: 1000px) {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 }
 

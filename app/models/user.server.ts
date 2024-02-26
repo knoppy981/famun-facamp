@@ -9,10 +9,10 @@ import type { Password, User, Delegate, DelegationAdvisor, File, FoodRestriction
 
 export type UserType = User & {
 	delegate?: Delegate & {
-		Comittee: Committee
+		Comittee?: Committee
 	},
 	delegationAdvisor?: DelegationAdvisor,
-	files?: File[],
+	files?: Partial<File>[],
 	foodRestrictions?: FoodRestrictions
 }
 
@@ -125,7 +125,24 @@ export async function getExistingUser({ userId, ...values }: { userId?: User["id
 	throw new ValidationError(errorMsg, errorDetails)
 }
 
-export async function adminParticipantList(index: number, participationMethod: ParticipationMethod, searchQuery?: string) {
+export async function adminParticipantList(index: number, participationMethod: ParticipationMethod, orderBy: string, searchQuery?: string) {
+	let orderByObject
+	type orderByType = "asc" | "desc"
+	switch (orderBy) {
+		case "user":
+			orderByObject = { name: "asc" as orderByType }
+			break;
+		case "delegation":
+			orderByObject = { delegation: { school: "asc" as orderByType } }
+			break;
+		case "createdAt":
+			orderByObject = { createdAt: "asc" as orderByType }
+			break;
+		default:
+			orderByObject = { name: "asc" as orderByType }
+			break;
+	}
+
 	return prisma.user.findMany({
 		skip: index * 12,
 		take: 12,
@@ -143,13 +160,11 @@ export async function adminParticipantList(index: number, participationMethod: P
 				select: {
 					school: true
 				}
-			}
+			},
+			createdAt: true,
+			delegationAdvisor: true
 		},
-		orderBy: {
-			delegation: {
-				school: 'asc'
-			}
-		},
+		orderBy: orderByObject,
 	})
 }
 

@@ -33,6 +33,16 @@
   }
 }
 
+.select-button-container {
+  width: 100%;
+
+  button {
+    opacity: 1 !important;
+    display: "flex";
+    align-items: "center";
+  }
+}
+
 .select-container {
   position: relative;
   display: flex;

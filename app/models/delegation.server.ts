@@ -185,8 +185,8 @@ export async function adminDelegationData(school: Delegation["school"]) {
 					delegationAdvisor: true,
 					foodRestrictions: true,
 					notifications: {
-						where: {
-							seen: false
+						orderBy: {
+							createdAt: "desc"
 						}
 					},
 					files: {
@@ -465,6 +465,14 @@ export async function updateInviteLink(delegationCode: Delegation["code"]) {
 		},
 		data: {
 			inviteLink: link
+		}
+	})
+}
+
+export async function deleteDelegation(id: string) {
+	return prisma.delegation.delete({
+		where: {
+			id
 		}
 	})
 }
