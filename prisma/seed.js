@@ -98,7 +98,7 @@ async function delegationWith2Users() {
 			participationMethod: "Escola",
 			password: {
 				create: {
-					hash: await bcrypt.hash("dede5562", 10)
+					hash: await bcrypt.hash("Dede5562", 10)
 				}
 			},
 			nacionality: "Brazil",
@@ -169,7 +169,7 @@ async function delegationWith2Users() {
 		data: {
 			code: "123456",
 			inviteLink: `http://localhost:3000/i/${token}`,
-			school: "Colégio Notre Dame Campinas",
+			school: "Colégio Teste 123",
 			schoolPhoneNumber: "+55 19 97866 7676",
 			participationMethod: "Escola",
 			paymentExpirationDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
@@ -207,7 +207,22 @@ async function createAdmin() {
 	const admin = await prisma.admin.create({
 		data: {
 			email: "admin@famun.com",
-			password: "Dede5562"
+			password: "Teste123"
+		}
+	})
+
+	const basicConifuration = await prisma.paymentConfiguration.create({
+		data: {
+			name: "default",
+			precoDelegadoEnsinoMedio: 16000,
+			precoDelegadoUniversidade: 16000,
+			precoProfessorOrientador: 16000,
+			precoDelegadoInternacional: 16000,
+			precoFacultyAdvisors: 16000,
+			coupons: {
+				code: "MUNPARTNER50",
+				type: "Universidade"
+			}
 		}
 	})
 }
@@ -249,32 +264,15 @@ async function createXDelegations(max) {
 }
 
 async function seed() {
-	// await delegationWith2Users()
+	await delegationWith2Users()
 
 	// await delegationWith10Delegates()
 
 	// await postponePaymentExpiration("111111")
 
-	// await createAdmin()
+	await createAdmin()
 
 	// await createXDelegations(20)
-
-	const x = await prisma.user.update({
-		where: {
-			email: "andre.knopp8@gmail.com"
-		},
-		data: {
-			delegate: {
-				update: {
-					Committee: {
-						connect: {
-							id: ""
-						}
-					}
-				}
-			}
-		}
-	})
 
 	console.log(`Database has been seeded. 🌱`);
 }

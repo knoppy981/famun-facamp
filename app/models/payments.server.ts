@@ -3,6 +3,8 @@ import { getUserType } from '~/models/user.server';
 import { requireUser } from '~/session.server';
 
 import type { UserType } from '~/models/user.server';
+import { getPaymentPrices } from './configuration.server';
+import { Council, Languages, ParticipationMethod } from '@prisma/client';
 
 export async function getPaidUsersIds(paidUsersIds: UserType["id"][]) {
   const arr: Array<any> = []
@@ -106,6 +108,7 @@ export async function getRequiredPayments({
           name: true,
           nacionality: true,
           delegate: true,
+          participationMethod: true,
         },
         orderBy: {
           delegationAdvisor: { id: "asc" }
@@ -124,16 +127,37 @@ export async function getRequiredPayments({
     expired: boolean,
   }> = []
 
-  if (delegation === null) {
+  const prices = await getPaymentPrices()
+
+  if (delegation === null || prices === null) {
     throw new Error('delegation not found');
   }
 
   delegation.participants?.forEach(participant => {
+    let price
+    if (participant.delegate) {
+      if (participant.nacionality === "Brazil") {
+        if (participant.participationMethod === "Escola") {
+          price = prices.precoDelegadoEnsinoMedio
+        } else {
+          price = prices.precoDelegadoUniversidade
+        }
+      } else {
+        price = prices.precoDelegadoInternacional
+      }
+    } else {
+      if (participant.nacionality === "Brazil") {
+        price = prices.precoProfessorOrientador
+      } else {
+        price = prices.precoFacultyAdvisors
+      }
+    }
+
     payments.push({
       id: participant.id,
       name: participant.name,
-      price: participant.delegate ? 10000 : 3000,
-      currency: participant.nacionality !== "Brazil" ? "USD" : "BRL",
+      price: price,
+      currency: participant.nacionality !== "Brazil" ? "usd" : "brl",
       type: participant.delegate ? "delegate" : "advisor",
       available: isLeader || userType === 'advisor' ? true : userId === participant.id,
       expiresAt: delegation.paymentExpirationDate,

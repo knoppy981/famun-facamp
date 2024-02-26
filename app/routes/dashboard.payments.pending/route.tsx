@@ -84,7 +84,7 @@ const PendingPayments = () => {
                       <div className='table-flex-cell'>
                         <div className="secondary-button-box red-light" style={{ opacity: item.expired ? .2 : 1 }}>
                           <div>
-                            {(item.price / 100).toLocaleString(locale, { style: "currency", currency: "BRL" })}
+                            {(item.price / 100).toLocaleString(locale, { style: "currency", currency: item.currency })}
                           </div>
                         </div>
                       </div>

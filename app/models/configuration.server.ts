@@ -15,3 +15,18 @@ export async function checkCuponCode(code: string, type: ParticipationMethod) {
 
   return paymentConfiguration.coupons.some(coupon => coupon.code === code && coupon.type === type);
 }
+
+export async function getPaymentPrices() {
+  return prisma.paymentConfiguration.findUnique({
+    where: {
+      name: "default"
+    },
+    select: {
+      precoDelegadoEnsinoMedio: true,
+      precoDelegadoInternacional: true,
+      precoDelegadoUniversidade: true,
+      precoFacultyAdvisors: true,
+      precoProfessorOrientador: true,
+    }
+  })
+}
