@@ -1,6 +1,6 @@
 import React from 'react'
 import { LoaderFunctionArgs, json } from '@remix-run/node';
-import { FetcherWithComponents, useFetcher, useLoaderData, useOutletContext } from '@remix-run/react'
+import { FetcherWithComponents, Form, SubmitFunction, useFetcher, useLoaderData, useOutletContext, useSubmit } from '@remix-run/react'
 
 
 import { FiChevronDown, FiChevronLeft, FiChevronRight } from "react-icons/fi/index.js";
@@ -12,6 +12,7 @@ import { ParticipantType } from './types';
 import PopoverTrigger from '~/components/popover/trigger';
 import Dialog from '~/components/dialog';
 import { Radio, RadioGroup } from '~/components/radioGroup';
+import useDidMountEffect from '~/hooks/useDidMountEffect';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -26,14 +27,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 }
 
 const Participants = () => {
-  const fetcher = useFetcher<any>()
+  const submit = useSubmit()
   const formRef = React.useRef<HTMLFormElement>(null)
   const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
-  const { participants: _participants } = useLoaderData<typeof loader>()
-  const [searchIndex, setSearchIndex, orderBy, setOrderBy, participants] = useDelegationsList(fetcher, participationMethod, _participants, formRef)
+  const { participants } = useLoaderData<typeof loader>()
+  const [searchIndex, handleSearchIndex, orderBy, handleOrderBy, resetIndex] = useDelegationsList(submit, formRef, participationMethod)
 
   return (
-    <fetcher.Form ref={formRef} onChange={e => { fetcher.submit(e.currentTarget, { method: "GET" }) }} className='admin-container' >
+    <Form ref={formRef} onChange={e => { submit(e.currentTarget, { method: "GET" }) }} className='admin-container' >
 
       <div className='admin-search-container'>
         <TextField
@@ -42,7 +43,7 @@ const Participants = () => {
           aria-label="Procurar"
           type="text"
           isRequired
-          onChange={() => { setSearchIndex(0) }}
+          onChange={resetIndex}
           placeholder='Procurar...'
         />
 
@@ -55,7 +56,7 @@ const Participants = () => {
               action={undefined}
               isDisabled={undefined}
               value={orderBy}
-              onChange={setOrderBy}
+              onChange={handleOrderBy}
             >
               {[["Ordem alfabética", "name"], ["Delegação", "delegation"], ["Data de inscrição", "createdAt"]].map((item, i) => {
                 return (
@@ -137,49 +138,57 @@ const Participants = () => {
       <input type='hidden' name="pm" value={participationMethod} />
 
       <div className='admin-navigation-button-container'>
-        <Button onPress={() => { setSearchIndex(prevValue => prevValue - 1) }} isDisabled={searchIndex < 1}>
+        <Button onPress={() => handleSearchIndex(false)} isDisabled={searchIndex < 1}>
           <FiChevronLeft className='icon' />
         </Button>
 
         Página {searchIndex + 1}
 
-        <Button onPress={() => { setSearchIndex(prevValue => prevValue + 1) }} isDisabled={participants.length < 12}>
+        <Button onPress={() => handleSearchIndex(true)} isDisabled={participants.length < 12}>
           <FiChevronRight className='icon' />
         </Button>
       </div>
-    </fetcher.Form >
+    </Form >
   )
 }
 
-function useDelegationsList(
-  fetcher: FetcherWithComponents<any>,
-  participationMethod: ParticipationMethod,
-  _participants: any[],
-  formRef: React.RefObject<HTMLFormElement>
-): [
-    number,
-    React.Dispatch<React.SetStateAction<number>>,
-    string,
-    React.Dispatch<React.SetStateAction<string>>,
-    ParticipantType[]
-  ] {
+function useDelegationsList(submit: SubmitFunction, formRef: React.RefObject<HTMLFormElement>, participationMethod: ParticipationMethod,): [
+  number,
+  (isAdding: boolean) => void,
+  string,
+  (value: string) => void,
+  () => void
+] {
   const [searchIndex, setSearchIndex] = React.useState<number>(0)
   const [orderBy, setOrderBy] = React.useState<string>("name")
-  const [participants, setParticipants] = React.useState(_participants)
+  // adding this extra state so that the form is only submitted when handle is triggered, can't modify formRef.current have to wait to state to update
+  const [testState, setTestState] = React.useState(false)
 
-  React.useEffect(() => {
-    setParticipants(fetcher.data?.participants ? fetcher.data?.participants : _participants)
-  }, [fetcher.data, _participants])
+  const handleSearchIndex = (isAdding: boolean) => {
+    setSearchIndex(prevValue => isAdding ? prevValue + 1 : prevValue - 1)
+    setTestState(!testState)
+  }
 
-  React.useEffect(() => {
+  const handleOrderBy = (value: string) => {
+    setOrderBy(value)
+    resetIndex()
+    setTestState(!testState)
+  }
+
+  const resetIndex = () => {
     setSearchIndex(0)
+  }
+
+  useDidMountEffect(() => {
+    submit(formRef.current, { method: "GET" })
+  }, [testState])
+
+  useDidMountEffect(() => {
+    resetIndex()
   }, [participationMethod])
 
-  React.useEffect(() => {
-    fetcher.submit(formRef.current, { method: "GET" })
-  }, [participationMethod, searchIndex, orderBy])
 
-  return [searchIndex, setSearchIndex, orderBy, setOrderBy, participants]
+  return [searchIndex, handleSearchIndex, orderBy, handleOrderBy, resetIndex]
 }
 
 export default Participants

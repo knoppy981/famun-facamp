@@ -1,6 +1,6 @@
 import React from 'react'
 import { LoaderFunctionArgs, json } from '@remix-run/node';
-import { FetcherWithComponents, Form, useFetcher, useLoaderData, useNavigate, useOutletContext, useSearchParams, useSubmit } from '@remix-run/react'
+import { FetcherWithComponents, Form, SubmitFunction, useFetcher, useLoaderData, useNavigate, useOutletContext, useSearchParams, useSubmit } from '@remix-run/react'
 
 import { adminDelegationsList } from '~/models/delegation.server';
 
@@ -9,6 +9,7 @@ import { ParticipationMethod } from '@prisma/client';
 import Button from '~/components/button'
 import TextField from '~/components/textfield';
 import { adminDelegationType } from './types';
+import useDidMountEffect from '~/hooks/useDidMountEffect';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -22,16 +23,16 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 }
 
 const Delegation = () => {
-  const fetcher = useFetcher<any>()
+  const submit = useSubmit()
   const formRef = React.useRef<HTMLFormElement>(null)
   const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
-  const { delegations: _delegations } = useLoaderData<typeof loader>()
-  const [searchIndex, setSearchIndex, delegations] = useDelegationsList(fetcher, participationMethod, _delegations, formRef)
+  const { delegations } = useLoaderData<typeof loader>()
+  const [searchIndex, handle, resetIndex] = handleSearchIndex(submit, formRef, participationMethod)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
   return (
-    <fetcher.Form ref={formRef} onChange={e => { fetcher.submit(e.currentTarget, { method: "GET" }) }} className='admin-container' >
+    <Form ref={formRef} onChange={e => { submit(e.currentTarget, { method: "GET" }) }} className='admin-container' >
       <div className='admin-search-container'>
         <TextField
           className="admin-search-input-box"
@@ -39,7 +40,7 @@ const Delegation = () => {
           aria-label="Procurar"
           type="text"
           isRequired
-          onChange={() => { setSearchIndex(0) }}
+          onChange={resetIndex}
           placeholder='Procurar...'
         />
       </div>
@@ -162,40 +163,46 @@ const Delegation = () => {
       <input type='hidden' name="pm" value={participationMethod} />
 
       <div className='admin-navigation-button-container'>
-        <Button onPress={() => { setSearchIndex(prevValue => prevValue - 1) }} isDisabled={searchIndex < 1}>
+        <Button onPress={() => handle(false)} isDisabled={searchIndex < 1}>
           <FiChevronLeft className='icon' />
         </Button>
 
         Página {searchIndex + 1}
 
-        <Button onPress={() => { setSearchIndex(prevValue => prevValue + 1) }} isDisabled={delegations.length < 12}>
+        <Button onPress={() => handle(true)} isDisabled={delegations.length < 12}>
           <FiChevronRight className='icon' />
         </Button>
       </div>
-    </fetcher.Form>
+    </Form>
   )
 }
 
-function useDelegationsList(fetcher: FetcherWithComponents<any>, participationMethod: ParticipationMethod, _delegations: any[], formRef: React.RefObject<HTMLFormElement>): [
+function handleSearchIndex(submit: SubmitFunction, formRef: React.RefObject<HTMLFormElement>, participationMethod: ParticipationMethod): [
   number,
-  React.Dispatch<React.SetStateAction<number>>,
-  adminDelegationType[]] {
+  (isAdding: boolean) => void,
+  () => void,
+] {
   const [searchIndex, setSearchIndex] = React.useState<number>(0)
-  const [delegations, setDelegations] = React.useState(_delegations)
+  // adding this extra state so that the form is only submitted when handle is triggered, and submit the form directly on handle because I cant modify the value of formRef.current
+  const [testState, setTestState] = React.useState(false)
 
-  React.useEffect(() => {
-    setDelegations(fetcher.data?.delegations ? fetcher.data?.delegations : _delegations)
-  }, [fetcher.data, _delegations])
+  const handle = (isAdding: boolean) => {
+    setSearchIndex(prevValue => isAdding ? prevValue + 1 : prevValue - 1)
+    setTestState(!testState)
+  }
 
-  React.useEffect(() => {
-    setSearchIndex(0)
+  const resetIndex = () => setSearchIndex(0)
+
+  useDidMountEffect(() => {
+    submit(formRef.current, { method: "GET" })
+  }, [testState])
+
+  useDidMountEffect(() => {
+    resetIndex()
   }, [participationMethod])
 
-  React.useEffect(() => {
-    fetcher.submit(formRef.current, { method: "GET" })
-  }, [participationMethod, searchIndex])
 
-  return [searchIndex, setSearchIndex, delegations]
+  return [searchIndex, handle, resetIndex]
 }
 
 export default Delegation

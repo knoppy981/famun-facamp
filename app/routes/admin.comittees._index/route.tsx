@@ -1,6 +1,6 @@
 import React from 'react'
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node';
-import { FetcherWithComponents, Form, useFetcher, useLoaderData, useOutletContext, useSearchParams } from '@remix-run/react';
+import { FetcherWithComponents, Form, useFetcher, useLoaderData, useOutletContext, useSearchParams, useSubmit } from '@remix-run/react';
 import qs from 'qs'
 import { ParticipationMethod } from '@prisma/client';
 
@@ -12,9 +12,9 @@ import { getCorrectErrorMessage } from '~/utils/error';
 import TextField from '~/components/textfield';
 import Link from '~/components/link';
 import Button from '~/components/button';
-import { useCreateComittee } from './useCreateComittee';
 import CreateComittee from './createComittee';
 import { FiPlus, FiUser } from 'react-icons/fi/index.js';
+import { useOverlayTriggerState } from 'react-stately';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const text = await request.text()
@@ -47,18 +47,16 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 }
 
 const route = () => {
-  const fetcher = useFetcher<any>()
+  const submit = useSubmit()
   const [searchParams] = useSearchParams()
   const formRef = React.useRef<HTMLFormElement>(null)
   const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
-  const { comittees: _comittees } = useLoaderData<typeof loader>()
-  const [comittees] = useComitteesList(fetcher, participationMethod, _comittees, formRef)
-  const createFetcher = useFetcher<any>()
-  const [state, openModal] = useCreateComittee(createFetcher)
+  const { comittees } = useLoaderData<typeof loader>()
+  const state = useOverlayTriggerState({})
 
   return (
     <div className='admin-container'>
-      <Form ref={formRef} onChange={e => { fetcher.submit(e.currentTarget, { method: "GET" }) }}>
+      <Form ref={formRef} onChange={e => { submit(e.currentTarget, { method: "GET" }) }}>
         <div className='admin-search-container'>
           <TextField
             className="admin-search-input-box"
@@ -100,31 +98,16 @@ const route = () => {
           </Link>
         ))}
 
-        <Button className='comittee-item add' onPress={openModal}>
+        <Button className='comittee-item add' onPress={state.toggle}>
           <div className='comittee-item-title add'>
             Adicionar Conferência <FiPlus className='icon' />
           </div>
         </Button>
 
-        <CreateComittee state={state} fetcher={createFetcher} participationMethod={participationMethod} />
+        <CreateComittee state={state} participationMethod={participationMethod} />
       </div>
     </div>
   )
-}
-
-function useComitteesList(fetcher: FetcherWithComponents<any>, participationMethod: ParticipationMethod, _comittees: any[], formRef: React.RefObject<HTMLFormElement>): [
-  ComitteeList] {
-  const [comittees, setComittees] = React.useState(_comittees)
-
-  React.useEffect(() => {
-    setComittees(fetcher.data?.comittees ? fetcher.data?.comittees : _comittees)
-  }, [fetcher.data, _comittees])
-
-  React.useEffect(() => {
-    fetcher.submit(formRef.current, { method: "GET" })
-  }, [participationMethod])
-
-  return [comittees]
 }
 
 export default route

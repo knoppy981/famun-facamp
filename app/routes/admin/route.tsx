@@ -1,6 +1,6 @@
 import React, { Key, useRef } from 'react'
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
-import { requireAdmin } from '~/session.server';
+import { requireAdminId } from '~/session.server';
 import { FiChevronRight, FiLogOut, FiMenu, FiX } from "react-icons/fi/index.js";
 import { Form, NavLink, Outlet, useMatches, useNavigate, useSearchParams } from '@remix-run/react';
 import Button from '~/components/button';
@@ -11,10 +11,10 @@ import { useStickyContainer } from '~/hooks/useStickyContainer';
 import Link from '~/components/link';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+  await requireAdminId(request)
   const url = new URL(request.url);
   if (url.pathname === "/admin") return redirect("/admin/delegations")
 
-  const adminId = await requireAdmin(request)
   return json({})
 };
 
@@ -25,19 +25,21 @@ const AdminPage = () => {
   const [stickyRef, isSticky] = useStickyContainer()
   const [participationMethod, setParticipationMethod] = React.useState<Key>(searchParams.get("pm") ?? "Escola")
 
-  React.useEffect(() => {
-    setSearchParams(prev => {
-      prev.set("pm", participationMethod as string)
-      return prev
-    })
-  }, [participationMethod])
-
   const menuItems = [
     { name: "Delegações", to: "delegations", active: "/admin/delegations" },
     { name: "Designação", to: "comittees", active: "/admin/comittees" },
     { name: "Participantes", to: "participants", active: "/admin/participants" },
     { name: "Credenciamento", to: "credentials", active: "/admin/credentials" },
   ]
+
+  console.log(matches)
+
+  const [changed, setChanged] = React.useState(false)
+
+  React.useEffect(() => {
+    setChanged(true)
+    if (changed) navigate(`${matches?.[2].pathname}?pm=${participationMethod}`, { replace: true })
+  }, [participationMethod])
 
   return (
     <div className='admin-wrapper'>
@@ -63,7 +65,9 @@ const AdminPage = () => {
             aria-label="Posição do(a) Professor(a) Orientador(a)"
             hideLabel={true}
             selectedKey={participationMethod}
-            onSelectionChange={setParticipationMethod}
+            onSelectionChange={(key: React.Key) => {
+              setParticipationMethod(key)
+            }}
             items={[
               { id: "Escola" },
               { id: "Universidade" },

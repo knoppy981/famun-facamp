@@ -1,5 +1,5 @@
 import React from 'react'
-import { FetcherWithComponents } from '@remix-run/react';
+import { FetcherWithComponents, useFetcher } from '@remix-run/react';
 import { AnimatePresence } from 'framer-motion'
 import { ParticipationMethod } from '@prisma/client';
 import { OverlayTriggerState } from 'react-stately'
@@ -11,7 +11,10 @@ import Dialog from '~/components/dialog'
 import TextField from '~/components/textfield';
 import { FiX } from "react-icons/fi/index.js";
 
-const CreateComittee = ({ state, fetcher, participationMethod }: { state: OverlayTriggerState, fetcher: FetcherWithComponents<any>, participationMethod: ParticipationMethod }) => {
+const CreateComittee = ({ state, participationMethod }: { state: OverlayTriggerState, participationMethod: ParticipationMethod }) => {
+  const fetcher = useFetcher<any>()
+  useCreateComittee(fetcher, state)
+
   return (
     <AnimatePresence>
       {state.isOpen &&
@@ -69,6 +72,12 @@ const CreateComittee = ({ state, fetcher, participationMethod }: { state: Overla
       }
     </AnimatePresence >
   )
+}
+
+function useCreateComittee(fetcher: FetcherWithComponents<any>, state: OverlayTriggerState) {
+  React.useEffect(() => {
+    if (fetcher.data?.comittee) state.close()
+  }, [fetcher.data])
 }
 
 export default CreateComittee

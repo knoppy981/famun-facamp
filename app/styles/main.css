@@ -1642,12 +1642,12 @@ input:-webkit-autofill:active {
   place-content: start;
   max-height: 650px;
 }
-@media screen and (max-width: 1450px) {
+@media screen and (max-width: 1500px) {
   .data-box-wrapper {
-    max-height: 800px;
+    max-height: 900px;
   }
 }
-@media screen and (max-width: 1100px) {
+@media screen and (max-width: 1150px) {
   .data-box-wrapper {
     max-height: none;
     align-items: stretch;
@@ -1657,7 +1657,7 @@ input:-webkit-autofill:active {
 .data-box-wrapper.d {
   max-height: 300px;
 }
-@media screen and (max-width: 1100px) {
+@media screen and (max-width: 1150px) {
   .data-box-wrapper.d {
     max-height: none;
   }

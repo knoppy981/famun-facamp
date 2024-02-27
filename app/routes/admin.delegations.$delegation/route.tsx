@@ -92,10 +92,14 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   }
 
   const delegationCharges = await getDelegationCharges(delegation as any)
-  let amountPaid = delegationCharges?.data.reduce((accumulator, charge) => {
-    accumulator += charge.amount
-    return accumulator
-  }, 0) as number
+  const amountPaid: { "usd": number, "brl": number } = { "usd": 0, "brl": 0 }
+  delegationCharges?.data.forEach(charge => {
+    if (amountPaid[charge.currency as "usd" | "brl"]) {
+      amountPaid[charge.currency as "usd" | "brl"] += charge.amount
+    } else {
+      amountPaid[charge.currency as "usd" | "brl"] = charge.amount
+    }
+  });
 
   if (!delegation || (participationMethod && delegation?.participationMethod !== participationMethod)) return redirect(`/admin/delegations?pm=${participationMethod}`)
 
@@ -123,6 +127,11 @@ const Delegation = () => {
   }, 0) as number
   const [handleRemoveParticipant] = useDeleteDelegation()
 
+  const totalPaid = `
+  ${delegation.amountPaid.brl > 0 ? (delegation.amountPaid.brl / 100).toLocaleString("pt-BR", { style: "currency", currency: "brl" }) : null}
+  ${delegation.amountPaid.usd > 0 ? (delegation.amountPaid.usd / 100).toLocaleString("pt-BR", { style: "currency", currency: "usd" }) : null}
+  `
+
   return (
     <div className='admin-container'>
       <div className='comittee-return-link'>
@@ -147,7 +156,7 @@ const Delegation = () => {
 
         <div className="admin-delegation-subtitle-item">
           <span>{paidParticipants}</span> inscriç{paidParticipants !== 1 ? "ões" : "ão"} paga{paidParticipants !== 1 ? "s, " : ", "}
-          total pago: {(delegation?.amountPaid / 100).toLocaleString("pt-BR", { style: "currency", currency: "brl" })}
+          total pago: {totalPaid}
         </div>
 
         <div className="admin-delegation-subtitle-item">
@@ -269,7 +278,7 @@ const Delegation = () => {
                 paymentExpirationDate: new Date(delegation.paymentExpirationDate as any),
                 updatedAt: new Date(),
                 participants: delegation.participants as any
-              }, delegation.amountPaid)
+              }, `${totalPaid}`)
 
               exportAoo(aoo, delegation.school as string)
             }
