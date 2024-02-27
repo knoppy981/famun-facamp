@@ -10,6 +10,10 @@
   max-height: 650px;
 
   @media screen and (max-width: 1500px) {
+    max-height: 850px;
+  }
+
+  @media screen and (max-width: 1400px) {
     max-height: 900px;
   }
 
@@ -17,6 +21,14 @@
     max-height: none;
     align-items: stretch;
     place-content: normal;
+  }
+
+  &.a {
+    max-height: 450px;
+
+    @media screen and (max-width: 1150px) {
+      max-height: none;
+    }
   }
 
   &.d {

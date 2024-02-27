@@ -39,7 +39,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         if (field === "foodRestrictions") {
           data[field]["upsert"]["create"][nestedField] = value ?? null;
           data[field]["upsert"]["update"][nestedField] = value ?? null;
-        } else if (nestedField === "Committee" && nested2Field === "id") {
+        } else if (nestedField === "comittee" && nested2Field === "id") {
           data[field]["update"][nestedField] = { connect: { id: value ?? null } }
         } else {
           data[field]["update"][nestedField] = value ?? null;
@@ -47,7 +47,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       } else {
         if (field === "foodRestrictions") {
           data[field] = { upsert: { create: { [nestedField]: value ?? null }, update: { [nestedField]: value ?? null } } };
-        } else if (nestedField === "Committee" && nested2Field === "id") {
+        } else if (nestedField === "comittee" && nested2Field === "id") {
           data[field] = { update: { [nestedField]: { connect: { id: value ?? null } } } }
         } else {
           data[field] = { update: { [nestedField]: value ?? null } };
@@ -122,7 +122,7 @@ const Delegation = () => {
     return accumulator
   }, 0) as number
   const paidParticipants = delegation.participants?.reduce((accumulator, participant) => {
-    if (participant.stripePaydId) accumulator += 1
+    if (participant.stripePaidId) accumulator += 1
     return accumulator
   }, 0) as number
   const [handleRemoveParticipant] = useDeleteDelegation()
@@ -196,7 +196,7 @@ const Delegation = () => {
                 {delegation.participants.map((participant, i) => {
                   const necessaryFiles = participant.delegate ? 2 : 1
                   const isDocumentsSent = participant.files?.filter((file) => file.name === "Liability Waiver" || file.name === "Position Paper").length === necessaryFiles
-                  const isPaid = participant.stripePaydId
+                  const isPaid = participant.stripePaidId
                   const leader = participant.leader
                   const delegate = participant.delegate as any
 
@@ -241,7 +241,7 @@ const Delegation = () => {
                       </td>
 
                       <td className='table-cell'>
-                        {participant.delegate ? delegate?.Committee?.council.replace(/_/g, " ") ?? <p className='text italic'>Não definido</p> : ""}
+                        {participant.delegate ? delegate?.comittee?.council.replace(/_/g, " ") ?? <p className='text italic'>Não definido</p> : ""}
                       </td>
 
                       <td className='table-cell'>

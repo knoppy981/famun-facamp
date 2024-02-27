@@ -6,7 +6,7 @@ export async function getComitteeByName(name: string) {
   const startDate = new Date(currentYear, 0, 1);
   const endDate = new Date(currentYear + 1, 0, 1);
 
-  return prisma.committee.findFirst({
+  return prisma.comittee.findFirst({
     where: {
       name,
       createdAt: {
@@ -55,12 +55,12 @@ export async function getComitteeByName(name: string) {
   })
 }
 
-export async function getCommitteesList(participationMethod: ParticipationMethod, searchQuery?: string) {
+export async function getComitteesList(participationMethod: ParticipationMethod, searchQuery?: string) {
   const currentYear = new Date().getFullYear();
   const startDate = new Date(currentYear, 0, 1);
   const endDate = new Date(currentYear + 1, 0, 1);
 
-  return prisma.committee.findMany({
+  return prisma.comittee.findMany({
     where: {
       createdAt: {
         gte: startDate,
@@ -83,7 +83,7 @@ export async function getCommitteesList(participationMethod: ParticipationMethod
 }
 
 export async function createComittee({ name, council, type }: { name: string, council: Council, type: ParticipationMethod }) {
-  return prisma.committee.create({
+  return prisma.comittee.create({
     data: {
       name,
       council,
@@ -93,7 +93,7 @@ export async function createComittee({ name, council, type }: { name: string, co
 }
 
 export async function deleteComittee(id: string) {
-  return prisma.committee.delete({
+  return prisma.comittee.delete({
     where: {
       id
     }
@@ -101,7 +101,7 @@ export async function deleteComittee(id: string) {
 }
 
 export async function addDelegatesToComittee(id: string, delegatesIds: { id: string }[]) {
-  return prisma.committee.update({
+  return prisma.comittee.update({
     where: {
       id
     },
@@ -114,7 +114,7 @@ export async function addDelegatesToComittee(id: string, delegatesIds: { id: str
 }
 
 export async function removeDelegates(id: string, delegatesIds: { id: string }[]) {
-  return prisma.committee.update({
+  return prisma.comittee.update({
     where: {
       id
     },

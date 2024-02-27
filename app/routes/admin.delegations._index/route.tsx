@@ -72,7 +72,7 @@ const Delegation = () => {
               const participantsCount = delegation.participants.length
               const info = true
               let paymentsCount = delegation.participants?.reduce((accumulator, participant) => {
-                if (participant.stripePaydId) accumulator += 1
+                if (participant.stripePaidId) accumulator += 1
                 return accumulator
               }, 0) as number
               const payments = paymentsCount === participantsCount

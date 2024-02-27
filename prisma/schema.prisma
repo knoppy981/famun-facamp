@@ -22,6 +22,7 @@ model User {
   files               File[]
   foodRestrictions    FoodRestrictions?
   participationMethod ParticipationMethod
+  sex                 Sex
   // useful info
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
@@ -34,7 +35,7 @@ model User {
   delegationAdvisor   DelegationAdvisor?
   // stripe
   stripeCustomerId    String?
-  stripePaydId        String?
+  stripePaidId        String?
   stripePaymentsId    String[]
   // 
   confirmationCode    ConfirmationCode?
@@ -104,12 +105,12 @@ model Delegate {
   currentYear                 String
   councilPreference           Council[]
   languagesSimulates          Languages[]
-  Committee                   Committee?  @relation(fields: [committeeId], references: [id])
-  committeeId                 String?     @db.ObjectId
+  comittee                    Comittee?   @relation(fields: [comitteeId], references: [id])
+  comitteeId                  String?     @db.ObjectId
   country                     String?
 }
 
-model Committee {
+model Comittee {
   id        String              @id @default(auto()) @map("_id") @db.ObjectId
   delegates Delegate[]
   council   Council
@@ -182,6 +183,11 @@ enum AdvisorRole {
   Coordenador
   Diretor
   Outro
+}
+
+enum Sex {
+  Male
+  Female
 }
 
 enum Council {

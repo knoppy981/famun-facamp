@@ -1644,6 +1644,11 @@ input:-webkit-autofill:active {
 }
 @media screen and (max-width: 1500px) {
   .data-box-wrapper {
+    max-height: 850px;
+  }
+}
+@media screen and (max-width: 1400px) {
+  .data-box-wrapper {
     max-height: 900px;
   }
 }
@@ -1652,6 +1657,14 @@ input:-webkit-autofill:active {
     max-height: none;
     align-items: stretch;
     place-content: normal;
+  }
+}
+.data-box-wrapper.a {
+  max-height: 450px;
+}
+@media screen and (max-width: 1150px) {
+  .data-box-wrapper.a {
+    max-height: none;
   }
 }
 .data-box-wrapper.d {
@@ -3466,13 +3479,13 @@ input:-webkit-autofill:active {
   max-height: 90vh;
   background: #192638;
   overflow: clip;
+  display: flex;
 }
 @media screen and (max-width: 700px) {
   .modal-container {
     max-height: 90svh;
     max-width: none;
     width: 90vw;
-    display: flex;
   }
 }
 .modal-container.max-width {

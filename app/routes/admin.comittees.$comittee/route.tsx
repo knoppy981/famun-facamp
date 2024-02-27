@@ -5,7 +5,7 @@ import qs, { ParsedQs } from 'qs'
 import { Council, ParticipationMethod } from '@prisma/client';
 import { useOverlayTriggerState } from 'react-stately';
 
-import { addDelegatesToComittee, getComitteeByName, removeDelegates } from '~/models/committee.server';
+import { addDelegatesToComittee, getComitteeByName, removeDelegates } from '~/models/comittee.server';
 import { requireAdminId } from '~/session.server';
 
 import Button from '~/components/button';

@@ -17,7 +17,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 const Home = () => {
   const { delegationId } = useLoaderData<typeof loader>()
   const user = useUser()
-  const paymentSucceed = user.stripePaydId
+  const paymentSucceed = user.stripePaidId
   const document = false
 
   const completed = () => {

@@ -96,6 +96,7 @@ async function delegationWith2Users() {
 			email: "andre.knopp8@gmail.com",
 			phoneNumber: "+55 19 97154 7424",
 			participationMethod: "Escola",
+			sex: "Male",
 			password: {
 				create: {
 					hash: await bcrypt.hash("Dede5562", 10)
@@ -140,6 +141,7 @@ async function delegationWith2Users() {
 			email: "teste@gmail.com",
 			phoneNumber: "+55 19 97154 7424",
 			participationMethod: "Escola",
+			sex: "Female",
 			password: {
 				create: {
 					hash: await bcrypt.hash("teste123", 10)

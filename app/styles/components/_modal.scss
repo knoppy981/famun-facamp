@@ -36,12 +36,12 @@
   max-height: 90vh;
   background: $azulEscuro;
   overflow: clip;
+  display: flex;
 
   @media screen and (max-width: 700px) {
     max-height: 90svh;
     max-width: none;
     width: 90vw;
-    display: flex;
   }
 
   &.max-width {

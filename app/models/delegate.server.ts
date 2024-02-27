@@ -9,7 +9,7 @@ export async function listDelegates(query?: string) {
           mode: "insensitive"
         } : undefined,
       },
-      Committee: {
+      comittee: {
         is: null
       }
     },
@@ -41,7 +41,7 @@ export async function removeFromComittee(delegateId: string) {
       id: delegateId
     },
     data: {
-      Committee: {
+      comittee: {
         disconnect: true
       }
     }

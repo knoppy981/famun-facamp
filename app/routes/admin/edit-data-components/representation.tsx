@@ -7,7 +7,7 @@ import { isoCountries } from "~/lib/ISO-3661-1";
 
 const Representation = (props: any) => {
   const { defaultValues, handleChange, isDisabled, actionData, theme } = props
-  const [comitteeList] = useComitteeList(defaultValues.participationMethod, defaultValues?.delegate?.Committee)
+  const [comitteeList] = useComitteeList(defaultValues.participationMethod, defaultValues?.delegate?.comittee)
   function createCountryArray(countries: object) {
     return Object.keys(countries).map(countryName => {
       return {
@@ -23,16 +23,16 @@ const Representation = (props: any) => {
         Representação
       </h3>
 
-      <p className="text">{defaultValues.delegate?.Committee?.council.replace(/_/g, " ")}</p>
+      <p className="text">{defaultValues.delegate?.comittee?.council.replace(/_/g, " ")}</p>
 
       <div className='data-box-input-container'>
         <Select
           className="secondary-input-box"
           label="Comitê"
           isDisabled={isDisabled}
-          defaultSelectedKey={defaultValues?.delegate?.Committee?.id}
+          defaultSelectedKey={defaultValues?.delegate?.comittee?.id}
           placeholder="Não definido"
-          onSelectionChange={value => handleChange({ target: { name: "delegate.Committee.id", value } })}
+          onSelectionChange={value => handleChange({ target: { name: "delegate.comittee.id", value } })}
         >
           {comitteeList?.map((item) => <Item key={item.id}>{item.name}</Item>)}
         </Select>

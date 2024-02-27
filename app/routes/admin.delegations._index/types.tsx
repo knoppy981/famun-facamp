@@ -6,7 +6,7 @@ export type adminDelegationType = {
   school: string;
   participants: {
     name: string;
-    stripePaydId: string | null;
+    stripePaidId: string | null;
     delegate: Delegate;
     delegationAdvisor: DelegationAdvisor;
     _count: {

@@ -33,12 +33,12 @@ export function delegationAoo(delegation: DelegationType, amountPaid: string) {
   const advisors = delegation?.participants?.filter((participant) => participant.delegationAdvisor !== null && participant.id)
 
   let advisorsPaid = advisors?.reduce((accumulator, delegate) => {
-    if (delegate.stripePaydId) accumulator += 1
+    if (delegate.stripePaidId) accumulator += 1
     return accumulator
   }, 0) as number
 
   let delegatesPaid = delegates?.reduce((accumulator, delegate) => {
-    if (delegate.stripePaydId) accumulator += 1
+    if (delegate.stripePaidId) accumulator += 1
     return accumulator
   }, 0) as number
 
@@ -71,8 +71,8 @@ export function delegationAoo(delegation: DelegationType, amountPaid: string) {
       "Delegates": 1,
       "Full name": participant.name,
       "Waiver": participant.files?.find(file => file.name === "Liability Waiver") ? 1 : 0,
-      "Amount Paid": participant.stripePaydId ? "150" : "0",
-      "Status": participant.stripePaydId ? "Pago" : "Não pago",
+      "Amount Paid": participant.stripePaidId ? "150" : "0",
+      "Status": participant.stripePaidId ? "Pago" : "Não pago",
       "Registration date": typeof participant.createdAt === "string" ? new Date(participant.createdAt).toLocaleDateString("pt-BR") : participant.createdAt.toLocaleDateString("pt-BR"),
     })
   })
@@ -82,8 +82,8 @@ export function delegationAoo(delegation: DelegationType, amountPaid: string) {
       "FA's": 1,
       "Full name": participant.name,
       "Waiver": participant.files?.find(file => file.name === "Liability Waiver") ? 1 : 0,
-      "Amount Paid": participant.stripePaydId ? "30" : "0",
-      "Status": participant.stripePaydId ? "Pago" : "Não pago",
+      "Amount Paid": participant.stripePaidId ? "30" : "0",
+      "Status": participant.stripePaidId ? "Pago" : "Não pago",
       "Registration date": typeof participant.createdAt === "string" ? new Date(participant.createdAt).toLocaleDateString("pt-BR") : participant.createdAt.toLocaleDateString("pt-BR"),
     })
   })

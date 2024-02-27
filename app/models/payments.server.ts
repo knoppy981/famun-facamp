@@ -41,7 +41,7 @@ export async function updateUsersPaymentStatus({
       OR: arr
     },
     data: {
-      stripePaydId: stripePaymentId
+      stripePaidId: stripePaymentId
     }
   })
 }
@@ -99,8 +99,8 @@ export async function getRequiredPayments({
       participants: {
         where: {
           OR: [
-            { stripePaydId: { isSet: false } },
-            { stripePaydId: { equals: "" } }
+            { stripePaidId: { isSet: false } },
+            { stripePaidId: { equals: "" } }
           ]
         },
         select: {

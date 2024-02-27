@@ -4,7 +4,7 @@ import { FetcherWithComponents, Form, useFetcher, useLoaderData, useOutletContex
 import qs from 'qs'
 import { ParticipationMethod } from '@prisma/client';
 
-import { createComittee, getCommitteesList } from '~/models/committee.server';
+import { createComittee, getComitteesList } from '~/models/comittee.server';
 import { ComitteeList } from './types';
 import { comitteeSchema } from '~/schemas';
 import { getCorrectErrorMessage } from '~/utils/error';
@@ -41,7 +41,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const query = url.searchParams.get("comittee-search");
   const participationMethod = url.searchParams.get("pm") as ParticipationMethod
 
-  const comittees = await getCommitteesList(participationMethod ?? "Escola", query as string)
+  const comittees = await getComitteesList(participationMethod ?? "Escola", query as string)
 
   return json({ comittees })
 }

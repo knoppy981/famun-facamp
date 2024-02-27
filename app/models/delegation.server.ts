@@ -23,7 +23,7 @@ export async function getDelegationById(id: Delegation["id"]) {
 				include: {
 					delegate: {
 						include: {
-							Committee: true
+							comittee: true
 						}
 					},
 					delegationAdvisor: true,
@@ -81,7 +81,7 @@ export async function getDelegationBySchool(school: string) {
 				include: {
 					delegate: {
 						include: {
-							Committee: true
+							comittee: true
 						}
 					},
 					delegationAdvisor: true,
@@ -136,7 +136,7 @@ export async function adminDelegationsList(index: number, participationMethod: P
 					name: true,
 					delegate: true,
 					delegationAdvisor: true,
-					stripePaydId: true,
+					stripePaidId: true,
 					_count: {
 						select: {
 							files: {
@@ -179,7 +179,7 @@ export async function adminDelegationData(school: Delegation["school"]) {
 				include: {
 					delegate: {
 						include: {
-							Committee: true
+							comittee: true
 						}
 					},
 					delegationAdvisor: true,

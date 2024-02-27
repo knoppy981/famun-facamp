@@ -9,6 +9,7 @@ import { Select, Item } from './select';
 import { motion } from 'framer-motion';
 import { useStickyContainer } from '~/hooks/useStickyContainer';
 import Link from '~/components/link';
+import useDidMountEffect from '~/hooks/useDidMountEffect';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireAdminId(request)
@@ -32,13 +33,8 @@ const AdminPage = () => {
     { name: "Credenciamento", to: "credentials", active: "/admin/credentials" },
   ]
 
-  console.log(matches)
-
-  const [changed, setChanged] = React.useState(false)
-
-  React.useEffect(() => {
-    setChanged(true)
-    if (changed) navigate(`${matches?.[2].pathname}?pm=${participationMethod}`, { replace: true })
+  useDidMountEffect(() => {
+    navigate(`${matches?.[2].pathname}?pm=${participationMethod}`, { replace: true })
   }, [participationMethod])
 
   return (

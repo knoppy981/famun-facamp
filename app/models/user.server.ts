@@ -5,11 +5,11 @@ import { prisma } from "~/db.server";
 import { ValidationError } from "~/utils/error";
 import { stripe } from "~/stripe.server";
 
-import type { Password, User, Delegate, DelegationAdvisor, File, FoodRestrictions, ParticipationMethod, Committee } from "@prisma/client";
+import type { Password, User, Delegate, DelegationAdvisor, File, FoodRestrictions, ParticipationMethod, Comittee } from "@prisma/client";
 
 export type UserType = User & {
 	delegate?: Delegate & {
-		Comittee?: Committee
+		comittee?: Comittee
 	},
 	delegationAdvisor?: DelegationAdvisor,
 	files?: Partial<File>[],
@@ -22,7 +22,7 @@ export async function getUserById(id: User["id"]) {
 		include: {
 			delegate: {
 				include: {
-					Committee: true
+					comittee: true
 				}
 			},
 			delegationAdvisor: true,

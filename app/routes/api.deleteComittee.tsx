@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, json } from "@remix-run/node"
-import { deleteComittee } from "~/models/committee.server"
+import { deleteComittee } from "~/models/comittee.server"
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData()
