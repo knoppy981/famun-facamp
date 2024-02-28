@@ -126,10 +126,6 @@ export async function handleWebHook(request: Request) {
     await updateUsersPaymentStatus({ paidUsersIds, stripePaymentId: id })
     await updateUserPayments({ userId: metadata.payerId, stripePaymentId: id })
 
-    console.log("\n")
-    console.log("sending email !!!!!!!!")
-    console.log("\n")
-
     const info = await sendEmail({
       to: user.email,
       subject: "Pagamento Confirmado!",
