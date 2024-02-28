@@ -28,6 +28,7 @@ const UserData = ({ data, actionData }: { data: any; actionData: any }) => {
             type="text"
             defaultValue={data?.name}
             errorMessage={actionData?.errors?.name}
+            autoComplete='off'
             action={actionData}
           />
 
@@ -41,6 +42,7 @@ const UserData = ({ data, actionData }: { data: any; actionData: any }) => {
                   type="text"
                   defaultValue={data?.rg}
                   errorMessage={actionData?.errors?.rg}
+                  autoComplete='off'
                   action={actionData}
                 />
 
@@ -52,6 +54,7 @@ const UserData = ({ data, actionData }: { data: any; actionData: any }) => {
                   placeholder='CPF opcional'
                   defaultValue={data?.cpf}
                   errorMessage={actionData?.errors?.cpf}
+                  autoComplete='off'
                   action={actionData}
                 />
               </>
@@ -63,6 +66,7 @@ const UserData = ({ data, actionData }: { data: any; actionData: any }) => {
                 type="text"
                 defaultValue={data?.passport}
                 errorMessage={actionData?.errors?.passport}
+                autoComplete='off'
                 action={actionData}
               />
             }
@@ -84,6 +88,7 @@ const UserData = ({ data, actionData }: { data: any; actionData: any }) => {
               label="Telefone"
               _defaultValue={data?.phoneNumber}
               errorMessage={actionData?.errors?.phoneNumber}
+              autoComplete='off'
               action={actionData}
             />
           </div>

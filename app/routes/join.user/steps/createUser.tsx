@@ -19,6 +19,7 @@ const CreateUser = ({ data, actionData }: { data: any; actionData: any }) => {
             defaultValue={data?.email}
             errorMessage={actionData?.errors?.email}
             action={actionData}
+            autoComplete='off'
           />
 
           <div className='join-sub-input-container'>
@@ -31,6 +32,7 @@ const CreateUser = ({ data, actionData }: { data: any; actionData: any }) => {
               defaultValue={data?.password}
               errorMessage={actionData?.errors?.password}
               action={actionData}
+              autoComplete='off'
             />
 
             <TextField
@@ -42,6 +44,7 @@ const CreateUser = ({ data, actionData }: { data: any; actionData: any }) => {
               defaultValue={data?.confirmPassword}
               errorMessage={actionData?.errors?.confirmPassword}
               action={actionData}
+              autoComplete='off'
             />
           </div>
         </div>

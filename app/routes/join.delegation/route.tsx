@@ -160,7 +160,8 @@ const delegation = () => {
     step, transition)
 
   return (
-    <Form className='auth-container' noValidate method='post' >
+    <Form autoComplete="off" className='auth-container' noValidate method='post' >
+      <input autoComplete="false" name="hidden" type="text" style={{ display: "none" }} />
       <h1 className='auth-title'>
         FAMUN 2024
       </h1>
