@@ -4,7 +4,7 @@ export const foodRestrictionsSchema = Joi.object({
   diet: Joi.string()
     .valid('vegetarian', 'vegan', '')
     .messages({
-      'any.only': "Select either vegetarian or vegan"
+      'any.only': "Selecione ou vegetariano ou vegano"
     }),
 
   allergy: Joi.boolean(),
@@ -14,11 +14,11 @@ export const foodRestrictionsSchema = Joi.object({
     then: Joi.required(),
     otherwise: Joi.string().allow('').optional(),
   }).messages({
-    'string.empty': "Please describe your allergy",
-    'any.forbidden': "Don't submit a description if you didn't say you had an allergy",
-    'alternatives.all': "Please describe your allergy",
-    'alternatives.any': "Please describe your allergy",
-    'alternatives.match': "Please describe your allergy",
-    'any.required': "Please describe your allergy",
+    'string.empty': "Descreva sua alergia",
+    'any.forbidden': "",
+    'alternatives.all': "Descreva sua alergia",
+    'alternatives.any': "Descreva sua alergia",
+    'alternatives.match': "Descreva sua alergia",
+    'any.required': "Descreva sua alergia",
   })
 })

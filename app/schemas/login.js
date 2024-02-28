@@ -5,14 +5,14 @@ export const loginSchema = Joi.object({
     .email()
     .required()
     .messages({
-      'string.empty': 'E-mail is required',
-      'string.email': "Invalid e-mail"
+      'string.empty': 'E-mail inválido',
+      'string.email': "E-mail inválido"
     }),
 
   password: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Password is required',
-      'string.email': "Invalid password"
+      'string.empty': 'Senha inválida',
+      'string.email': "Senha inválida"
     })
 })

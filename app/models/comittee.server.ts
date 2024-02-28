@@ -22,6 +22,7 @@ export async function getComitteeByName(name: string) {
           user: {
             select: {
               name: true,
+              sex: true,
               _count: {
                 select: {
                   files: {

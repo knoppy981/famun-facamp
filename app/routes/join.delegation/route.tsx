@@ -7,8 +7,7 @@ import { createUserSession, sessionStorage, getSession, requireUserId, requireUs
 import { joinDelegation, createDelegation, formatDelegationData, getExistingDelegation } from "~/models/delegation.server";
 import { safeRedirect, generateString, useUser } from "~/utils";
 import { getCorrectErrorMessage } from "~/utils/error";
-import { delegationStepValidation } from "~/schemas";
-import { prismaDelegationSchema } from "~/schemas";
+import { createDelegationSchema, delegationStepValidation } from "~/schemas";
 
 import Button from "~/components/button";
 import JoinMethod from "./steps/joinMethod";
@@ -83,14 +82,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
       delegationData = await formatDelegationData({
         data: delegationData,
-        addressModification: "create",
-        participantModification: "connect",
       })
 
       let delegation
 
       try {
-        await prismaDelegationSchema.validateAsync(delegationData)
+        await createDelegationSchema.validateAsync(delegationData)
         delegation = await createDelegation(delegationData, user.id)
         const info = await sendEmail({
           to: user.email,

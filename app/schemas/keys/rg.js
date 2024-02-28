@@ -10,8 +10,8 @@ export const customRg = Joi.extend((joi) => ({
   type: 'rg',
   base: joi.string(),
   messages: {
-    'rg.invalid': 'Invalid RG',
-		'string.empty': 'RG is required'
+    'rg.invalid': 'RG inválido',
+		'string.empty': 'RG é necessário'
   },
   validate(value, helpers) {
     if (!isValidRG(value)) {

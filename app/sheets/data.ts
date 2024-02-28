@@ -101,8 +101,8 @@ export function comitteeAoo(comittee: ComitteeType) {
       "Delegate": delegate.user.name,
       "Head Delegate": delegate.user.delegation?.participants[0].name,
       "Position Paper": delegate.user._count.files > 0 ? 1 : 0,
-      "Male": 1,
-      "Female": 0,
+      "Male": delegate.user.sex === "Male" ? 1 : 0,
+      "Female": delegate.user.sex === "Female" ? 1 : 0,
     })
   })
 

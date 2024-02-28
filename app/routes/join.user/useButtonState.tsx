@@ -15,7 +15,7 @@ export function useButtonState(step: number, termsAndConditions: "on" | string, 
   }
 
   React.useEffect(() => {
-    setButtonLabel(step === 7 ? 'Cadastrar' : 'Próximo')
+    setButtonLabel(step === 8 ? 'Cadastrar' : 'Próximo')
     setIsButtonClicked(transition.state === 'idle' ? false : isButtonClicked)
     setButtonSpinner(transition.state !== 'idle' && isButtonClicked ?
       <Spinner dim="18px" /> :

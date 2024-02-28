@@ -2,6 +2,8 @@ import { today, getLocalTimeZone, parseDate } from '@internationalized/date';
 import React from 'react';
 import ComboBox, { Item } from '~/components/combobox';
 import DatePicker from '~/components/datePicker';
+import { Radio, RadioGroup } from '~/components/radioGroup';
+import { Select } from '~/components/select';
 import TextField from '~/components/textfield';
 import PhoneNumberField from '~/components/textfield/phoneNumberField';
 import { isoCountries } from '~/lib/ISO-3661-1';
@@ -30,7 +32,7 @@ const PersonalData = (props: any) => {
       <div className='data-box-input-container'>
         {[
           ["Email", "email", "email"],
-          ["Name", "name", "text"],
+          ["Nome", "name", "text"],
         ].map((item, index) => (
           <TextField
             className="secondary-input-box"
@@ -49,7 +51,7 @@ const PersonalData = (props: any) => {
         <PhoneNumberField
           className="secondary-input-box"
           name="phoneNumber"
-          label="Phone Number"
+          label="Telefone"
           isRequired
           _defaultValue={defaultValues?.phoneNumber}
           onChange={value => handleChange({ target: { name: "phoneNumber", value: value } })}
@@ -61,7 +63,7 @@ const PersonalData = (props: any) => {
         <DatePicker
           className="secondary-input-box"
           name="birthDate"
-          label="Birth Date"
+          label="Data de nascimento"
           isRequired
           maxValue={today(getLocalTimeZone())}
           defaultValue={defaultValues?.birthDate ? parseDate(defaultValues.birthDate) : undefined}
@@ -71,10 +73,26 @@ const PersonalData = (props: any) => {
           action={actionData}
         />
 
+        <Select
+          className="secondary-input-box"
+          name="sex"
+          label="Sexo"
+          isRequired
+          /* defaultValue={defaultValues?.sex} */
+          onSelectionChange={value => handleChange({ target: { name: "sex", value: value } })}
+          defaultSelectedKey={defaultValues?.sex}
+          isDisabled={isDisabled}
+          errorMessage={actionData?.errors?.birthDate}
+          action={actionData}
+        >
+          <Item key='Male'>Masculino</Item>
+          <Item key='Female'>Feminino</Item>
+        </Select>
+
         <ComboBox
           className="secondary-input-box"
           name="nacionality"
-          label="Nacionality"
+          label="Nacionalidade"
           isRequired
           defaultItems={countryArray}
           onSelectionChange={value => {
@@ -103,7 +121,7 @@ const PersonalData = (props: any) => {
             ref={passportRef}
             className="secondary-input-box"
             name="passport"
-            label="Passport"
+            label="Passporte"
             type="text"
             isRequired
             defaultValue={defaultValues?.passport ?? ""}

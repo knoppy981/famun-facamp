@@ -7,6 +7,7 @@ import TextArea from '~/components/textfield/textArea';
 import PhoneNumberField from '~/components/textfield/phoneNumberField';
 import { CheckboxGroup, Checkbox } from '~/components/checkbox/checkbox-group';
 import _Checkbox from '~/components/checkbox';
+import { Radio, RadioGroup } from '~/components/radioGroup';
 
 const UserData = ({ data, actionData }: { data: any; actionData: any }) => {
 
@@ -86,6 +87,18 @@ const UserData = ({ data, actionData }: { data: any; actionData: any }) => {
               action={actionData}
             />
           </div>
+
+          <RadioGroup
+            className="primary-input-box"
+            name="sex"
+            label="Sexo"
+            defaultValue={data?.sex}
+            errorMessage={actionData?.errors?.birthDate}
+            action={actionData}
+          >
+            <Radio value="Male">Masculino</Radio>
+            <Radio value='Female'>Feminino</Radio>
+          </RadioGroup>
 
           <CheckboxGroup
             label="Restrições alimentares"

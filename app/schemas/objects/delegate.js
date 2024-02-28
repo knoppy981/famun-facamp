@@ -10,8 +10,8 @@ export const updateDelegateSchema = Joi.object({
     .max(40)
     .pattern(/^[^\d]*$/)
     .messages({
-      'string.empty': 'Name is required',
-      'string.pattern.base': 'Invalid Name'
+      'string.empty': 'Nome é necessário',
+      'string.pattern.base': 'Nome inválido'
     }),
 
   emergencyContactPhoneNumber: customPhoneNumber.phone(),
@@ -19,16 +19,16 @@ export const updateDelegateSchema = Joi.object({
   educationLevel: Joi.string()
     .valid("Ensino Medio", "Cursinho", "Universidade")
     .messages({
-      'any.required': 'Educational level required',
+      'any.required': 'Nível educacional é necessário',
     }),
 
   currentYear: Joi.string()
     .messages({
-      'string.empty': 'Current year is required',
-      'alternatives.match': `Current year is required`,
-      'alternatives.all': `Current year is required`,
-      'alternatives.any': `Current year is required`,
-      'any.required': `Current year is required`,
+      'string.empty': 'Ano atual é necessário',
+      'alternatives.match': `Ano atual é necessário`,
+      'alternatives.all': `Ano atual é necessário`,
+      'alternatives.any': `Ano atual é necessário`,
+      'any.required': `Ano atual é necessário`,
     }),
 
   councilPreference: Joi.alternatives()
@@ -45,16 +45,16 @@ export const updateDelegateSchema = Joi.object({
       Joi.string().valid('Portugues', 'Ingles', 'Espanhol')
     )
     .messages({
-      'alternatives.all': `At least one language required`,
-      'alternatives.any': `At least one language required`,
-      'alternatives.match': `At least one language required`,
-      'any.required': `At least one language required`,
-      'alternatives.types': 'At least one language required'
+      'alternatives.all': `Pelo menos um idioma necessário`,
+      'alternatives.any': `Pelo menos um idioma necessário`,
+      'alternatives.match': `Pelo menos um idioma necessário`,
+      'any.required': `Pelo menos um idioma necessário`,
+      'alternatives.types': 'Pelo menos um idioma necessário'
     }),
 
   country: Joi.string()
     .messages({
-      'string.empty': 'Please select a nacionality'
+      'string.empty': 'Selecione uma nacionalidade'
     }),
 
   comittee: Joi.any(),
@@ -74,8 +74,8 @@ export const createDelegateSchema = Joi.object({
     .required()
     .pattern(/^[^\d]*$/)
     .messages({
-      'string.empty': 'Name is required',
-      'string.pattern.base': 'Invalid Name'
+      'string.empty': 'Nome é necessário',
+      'string.pattern.base': 'Nome inválido'
     }),
 
   emergencyContactPhoneNumber: customPhoneNumber.phone()
@@ -85,17 +85,17 @@ export const createDelegateSchema = Joi.object({
     .valid("Ensino Medio", "Cursinho", "Universidade")
     .required()
     .messages({
-      'any.required': 'Educational level required',
+      'any.required': 'Nível educacional é necessário',
     }),
 
   currentYear: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Current year is required',
-      'alternatives.match': `Current year is required`,
-      'alternatives.all': `Current year is required`,
-      'alternatives.any': `Current year is required`,
-      'any.required': `Current year is required`,
+      'string.empty': 'Ano atual é necessário',
+      'alternatives.match': `Ano atual é necessário`,
+      'alternatives.all': `Ano atual é necessário`,
+      'alternatives.any': `Ano atual é necessário`,
+      'any.required': `Ano atual é necessário`,
     }),
 
   councilPreference: Joi.alternatives()
@@ -114,11 +114,11 @@ export const createDelegateSchema = Joi.object({
     )
     .required()
     .messages({
-      'alternatives.all': `At least one language required`,
-      'alternatives.any': `At least one language required`,
-      'alternatives.match': `At least one language required`,
-      'any.required': `At least one language required`,
-      'alternatives.types': 'At least one language required'
+      'alternatives.all': `Pelo menos um idioma necessário`,
+      'alternatives.any': `Pelo menos um idioma necessário`,
+      'alternatives.match': `Pelo menos um idioma necessário`,
+      'any.required': `Pelo menos um idioma necessário`,
+      'alternatives.types': 'Pelo menos um idioma necessário'
     }),
 
   advisorRole: Joi.forbidden(),

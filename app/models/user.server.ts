@@ -191,12 +191,10 @@ export async function updateUser({
 
 export async function formatUserData({
 	data,
-	childrenModification,
 	userType,
 	participationMethod
 }: {
 	data: any;
-	childrenModification: string;
 	userType: string,
 	participationMethod: string
 }) {
@@ -204,14 +202,10 @@ export async function formatUserData({
 	let delegationAdvisor
 	let foodRestrictions
 
-	if (data.delegate) {
-		delete data.delegate.id
-		delete data.delegate.userId
-		delegate = { [childrenModification]: data.delegate }
-	} else {
+	if (userType === "delegate") {
 		delegate = {
 			create: {
-				councilPreference: Object.values(qs.parse(data?.councilPreference))/* .map(function (item) { return item.replace(/ /g, "_")}) */,
+				councilPreference: Object.values(qs.parse(data?.councilPreference)),
 				languagesSimulates: data?.languagesSimulates,
 				emergencyContactName: data.emergencyContactName,
 				emergencyContactPhoneNumber: data.emergencyContactPhoneNumber,
@@ -219,12 +213,6 @@ export async function formatUserData({
 				currentYear: data.currentYear,
 			}
 		}
-	}
-
-	if (data.delegationAdvisor) {
-		delete data.delegationAdvisor.id
-		delete data.delegationAdvisor.userId
-		delegationAdvisor = { [childrenModification]: data.delegationAdvisor }
 	} else {
 		delegationAdvisor = {
 			create: {
@@ -236,22 +224,7 @@ export async function formatUserData({
 		}
 	}
 
-	if (data.foodRestrictions) {
-		delete data.foodRestrictions.id
-		delete data.foodRestrictions.userId
-		data.foodRestrictions.allergy = data.foodRestrictions.allergy === "true"
-		if (data.foodRestrictions.allergy === false) {
-			data.foodRestrictions.allergyDescription = ""
-		}
-		foodRestrictions = childrenModification === "update" ? {
-			upsert: {
-				create: data.foodRestrictions,
-				update: data.foodRestrictions,
-			}
-		} : {
-			[childrenModification]: data.foodRestrictions
-		}
-	} else if (data.foodRestriction || data.allergyDescription) {
+	if (data.diet || data.allergy) {
 		foodRestrictions = {
 			create: {
 				diet: data.diet,
@@ -275,8 +248,9 @@ export async function formatUserData({
 		phoneNumber: data.phoneNumber,
 		birthDate: data.birthDate,
 		nacionality: data.nacionality,
-		foodRestrictions: foodRestrictions,
+		sex: data.sex,
 		participationMethod: participationMethod ?? data.participationMethod ?? undefined,
+		foodRestrictions: foodRestrictions,
 		delegate: userType === "delegate" ? delegate : undefined,
 		delegationAdvisor: userType === "advisor" ? delegationAdvisor : undefined,
 	}

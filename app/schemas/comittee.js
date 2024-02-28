@@ -4,8 +4,8 @@ export const comitteeSchema = Joi.object({
   name: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Name is required',
-      'string.email': "Invalid name"
+      'string.empty': 'Nome obrigatório',
+      'string.email': "Nome inválido"
     }),
 
   council: Joi.string()

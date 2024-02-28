@@ -16,7 +16,7 @@ const step3 = Joi.object({
   nacionality: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Please select a nacionality'
+      'string.empty': 'Selecione uma nacionalidade'
     })
 })
 
@@ -25,7 +25,7 @@ const step4 = Joi.object({
     .email()
     .required()
     .messages({
-      'string.empty': 'E-mail is required',
+      'string.empty': 'E-mail obrigatório',
       'string.email': "Invalid e-mail"
     }),
 
@@ -36,8 +36,8 @@ const step4 = Joi.object({
     .required()
     .valid(Joi.ref('password'))
     .messages({
-      'any.only': "Passwords don't match",
-      'string.empty': 'Confirm Password is Required'
+      'any.only': "Senhas diferentes",
+      'string.empty': 'É necessário confirmar a senha'
     })
 })
 
@@ -48,8 +48,8 @@ const step5 = Joi.object({
     .pattern(/^[^\d]*$/)
     .required()
     .messages({
-      'string.empty': 'Name is required',
-      'string.pattern.base': 'Invalid Name'
+      'string.empty': 'Nome obrigatório',
+      'string.pattern.base': 'Nome obrigatório'
     }),
 
   rg: customRg.rg(),
@@ -58,7 +58,7 @@ const step5 = Joi.object({
 
   passport: Joi.string()
     .messages({
-      'string.empty': 'Passport is required',
+      'string.empty': 'Passporte obrigatório',
     }),
 
   birthDate: Joi.date()
@@ -67,16 +67,24 @@ const step5 = Joi.object({
     .message('Invalid Birth Date')
     .required()
     .messages({
-      'date.base': 'Birth date is required',
+      'date.base': 'Data de nascimento obrigatória',
     }),
 
   phoneNumber: customPhoneNumber.phone()
     .required(),
 
+  sex: Joi.string()
+    .valid('Male', 'Female')
+    .required()
+    .messages({
+      'string.empty': 'Sexo obrigatório',
+      'string.pattern.base': 'Sexp inválido'
+    }),
+
   diet: Joi.string()
     .valid('vegetarian', 'vegan')
     .messages({
-      'any.only': "Select either vegetarian or vegan"
+      'any.only': "Selecione ou vegetariano ou vegano"
     }),
 
   allergy: Joi.string()
@@ -87,8 +95,8 @@ const step5 = Joi.object({
     then: Joi.required(),
     otherwise: Joi.optional()
   }).messages({
-    'string.empty': "Please describe your allergy",
-    'any.forbidden': "Don't submit a description if you didn't say you had an allergy"
+    'string.empty': "Descreva sua alergia",
+    'any.forbidden': ""
   })
 
 }).xor('rg', 'passport')

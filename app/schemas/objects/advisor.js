@@ -5,7 +5,7 @@ export const updateAdvisorSchema = Joi.object({
 
   advisorRole: Joi.string()
     .messages({
-      'string.empty': `Select your position`,
+      'string.empty': `Selecione uma posição`,
     }),
 
   facebook: Joi.string()
@@ -29,7 +29,7 @@ export const createAdvisorSchema = Joi.object({
   advisorRole: Joi.string()
     .required()
     .messages({
-      'string.empty': `Select your position`,
+      'string.empty': `Selecione uma posição`,
     }),
 
   facebook: Joi.string()

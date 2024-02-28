@@ -346,82 +346,25 @@ type UserWithDelegateAndAdvisor = User & {
 	delegationAdvisor: DelegationAdvisor | null
 }
 
-export async function formatDelegationData({
-	data,
-	addressModification,
-	participantModification,
-	usersIdFilter
-}: {
-	data: any;
-	addressModification: string;
-	participantModification: string;
-	usersIdFilter?: Array<any>
-}) {
+export async function formatDelegationData({ data }: { data: any; }) {
 	let address
 	let participants
 
 	// handle address
-	if (typeof data.address === "object") {
-		delete data.address.id
-		delete data.address.delegationId
-		address = { [addressModification]: data.address }
-	} else {
-		address = {
-			[addressModification]: {
-				address: data.address,
-				postalCode: data.postalCode,
-				city: data.city,
-				country: data.country,
-				state: data.state,
-			}
+	address = {
+		create: {
+			address: data.address,
+			postalCode: data.postalCode,
+			city: data.city,
+			country: data.country,
+			state: data.state,
 		}
 	}
 
-	// handle participants
-	if (data?.participants?.length > 0 && usersIdFilter && usersIdFilter.length > 0) {
-		if (participantModification === "updateMany") {
-			// check
-			let aux = await Promise.all(data.participants
-				.filter((participant: User) => usersIdFilter.includes(participant.id))
-				.map(async (participant: UserWithDelegateAndAdvisor) => {
-					return {
-						where: { id: participant.id },
-						data: await formatUserData({
-							data: participant,
-							childrenModification: "update",
-							userType: participant.delegate ? "delegate" : "advisor",
-							participationMethod: participant.participationMethod
-						})
-					}
-				})
-			)
-			participants = {
-				[participantModification]: aux
-			}
-		} else if (participantModification === "update" && usersIdFilter.length === 1 && usersIdFilter[0] !== "") {
-			// check
-			let aux = data.participants.find((participant: UserWithDelegateAndAdvisor) => participant.id === usersIdFilter[0])
-			participants = {
-				[participantModification]: {
-					where: { id: aux.id },
-					data: await formatUserData({
-						data: aux,
-						childrenModification: "update",
-						userType: aux.delegate ? "delegate" : "advisor",
-						participationMethod: aux.participationMethod
-					}),
-				}
-			}
+	participants = {
+		connect: {
+			id: data.user.id
 		}
-	} else if (participantModification === "connect" && data.user) {
-		//works
-		participants = {
-			[participantModification]: {
-				id: data.user.id,
-			}
-		}
-	} else {
-		participants = undefined
 	}
 
 	return {
@@ -432,7 +375,7 @@ export async function formatDelegationData({
 		schoolPhoneNumber: data.schoolPhoneNumber,
 		paymentExpirationDate: data.paymentExpirationDate,
 		address,
-		participants,
+		participants
 	}
 }
 

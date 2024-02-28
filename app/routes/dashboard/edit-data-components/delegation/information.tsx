@@ -17,7 +17,7 @@ const DelegationData = (props: any) => {
         <TextField
           className='secondary-input-box'
           name="school"
-          label="School / University"
+          label="Escola / Universidade"
           type="text"
           isRequired
           defaultValue={defaultValues?.school}
@@ -31,7 +31,7 @@ const DelegationData = (props: any) => {
         <PhoneNumberField
           className='secondary-input-box'
           name="schoolPhoneNumber"
-          label="Contact Number"
+          label="Telefone para contato"
           isRequired
           _defaultValue={defaultValues?.schoolPhoneNumber}
           onChange={value => handleChange({ target: { name: "schoolPhoneNumber", value: value } })}
@@ -39,23 +39,6 @@ const DelegationData = (props: any) => {
           errorMessage={actionData?.errors?.schoolPhoneNumber}
           action={actionData}
         />
-
-        {/* <Select
-          className='secondary-input-box'
-          name="participationMethod"
-          label="Participação"
-          defaultSelectedKey={defaultValues?.participationMethod}
-          onSelectionChange={value => handleChange({ target: { name: "participationMethod", value: value } })}
-          items={[
-            { id: "Presencial" },
-            { id: "Online" },
-            { id: "Ambos" }
-          ]}
-          errorMessage={actionData?.errors?.participationMethod}
-          isDisabled={true}
-        >
-          {(item) => <Item>{item.id}</Item>}
-        </Select> */}
       </div>
     </div>
   )

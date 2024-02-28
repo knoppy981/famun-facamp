@@ -4,7 +4,7 @@ import { Form, useActionData, useLoaderData, useNavigation, useSearchParams } fr
 import qs, { ParsedQs } from "qs"
 
 import { sessionStorage, createUserSession, getSession, getUserId } from '~/session.server'
-import { prismaUserSchema, userStepValidation } from '~/schemas'
+import { createUserSchema, userStepValidation } from '~/schemas'
 import { createUser, formatUserData, getExistingUser } from '~/models/user.server'
 import { safeRedirect } from '~/utils'
 import { getCorrectErrorMessage } from '~/utils/error'
@@ -42,7 +42,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (action === 'next') {
     try {
       await userStepValidation(Number(step), data)
-      await getExistingUser({
+      console.log(step)
+      if (Number(step) === 4 || Number(step) === 5) await getExistingUser({
         name: data.name === "" ? undefined : data.name,
         email: data.email === "" ? undefined : data.email,
         cpf: data.cpf === "" ? undefined : data.cpf,
@@ -71,15 +72,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
       userData = await formatUserData({
         data: userData,
-        childrenModification: "create",
         participationMethod: userData.participationMethod,
         userType: userData.userType
       })
 
+      console.log(userData)
+
       let user
 
       try {
-        await prismaUserSchema.validateAsync(userData)
+        await createUserSchema.validateAsync(userData)
         user = await createUser(userData)
       } catch (error) {
         console.log(error)
@@ -88,6 +90,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           { status: 400 }
         );
       }
+
+      return json({})
 
       return createUserSession({
         request,

@@ -2,6 +2,7 @@ const keyToLabelList = {
   email: "E-mail",
   name: "Nome",
   password: "Senha",
+  sex: "Sexo",
   cpf: "CPF",
   rg: "RG",
   passport: "Passaporte",

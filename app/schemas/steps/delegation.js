@@ -13,9 +13,9 @@ const step2 = Joi.object({
     .max(60)
     .required()
     .messages({
-      'string.min': 'School name must be at least 3 characters long',
-      'string.max': "School name can't be more than 40 characters long",
-      'string.empty': 'School name is required',
+      'string.min': 'Nome deve conter pelo menos 3 letras',
+      'string.max': "Nome não pode conter mais de 60 lentras",
+      'string.empty': 'Nome é necessário',
     }),
 
   schoolPhoneNumber: customPhoneNumber.phone()
@@ -25,37 +25,37 @@ const step2 = Joi.object({
     .valid('Escola', 'Universidade')
     .required()
     .messages({
-      'any.only': 'Participation method is required',
+      'any.only': 'Método de participação obrigatório',
     }),
 
   address: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Address is required'
+      'string.empty': 'Endereço obrigatório'
     }),
 
   country: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Country is required'
+      'string.empty': 'País obrigatório'
     }),
 
   postalCode: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Postal code is required'
+      'string.empty': 'Código postal obrigatório'
     }),
 
   state: Joi.string()
     .required()
     .messages({
-      'string.empty': 'State is required'
+      'string.empty': 'Estado obrigatório'
     }),
 
   city: Joi.string()
     .required()
     .messages({
-      'string.empty': 'City is required'
+      'string.empty': 'Cidade obrigatório'
     }),
 })
 

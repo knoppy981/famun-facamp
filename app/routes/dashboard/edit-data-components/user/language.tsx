@@ -10,7 +10,6 @@ const LanguageData = (props: any) => {
   return (
     <div className={`data-box-container ${theme ?? ""}`}>
       <h3 className="data-box-container-title blue-border">
-
         Idiomas que pode simular
       </h3>
 

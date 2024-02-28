@@ -256,7 +256,7 @@ function Notification(notification: {
                     </li>
                   ))}
                 </ul> :
-                <div className="text italic">{item.value}</div>
+                <div className="text italic">{item.key === "sex" ? item.value === "Male" ? "Masculino" : "Feminino" : item.value}</div>
               }
 
             </li>

@@ -1,33 +1,33 @@
 import Joi from "joi";
 
-import { findUser, prismaUserSchema } from "./objects/user";
+import { findUser } from "./objects/user";
 import { customPhoneNumber } from "./keys/phoneNumber";
 import { updateUserSchema } from "./index"
 
 const addressSchema = Joi.object({
   address: Joi.string()
     .messages({
-      'string.empty': 'Address is required'
+      'string.empty': 'Endereço obrigatório'
     }),
 
   country: Joi.string()
     .messages({
-      'string.empty': 'Country is required'
+      'string.empty': 'País obrigatório'
     }),
 
   postalCode: Joi.string()
     .messages({
-      'string.empty': 'Postal code is required'
+      'string.empty': 'Código postal obrigatório'
     }),
 
   state: Joi.string()
     .messages({
-      'string.empty': 'State is required'
+      'string.empty': 'Estado obrigatório'
     }),
 
   city: Joi.string()
     .messages({
-      'string.empty': 'City is required'
+      'string.empty': 'Cidade obrigatório'
     }),
 })
 
@@ -36,9 +36,9 @@ export const updateDelegationSchema = Joi.object({
     .min(3)
     .max(60)
     .messages({
-      'string.min': 'School name must be at least 3 characters long',
-      'string.max': "School name can't be more than 60 characters long",
-      'string.empty': 'School name is required',
+      'string.min': 'Nome deve conter pelo menos 3 letras',
+      'string.max': "Nome não pode conter mais de 60 lentras",
+      'string.empty': 'Nome é necessário',
     }),
 
   schoolPhoneNumber: customPhoneNumber.phone(),
@@ -46,7 +46,7 @@ export const updateDelegationSchema = Joi.object({
   participationMethod: Joi.string()
     .valid('Escola', 'Universidade')
     .messages({
-      'any.only': 'Participation method is required',
+      'any.only': 'Método de Participação obrigatório',
     }),
 
   code: Joi.string(),

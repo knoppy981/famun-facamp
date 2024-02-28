@@ -27,7 +27,7 @@ const AddressData = (props: any) => {
         <ComboBox
           className='secondary-input-box'
           name="address.country"
-          label="Country"
+          label="País"
           isRequired
           defaultItems={countryArray}
           onSelectionChange={value => handleChange({ target: { name: "address.country", value: value } })}
@@ -53,9 +53,9 @@ const AddressData = (props: any) => {
         />
 
         {[
-          ["State", "address.state", "text"],
-          ["City", "address.city", "text"],
-          ["Address", "address.address", "text"],
+          ["Estado", "address.state", "text"],
+          ["Cidade", "address.city", "text"],
+          ["Endereço", "address.address", "text"],
         ].map((item, index) => (
           <TextField
             className='secondary-input-box'

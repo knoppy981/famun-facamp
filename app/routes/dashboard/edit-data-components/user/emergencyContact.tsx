@@ -14,7 +14,7 @@ const EmergencyContactData = (props: any) => {
         <TextField
           className="secondary-input-box"
           name="delegate.emergencyContactName"
-          label="Name"
+          label="Nome"
           type="text"
           isRequired
           defaultValue={defaultValues?.delegate?.emergencyContactName}
@@ -27,7 +27,7 @@ const EmergencyContactData = (props: any) => {
         <PhoneNumberField
           className="secondary-input-box"
           name="delegate.emergencyContactPhoneNumber"
-          label="Phone Number"
+          label="Telefone"
           type="text"
           isRequired
           _defaultValue={defaultValues?.delegate?.emergencyContactPhoneNumber}

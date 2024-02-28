@@ -11,8 +11,8 @@ export const createUserSchema = Joi.object({
     .email()
     .required()
     .messages({
-      'string.empty': 'E-mail is required',
-      'string.email': "Invalid e-mail"
+      'string.empty': 'E-mail obrigatório',
+      'string.email': "E-mail inválido"
     }),
 
   name: Joi.string()
@@ -21,9 +21,17 @@ export const createUserSchema = Joi.object({
     .required()
     .pattern(/^[^\d]*$/)
     .messages({
-      'string.empty': 'Name is required',
-      'string.pattern.base': 'Invalid Name'
+      'string.empty': 'Nome obrigatório',
+      'string.pattern.base': 'Nome inválido',
+      'string.min': 'Nome deve conter pelo menos 3 letras',
+      'string.max': "Nome não pode conter mais de 60 lentras",
     }),
+
+  password: Joi.object({
+    create: Joi.object({
+      hash: Joi.string()
+    })
+  }),
 
   phoneNumber: customPhoneNumber.phone()
     .required(),
@@ -32,22 +40,31 @@ export const createUserSchema = Joi.object({
     .max('now')
     .required()
     .messages({
-      'date.base': 'Birth date is required',
+      'date.base': 'Data de nascimento obrigatório',
     }),
 
   nacionality: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Please select a nacionality'
+      'string.empty': 'Selecione sua nacionalidade'
     }),
+
+  sex: Joi.string()
+    .valid('Male', 'Female')
+    .required()
+    .messages({
+      'string.empty': 'Sexo obrigatório',
+      'string.pattern.base': 'Sexo inválido'
+    }),
+
 
   rg: Joi.string().when('nacionality', {
     is: "Brazil",
     then: Joi.string().required(),
     otherwise: Joi.string().allow('', null).optional(),
   }).messages({
-    'string.empty': 'RG is required',
-    'any.required': 'RG is required for Brazilian nationality',
+    'string.empty': 'RG obrigatório',
+    'any.required': 'RG obrigatório',
   }),
 
   cpf: customCpf.cpf()
@@ -59,8 +76,8 @@ export const createUserSchema = Joi.object({
     then: Joi.string().allow('', null).optional(),
     otherwise: Joi.string().required(),
   }).messages({
-    'string.empty': 'Passport is required',
-    'any.required': 'Passport is required for non-Brazilian nationality',
+    'string.empty': 'Passporte obrigatório',
+    'any.required': 'Passporte obrigatório',
   }),
 
   participationMethod: Joi.string()

@@ -87,6 +87,7 @@ export type ComitteeType = {
     country: string | null;
     user: {
       name: string;
+      sex: "Male" | "Female";
       _count: {
         files: number;
       };
@@ -222,7 +223,7 @@ const Comittee = () => {
                   </td>
 
                   <td className='table-cell'>
-                    Masculino
+                    {delegate.user.sex === "Male" ? "Masculino" : "Feminino"}
                   </td>
                 </tr>
               ))}
