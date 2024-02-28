@@ -109,8 +109,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         remember: false,
         redirectTo: redirectTo ? safeRedirect(redirectTo) : `/dashboard/home`,
       });
-
-      return json({})
     }
   }
 
@@ -160,8 +158,6 @@ const delegation = () => {
   const transition = useNavigation()
   const [buttonLabel, isButtonDisabled, setIsButtonDisabled, handleButtonPress, buttonSpinner] = useButtonState(
     step, transition)
-
-  console.log(user)
 
   return (
     <Form className='auth-container' noValidate method='post' >

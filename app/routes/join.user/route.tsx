@@ -42,7 +42,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (action === 'next') {
     try {
       await userStepValidation(Number(step), data)
-      console.log(step)
       if (Number(step) === 4 || Number(step) === 5) await getExistingUser({
         name: data.name === "" ? undefined : data.name,
         email: data.email === "" ? undefined : data.email,
@@ -76,8 +75,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         userType: userData.userType
       })
 
-      console.log(userData)
-
       let user
 
       try {
@@ -90,8 +87,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           { status: 400 }
         );
       }
-
-      return json({})
 
       return createUserSession({
         request,
