@@ -38,7 +38,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   try {
     const charges = await getChargesByCustomerId(user.stripeCustomerId)
-    charges.data.forEach((ch: Stripe.Charge, index) => {
+    charges?.data.forEach((ch: Stripe.Charge, index) => {
       paymentsList.push({
         amount: ch.amount,
         currency: ch.currency,

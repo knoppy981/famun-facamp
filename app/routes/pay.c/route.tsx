@@ -12,8 +12,6 @@ import { Elements } from "@stripe/react-stripe-js";
 import PaymentForm from "./form";
 import { checkCuponCode } from "~/models/configuration.server";
 
-const stripePromise = loadStripe("pk_test_51Lwc6CG8QBKHSgkGKn1eEavFX2wS75qcPXAhIf6a1FKhiTb3En4rlawvC5xohEmhIzvWn4C8gw3FcV2N59V7CKll00YmZnlrcw")
-
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   // get all user names that were selected to be paid
@@ -46,22 +44,23 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   let paymentIntent
   try {
     paymentIntent = await createPaymentIntent(
-      { price, userId: user.id, stripeCustomerId: user.stripeCustomerId as string, usersIdsThatWillBePaid, currency: payments[0].currency }
+      { price, userId: user.id, email: user.email, stripeCustomerId: user.stripeCustomerId as string, usersIdsThatWillBePaid, currency: payments[0].currency }
     )
   } catch (error) {
     console.log(error)
-    return json({
+    throw json({
       errors: { paymentIntent: "Failed to load payment intent" },
       status: 400
     })
   }
 
   // return payment intent and the price
-  return json({ paymentIntent, price, payments, WEBSITE_URL: process.env.WEBSITE_URL })
+  return json({ paymentIntent, price, payments, WEBSITE_URL: process.env.WEBSITE_URL, STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY as string })
 }
 
 const CompletePayments = () => {
-  const { paymentIntent, price, payments, WEBSITE_URL } = useLoaderData<any>()
+  const { paymentIntent, price, payments, WEBSITE_URL, STRIPE_PUBLIC_KEY } = useLoaderData<typeof loader>()
+  const [stripePromise, setStripePromise] = React.useState(() => loadStripe(STRIPE_PUBLIC_KEY))
   const [delegatesPaymentsCount, advisorPaymentsCount, paymentNames] = usePaymentsData(payments)
   const locale = getCurrentLocale()
 
@@ -97,11 +96,11 @@ const CompletePayments = () => {
 
       <Elements
         stripe={stripePromise}
-        options={{ clientSecret: paymentIntent.client_secret }}
+        options={{ clientSecret: paymentIntent.client_secret as string }}
       >
         {paymentIntent !== undefined ?
           <PaymentForm
-            WEBSITE_URL={WEBSITE_URL}
+            WEBSITE_URL={WEBSITE_URL as string}
             paymentNames={paymentNames}
           /> :
           null

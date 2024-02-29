@@ -32,11 +32,11 @@ const Dashboard = () => {
   const matches = useMatches()
   const t = (title: string) => (title)
   const menuItems = [
-    { name: t("home"), to: "home", active: "/dashboard/home", icon: <FiHome className='icon' /> },
-    { name: t("dados da inscrição"), to: "profile", active: "/dashboard/profile", icon: <FiEdit className='icon' /> },
-    { name: t("delegation"), to: "delegation/participants", active: "/dashboard/delegation", icon: <FiFlag className='icon' /> },
-    { name: t("payments"), to: "payments/pending", active: "/dashboard/payments", icon: <FiCreditCard className='icon' /> },
-    { name: t("documents"), to: "documents", active: "/dashboard/documents", icon: <FiFile className='icon' /> },
+    { name: t("Início"), to: "home", active: "/dashboard/home", icon: <FiHome className='icon' /> },
+    { name: t("Dados da inscrição"), to: "profile", active: "/dashboard/profile", icon: <FiEdit className='icon' /> },
+    { name: t("Delegação"), to: "delegation/participants", active: "/dashboard/delegation", icon: <FiFlag className='icon' /> },
+    { name: t("Pagamentos"), to: "payments/pending", active: "/dashboard/payments", icon: <FiCreditCard className='icon' /> },
+    { name: t("Documentos"), to: "documents", active: "/dashboard/documents", icon: <FiFile className='icon' /> },
   ]
 
   return (
@@ -70,7 +70,7 @@ const Dashboard = () => {
               <div className='dashboard-nav-item'>
                 <FiLogOut className='icon' />
 
-                {t("log out")}
+                {t("Sair")}
               </div>
             </Button>
           </Form>
@@ -108,7 +108,7 @@ const Dashboard = () => {
                 <Form action='/logout' method='post' onClick={close}>
                   <Button type='submit'>
                     <FiLogOut className='icon' />
-                    Log out
+                    Sair
                   </Button>
                 </Form>
               </div>

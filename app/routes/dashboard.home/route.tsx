@@ -71,7 +71,7 @@ const Home = () => {
               Documentos
             </div>
 
-            Comprovante de Vacinação
+            Enviar documnentos
 
             <Button className={`secondary-button-box ${document ? 'green-light' : 'red-light'}`}>
               {document ? 'Concluído' : 'Pendente'}

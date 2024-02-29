@@ -30,10 +30,10 @@ export async function getPaymentsIntentByCustomerId(customerId: UserType["stripe
 }
 
 export async function getChargesByCustomerId(customerId: UserType["stripeCustomerId"]):
-  Promise<Stripe.ApiListPromise<Stripe.Charge>> {
+  Promise<Stripe.ApiListPromise<Stripe.Charge> | undefined> {
 
   if (customerId === null) {
-    throw new Error(`Error loading payments id`)
+    return
   }
 
   return stripe.charges.list({ customer: customerId })
@@ -48,15 +48,17 @@ export async function getTransactionsByUserId(userId: UserType["id"]) {
 export async function createPaymentIntent({
   price,
   userId,
+  email,
   stripeCustomerId,
   usersIdsThatWillBePaid,
   currency
 }: {
-  price: number; userId: UserType["id"]; stripeCustomerId: Stripe.Customer["id"], usersIdsThatWillBePaid: Array<string>, currency: string
+  price: number; userId: UserType["id"]; email: UserType["email"]; stripeCustomerId: Stripe.Customer["id"], usersIdsThatWillBePaid: Array<string>, currency: string
 }) {
   return stripe.paymentIntents.create({
     customer: stripeCustomerId,
     amount: price,
+    receipt_email: email,
     currency: currency,
     automatic_payment_methods: {
       enabled: true,
@@ -129,7 +131,7 @@ export async function handleWebHook(request: Request) {
     const info = await sendEmail({
       to: user.email,
       subject: "Pagamento Confirmado!",
-      html: paymentCompletedEmail(user as UserType, paidUsers as UserType[], event.data.object?.charges?.data[0].receipt_url as string, new Date(event.data.object.created * 1000).toLocaleDateString("pt-BR"))
+      html: paymentCompletedEmail(user as UserType, paidUsers as UserType[], "", new Date(event.data.object.created * 1000).toLocaleDateString("pt-BR"))
     })
   }
 

@@ -272,7 +272,7 @@ async function seed() {
 
 	// await postponePaymentExpiration("111111")
 
-	await createAdmin()
+	// await createAdmin()
 
 	// await createXDelegations(20)
 
