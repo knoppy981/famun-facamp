@@ -81,3 +81,19 @@ export async function deleteFileById(fileId: File["id"]) {
   })
 }
 
+export async function getFileBuffer(fileId: File["id"]) {
+  return prisma.file.findUnique({
+    where: {
+      id: fileId
+    },
+    select: {
+      stream: true,
+      name: true,
+      user: {
+        select: {
+          name: true
+        }
+      }
+    }
+  })
+}

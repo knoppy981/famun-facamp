@@ -191,6 +191,7 @@ export async function adminDelegationData(school: Delegation["school"]) {
 					},
 					files: {
 						select: {
+							id: true,
 							name: true,
 							size: true,
 							createdAt: true,

@@ -157,7 +157,7 @@ const CreateUser = () => {
           onSelectionChange={(key: Key) => changeCreatingUserType(key as "delegate" | "advisor")}
           items={[
             { id: "delegate", name: "Delegado" },
-            { id: "advisor", name: "Professor(a) Oritentador(a)" },
+            { id: "advisor", name: "Professor(a) Orientador(a)" },
           ]}
           isDisabled={creationPermission?.type === "userType"}
         >

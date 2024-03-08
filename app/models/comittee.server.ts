@@ -1,5 +1,6 @@
 import { Council, ParticipationMethod } from "@prisma/client";
 import { prisma } from "~/db.server";
+import { ValidationError } from "~/utils/error";
 
 export async function getComitteeByName(name: string) {
   const currentYear = new Date().getFullYear();
@@ -81,6 +82,30 @@ export async function getComitteesList(participationMethod: ParticipationMethod,
       }
     }
   })
+}
+
+export async function getExistingComittee(name: string) {
+	let comittee
+
+	try {
+		comittee = await prisma.comittee.findFirstOrThrow({
+			where: {
+				name
+			}
+		})
+	} catch (e) {
+		return {}
+	}
+
+	const errorDetails = [
+		{
+			message: "Nome já está sendo utilizado",
+			path: ["name"],
+			context: { label: "name", value: '', key: "name" }
+		}
+	];
+
+	throw new ValidationError("Nome já está sendo utilizado", errorDetails)
 }
 
 export async function createComittee({ name, council, type }: { name: string, council: Council, type: ParticipationMethod }) {

@@ -1035,6 +1035,12 @@ input:-webkit-autofill:active {
   flex-wrap: wrap;
   gap: 5px;
 }
+@media screen and (max-width: 800px) {
+  .admin-delegation-modal-button-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 
 .admin-delegation-notification {
   max-width: 500px;
@@ -1082,6 +1088,13 @@ input:-webkit-autofill:active {
 .admin-delegation-notification-item.array ul {
   margin-left: 20px;
   list-style: disc;
+}
+
+.admin-delegation-documents-buttons-container {
+  margin-top: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .comittee-container {
@@ -2812,6 +2825,7 @@ input:-webkit-autofill:active {
   font-size: inherit;
   outline: none;
   border: none;
+  width: 100%;
 }
 .combo-box-input:disabled {
   opacity: 1;
@@ -3072,6 +3086,19 @@ input:-webkit-autofill:active {
   .dialog.max-width {
     max-width: none;
   }
+}
+.dialog::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: transparent;
+}
+.dialog::-webkit-scrollbar {
+  width: 12px;
+  background-color: transparent;
+}
+.dialog::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3);
+  background-color: #fff;
 }
 
 .dialog-title {
@@ -3495,19 +3522,6 @@ input:-webkit-autofill:active {
   .modal-container.max-width {
     max-width: none;
   }
-}
-.modal-container::-webkit-scrollbar-track {
-  border-radius: 10px;
-  background-color: transparent;
-}
-.modal-container::-webkit-scrollbar {
-  width: 12px;
-  background-color: transparent;
-}
-.modal-container::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3);
-  background-color: #fff;
 }
 
 .sidebar-aside {

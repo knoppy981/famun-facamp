@@ -23,8 +23,8 @@ const LanguageData = (props: any) => {
           defaultValue={defaultValues?.delegate?.languagesSimulates}
           action={actionData}
         >
-          <Checkbox value='Portugues' isDisabled={isDisabled}>Portugues</Checkbox>
-          <Checkbox value='Ingles' isDisabled={isDisabled}>Ingles</Checkbox>
+          <Checkbox value='Portugues' isDisabled={isDisabled}>Português</Checkbox>
+          <Checkbox value='Ingles' isDisabled={isDisabled}>Inglês</Checkbox>
           <Checkbox value='Espanhol' isDisabled={isDisabled}>Espanhol</Checkbox>
         </CheckboxGroup>
 

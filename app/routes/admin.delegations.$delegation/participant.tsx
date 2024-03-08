@@ -6,7 +6,7 @@ import _ from "lodash"
 import Button from "~/components/button"
 import Dialog from "~/components/dialog"
 import Modal from "~/components/modalOverlay"
-import { FiBell, FiCheck, FiChevronDown, FiEdit, FiX } from "react-icons/fi/index.js";
+import { FiBell, FiCheck, FiChevronDown, FiCreditCard, FiDownload, FiEdit, FiExternalLink, FiEye, FiFile, FiX } from "react-icons/fi/index.js";
 import { OverlayTriggerState } from "react-stately"
 import { FetcherWithComponents, useFetcher, useSubmit } from "@remix-run/react"
 import { UserType } from "~/models/user.server"
@@ -14,10 +14,11 @@ import EditUserData from "../admin/edit-data-components/user"
 import Spinner from "~/components/spinner"
 import { Notifications } from "@prisma/client"
 import keyToLabel from "~/utils/keyToLabel"
+import Link from "~/components/link"
 
 const ParticipantModal = ({ state, participant }: { state: OverlayTriggerState, participant: UserType & { notifications?: Notifications[] } }) => {
   const fetcher = useFetcher<any>()
-  const [selectedMenu, setSelectedMenu] = React.useState<"data" | "notifications">("data")
+  const [selectedMenu, setSelectedMenu] = React.useState<"data" | "notifications" | "documents" | "payments">("data")
   const { readySubmission, userWantsToChangeData, handleSubmission, handleChange } =
     useUserUpdate(participant, fetcher, state, selectedMenu, setSelectedMenu)
   const [buttonLabel, buttonIcon, buttonColor] = useButtonState(userWantsToChangeData, readySubmission, fetcher.state)
@@ -40,15 +41,33 @@ const ParticipantModal = ({ state, participant }: { state: OverlayTriggerState, 
             <div className="admin-delegation-modal-button-container">
               <Button
                 onPress={() => selectedMenu === "data" ? handleSubmission() : setSelectedMenu("data")}
-                className={`secondary-button-box ${selectedMenu === "notifications" ? "grey-dark" : buttonColor ? buttonColor + "-dark" : ""}`}
+                className={`secondary-button-box ${selectedMenu === "data" ? buttonColor ? buttonColor + "-dark" : "" : "grey-dark"}`}
               >
                 {buttonIcon} {buttonLabel}
               </Button>
 
+              <Button
+                onPress={() => setSelectedMenu("payments")}
+                className={`secondary-button-box ${selectedMenu === "payments" ? buttonColor ? buttonColor + "-dark" : "" : "grey-dark"}`}
+              >
+                <FiCreditCard className="icon"/> Pagamentos
+              </Button>
+
+              {participant.files?.length && participant.files?.length > 0 ?
+                <Button
+                  onPress={() => setSelectedMenu("documents")}
+                  className={`secondary-button-box ${selectedMenu === "documents" ? buttonColor ? buttonColor + "-dark" : "" : "grey-dark"}`}
+                >
+                  <FiFile className="icon" /> Documentos
+                </Button>
+                :
+                null
+              }
+
               {participant.notifications?.length && participant.notifications?.length > 0 ?
                 <Button
                   onPress={() => setSelectedMenu("notifications")}
-                  className={`secondary-button-box ${selectedMenu === "data" ? "grey-dark" : buttonColor ? buttonColor + "-dark" : ""}`}
+                  className={`secondary-button-box ${selectedMenu === "notifications" ? buttonColor ? buttonColor + "-dark" : "" : "grey-dark"}`}
                 >
                   <FiBell className="icon" /> Notificações
                 </Button>
@@ -71,9 +90,14 @@ const ParticipantModal = ({ state, participant }: { state: OverlayTriggerState, 
                 />
               </div>
               :
-              <div>
-                {participant.notifications?.map((notification, index) => <Notification {...notification} key={index} i={index} />)}
-              </div>
+              selectedMenu === "documents" ?
+                <div>
+                  {participant.files?.map((item, index) => <Document file={item} key={index} i={index} />)}
+                </div>
+                :
+                <div>
+                  {participant.notifications?.map((notification, index) => <Notification {...notification} key={index} i={index} />)}
+                </div>
             }
           </Dialog>
         </Modal>
@@ -86,8 +110,8 @@ function useUserUpdate(
   user: UserType,
   fetcher: FetcherWithComponents<any>,
   state: OverlayTriggerState,
-  selectedMenu: "data" | "notifications",
-  setSelectedMenu: React.Dispatch<React.SetStateAction<"notifications" | "data">>
+  selectedMenu: "data" | "notifications" | "documents" | "payments",
+  setSelectedMenu: React.Dispatch<React.SetStateAction<"notifications" | "data" | "documents" | "payments">>
 ): {
   readySubmission: boolean,
   userWantsToChangeData: boolean,
@@ -299,6 +323,82 @@ function handleNotification(
   }
 
   return [handleNotificationData(data), handleSeeNotification]
+}
+
+function Document({ file, i }: {
+  file: {
+    id?: string;
+    userId?: string;
+    url?: string | null;
+    name?: string;
+    fileName?: string;
+    stream?: Buffer;
+    size?: number;
+    createdAt?: Date;
+  }, i: number
+}) {
+  return (
+    <div className={`admin-delegation-notification ${i !== 0 ? "border" : ""}`}>
+      <p className="text">
+        {file.name}
+      </p>
+
+      <p className="text italic">{file.fileName} {file.size ? " - " + formatBytes(file.size) : null}</p>
+
+      <div className="admin-delegation-documents-buttons-container">
+        <Button
+          onPress={() => handleFileView(file.id as string)}
+          className="secondary-button-box blue-dark"
+        >
+          <FiExternalLink className="icon" /> Visualizar
+        </Button>
+
+        <Link
+          to={`/api/dfb?fileId=${file.id}`}
+          reloadDocument
+          className="secondary-button-box green-dark"
+        >
+          <div>
+            <FiDownload className="icon" /> Baixar
+          </div>
+        </Link>
+      </div>
+    </div>
+  )
+}
+
+async function handleFileView(fileId: string) {
+  try {
+    const response = await fetch('/api/gfb', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ fileId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Network response was not ok: ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+    const imageUrl = URL.createObjectURL(blob);
+    window.open(imageUrl, '_blank');
+  } catch (error) {
+    console.error('Error fetching the image:', error);
+  }
+}
+
+function formatBytes(bytes: number, decimals = 2) {
+  if (!+bytes) return '0 Bytes'
+
+  const k = 1000
+  const dm = decimals < 0 ? 0 : decimals
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }
 
 export default ParticipantModal

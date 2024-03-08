@@ -128,8 +128,8 @@ const Delegation = () => {
   const [handleRemoveParticipant] = useDeleteDelegation()
 
   const totalPaid = `
-  ${delegation.amountPaid.brl > 0 ? (delegation.amountPaid.brl / 100).toLocaleString("pt-BR", { style: "currency", currency: "brl" }) : null}
-  ${delegation.amountPaid.usd > 0 ? (delegation.amountPaid.usd / 100).toLocaleString("pt-BR", { style: "currency", currency: "usd" }) : null}
+  ${delegation.amountPaid.brl > 0 ? (delegation.amountPaid.brl / 100).toLocaleString("pt-BR", { style: "currency", currency: "brl" }) : ""}
+  ${delegation.amountPaid.usd > 0 ? (delegation.amountPaid.usd / 100).toLocaleString("pt-BR", { style: "currency", currency: "usd" }) : ""}
   `
 
   return (

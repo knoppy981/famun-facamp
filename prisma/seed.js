@@ -46,6 +46,7 @@ async function delegationWith10Delegates() {
 				email: `user${i + 1}@gmail.com`,
 				phoneNumber: "+55 19 97154 7424",
 				participationMethod: "Escola",
+				sex: "Male",
 				password: {
 					create: {
 						hash: await bcrypt.hash("Dede5562", 10)
@@ -268,13 +269,13 @@ async function createXDelegations(max) {
 async function seed() {
 	await delegationWith2Users()
 
-	// await delegationWith10Delegates()
+	await delegationWith10Delegates()
 
 	// await postponePaymentExpiration("111111")
 
-	// await createAdmin()
+	await createAdmin()
 
-	// await createXDelegations(20)
+	await createXDelegations(20)
 
 	console.log(`Database has been seeded. 🌱`);
 }

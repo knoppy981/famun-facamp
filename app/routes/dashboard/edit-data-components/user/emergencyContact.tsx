@@ -5,7 +5,7 @@ const EmergencyContactData = (props: any) => {
   const { defaultValues, isDisabled, handleChange, actionData, theme } = props
 
   return (
-    <div className={`data-box-container ${theme ?? ""}`}>
+    <div className={`data-box-container ${theme ?? ""}`} style={{ placeSelf: "auto", alignSelf: "normal" }}>
       <h3 className="data-box-container-title blue-border">
         Contato de Emergencia
       </h3>

@@ -86,6 +86,7 @@ const UserData = ({ data, actionData }: { data: any; actionData: any }) => {
               className="primary-input-box"
               name="phoneNumber"
               label="Telefone"
+              placeholder='DDI + DDD + número'
               _defaultValue={data?.phoneNumber}
               errorMessage={actionData?.errors?.phoneNumber}
               autoComplete='off'
@@ -98,7 +99,7 @@ const UserData = ({ data, actionData }: { data: any; actionData: any }) => {
             name="sex"
             label="Sexo"
             defaultValue={data?.sex}
-            errorMessage={actionData?.errors?.birthDate}
+            errorMessage={actionData?.errors?.sex}
             action={actionData}
           >
             <Radio value="Male">Masculino</Radio>

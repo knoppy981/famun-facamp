@@ -61,6 +61,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       await delegationStepValidation(Number(step), data)
       if (data.participationMethod === "Escola") await getExistingDelegation({ school: data.school ?? "" })
     } catch (error) {
+      console.dir(error, { depth: null })
       const [label, msg] = getCorrectErrorMessage(error)
       return json(
         { errors: { [label]: msg } },
@@ -161,7 +162,6 @@ const delegation = () => {
 
   return (
     <Form autoComplete="off" className='auth-container' noValidate method='post' >
-      <input autoComplete="false" name="hidden" type="text" style={{ display: "none" }} />
       <h1 className='auth-title'>
         FAMUN 2024
       </h1>

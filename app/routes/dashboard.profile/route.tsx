@@ -68,7 +68,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   }
 
-  await createUserChangeNotification(user.id, qs.stringify(data), user.id, `Changed ${user.name} data`)
+  await createUserChangeNotification(user.id, qs.stringify(changes), user.id, `Changed ${user.name} data`)
 
   return updateUser({ userId: user.id, values: data })
 }

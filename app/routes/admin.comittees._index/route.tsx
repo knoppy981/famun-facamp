@@ -4,7 +4,7 @@ import { FetcherWithComponents, Form, useFetcher, useLoaderData, useOutletContex
 import qs from 'qs'
 import { ParticipationMethod } from '@prisma/client';
 
-import { createComittee, getComitteesList } from '~/models/comittee.server';
+import { createComittee, getComitteesList, getExistingComittee } from '~/models/comittee.server';
 import { ComitteeList } from './types';
 import { comitteeSchema } from '~/schemas';
 import { getCorrectErrorMessage } from '~/utils/error';
@@ -19,9 +19,11 @@ import { useOverlayTriggerState } from 'react-stately';
 export const action = async ({ request }: ActionFunctionArgs) => {
   const text = await request.text()
   const { ...data } = qs.parse(text)
+  let comittee
 
   try {
     await comitteeSchema.validateAsync(data)
+    await getExistingComittee(data?.name as string)
   } catch (error) {
     const [label, msg] = getCorrectErrorMessage(error)
     console.log(error)
@@ -31,7 +33,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   }
 
-  const comittee = await createComittee(data as any)
+  try {
+    comittee = await createComittee(data as any)
+  } catch (error) {
+    console.log(error)
+    return json(
+      { errors: { error } },
+      { status: 400 }
+    );
+  }
+
 
   return json({ comittee })
 }
