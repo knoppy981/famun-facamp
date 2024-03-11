@@ -1,7 +1,7 @@
-import { Council, Languages } from "@prisma/client";
+import { Languages } from "@prisma/client";
 import { UserType } from "~/models/user.server";
 
-export const defaultUser = {
+export const defaultUser = (councils: string[]) => ({
   id: '',
   email: '',
   name: '',
@@ -14,12 +14,7 @@ export const defaultUser = {
   delegate: {
     emergencyContactName: '',
     emergencyContactPhoneNumber: '',
-    councilPreference: [
-      'Conselho_de_Seguranca_da_ONU',
-      'Rio_92',
-      'Assembleia_Geral_da_ONU',
-      'Conselho_de_Juventude_da_ONU'
-    ] as Council[],
+    councilPreference: councils,
     languagesSimulates: [] as Languages[]
   },
   delegationAdvisor: {
@@ -28,4 +23,4 @@ export const defaultUser = {
     instagram: '',
     linkedin: ''
   }
-} as UserType
+} as UserType)

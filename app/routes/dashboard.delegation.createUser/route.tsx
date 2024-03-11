@@ -1,6 +1,6 @@
 import React, { Key } from "react";
-import { ActionFunctionArgs, json } from "@remix-run/node"
-import { Form, useFetcher, useOutletContext } from "@remix-run/react";
+import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node"
+import { Form, useFetcher, useLoaderData, useOutletContext } from "@remix-run/react";
 import { AnimatePresence } from "framer-motion";
 import qs from "qs"
 import { motion } from "framer-motion";
@@ -24,6 +24,7 @@ import { Select, Item } from "~/components/select";
 import { defaultUser } from "./defaultUserData";
 import { iterateObject } from "../dashboard/utils/findDiffrences";
 import { createDelegationChangeNotification } from "~/models/notifications.server";
+import { getCouncils } from "~/models/configuration.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const user = await requireUser(request)
@@ -99,15 +100,24 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return json({ newUser })
 }
 
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const delegation = await requireDelegation(request)
+
+  const councils = await getCouncils(delegation.participationMethod)
+
+  return json({ councils })
+}
+
 const CreateUser = () => {
   const [buttonRef, isRefVisible] = useOnScreen();
   const delegation: DelegationType = useOutletContext()
+  const { councils } = useLoaderData<typeof loader>()
   const delegatesCount = delegation.participants?.filter(user => user.delegate !== null).length as number
   const user = useUser()
   const userType = useUserType()
   const fetcher = useFetcher()
   const { creatingUserType, changeCreatingUserType, creationPermission, handleChange, handleSubmission, editUserDataId } =
-    useUserCreation(user, userType, fetcher, delegatesCount, delegation.id, delegation.participationMethod)
+    useUserCreation(user, userType, fetcher, delegatesCount, delegation.id, delegation.participationMethod, councils as string[])
   const [buttonLabel, buttonIcon, buttonColor] = useButtonState(creationPermission?.allowed, fetcher.state)
   const [modalContext, state] = useModalContext(fetcher)
 
@@ -179,7 +189,7 @@ const CreateUser = () => {
       <EditUserData
         isDisabled={!creationPermission?.allowed}
         actionData={fetcher.data}
-        defaultValues={defaultUser}
+        defaultValues={defaultUser(councils as string[])}
         handleChange={handleChange}
         id={editUserDataId}
         userType={creatingUserType}

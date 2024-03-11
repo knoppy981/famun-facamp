@@ -5,12 +5,12 @@ import qs from "qs"
 
 import { UserType } from "~/models/user.server"
 
-const newUserDataDefaultValues = {
-  "delegate.councilPreference": ['Conselho_de_Seguranca_da_ONU', 'Rio_92', 'Assembleia_Geral_da_ONU', 'Conselho_de_Juventude_da_ONU'],
+const newUserDataDefaultValues = (councils: string[]) => ({
+  "delegate.councilPreference": councils,
   nacionality: "Brazil"
-}
+})
 
-export function useUserCreation(user: UserType, userType: "delegate" | "advisor" | undefined, fetcher: FetcherWithComponents<any>, delegatesCount: number, delegationId: string, participationMethod: string): {
+export function useUserCreation(user: UserType, userType: "delegate" | "advisor" | undefined, fetcher: FetcherWithComponents<any>, delegatesCount: number, delegationId: string, participationMethod: string, councils: string[]): {
   creatingUserType: string,
   changeCreatingUserType: (userType: "delegate" | "advisor") => void,
   creationPermission: { allowed: boolean, type: string } | undefined,
@@ -20,8 +20,12 @@ export function useUserCreation(user: UserType, userType: "delegate" | "advisor"
 } {
   const [creatingUserType, setCreatingUserType] = React.useState("delegate")
   const [creationPermission, setCreationPermission] = React.useState<{ allowed: boolean, type: string } | undefined>(undefined)
-  const [newUserData, setNewUserData] = React.useState<{ [key: string]: any }>(newUserDataDefaultValues)
+  const [newUserData, setNewUserData] = React.useState<{ [key: string]: any }>(newUserDataDefaultValues(councils))
   const [editUserDataId, setEditUserDataId] = React.useState(false)
+
+  React.useEffect(() => {
+    console.log(newUserData)
+  }, [newUserData])
 
   React.useEffect(() => {
     // update the variable that decides if the user can create a user
@@ -60,7 +64,7 @@ export function useUserCreation(user: UserType, userType: "delegate" | "advisor"
         }
       });
       if (userType === "delegate") {
-        newData["delegate.councilPreference"] = ['Conselho_de_Seguranca_da_ONU', 'Rio_92', 'Assembleia_Geral_da_ONU', 'Conselho_de_Juventude_da_ONU']
+        newData["delegate.councilPreference"] = councils
       } else if (userType === "advisor") {
         newData["delegationAdvisor.advisorRole"] = "Professor"
       }

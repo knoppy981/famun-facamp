@@ -4,7 +4,7 @@ import { requireUser } from '~/session.server';
 
 import type { UserType } from '~/models/user.server';
 import { getPaymentPrices } from './configuration.server';
-import { Council, Languages, ParticipationMethod } from '@prisma/client';
+import { Languages, ParticipationMethod } from '@prisma/client';
 
 export async function getPaidUsersIds(paidUsersIds: UserType["id"][]) {
   const arr: Array<any> = []

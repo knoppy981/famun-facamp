@@ -2,7 +2,7 @@ import React from 'react'
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from '@remix-run/node'
 import { useLoaderData, useOutletContext, useSearchParams } from '@remix-run/react'
 import qs, { ParsedQs } from 'qs'
-import { Council, ParticipationMethod } from '@prisma/client';
+import { ParticipationMethod } from '@prisma/client';
 import { useOverlayTriggerState } from 'react-stately';
 
 import { addDelegatesToComittee, getComitteeByName, removeDelegates } from '~/models/comittee.server';
@@ -100,7 +100,7 @@ export type ComitteeType = {
     };
   }[];
   id: string;
-  council: Council;
+  council: string;
   type: ParticipationMethod;
   name: string;
   createdAt: string;

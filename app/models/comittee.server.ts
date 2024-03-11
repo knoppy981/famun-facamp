@@ -1,4 +1,4 @@
-import { Council, ParticipationMethod } from "@prisma/client";
+import { ParticipationMethod } from "@prisma/client";
 import { prisma } from "~/db.server";
 import { ValidationError } from "~/utils/error";
 
@@ -108,7 +108,7 @@ export async function getExistingComittee(name: string) {
 	throw new ValidationError("Nome já está sendo utilizado", errorDetails)
 }
 
-export async function createComittee({ name, council, type }: { name: string, council: Council, type: ParticipationMethod }) {
+export async function createComittee({ name, council, type }: { name: string, council: string, type: ParticipationMethod }) {
   return prisma.comittee.create({
     data: {
       name,
