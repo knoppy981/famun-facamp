@@ -12,6 +12,7 @@ model User {
   email               String              @unique
   // personal info
   name                String
+  socialName          String?
   password            Password?
   cpf                 String?
   rg                  String?
@@ -103,7 +104,7 @@ model Delegate {
   emergencyContactPhoneNumber String
   educationLevel              String
   currentYear                 String
-  councilPreference           Council[]
+  councilPreference           String[]
   languagesSimulates          Languages[]
   comittee                    Comittee?   @relation(fields: [comitteeId], references: [id])
   comitteeId                  String?     @db.ObjectId
@@ -113,7 +114,7 @@ model Delegate {
 model Comittee {
   id        String              @id @default(auto()) @map("_id") @db.ObjectId
   delegates Delegate[]
-  council   Council
+  council   String
   type      ParticipationMethod
   name      String              @unique
   createdAt DateTime            @default(now())
@@ -161,16 +162,22 @@ model Admin {
   password String
 }
 
-model PaymentConfiguration {
-  id                         String       @id @default(auto()) @map("_id") @db.ObjectId
-  name                       String       @unique
-  updatedAt                  DateTime     @updatedAt
+model Configuration {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  updatedAt DateTime @updatedAt
+
+  // payments
   precoDelegadoEnsinoMedio   Int
   precoDelegadoUniversidade  Int
   precoProfessorOrientador   Int
   precoDelegadoInternacional Int
   precoFacultyAdvisors       Int
   coupons                    CouponType[]
+
+  // council
+  conselhosUniversidades String[]
+  conselhosEscolas       String[]
 }
 
 type CouponType {
@@ -188,13 +195,6 @@ enum AdvisorRole {
 enum Sex {
   Male
   Female
-}
-
-enum Council {
-  Assembleia_Geral_da_ONU
-  Rio_92
-  Conselho_de_Juventude_da_ONU
-  Conselho_de_Seguranca_da_ONU
 }
 
 enum ParticipationMethod {

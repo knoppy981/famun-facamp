@@ -6,19 +6,14 @@ import { CheckboxGroup, Checkbox } from '~/components/checkbox/checkbox-group';
 import TextField from '~/components/textfield';
 import PhoneNumberField from '~/components/textfield/phoneNumberField';
 import { RadioGroup, Radio } from '~/components/radioGroup';
-import { NumberField } from '~/components/textfield/numberField';
 import TextArea from '~/components/textfield/textArea';
 
 const DelegateData = ({ data, actionData, participationMethod }: { data: any; actionData: any, participationMethod: string }) => {
+  console.log(data)
+
   const list = useListData({
     initialItems: data.councilPreference ?
-      Object.values(qs.parse(data.councilPreference)).map(item => ({ id: item })) :
-      [
-        { id: 'Assembleia_Geral_da_ONU' },
-        { id: 'Rio_92' },
-        { id: 'Conselho_de_Juventude_da_ONU' },
-        { id: 'Conselho_de_Seguranca_da_ONU' },
-      ]
+      Object.values(qs.parse(data.councilPreference)).map(item => ({ id: item })) : data.councils.map((item: string) => ({ id: item }))
   });
 
   const onReorder = (e: any) => {
@@ -51,7 +46,7 @@ const DelegateData = ({ data, actionData, participationMethod }: { data: any; ac
           {(item: { id: string }) => <Item>{item.id.replace(/_/g, " ")}</Item>}
         </ReorderableListBox>
 
-        <input type="hidden" name="councilPreference" value={qs.stringify(list.items.map(item => item.id))} />
+        <input type="hidden" name="councilPreference" value={qs.stringify(list.items.map((item: any) => item.id))} />
 
         <CheckboxGroup
           label="Idiomas que pode simular"
@@ -75,8 +70,7 @@ const DelegateData = ({ data, actionData, participationMethod }: { data: any; ac
             errorMessage={actionData?.errors.educationLevel}
             action={actionData}
           >
-            <Radio value="Ensino Medio">Ensino Médio</Radio>
-            <Radio value="Universidade">Universidade</Radio>
+            {participationMethod === "Escola" ? <Radio value="Ensino Medio">Ensino Médio</Radio> : <Radio value="Universidade">Universidade</Radio>}
             <Radio value="Cursinho">Cursinho</Radio>
           </RadioGroup>
 
@@ -110,6 +104,7 @@ const DelegateData = ({ data, actionData, participationMethod }: { data: any; ac
             label="Número para Contato"
             aria-label="Número para Contato"
             type="text"
+            placeholder='DDI + DDD + número'
             _defaultValue={data?.emergencyContactPhoneNumber}
             errorMessage={actionData?.errors?.emergencyContactPhoneNumber}
             action={actionData}

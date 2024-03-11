@@ -22,7 +22,7 @@ export const links: LinksFunction = () => [
   { as: "style", rel: "stylesheet preload prefetch", href: "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" }
 ];
 
-export const meta: MetaFunction = () => [{ title: "Famun 2024" }];
+export const meta: MetaFunction = () => [{ title: "FAMUN" }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const locale = await i18next.getLocale(request);

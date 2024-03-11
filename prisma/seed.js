@@ -127,7 +127,7 @@ async function delegationWith2Users() {
 					},
 					emergencyContactName: "Julia",
 					emergencyContactPhoneNumber: "+55 11 99877 2333",
-					educationLevel: "Universidade",
+					educationLevel: "Escola",
 					currentYear: "4 ano"
 				}
 			},
@@ -207,6 +207,9 @@ async function postponePaymentExpiration(code) {
 }
 
 async function createAdmin() {
+	await prisma.admin.delete({ where: { email: "admin@famun.com" } }).catch(err => { console.log('no admin found') })
+	await prisma.configuration.delete({ where: { name: "default" } }).catch(err => { console.log('no configuration found') })
+
 	const admin = await prisma.admin.create({
 		data: {
 			email: "admin@famun.com",
@@ -214,7 +217,7 @@ async function createAdmin() {
 		}
 	})
 
-	const basicConifuration = await prisma.paymentConfiguration.create({
+	const basicConifuration = await prisma.configuration.create({
 		data: {
 			name: "default",
 			precoDelegadoEnsinoMedio: 16000,
@@ -225,7 +228,17 @@ async function createAdmin() {
 			coupons: {
 				code: "MUNPARTNER50",
 				type: "Universidade"
-			}
+			},
+			conselhosEscolas: [
+				"United Nations Security Council - Inglês",
+				"Conselho de Segurança da ONU - Português",
+				"United Nations Environment Assembly - Inglês",
+				"Assembleia do Meio Ambiente da ONU - Português"
+			],
+			conselhosUniversidades: [
+				"Consejo de Seguridad de las Naciones Unidas - Espanhol",
+				"United Nations Environment Assembly - Inglês"
+			]
 		}
 	})
 }
@@ -267,15 +280,15 @@ async function createXDelegations(max) {
 }
 
 async function seed() {
-	await delegationWith2Users()
+	// await delegationWith2Users()
 
-	await delegationWith10Delegates()
+	// await delegationWith10Delegates()
 
 	// await postponePaymentExpiration("111111")
 
-	await createAdmin()
+	// await createAdmin()
 
-	await createXDelegations(20)
+	// await createXDelegations(20)
 
 	console.log(`Database has been seeded. 🌱`);
 }

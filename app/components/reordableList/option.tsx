@@ -58,7 +58,7 @@ export const ReorderableOption = ({ item, state, dropState, dragState, isDisable
           ${isDisabled ? 'disabled' : ''}
         `}
       >
-        {item.rendered}
+        {item.index + 1 + "° - "} {item.rendered}
       </li>
       {state.collection.getKeyAfter(item.key) == null &&
         (

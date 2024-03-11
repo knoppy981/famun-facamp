@@ -20,6 +20,9 @@ import AdvisorData from './steps/advisorData'
 import DelegateData from './steps/delegateData'
 import ConfirmData from './steps/confirmData'
 import ParticipationMethod from './steps/participationMethod'
+import { getCouncils } from '~/models/configuration.server'
+import { sendEmail } from '~/nodemailer.server'
+import { createUserEmail } from '~/lib/emails'
 
 interface ExtendedParsedQs extends ParsedQs {
   redirectTo: string;
@@ -80,6 +83,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       try {
         await createUserSchema.validateAsync(userData)
         user = await createUser(userData)
+        const info = await sendEmail({
+          to: user.email,
+          subject: "Bem-vindo a Famun",
+          html: createUserEmail(user)
+        })
       } catch (error) {
         console.log(error)
         return json(
@@ -119,23 +127,35 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     ...session.get("user-type"),
     ...session.get("user-participationMethod"),
   }
-  if (step === LAST_STEP) {
-    const data = {
-      ...session.get("user-data-3"),
-      ...session.get("user-data-4"),
-      ...session.get("user-data-5"),
-      ...session.get("user-data-7"),
-    } ?? {}
-    return json({ data, step, userType, termsAndConditions, participationMethod })
-  } else if (step === 5) {
-    const data = {
-      ...session.get(`user-data-3`),
-      ...session.get(`user-data-5`),
-    } ?? {}
-    return json({ data, step, userType, termsAndConditions, participationMethod })
-  } else {
-    const data = session.get(`user-data-${step}`) ?? {}
-    return json({ data, step, userType, termsAndConditions, participationMethod })
+
+  console.log(step, userType, participationMethod)
+  let data
+
+  switch (step) {
+    case LAST_STEP:
+      data = {
+        ...session.get("user-data-3"),
+        ...session.get("user-data-4"),
+        ...session.get("user-data-5"),
+        ...session.get("user-data-7"),
+      } ?? {}
+      return json({ data, step, userType, termsAndConditions, participationMethod })
+    case 5:
+      data = {
+        ...session.get(`user-data-3`),
+        ...session.get(`user-data-5`),
+      } ?? {}
+      return json({ data, step, userType, termsAndConditions, participationMethod })
+    case 7:
+      const councils = await getCouncils(participationMethod as "Escola" | "Universidade")
+      data = {
+        ...session.get(`user-data-${step}`),
+        councils
+      } ?? {}
+      return json({ data, step, userType, termsAndConditions, participationMethod })
+    default:
+      data = session.get(`user-data-${step}`) ?? {}
+      return json({ data, step, userType, termsAndConditions, participationMethod })
   }
 }
 
@@ -148,6 +168,7 @@ const JoinUser = () => {
   const transition = useNavigation()
   const [buttonLabel, isButtonDisabled, setIsButtonDisabled, handleButtonPress, buttonSpinner] = useButtonState(
     step, termsAndConditions, transition)
+
 
   return (
     <Form className='auth-container' noValidate method='post'>

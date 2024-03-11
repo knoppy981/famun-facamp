@@ -8,7 +8,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const delegationId = formData.get("delegationId")
   const leaderId = formData.get("leaderId")
 
-  if (!participantId || !delegationId || !leaderId) throw json({})
+  if (participantId === "undefined" || delegationId === "undefined") throw json({})
 
   let delegation
   try {
@@ -17,14 +17,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       values: {
         participants: {
           updateMany: [
-            {
+            leaderId !== "undefined" ? {
               where: {
                 id: leaderId
               },
               data: {
                 leader: false
               }
-            },
+            } : undefined,
             {
               where: {
                 id: participantId

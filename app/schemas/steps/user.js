@@ -26,7 +26,7 @@ const step4 = Joi.object({
     .required()
     .messages({
       'string.empty': 'E-mail obrigatório',
-      'string.email': "Invalid e-mail"
+      'string.email': "E-mail inválido"
     }),
 
   password: customPassword.password()
@@ -49,8 +49,22 @@ const step5 = Joi.object({
     .required()
     .messages({
       'string.empty': 'Nome obrigatório',
-      'string.pattern.base': 'Nome obrigatório'
+      'string.pattern.base': 'Nome inválido',
+      'string.min': 'Nome deve conter pelo menos 3 letras',
+      'string.max': "Nome não pode conter mais de 60 lentras",
     }),
+
+  socialName: Joi.string()
+    .max(40)
+    .pattern(/^[^\d]*$/)
+    .optional()
+    .allow('')
+    .messages({
+      'string.pattern.base': 'Nome inválido',
+      'string.min': 'Nome deve conter pelo menos 3 letras',
+      'string.max': "Nome não pode conter mais de 60 lentras",
+    }),
+
 
   rg: customRg.rg(),
 

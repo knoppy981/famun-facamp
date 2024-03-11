@@ -70,11 +70,11 @@ export const ReorderableListBox = (props: any): JSX.Element => {
       </h2>
 
       <div className='reordable-lsit-wrapper'>
-        <div className='reordable-list-indexes'>
+        {/* <div className='reordable-list-indexes'>
           {[...state.collection].map((item, i) => (
-            <div key={i}> {i + 1 + "° "} - </div>
+            <div key={i}> {i + 1 + "°"} </div>
           ))}
-        </div>
+        </div> */}
 
         <ul
           {...mergeProps(listBoxProps, collectionProps)}

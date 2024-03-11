@@ -237,6 +237,7 @@ export async function formatUserData({
 	return {
 		email: data.email,
 		name: data.name,
+		socialName: data.socialName ? data.socialName : null,
 		password: data.password ? {
 			create: {
 				hash: await bcrypt.hash(data.password, 10)

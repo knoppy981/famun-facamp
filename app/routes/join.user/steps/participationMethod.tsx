@@ -8,7 +8,7 @@ const ParticipationMethod = () => {
   return (
     <>
       <h2 className='join-title'>
-        Você está se inscrevendo junto com uma escola ou universidade?
+        Você está se inscrevendo como participante de uma:
       </h2>
 
       <div className='join-choice-buttons-container'>
@@ -17,9 +17,9 @@ const ParticipationMethod = () => {
           type="submit"
           name="action"
           value="next"
-          onPress={() => setParticipationMethod("Escola")}
+          onPress={() => setParticipationMethod("Universidade")}
         >
-          Escola
+          Universidade
         </Button>
 
         <Button
@@ -27,9 +27,9 @@ const ParticipationMethod = () => {
           type="submit"
           name="action"
           value="next"
-          onPress={() => setParticipationMethod("Universidade")}
+          onPress={() => setParticipationMethod("Escola")}
         >
-          Universidade
+          Ensino Médio
         </Button>
 
         <input type='hidden' name='participationMethod' value={participationMethod} />

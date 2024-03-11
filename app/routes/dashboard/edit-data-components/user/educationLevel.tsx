@@ -22,8 +22,7 @@ const EducationLevel = (props: any) => {
           action={actionData}
           isDisabled={isDisabled}
         >
-          <Radio value="Ensino Medio">Ensino Médio</Radio>
-          <Radio value="Universidade">Universidade</Radio>
+          {defaultValues.participationMethod === "Escola" ? <Radio value="Ensino Medio">Ensino Médio</Radio> : <Radio value="Universidade">Universidade</Radio>}
           <Radio value="Cursinho">Cursinho</Radio>
         </RadioGroup>
 

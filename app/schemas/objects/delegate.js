@@ -35,8 +35,7 @@ export const updateDelegateSchema = Joi.object({
     .try(
       Joi.string(),
       Joi.array()
-        .items(Joi.string()
-          .valid('Assembleia_Geral_da_ONU', 'Conselho_de_Juventude_da_ONU', 'Conselho_de_Seguranca_da_ONU', 'Rio_92'))
+        .items(Joi.string())
     ),
 
   languagesSimulates: Joi.alternatives()
@@ -102,8 +101,7 @@ export const createDelegateSchema = Joi.object({
     .try(
       Joi.string(),
       Joi.array()
-        .items(Joi.string()
-          .valid('Assembleia_Geral_da_ONU', 'Conselho_de_Juventude_da_ONU', 'Conselho_de_Seguranca_da_ONU', 'Rio_92'))
+        .items(Joi.string())
     )
     .required(),
 

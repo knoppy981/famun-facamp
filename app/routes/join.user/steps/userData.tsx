@@ -32,6 +32,18 @@ const UserData = ({ data, actionData }: { data: any; actionData: any }) => {
             action={actionData}
           />
 
+          <TextField
+            className='primary-input-box'
+            name="socialName"
+            label="Nome social"
+            type="text"
+            placeholder='Opcional'
+            defaultValue={data?.socialName}
+            errorMessage={actionData?.errors?.socialName}
+            autoComplete='off'
+            action={actionData}
+          />
+
           <div className='join-sub-input-container'>
             {data?.nacionality === "Brazil" ?
               <>

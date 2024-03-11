@@ -26,16 +26,6 @@
   word-break: normal;
 }
 
-.reordable-list-indexes {
-  display: grid;
-
-  div {
-    display: grid;
-    align-self: center;
-    font-size: 1.4rem;
-  }
-}
-
 .reordable-list {
   display: flex;
   flex-direction: column;
@@ -62,8 +52,8 @@
 .reordable-list-option {
   display: flex;
   align-items: center;
-  height: 4rem;
-  padding: 0 5px;
+  min-height: 4rem;
+  padding: 8px;
   outline: $azulClaro;
   background: #fff;
   border-radius: 5px;

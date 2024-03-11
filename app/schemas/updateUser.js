@@ -25,6 +25,17 @@ export const updateUserSchema = Joi.object({
       'string.max': "Nome não pode conter mais de 60 lentras",
     }),
 
+  socialName: Joi.string()
+    .max(40)
+    .pattern(/^[^\d]*$/)
+    .optional()
+    .allow('')
+    .messages({
+      'string.pattern.base': 'Nome inválido',
+      'string.min': 'Nome deve conter pelo menos 3 letras',
+      'string.max': "Nome não pode conter mais de 60 lentras",
+    }),
+
   phoneNumber: customPhoneNumber.phone(),
 
   birthDate: Joi.date()

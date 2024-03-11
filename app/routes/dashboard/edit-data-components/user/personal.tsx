@@ -48,6 +48,20 @@ const PersonalData = (props: any) => {
           />
         ))}
 
+        <TextField
+          className="secondary-input-box"
+          name="socialName"
+          label="Nome social"
+          type="text"
+          isRequired
+          defaultValue={defaultValues?.socialName}
+          onChange={handleChange}
+          isDisabled={isDisabled}
+          errorMessage={actionData?.errors?.socialName}
+          action={actionData}
+          placeholder='Opcional'
+        />
+
         <PhoneNumberField
           className="secondary-input-box"
           name="phoneNumber"

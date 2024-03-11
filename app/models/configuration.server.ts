@@ -2,7 +2,7 @@ import { ParticipationMethod } from "@prisma/client";
 import { prisma } from "~/db.server";
 
 export async function checkCuponCode(code: string, type: ParticipationMethod) {
-  const paymentConfiguration = await prisma.paymentConfiguration.findUnique({
+  const configuration = await prisma.configuration.findUnique({
     where: {
       name: "default"
     },
@@ -11,13 +11,13 @@ export async function checkCuponCode(code: string, type: ParticipationMethod) {
     }
   })
 
-  if (paymentConfiguration === null) return false
+  if (configuration === null) return false
 
-  return paymentConfiguration.coupons.some(coupon => coupon.code === code && coupon.type === type);
+  return configuration.coupons.some(coupon => coupon.code === code && coupon.type === type);
 }
 
 export async function getPaymentPrices() {
-  return prisma.paymentConfiguration.findUnique({
+  return prisma.configuration.findUnique({
     where: {
       name: "default"
     },
@@ -29,4 +29,18 @@ export async function getPaymentPrices() {
       precoProfessorOrientador: true,
     }
   })
+}
+
+export async function getCouncils(participationMethod: "Escola" | "Universidade") {
+  const config = await prisma.configuration.findUnique({
+    where: {
+      name: "default"
+    },
+    select: {
+      conselhosEscolas: participationMethod === "Escola",
+      conselhosUniversidades: participationMethod === "Universidade",
+    }
+  })
+
+  return participationMethod === "Escola" ? config?.conselhosEscolas : config?.conselhosUniversidades
 }

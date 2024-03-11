@@ -16,6 +16,7 @@ const ConfirmData = ({ data, userType }: { data: any, userType: any }) => {
       <div className='join-confirm-data-list'>
         {[
           ["Nome", "name"],
+          ["Nome Social", "socialName"],
           ["E-mail", "email"],
           ["Telefone", "phoneNumber"],
           ["Nacionalidade", "nacionality"],

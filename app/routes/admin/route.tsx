@@ -65,11 +65,11 @@ const AdminPage = () => {
               setParticipationMethod(key)
             }}
             items={[
-              { id: "Escola" },
-              { id: "Universidade" },
+              { id: "Escola", textValue: "Ensino Medio" },
+              { id: "Universidade", textValue: "Universidade" },
             ]}
           >
-            {(item) => <Item textValue={item.id}>{item.id + "s"}</Item>}
+            {(item) => <Item textValue={item.id}>{item.textValue + "s"}</Item>}
           </Select>
         </div>
 

@@ -3,7 +3,7 @@ import Joi from "joi"
 function isValidRG(rg) {
   // Example validation: RG should be 9 characters long and numeric
   const rgRegex = /^\d{9}$/;
-  return rgRegex.test(rg);
+  return true;
 }
 
 export const customRg = Joi.extend((joi) => ({
