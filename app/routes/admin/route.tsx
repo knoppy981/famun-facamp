@@ -69,7 +69,7 @@ const AdminPage = () => {
               { id: "Universidade", textValue: "Universidade" },
             ]}
           >
-            {(item) => <Item textValue={item.id}>{item.textValue + "s"}</Item>}
+            {(item) => <Item textValue={item.id}>{item.textValue}</Item>}
           </Select>
         </div>
 

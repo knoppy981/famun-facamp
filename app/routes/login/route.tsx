@@ -116,7 +116,7 @@ const Login = () => {
           </Checkbox>
 
           <div className='auth-link-box'>
-            <DefaultLink to="/forgotPassword" underline={1}>
+            <DefaultLink to="/password/request" underline={1}>
               {t("forgotPassword")}
             </DefaultLink>
           </div>

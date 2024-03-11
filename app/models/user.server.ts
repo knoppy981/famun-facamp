@@ -403,7 +403,7 @@ export async function unsetConfirmationCode(email: User["email"]) {
 }
 
 export async function getConfirmationCode(email: User["email"]) {
-	let user = await prisma.user.findFirstOrThrow({
+	let user = await prisma.user.findFirst({
 		where: {
 			email: email
 		},
@@ -417,7 +417,7 @@ export async function getConfirmationCode(email: User["email"]) {
 		}
 	})
 
-	if (!user.confirmationCode) throw new Error("Invalid code")
+	if (!user?.confirmationCode) throw new Error("Código Inválido")
 
-	return user
+	return user.confirmationCode
 }

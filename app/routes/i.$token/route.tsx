@@ -5,7 +5,7 @@ import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node';
 import { getDelegationByCode, joinDelegation } from '~/models/delegation.server'
 import { requireUserId, createUserSession, getUser } from "~/session.server";
 import { safeRedirect } from '~/utils';
-import { decodeJwt } from '~/challenges.server';
+import { decodeJwt } from '~/jwt';
 
 import { FiArrowLeft } from "react-icons/fi/index.js";
 import Button from '~/components/button';

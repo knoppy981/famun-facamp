@@ -37,6 +37,10 @@ export const HTMLLink = forwardRef<HTMLAnchorElement, HTMLLinkProps>((props, for
       ref={mergeRefs([ref, forwardedRef])}
       href={props.href}
       target={props.target}
+      style={{
+        color: "inherit",
+        textDecoration: "inherit"
+      }}
     >
       {props.children}
     </a>

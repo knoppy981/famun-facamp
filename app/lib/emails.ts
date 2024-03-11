@@ -86,3 +86,26 @@ export const paymentCompletedEmail = (user: UserType, paidUsers: UserType[], rec
     <p>Equipe do Sistema Famun</p>
   `
 }
+
+export const requestPasswordReset = (user: UserType, code: string) => {
+  return `
+    <h1 style="color: #183567;">Famun 2024</h1>
+
+    <h2>Olá, ${user.name}.</h2>
+
+    <p>Insira este código para concluir a redefinição </p>
+
+    <h2>${code}</h2>
+
+    <p>Se você não solicitou este código, recomendamos que altere sua senha do sistema de inscrição FAMUN.</p>
+
+    <p>Ná pagina de login > Esqueceu a senha > Altere a senha</p>
+
+    <h2>Suporte </h2>
+
+    <p>Em caso de dúvidas, acesse nossa Central de Ajuda ou entre em contato pelo suporte. <br/> Este é um e-mail automático. Por favor, não responda. </p>
+
+    <p>Atenciosamente, </p>
+    <p>Equipe do Sistema Famun</p>
+  `
+}

@@ -191,7 +191,6 @@ const JoinUser = () => {
           <DelegateData data={data} actionData={actionData} participationMethod={participationMethod} />)
         }
         {step === 8 && <ConfirmData data={data} userType={userType} />}
-
       </div>
 
       <div className='join-buttons-container' style={{ pointerEvents: transition.state === 'idle' ? 'auto' : 'none' }}>

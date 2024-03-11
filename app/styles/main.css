@@ -96,11 +96,10 @@ h6 {
 /*
 Reset links to optimize for opt-in styling instead of opt-out.
 */
-a {
+/* a {
   color: inherit;
   text-decoration: inherit;
-}
-
+} */
 /*
 Add the correct font weight in Edge and Safari.
 */
@@ -458,6 +457,9 @@ input:-webkit-autofill:active {
   .text {
     font-size: 1.6rem;
   }
+}
+.text * {
+  font-size: inherit;
 }
 
 .vertical-line {
@@ -1476,6 +1478,8 @@ input:-webkit-autofill:active {
   border-radius: 5px;
   transition: all 0.4s ease;
   font-size: 1.6rem;
+  text-decoration: none;
+  color: #000;
 }
 .dashboard-item._active {
   transform: translateX(10px);
@@ -1623,6 +1627,8 @@ input:-webkit-autofill:active {
   cursor: pointer;
   margin-right: 25px;
   white-space: nowrap;
+  text-decoration: none;
+  color: #000;
 }
 @media screen and (max-width: 700px) {
   .section-menu-item {
@@ -2743,7 +2749,8 @@ input:-webkit-autofill:active {
   justify-content: center;
   border: none;
   font-size: inherit;
-  text-decoration: none;
+  text-decoration: inherit;
+  color: inherit;
 }
 .link svg {
   font-size: 2rem;
