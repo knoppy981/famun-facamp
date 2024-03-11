@@ -1,6 +1,6 @@
 import React from 'react'
 import { json, redirect } from '@remix-run/node'
-import { Form, useNavigation } from '@remix-run/react'
+import { Form, useActionData, useNavigation } from '@remix-run/react'
 import { ActionFunctionArgs } from 'react-router'
 
 import { updateConfirmationCode } from '~/models/user.server'
@@ -22,7 +22,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   try {
     await customEmail.validateAsync(email)
   } catch (error) {
-    console.log(error)
     const [label, msg] = getCorrectErrorMessage(error)
     return json(
       { errors: { email: msg } },
@@ -39,7 +38,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       html: requestPasswordReset(user, code)
     })
   } catch (error) {
-    console.log(error)
     if (typeof error === 'object' && error !== null && 'code' in error && error.code !== "P2025") {
       return json(
         { errors: { error: "Unexpected error, please refresh and try again" } },
@@ -57,6 +55,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 const PasswordRequest = () => {
   const transition = useNavigation()
+  const actionData = useActionData<any>()
 
   return (
     <Form className='auth-container' style={{ gap: "15px" }} noValidate method='post'>
@@ -77,8 +76,8 @@ const PasswordRequest = () => {
               label="E-mail"
               aria-label="E-mail"
               type="email"
-              /* errorMessage={actionData?.errors?.email}
-              action={actionData} */
+              errorMessage={actionData?.errors?.email}
+              action={actionData}
               autoComplete='off'
             />
           </div>
