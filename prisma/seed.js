@@ -280,15 +280,15 @@ async function createXDelegations(max) {
 }
 
 async function seed() {
-	// await delegationWith2Users()
+	 await delegationWith2Users()
 
-	// await delegationWith10Delegates()
+	 await delegationWith10Delegates()
 
 	// await postponePaymentExpiration("111111")
 
-	// await createAdmin()
+	 await createAdmin()
 
-	// await createXDelegations(20)
+	 await createXDelegations(20)
 
 	console.log(`Database has been seeded. 🌱`);
 }

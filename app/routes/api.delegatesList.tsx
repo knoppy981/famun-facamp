@@ -5,11 +5,10 @@ import { requireAdminId } from "~/session.server"
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireAdminId(request)
   const url = new URL(request.url);
-  const query = url.searchParams.get("user-search") as string;
   let delegatesList
 
   try {
-    delegatesList = (await listDelegates(query)).map(item => ({ name: item.user.name, id: item.id }))
+    delegatesList = (await listDelegates()).map(item => ({ name: item.user.name, id: item.id }))
   } catch (error) {
     console.log(error)
     return json(

@@ -5,6 +5,7 @@ import { UserType, formatUserData, updateUser } from "./user.server";
 import { ValidationError } from "~/utils/error";
 
 import { Prisma, type Delegation, DelegationPayload, UserPayload, User, Delegate, DelegationAdvisor, Address, ParticipationMethod } from "@prisma/client";
+import { GetResult } from "@prisma/client/runtime";
 export type { Delegation } from "@prisma/client";
 
 export type DelegationType = Delegation & {
@@ -417,6 +418,30 @@ export async function deleteDelegation(id: string) {
 	return prisma.delegation.delete({
 		where: {
 			id
+		}
+	})
+}
+
+export async function getAllDelegations(): Promise<any[]> {
+	const currentYear = new Date().getFullYear();
+	const startDate = new Date(currentYear, 0, 1);
+	const endDate = new Date(currentYear + 1, 0, 1);
+
+	return prisma.delegation.findMany({
+		where: {
+			createdAt: {
+				gte: startDate,
+				lt: endDate
+			},
+		},
+		include: {
+			address: true,
+			participants: {
+				include: {
+					delegate: true,
+					delegationAdvisor: true,
+				},
+			}
 		}
 	})
 }

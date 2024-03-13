@@ -1,14 +1,8 @@
 import { prisma } from "~/db.server";
 
-export async function listDelegates(query?: string) {
+export async function listDelegates() {
   return prisma.delegate.findMany({
     where: {
-      user: {
-        name: query ? {
-          contains: query,
-          mode: "insensitive"
-        } : undefined,
-      },
       comittee: {
         is: null
       }

@@ -138,6 +138,9 @@ export async function adminParticipantList(index: number, participationMethod: P
 		case "createdAt":
 			orderByObject = { createdAt: "asc" as orderByType }
 			break;
+		case "position":
+			orderByObject = { delegate: { user: { name: "asc" as orderByType } } }
+			break;
 		default:
 			orderByObject = { name: "asc" as orderByType }
 			break;

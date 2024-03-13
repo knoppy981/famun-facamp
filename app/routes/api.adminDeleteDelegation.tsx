@@ -13,13 +13,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   let delegation
 
   try {
-    if (typeof delegationId === "string") {
+    if (typeof delegationId === "string" && delegationId !== "") {
       delegation = await deleteDelegation(delegationId)
     }
   } catch (error) {
     console.log(error)
     return json(
-      { errors: { deleteDelegation: "Failed deleting delegation" } },
+      { errors: { adminAction: "Failed action" } },
       { status: 400 }
     )
   }

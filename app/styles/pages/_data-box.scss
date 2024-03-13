@@ -10,14 +10,10 @@
   max-height: 650px;
 
   @media screen and (max-width: 1500px) {
-    max-height: 850px;
+    max-height: 870px;
   }
 
-  @media screen and (max-width: 1400px) {
-    max-height: 900px;
-  }
-
-  @media screen and (max-width: 1150px) {
+  @media screen and (max-width: 1300px) {
     max-height: none;
     align-items: stretch;
     place-content: normal;

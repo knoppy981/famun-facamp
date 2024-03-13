@@ -75,13 +75,11 @@
   font-weight: 400;
 
   & > button,
-  div {
+  .button-child {
     width: 100%;
     padding: 5px 15px;
     outline: none;
-  }
-
-  & > div {
+    font-size: 1.5rem;
     position: relative;
     outline: none;
     border: none;
@@ -89,7 +87,6 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    font-size: 1.5rem;
   }
 
   &.red-light {

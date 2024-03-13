@@ -4,12 +4,14 @@ import { FetcherWithComponents, Form, SubmitFunction, useFetcher, useLoaderData,
 
 import { adminDelegationsList } from '~/models/delegation.server';
 
-import { FiBell, FiCheckCircle, FiChevronLeft, FiChevronRight, FiXCircle } from "react-icons/fi/index.js";
+import { FiBell, FiCheckCircle, FiChevronLeft, FiChevronRight, FiDownload, FiXCircle } from "react-icons/fi/index.js";
 import { ParticipationMethod } from '@prisma/client';
 import Button from '~/components/button'
 import TextField from '~/components/textfield';
 import { adminDelegationType } from './types';
 import useDidMountEffect from '~/hooks/useDidMountEffect';
+import { exportAoo } from '~/sheets';
+import Spinner from '~/components/spinner';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -30,6 +32,7 @@ const Delegation = () => {
   const [searchIndex, handle, resetIndex] = handleSearchIndex(submit, formRef, participationMethod)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const [handleDelegationsSheet, downloadState] = useDleegationsSheet()
 
   return (
     <Form ref={formRef} onChange={e => { submit(e.currentTarget, { method: "GET" }) }} className='admin-container' >
@@ -112,7 +115,7 @@ const Delegation = () => {
                   <td className='table-cell'>
                     <div className='table-flex-cell'>
                       <div className={`secondary-button-box ${info ? 'green-light' : 'red-light'}`}>
-                        <div>
+                        <div className='button-child'>
                           {info ? <><FiCheckCircle className='icon' /> Preenchidos</> : <><FiXCircle className='icon' /> Não preenchidos</>}
                         </div>
                       </div>
@@ -122,7 +125,7 @@ const Delegation = () => {
                   <td className='table-cell'>
                     <div className='table-flex-cell'>
                       <div className={`secondary-button-box ${payments ? 'green-light' : 'red-light'}`}>
-                        <div>
+                        <div className='button-child'>
                           {payments ? <><FiCheckCircle className='icon' /> Pagos</> : <><FiXCircle className='icon' /> Não pagos</>}
                         </div>
                       </div>
@@ -132,7 +135,7 @@ const Delegation = () => {
                   <td className='table-cell'>
                     <div className='table-flex-cell'>
                       <div className={`secondary-button-box ${documents ? 'green-light' : 'red-light'}`}>
-                        <div>
+                        <div className='button-child'>
                           {documents ? <><FiCheckCircle className='icon' /> Enviados</> : <><FiXCircle className='icon' /> Não enviados</>}
                         </div>
                       </div>
@@ -163,15 +166,23 @@ const Delegation = () => {
       <input type='hidden' name="pm" value={participationMethod} />
 
       <div className='admin-navigation-button-container'>
-        <Button onPress={() => handle(false)} isDisabled={searchIndex < 1}>
-          <FiChevronLeft className='icon' />
-        </Button>
+        <div>
+          <Button onPress={() => handleDelegationsSheet()} className='secondary-button-box green-light'>
+            {downloadState === "idle" ? <FiDownload className='icon' /> : <Spinner dim='18px' color='green' />} Planilha
+          </Button>
+        </div>
 
-        Página {searchIndex + 1}
+        <div>
+          <Button onPress={() => handle(false)} isDisabled={searchIndex < 1}>
+            <FiChevronLeft className='icon' />
+          </Button>
 
-        <Button onPress={() => handle(true)} isDisabled={delegations.length < 12}>
-          <FiChevronRight className='icon' />
-        </Button>
+          Página {searchIndex + 1}
+
+          <Button onPress={() => handle(true)} isDisabled={delegations.length < 12}>
+            <FiChevronRight className='icon' />
+          </Button>
+        </div>
       </div>
     </Form>
   )
@@ -203,6 +214,26 @@ function handleSearchIndex(submit: SubmitFunction, formRef: React.RefObject<HTML
 
 
   return [searchIndex, handle, resetIndex]
+}
+
+function useDleegationsSheet(): [() => void, "idle" | "loading" | "submitting"] {
+  const fetcher = useFetcher<any>()
+
+  const handleDownload = () => {
+    fetcher.submit(
+      {},
+      { method: "get", action: "/api/daoo", navigate: false }
+    )
+  }
+
+  React.useEffect(() => {
+    if (fetcher.data?.aoo) {
+      console.log(fetcher.data?.aoo)
+      exportAoo(fetcher.data?.aoo, "Delegações")
+    }
+  }, [fetcher.data])
+
+  return [handleDownload, fetcher.state]
 }
 
 export default Delegation

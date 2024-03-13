@@ -148,7 +148,7 @@ const Documents = () => {
                 {file ?
                   <>
                     <div className='text overflow'>{selectedFiles[item.key]}</div>
-                    <div className='secondary-button-box green-light'><div>Recebido</div></div>
+                    <div className='secondary-button-box green-light'><div className='button-child'>Recebido</div></div>
                   </>
                   :
                   <>

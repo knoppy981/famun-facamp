@@ -15,6 +15,9 @@ const Spinner: React.FC<SpinnerProps> = ({ dim = '32px', color = 'black', ...pro
 
   const strokeColor = colorMap[color] || colorMap.default;
 
+  console.log(strokeColor)
+  console.log(color)
+
   return (
     <div className="spinner-wrapper" style={{ width: dim, height: dim }}>
       <svg className="circle" viewBox="0 0 64 64">

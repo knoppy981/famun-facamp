@@ -11,7 +11,7 @@ import Dialog from '~/components/dialog'
 import TextField from '~/components/textfield';
 import { FiX } from "react-icons/fi/index.js";
 
-const CreateComittee = ({ state, participationMethod }: { state: OverlayTriggerState, participationMethod: ParticipationMethod }) => {
+const CreateComittee = ({ state, participationMethod, councilOptions }: { state: OverlayTriggerState, participationMethod: ParticipationMethod, councilOptions: string[] | undefined }) => {
   const fetcher = useFetcher<any>()
   useCreateComittee(fetcher, state)
 
@@ -47,12 +47,7 @@ const CreateComittee = ({ state, participationMethod }: { state: OverlayTriggerS
                 label='Conselho/Comitê'
                 theme='dark'
                 defaultSelectedKey='Assembleia_Geral_da_ONU'
-                items={[
-                  { id: 'Assembleia_Geral_da_ONU' },
-                  { id: 'Rio_92' },
-                  { id: 'Conselho_de_Juventude_da_ONU' },
-                  { id: 'Conselho_de_Seguranca_da_ONU' },
-                ]}
+                items={councilOptions?.map(item => ({ id: item }))}
                 isInvalid={fetcher.data?.errors?.council ? true : false}
                 errorMessage={fetcher.data?.errors?.council}
                 action={fetcher.data}

@@ -57,7 +57,7 @@ const CompletedPayments = () => {
                     <td className='table-cell'>
                       <div className='table-flex-cell'>
                         <div className="secondary-button-box green-light">
-                          <div>
+                          <div className='button-child'>
                             {(item.amount / 100).toLocaleString(locale, { style: "currency", currency: item.currency })}
                           </div>
                         </div>
@@ -68,7 +68,7 @@ const CompletedPayments = () => {
                       <div className='table-flex-cell'>
                         <HTMLLink href={item?.receiptUrl as string | undefined} target="_blank" rel="noopener noreferrer">
                           <div className="secondary-button-box blue-light">
-                            <div>
+                            <div className='button-child'>
                               <FiExternalLink className='icon' />  Recibo
                             </div>
                           </div>

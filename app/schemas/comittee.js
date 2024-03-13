@@ -8,8 +8,12 @@ export const comitteeSchema = Joi.object({
       'string.email': "Nome inválido"
     }),
 
-  council: Joi.string()
-    .valid('Assembleia_Geral_da_ONU', 'Conselho_de_Juventude_da_ONU', 'Conselho_de_Seguranca_da_ONU', 'Rio_92')
+  council: Joi.alternatives()
+    .try(
+      Joi.string(),
+      Joi.array()
+        .items(Joi.string())
+    )
     .required(),
 
   type: Joi.string()

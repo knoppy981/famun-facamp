@@ -990,13 +990,19 @@ input:-webkit-autofill:active {
 }
 
 .admin-navigation-button-container {
+  width: 100%;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+}
+.admin-navigation-button-container > div {
+  display: flex;
   gap: 10px;
-  align-self: flex-end;
+  align-items: center;
   justify-self: end;
   font-size: 1.6rem;
-  padding: 0 15px;
 }
 
 .admin-search-input-box {
@@ -1663,15 +1669,10 @@ input:-webkit-autofill:active {
 }
 @media screen and (max-width: 1500px) {
   .data-box-wrapper {
-    max-height: 850px;
+    max-height: 870px;
   }
 }
-@media screen and (max-width: 1400px) {
-  .data-box-wrapper {
-    max-height: 900px;
-  }
-}
-@media screen and (max-width: 1150px) {
+@media screen and (max-width: 1300px) {
   .data-box-wrapper {
     max-height: none;
     align-items: stretch;
@@ -2269,12 +2270,11 @@ input:-webkit-autofill:active {
   font-weight: 400;
 }
 .secondary-button-box > button,
-.secondary-button-box div {
+.secondary-button-box .button-child {
   width: 100%;
   padding: 5px 15px;
   outline: none;
-}
-.secondary-button-box > div {
+  font-size: 1.5rem;
   position: relative;
   outline: none;
   border: none;
@@ -2282,7 +2282,6 @@ input:-webkit-autofill:active {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-size: 1.5rem;
 }
 .secondary-button-box.red-light {
   color: #d55748;

@@ -177,7 +177,7 @@ const CreateUser = () => {
         {creatingUserType === "delegate" && creationPermission ?
           <div className="delegation-data-delegates-countdown">
             <div className="secondary-button-box red-light">
-              <div>
+              <div className='button-child'>
                 {10 - delegatesCount} vagas restantes para delegados
               </div>
             </div>
@@ -189,7 +189,7 @@ const CreateUser = () => {
       <EditUserData
         isDisabled={!creationPermission?.allowed}
         actionData={fetcher.data}
-        defaultValues={defaultUser(councils as string[])}
+        defaultValues={defaultUser(councils as string[], delegation.participationMethod)}
         handleChange={handleChange}
         id={editUserDataId}
         userType={creatingUserType}

@@ -1,6 +1,6 @@
 import React from 'react'
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from '@remix-run/node'
-import { useLoaderData, useOutletContext, useSearchParams, useSubmit } from '@remix-run/react'
+import { useFetcher, useLoaderData, useOutletContext, useSearchParams, useSubmit } from '@remix-run/react'
 import qs from 'qs'
 import { ParticipationMethod } from '@prisma/client';
 import { useOverlayTriggerState } from 'react-stately';
@@ -21,6 +21,7 @@ import { getExistingUser, updateUser } from '~/models/user.server';
 import { getCorrectErrorMessage } from '~/utils/error';
 import ModalTrigger from '~/components/modalOverlay/trigger';
 import Dialog from '~/components/dialog';
+import Spinner from '~/components/spinner';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
@@ -126,6 +127,7 @@ const Delegation = () => {
     return accumulator
   }, 0) as number
   const [handleRemoveParticipant] = useDeleteDelegation()
+  const [handlePostponePayment, postponePaymentState] = usePostponePayment()
 
   const totalPaid = `
   ${delegation.amountPaid.brl > 0 ? (delegation.amountPaid.brl / 100).toLocaleString("pt-BR", { style: "currency", currency: "brl" }) : ""}
@@ -227,13 +229,14 @@ const Delegation = () => {
                           {participant.notifications.filter(notification => !notification.seen).length > 0 ?
                             <div className='notification'><FiBell className='icon notification' /></div> : null
                           }
+                          {leader && <div className="secondary-button-box red-light"><div className='button-child'>Chefe da Delegação</div></div>}
                         </div>
                       </td>
 
                       <td className='table-cell'>
                         <div className='table-flex-cell'>
                           <div className={`secondary-button-box ${participant.delegate ? 'blue-light' : 'green-light'}`}>
-                            <div>
+                            <div className='button-child'>
                               {participant.delegate ? "Delegado" : participant?.delegationAdvisor?.advisorRole}
                             </div>
                           </div>
@@ -266,25 +269,17 @@ const Delegation = () => {
         </div>
       }
       <div className='comittee-title'>
+        <div className='text'>
+          Limite para o pagamento: {new Date(delegation.paymentExpirationDate).toLocaleDateString("pt-BR")}
+        </div>
+
         <Button
           className="secondary-button-box green-light"
           isDisabled={!delegation}
-          onPress={() => {
-            if (delegation !== null) {
-              let aoo = delegationAoo({
-                ...delegation,
-                address: delegation.address ? delegation.address : undefined,
-                createdAt: new Date(delegation.createdAt as any),
-                paymentExpirationDate: new Date(delegation.paymentExpirationDate as any),
-                updatedAt: new Date(),
-                participants: delegation.participants as any
-              }, `${totalPaid}`)
-
-              exportAoo(aoo, delegation.school as string)
-            }
-          }}
+          onPress={() => handlePostponePayment(delegation.id)}
         >
-          <FiDownload className='icon' /> Planilha
+          {postponePaymentState !== 'idle' && <Spinner dim="18px" color='green'/>}
+          Adiar Pagamento
         </Button>
       </div>
 
@@ -341,6 +336,19 @@ function useDeleteDelegation() {
   }
 
   return [handleRemoveParticipant]
+}
+
+function usePostponePayment(): [(delegationId: string) => void, "idle" | "loading" | "submitting"] {
+  const fetcher = useFetcher()
+
+  const handlePostponePayment = (delegationId: string) => {
+    fetcher.submit(
+      { delegationId },
+      { method: "post", action: "/api/ppd", navigate: false }
+    )
+  }
+
+  return [handlePostponePayment, fetcher.state]
 }
 
 export default Delegation

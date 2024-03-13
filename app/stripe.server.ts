@@ -19,8 +19,7 @@ export async function getPaymentIntentById(paymentIntentId: Stripe.PaymentIntent
   );
 }
 
-export async function getPaymentsIntentByCustomerId(customerId: UserType["stripeCustomerId"]):
-  Promise<Stripe.ApiListPromise<Stripe.PaymentIntent>> {
+export async function getPaymentsIntentByCustomerId(customerId: UserType["stripeCustomerId"]): Promise<Stripe.ApiListPromise<Stripe.PaymentIntent>> {
 
   if (customerId === null) {
     throw new Error(`Error loading payments id`)
@@ -29,8 +28,7 @@ export async function getPaymentsIntentByCustomerId(customerId: UserType["stripe
   return stripe.paymentIntents.list({ customer: customerId })
 }
 
-export async function getChargesByCustomerId(customerId: UserType["stripeCustomerId"]):
-  Promise<Stripe.ApiListPromise<Stripe.Charge> | undefined> {
+export async function getChargesByCustomerId(customerId: UserType["stripeCustomerId"]): Promise<Stripe.ApiListPromise<Stripe.Charge> | undefined> {
 
   if (customerId === null) {
     return

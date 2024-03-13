@@ -137,6 +137,9 @@ const Comittee = () => {
           <FiUserPlus className='icon' /> Adicionar Delegados
         </Button>
       </div>
+      <div className='comittee-title'>
+        <p className='text italic'>{comittee.council}</p>
+      </div>
 
       <AddParticipant state={addUserState} comittee={comittee} participationMethod={participationMethod} />
 

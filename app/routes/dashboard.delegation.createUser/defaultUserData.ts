@@ -1,7 +1,7 @@
 import { Languages } from "@prisma/client";
 import { UserType } from "~/models/user.server";
 
-export const defaultUser = (councils: string[]) => ({
+export const defaultUser = (councils: string[], participationMethod: string) => ({
   id: '',
   email: '',
   name: '',
@@ -11,6 +11,7 @@ export const defaultUser = (councils: string[]) => ({
   passport: null,
   phoneNumber: '',
   birthDate: '',
+  participationMethod,
   delegate: {
     emergencyContactName: '',
     emergencyContactPhoneNumber: '',

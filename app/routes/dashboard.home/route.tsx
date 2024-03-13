@@ -30,7 +30,7 @@ const Home = () => {
         Inscrição
 
         <div className={`secondary-button-box ${completed() ? 'green-light' : 'red-light'}`}>
-          <div>
+          <div className='button-child'>
             {completed() ? "Concluída" : "Incompleta"}
           </div>
         </div>

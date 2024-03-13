@@ -15,6 +15,7 @@ import Button from '~/components/button';
 import CreateComittee from './createComittee';
 import { FiPlus, FiUser } from 'react-icons/fi/index.js';
 import { useOverlayTriggerState } from 'react-stately';
+import { getCouncils } from '~/models/configuration.server';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const text = await request.text()
@@ -54,7 +55,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   const comittees = await getComitteesList(participationMethod ?? "Escola", query as string)
 
-  return json({ comittees })
+  const councils = await getCouncils(participationMethod as "Escola" | "Universidade")
+
+  return json({ comittees, councilOptions: councils })
 }
 
 const route = () => {
@@ -62,7 +65,7 @@ const route = () => {
   const [searchParams] = useSearchParams()
   const formRef = React.useRef<HTMLFormElement>(null)
   const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
-  const { comittees } = useLoaderData<typeof loader>()
+  const { comittees, councilOptions } = useLoaderData<typeof loader>()
   const state = useOverlayTriggerState({})
 
   return (
@@ -86,7 +89,7 @@ const route = () => {
         {comittees?.map((item, index) => (
           <Link
             prefetch='intent'
-            className='comittee-item' key={index}
+            className='comittee-item link' key={index}
             to={{
               pathname: item.name,
               search: searchParams.toString(),
@@ -115,7 +118,7 @@ const route = () => {
           </div>
         </Button>
 
-        <CreateComittee state={state} participationMethod={participationMethod} />
+        <CreateComittee state={state} participationMethod={participationMethod} councilOptions={councilOptions} />
       </div>
     </div>
   )

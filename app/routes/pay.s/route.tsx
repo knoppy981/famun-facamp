@@ -71,7 +71,7 @@ const SelectPayments = () => {
 
                       <div className='pay-item-right-container' style={{ opacity: isDisabled ? .2 : 1 }}>
                         <div className={`secondary-button-box ${item.available ? 'green-light' : 'red-light'}`} >
-                          <div>
+                          <div className='button-child'>
                             {(item.price / 100).toLocaleString(locale, { style: "currency", currency: item.currency })}
                           </div>
                         </div>

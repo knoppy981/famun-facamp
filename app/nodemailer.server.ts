@@ -24,7 +24,7 @@ export const sendEmail = async ({
     html,
   })
 
-  console.log('Email sent with id: ' + info.messageId)
+  // console.log('Email sent with id: ' + info.messageId)
 
   return info
 }

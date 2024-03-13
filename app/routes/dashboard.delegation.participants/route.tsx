@@ -67,14 +67,14 @@ const DelegationParticipants = () => {
                 <td className={`table-cell ${item.id === user.id ? "user" : ""}`}>
                   <div className='table-flex-cell'>
                     {item.name}
-                    {leader && <div className="secondary-button-box red-light"><div>Chefe da Delegação</div></div>}
+                    {leader && <div className="secondary-button-box red-light"><div className='button-child'>Chefe da Delegação</div></div>}
                   </div>
                 </td>
 
                 <td className='table-cell'>
                   <div className='table-flex-cell'>
                     <div className={`secondary-button-box ${item.delegate ? 'blue-light' : 'green-light'}`}>
-                      <div>
+                      <div className='button-child'>
                         {item.delegate ? "Delegado" : item?.delegationAdvisor?.advisorRole}
                       </div>
                     </div>

@@ -1,5 +1,7 @@
+import _ from "lodash"
 import { DelegationType } from "~/models/delegation.server";
 import { ComitteeType } from "~/routes/admin.comittees.$comittee/route";
+import { getDelegationCharges } from "~/stripe.server";
 
 export type DelegationAooType = {
   "Number of Delegation"?: string,
@@ -27,6 +29,32 @@ export type ComitteeAooType = {
   "Male"?: number,
   "Female"?: number,
 }[]
+
+export async function delegationsAoo(delegations: DelegationType[]) {
+  let aoo: DelegationAooType = []
+
+  const promises = delegations.map(async (delegation) => {
+    const delegationCharges = await getDelegationCharges(delegation as any)
+    const amountPaid: { "usd": number, "brl": number } = { "usd": 0, "brl": 0 }
+    delegationCharges?.data.forEach(charge => {
+      if (amountPaid[charge.currency as "usd" | "brl"]) {
+        amountPaid[charge.currency as "usd" | "brl"] += charge.amount
+      } else {
+        amountPaid[charge.currency as "usd" | "brl"] = charge.amount
+      }
+    });
+    const paidString = `
+      ${amountPaid.brl > 0 ? (amountPaid.brl / 100).toLocaleString("pt-BR", { style: "currency", currency: "brl" }) : ""}
+      ${amountPaid.usd > 0 ? (amountPaid.usd / 100).toLocaleString("pt-BR", { style: "currency", currency: "usd" }) : ""}
+    `.trim()
+
+    aoo.push(...delegationAoo(delegation, paidString))
+  })
+
+  await Promise.all(promises);
+
+  return aoo
+}
 
 export function delegationAoo(delegation: DelegationType, amountPaid: string) {
   const delegates = delegation?.participants?.filter((participant) => participant.delegate !== null && participant.id)

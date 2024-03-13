@@ -73,7 +73,7 @@ const PendingPayments = () => {
                         Inscrição de {item.name}
 
                         <div className="secondary-button-box blue-light">
-                          <div>
+                          <div className='button-child'>
                             <FiExternalLink className='icon' /> Pagar
                           </div>
                         </div>
@@ -83,7 +83,7 @@ const PendingPayments = () => {
                     <td className='table-cell'>
                       <div className='table-flex-cell'>
                         <div className="secondary-button-box red-light" style={{ opacity: item.expired ? .2 : 1 }}>
-                          <div>
+                          <div className='button-child'>
                             {(item.price / 100).toLocaleString(locale, { style: "currency", currency: item.currency })}
                           </div>
                         </div>

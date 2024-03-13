@@ -167,3 +167,14 @@ export async function getRequiredPayments({
 
   return payments
 }
+
+export async function postponeDelegationPaymentDue(id: string) {
+  return prisma.delegation.update({
+		where: {
+			id
+		},
+		data: {
+			paymentExpirationDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
+		}
+	})
+}

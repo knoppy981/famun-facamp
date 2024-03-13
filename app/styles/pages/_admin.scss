@@ -76,13 +76,20 @@
 }
 
 .admin-navigation-button-container {
+  width: 100%;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  align-self: flex-end;
-  justify-self: end;
-  font-size: 1.6rem;
+  justify-content: space-between;
   padding: 0 15px;
+
+  & > div {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-self: end;
+    font-size: 1.6rem;
+  }
 }
 
 .admin-search-input-box {

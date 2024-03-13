@@ -5,9 +5,10 @@ import qs from "qs"
 
 import { UserType } from "~/models/user.server"
 
-const newUserDataDefaultValues = (councils: string[]) => ({
+const newUserDataDefaultValues = (councils: string[], participationMethod: string) => ({
   "delegate.councilPreference": councils,
-  nacionality: "Brazil"
+  nacionality: "Brazil",
+  participationMethod
 })
 
 export function useUserCreation(user: UserType, userType: "delegate" | "advisor" | undefined, fetcher: FetcherWithComponents<any>, delegatesCount: number, delegationId: string, participationMethod: string, councils: string[]): {
@@ -20,12 +21,8 @@ export function useUserCreation(user: UserType, userType: "delegate" | "advisor"
 } {
   const [creatingUserType, setCreatingUserType] = React.useState("delegate")
   const [creationPermission, setCreationPermission] = React.useState<{ allowed: boolean, type: string } | undefined>(undefined)
-  const [newUserData, setNewUserData] = React.useState<{ [key: string]: any }>(newUserDataDefaultValues(councils))
+  const [newUserData, setNewUserData] = React.useState<{ [key: string]: any }>(newUserDataDefaultValues(councils, participationMethod))
   const [editUserDataId, setEditUserDataId] = React.useState(false)
-
-  React.useEffect(() => {
-    console.log(newUserData)
-  }, [newUserData])
 
   React.useEffect(() => {
     // update the variable that decides if the user can create a user

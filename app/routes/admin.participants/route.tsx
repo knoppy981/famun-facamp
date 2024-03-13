@@ -35,7 +35,6 @@ const Participants = () => {
 
   return (
     <Form ref={formRef} onChange={e => { submit(e.currentTarget, { method: "GET" }) }} className='admin-container' >
-
       <div className='admin-search-container'>
         <TextField
           className="admin-search-input-box"
@@ -58,7 +57,7 @@ const Participants = () => {
               value={orderBy}
               onChange={handleOrderBy}
             >
-              {[["Ordem alfabética", "name"], ["Delegação", "delegation"], ["Data de inscrição", "createdAt"]].map((item, i) => {
+              {[["Ordem alfabética", "name"], ["Delegação", "delegation"], ["Data de inscrição", "createdAt"], ["Posição", "position"]].map((item, i) => {
                 return (
                   <Radio key={i} value={item[1]}>{item[0]}</Radio>
                 )
@@ -118,7 +117,7 @@ const Participants = () => {
                 <td className='table-cell'>
                   <div className='table-flex-cell'>
                     <div className={`secondary-button-box ${item.delegationAdvisor ? 'green-light' : 'blue-light'}`}>
-                      <div>
+                      <div className='button-child'>
                         {item.delegationAdvisor ? item?.delegationAdvisor?.advisorRole : "Delegado"}
                       </div>
                     </div>
