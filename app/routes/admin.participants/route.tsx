@@ -137,15 +137,19 @@ const Participants = () => {
       <input type='hidden' name="pm" value={participationMethod} />
 
       <div className='admin-navigation-button-container'>
-        <Button onPress={() => handleSearchIndex(false)} isDisabled={searchIndex < 1}>
-          <FiChevronLeft className='icon' />
-        </Button>
+        <div></div>
 
-        Página {searchIndex + 1}
+        <div>
+          <Button onPress={() => handleSearchIndex(false)} isDisabled={searchIndex < 1}>
+            <FiChevronLeft className='icon' />
+          </Button>
 
-        <Button onPress={() => handleSearchIndex(true)} isDisabled={participants.length < 12}>
-          <FiChevronRight className='icon' />
-        </Button>
+          Página {searchIndex + 1}
+
+          <Button onPress={() => handleSearchIndex(true)} isDisabled={participants.length < 12}>
+            <FiChevronRight className='icon' />
+          </Button>
+        </div>
       </div>
     </Form >
   )
