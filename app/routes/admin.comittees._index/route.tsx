@@ -55,7 +55,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   const comittees = await getComitteesList(participationMethod ?? "Escola", query as string)
 
-  const councils = await getCouncils(participationMethod as "Escola" | "Universidade")
+  const councils = await getCouncils(participationMethod ?? "Escola")
 
   return json({ comittees, councilOptions: councils })
 }
