@@ -1680,7 +1680,7 @@ input:-webkit-autofill:active {
   }
 }
 .data-box-wrapper.a {
-  max-height: 450px;
+  max-height: 480px;
 }
 @media screen and (max-width: 1150px) {
   .data-box-wrapper.a {

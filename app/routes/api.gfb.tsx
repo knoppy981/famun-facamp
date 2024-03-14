@@ -1,3 +1,4 @@
+// get file buffer
 import React from 'react'
 import qs from "qs"
 import { ActionFunctionArgs, json } from '@remix-run/node'
@@ -25,7 +26,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   const headers = new Headers();
-  headers.set('Content-Type', 'image/jpeg');
+  headers.set('Content-Type', file?.contentType ?? "image/jpeg");
   headers.set('Content-Disposition', 'inline');
 
   return new Response(file?.stream, {

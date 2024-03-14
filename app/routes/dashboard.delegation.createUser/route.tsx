@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { createUser, getExistingUser } from "~/models/user.server"
 import { DelegationType } from "~/models/delegation.server"
 import { useOnScreen } from "~/hooks/useOnScreen";
-import { useUser, useUserType, generatePassword } from "~/utils";
+import { useUser, useUserType } from "~/utils";
 import { getCorrectErrorMessage } from "~/utils/error";
 import { createUserSchema } from "~/schemas";
 import { useUserCreation } from "./useUserCreation";
@@ -25,6 +25,9 @@ import { defaultUser } from "./defaultUserData";
 import { iterateObject } from "../dashboard/utils/findDiffrences";
 import { createDelegationChangeNotification } from "~/models/notifications.server";
 import { getCouncils } from "~/models/configuration.server";
+import { createUserEmail, manualCreateUserEmail } from "~/lib/emails";
+import { sendEmail } from "~/nodemailer.server";
+import { generatePassword } from "./generatePassword";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const user = await requireUser(request)
@@ -61,8 +64,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
   });
 
-  console.dir(data, { depth: null })
-
   try {
     await createUserSchema.validateAsync(data)
     await getExistingUser({
@@ -83,14 +84,27 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   let newUser
 
+
+
   try {
+    let [hash, password] = await generatePassword()
     newUser = await createUser({
       ...data,
       delegation: {
         connect: {
           id: delegation.id
         }
+      },
+      password: {
+        create: {
+          hash: hash
+        }
       }
+    })
+    const info = await sendEmail({
+      to: newUser.email,
+      subject: "Bem-vindo a Famun",
+      html: manualCreateUserEmail(user.name, delegation.school, newUser, password, process.env.WEBSITE_URL ?? "famun.fly.dev")
     })
     /* await createDelegationChangeNotification(user.id, qs.stringify(data), newUser.id, "delegation", `Created ${newUser.name}, and joined ${delegation.school} delegation`) */
   } catch (e) {

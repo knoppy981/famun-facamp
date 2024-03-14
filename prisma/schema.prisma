@@ -60,15 +60,16 @@ model FoodRestrictions {
 }
 
 model File {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId    String   @db.ObjectId
-  url       String?
-  name      String
-  fileName  String
-  stream    Bytes
-  size      Int
-  createdAt DateTime @default(now())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId      String   @db.ObjectId
+  url         String?
+  name        String
+  fileName    String
+  stream      Bytes
+  contentType String
+  size        Int
+  createdAt   DateTime @default(now())
 
   @@unique([name, userId])
 }

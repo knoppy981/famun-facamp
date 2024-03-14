@@ -28,7 +28,7 @@ export const documentsType = [
 ]
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  let userId: string, fileType: string
+  let userId: string, fileType: string, fileContentType: string
 
   let uploadHandler = async ({
     name,
@@ -41,6 +41,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
     if (name === "my-file") {
       console.log(name, filename)
+      fileContentType = contentType;
+
     } else if (name === "user-id" || name === "file-type") {
       const chunks = []
       for await (const chunk of data) chunks.push(chunk)
@@ -64,7 +66,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     console.log(buffer.length)
 
     try {
-      await uploadFile({ userId, stream: buffer, filename, name: fileType, size: buffer.length })
+      await uploadFile({ userId, stream: buffer, filename, name: fileType, size: buffer.length, contentType: fileContentType })
     } catch (error) {
       console.log(error)
     }

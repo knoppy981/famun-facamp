@@ -26,6 +26,29 @@ export const createUserEmail = (user: UserType) => {
   `
 }
 
+export const manualCreateUserEmail = (creatorName: string, delegationSchool: string, user: UserType, password: string, url: string) => {
+  return `
+    <h1 style="color: #183567;">Famun 2024</h1>
+
+    <h2>Olá ${user.name} </h2>
+    
+    <p>a sua inscrição para a FAMUN 2024 foi registrada com sucesso!</p>
+
+    <p>Sua conta foi criada pelo(a) ${creatorName} e você está participando junto com o(a) ${delegationSchool}. </p>
+
+    <p>Para acessar o sistema de inscrição acesse o link: ${url}/login e use a senha: ${password}</p>
+
+    <p>É recomendado que você atualize a sua senha através do link: ${url}/password/request.</p>
+
+    <h2>Suporte </h2>
+
+    <p>Em caso de dúvidas, acesse nossa Central de Ajuda ou entre em contato pelo suporte. <br/> Este é um e-mail automático. Por favor, não responda. </p>
+
+    <p>Atenciosamente, </p>
+    <p>Equipe do Sistema Famun</p>
+  `
+}
+
 export const createDelegationEmail = (delegation: DelegationType, user: UserType) => {
   return `
     <h1 style="color: #183567;">Famun 2024</h1>

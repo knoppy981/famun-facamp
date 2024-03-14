@@ -41,8 +41,8 @@ export async function getFilesByUserId(userId: UserType["id"]) {
   })
 }
 
-export async function uploadFile({ userId, stream, filename, name, size }:
-  { userId: UserType["id"], stream: Buffer, filename: string | undefined, name: string, size: number }
+export async function uploadFile({ userId, stream, filename, name, size, contentType }:
+  { userId: UserType["id"], stream: Buffer, filename: string | undefined, name: string, size: number, contentType: string }
 ) {
   if (filename === undefined) return
 
@@ -68,7 +68,8 @@ export async function uploadFile({ userId, stream, filename, name, size }:
       name,
       size,
       stream,
-      url: undefined
+      url: undefined,
+      contentType
     },
   })
 }
@@ -89,6 +90,7 @@ export async function getFileBuffer(fileId: File["id"]) {
     select: {
       stream: true,
       name: true,
+      contentType: true,
       user: {
         select: {
           name: true

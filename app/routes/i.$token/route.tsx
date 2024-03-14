@@ -57,13 +57,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return json({ delegation, user })
 }
 
-/* export const handle = {
-  i18n: "translation"
-}; */
-
 const invite = () => {
-
-  /* const { t, i18n } = useTranslation("translation") */
   const [searchParams] = useSearchParams();
   const fetcher = useFetcher()
   const matches = useMatches()
@@ -98,7 +92,7 @@ const invite = () => {
 
           <div className='join-buttons-container'>
             {user ?
-              <Button className="primary-button-box">
+              <Button className="primary-button-box" type='submit'>
                 Entrar
               </Button>
               :

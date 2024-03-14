@@ -356,9 +356,9 @@ function Document({ file, i }: {
         <Link
           to={`/api/dfb?fileId=${file.id}`}
           reloadDocument
-          className="secondary-button-box green-dark"
+          className="secondary-button-box green-dark link"
         >
-          <div>
+          <div className='button-child'>
             <FiDownload className="icon" /> Baixar
           </div>
         </Link>

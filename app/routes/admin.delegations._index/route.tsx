@@ -32,7 +32,7 @@ const Delegation = () => {
   const [searchIndex, handle, resetIndex] = handleSearchIndex(submit, formRef, participationMethod)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const [handleDelegationsSheet, downloadState] = useDleegationsSheet()
+  const [handleDelegationsSheet, downloadState] = useDleegationsSheet(participationMethod)
 
   return (
     <Form ref={formRef} onChange={e => { submit(e.currentTarget, { method: "GET" }) }} className='admin-container' >
@@ -216,14 +216,11 @@ function handleSearchIndex(submit: SubmitFunction, formRef: React.RefObject<HTML
   return [searchIndex, handle, resetIndex]
 }
 
-function useDleegationsSheet(): [() => void, "idle" | "loading" | "submitting"] {
+function useDleegationsSheet(participationMethod: ParticipationMethod): [() => void, "idle" | "loading" | "submitting"] {
   const fetcher = useFetcher<any>()
 
   const handleDownload = () => {
-    fetcher.submit(
-      {},
-      { method: "get", action: "/api/daoo", navigate: false }
-    )
+    fetcher.load(`/api/daoo?pm=${participationMethod}`)
   }
 
   React.useEffect(() => {

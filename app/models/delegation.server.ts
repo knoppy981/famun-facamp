@@ -422,7 +422,7 @@ export async function deleteDelegation(id: string) {
 	})
 }
 
-export async function getAllDelegations(): Promise<any[]> {
+export async function getAllDelegations(pm: ParticipationMethod): Promise<any[]> {
 	const currentYear = new Date().getFullYear();
 	const startDate = new Date(currentYear, 0, 1);
 	const endDate = new Date(currentYear + 1, 0, 1);
@@ -433,6 +433,7 @@ export async function getAllDelegations(): Promise<any[]> {
 				gte: startDate,
 				lt: endDate
 			},
+			participationMethod: pm
 		},
 		include: {
 			address: true,
