@@ -962,6 +962,14 @@ input:-webkit-autofill:active {
   font-size: 1.8rem;
 }
 
+.admin-section-title {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 0 15px;
+  font-size: 1.8rem;
+}
+
 .admin-dialog-title {
   min-width: 500px;
   display: flex;
@@ -1379,7 +1387,7 @@ input:-webkit-autofill:active {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid #e6e6e6;
-  gap: 10px;
+  gap: 20px;
   padding: 0 15px;
   background: #fff;
 }
@@ -1695,6 +1703,14 @@ input:-webkit-autofill:active {
     max-height: none;
   }
 }
+.data-box-wrapper.c {
+  max-height: 550px;
+}
+@media screen and (max-width: 1150px) {
+  .data-box-wrapper.c {
+    max-height: none;
+  }
+}
 
 .data-box-container {
   position: relative;
@@ -1728,19 +1744,6 @@ input:-webkit-autofill:active {
 .data-box-container-title {
   font-size: 1.5rem;
   font-weight: 500;
-  /* border-bottom: 1px solid #a7a7a7;
-
-  &.red-border {
-    border-color: $vermelho;
-  }
-
-  &.green-border {
-    border-color: $verdeClaro;
-  }
-
-  &.blue-border {
-    border-color: $azulCeu;
-  } */
 }
 @media screen and (max-width: 700px) {
   .data-box-container-title {
@@ -1768,66 +1771,6 @@ input:-webkit-autofill:active {
 .data-box-secondary-input-container {
   display: grid;
   gap: 10px;
-}
-
-.data-box-checkbox-button {
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  border: none;
-  outline: none;
-  cursor: pointer;
-}
-.data-box-checkbox-button:hover {
-  color: red;
-}
-.data-box-checkbox-button.disabled {
-  cursor: default;
-}
-.data-box-checkbox-button.disabled:hover {
-  color: #000;
-}
-
-.data-box-checkbox-label {
-  padding: 0 5px;
-  font-size: 1.4rem;
-  transition: 0.2s all ease-in-out;
-}
-@media screen and (max-width: 700px) {
-  .data-box-checkbox-label {
-    font-size: 1.6rem;
-  }
-}
-
-.data-box-checkbox-icon {
-  display: grid;
-  place-content: center;
-  transition: 0.2s all ease-in-out;
-}
-.data-box-checkbox-icon.disabled {
-  display: none;
-}
-.data-box-checkbox-icon svg {
-  height: 1.5rem;
-  width: 1.5rem;
-}
-
-.data-box-language-container {
-  display: grid;
-  box-sizing: border-box;
-  min-width: 0;
-}
-.data-box-language-container > div {
-  height: 3rem;
-  font-size: 1.4rem;
-  border-radius: 5px;
-  padding: 0 5px;
-}
-@media screen and (max-width: 700px) {
-  .data-box-language-container > div {
-    height: 4rem;
-    font-size: 1.6rem;
-  }
 }
 
 .home-container {
@@ -2891,6 +2834,101 @@ input:-webkit-autofill:active {
 }
 .list-box-item.selected {
   list-style: disc;
+}
+
+.pop-list-box-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.pop-list-box {
+  list-style: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+}
+.pop-list-box.disabled {
+  margin-left: 15px;
+}
+
+.pop-list-box-item {
+  position: relative;
+  color: #000;
+  padding: 5px 0;
+  font-size: 1.4rem;
+  display: flex;
+  gap: 5px;
+  outline: none;
+  align-items: center;
+  animation: color 0.2s ease;
+  cursor: pointer;
+}
+@media screen and (max-width: 700px) {
+  .pop-list-box-item {
+    font-size: 1.6rem;
+  }
+}
+.pop-list-box-item:hover {
+  color: #c32b19;
+}
+.pop-list-box-item:hover.disabled {
+  color: #000;
+}
+.pop-list-box-item.disabled {
+  cursor: auto;
+}
+
+.pop-list-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pop-list-box-input {
+  display: contents;
+  box-sizing: border-box;
+  min-width: 0;
+}
+@media screen and (max-width: 700px) {
+  .pop-list-box-input {
+    gap: 4px;
+  }
+}
+.pop-list-box-input > label {
+  display: none;
+}
+.pop-list-box-input > div {
+  height: 3rem;
+  font-size: 1.4rem;
+  border-radius: 5px;
+  padding: 0 5px;
+}
+@media screen and (max-width: 700px) {
+  .pop-list-box-input > div {
+    height: 4rem;
+    font-size: 1.6rem;
+  }
+}
+.pop-list-box-input input {
+  width: 100%;
+  min-width: 250px;
+  font-size: 1.4rem;
+  height: 3rem;
+  border-radius: 5px;
+  -webkit-text-fill-color: #000 !important;
+}
+.pop-list-box-input input::placeholder {
+  font-style: italic;
+  opacity: 0.6;
+}
+@media screen and (max-width: 700px) {
+  .pop-list-box-input input {
+    min-width: 0;
+    height: 4rem;
+    font-size: 1.6rem;
+    opacity: 1;
+  }
 }
 
 .popover-arrow {

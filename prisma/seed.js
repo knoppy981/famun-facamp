@@ -22,6 +22,7 @@ async function delegationWith10Delegates() {
 			school: "teste",
 			schoolPhoneNumber: "+55 19 97866 7676",
 			participationMethod: "Escola",
+			maxParticipants: 10,
 			paymentExpirationDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
 			address: {
 				create: {
@@ -49,7 +50,7 @@ async function delegationWith10Delegates() {
 				sex: "Male",
 				password: {
 					create: {
-						hash: await bcrypt.hash("Dede5562", 10)
+						hash: await bcrypt.hash("Teste123", 10)
 					}
 				},
 				nacionality: "Brazil",
@@ -175,6 +176,7 @@ async function delegationWith2Users() {
 			school: "Colégio Teste 123",
 			schoolPhoneNumber: "+55 19 97866 7676",
 			participationMethod: "Escola",
+			maxParticipants: 5,
 			paymentExpirationDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
 			address: {
 				create: {
@@ -263,6 +265,7 @@ async function createXDelegations(max) {
 				inviteLink: `http://localhost:3000/i/${token}`,
 				school: `teste ${i}`,
 				schoolPhoneNumber: "+55 19 97866 7676",
+				maxParticipants: 10,
 				participationMethod: /* i % 2 === 0 */false ? "Escola" : "Universidade",
 				paymentExpirationDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
 				address: {
@@ -289,6 +292,17 @@ async function seed() {
 	// await createAdmin()
 
 	// await createXDelegations(20)
+
+	await prisma.configuration.update({
+		where: {
+			name: "default"
+		},
+		data: {
+			conselhosEscolas: {
+				set: [""]
+			}
+		}
+	})
 
 	console.log(`Database has been seeded. 🌱`);
 }

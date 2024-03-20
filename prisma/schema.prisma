@@ -143,6 +143,7 @@ model Delegation {
   participationMethod   ParticipationMethod
   address               Address?
   participants          User[]
+  maxParticipants       Int
   notifications         Notifications[]     @relation("delegation_change")
 }
 
@@ -167,6 +168,9 @@ model Configuration {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String   @unique
   updatedAt DateTime @updatedAt
+
+  //
+  subscriptionAvailable Boolean @default(true)
 
   // payments
   precoDelegadoEnsinoMedio   Int

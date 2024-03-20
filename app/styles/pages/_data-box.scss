@@ -34,6 +34,14 @@
       max-height: none;
     }
   }
+
+  &.c {
+    max-height: 550px;
+
+    @media screen and (max-width: 1150px) {
+      max-height: none;
+    }
+  }
 }
 
 .data-box-container {
@@ -69,19 +77,6 @@
 .data-box-container-title {
   font-size: 1.5rem;
   font-weight: 500;
-  /* border-bottom: 1px solid #a7a7a7;
-
-  &.red-border {
-    border-color: $vermelho;
-  }
-
-  &.green-border {
-    border-color: $verdeClaro;
-  }
-
-  &.blue-border {
-    border-color: $azulCeu;
-  } */
 
   @media screen and (max-width: 700px) {
     border: none;
@@ -106,64 +101,4 @@
 .data-box-secondary-input-container {
   display: grid;
   gap: 10px;
-}
-.data-box-checkbox-button {
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  border: none;
-  outline: none;
-  cursor: pointer;
-
-  &:hover {
-    color: red;
-  }
-
-  &.disabled {
-    cursor: default;
-
-    &:hover {
-      color: #000;
-    }
-  }
-}
-
-.data-box-checkbox-label {
-  padding: 0 5px;
-  font-size: 1.4rem;
-  transition: 0.2s all ease-in-out;
-
-  @media screen and (max-width: 700px) {
-    font-size: 1.6rem;
-  }
-}
-.data-box-checkbox-icon {
-  display: grid;
-  place-content: center;
-  transition: 0.2s all ease-in-out;
-
-  &.disabled {
-    display: none;
-  }
-
-  svg {
-    height: 1.5rem;
-    width: 1.5rem;
-  }
-}
-.data-box-language-container {
-  display: grid;
-  box-sizing: border-box;
-  min-width: 0;
-
-  & > div {
-    height: 3rem;
-    font-size: 1.4rem;
-    border-radius: 5px;
-    padding: 0 5px;
-    @media screen and (max-width: 700px) {
-      height: 4rem;
-      font-size: 1.6rem;
-    }
-  }
 }

@@ -1,19 +1,23 @@
 import { ParticipationMethod } from "@prisma/client";
 import { prisma } from "~/db.server";
 
-export async function checkCuponCode(code: string, type: ParticipationMethod) {
-  const configuration = await prisma.configuration.findUnique({
+export async function getConfigurations() {
+  return prisma.configuration.findUnique({
     where: {
       name: "default"
     },
     select: {
-      coupons: true
+      conselhosEscolas: true,
+      conselhosUniversidades: true,
+      coupons: true,
+      precoDelegadoEnsinoMedio: true,
+      precoDelegadoInternacional: true,
+      precoDelegadoUniversidade: true,
+      precoFacultyAdvisors: true,
+      precoProfessorOrientador: true,
+      subscriptionAvailable: true,
     }
   })
-
-  if (configuration === null) return false
-
-  return configuration.coupons.some(coupon => coupon.code === code && coupon.type === type);
 }
 
 export async function getPaymentPrices() {
@@ -43,4 +47,59 @@ export async function getCouncils(participationMethod: "Escola" | "Universidade"
   })
 
   return participationMethod === "Escola" ? config?.conselhosEscolas : config?.conselhosUniversidades
+}
+
+export async function updateConfiguration(values: { [key: string]: string | any }) {
+  return prisma.configuration.update({
+    where: {
+      name: "default"
+    },
+    data: values,
+    select: {
+      precoDelegadoEnsinoMedio: true,
+      precoDelegadoInternacional: true,
+      precoDelegadoUniversidade: true,
+      precoFacultyAdvisors: true,
+      precoProfessorOrientador: true,
+    }
+  })
+}
+
+export async function checkSubscriptionAvailability() {
+  const config = await prisma.configuration.findUnique({
+    where: {
+      name: "default"
+    },
+    select: {
+      subscriptionAvailable: true
+    }
+  })
+
+  return config?.subscriptionAvailable
+}
+
+export async function checkCuponCode(code: string, type: ParticipationMethod) {
+  const configuration = await prisma.configuration.findUnique({
+    where: {
+      name: "default"
+    },
+    select: {
+      coupons: true
+    }
+  })
+
+  if (configuration === null) return false
+
+  return configuration.coupons.some(coupon => coupon.code === code && coupon.type === type);
+}
+
+export async function changeSucscriptionAvailavilityStatus(boolean: boolean) {
+  return prisma.configuration.update({
+    where: {
+      name: "default"
+    },
+    data: {
+      subscriptionAvailable: boolean
+    }
+  })
 }

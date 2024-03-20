@@ -1,7 +1,7 @@
 import React, { Key, useRef } from 'react'
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { requireAdminId } from '~/session.server';
-import { FiChevronRight, FiLogOut, FiMenu, FiX } from "react-icons/fi/index.js";
+import { FiChevronRight, FiLogOut, FiMenu, FiSettings, FiX } from "react-icons/fi/index.js";
 import { Form, NavLink, Outlet, useMatches, useNavigate, useSearchParams } from '@remix-run/react';
 import Button from '~/components/button';
 import { SidebarTrigger } from '../dashboard/sidebar';
@@ -23,19 +23,15 @@ const AdminPage = () => {
   const matches = useMatches()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [stickyRef, isSticky] = useStickyContainer()
   const [participationMethod, setParticipationMethod] = React.useState<Key>(searchParams.get("pm") ?? "Escola")
 
-  const menuItems = [
-    { name: "Delegações", to: "delegations", active: "/admin/delegations" },
-    { name: "Designação", to: "comittees", active: "/admin/comittees" },
-    { name: "Participantes", to: "participants", active: "/admin/participants" },
-    { name: "Credenciamento", to: "credentials", active: "/admin/credentials" },
-  ]
-
   useDidMountEffect(() => {
-    navigate(`${matches?.[2].pathname}?pm=${participationMethod}`, { replace: true })
+    if (matches?.[3]?.pathname) navigate(`${matches[3].pathname}?pm=${participationMethod}`, { replace: true })
   }, [participationMethod])
+
+  React.useEffect(() => {
+    console.log(matches)
+  }, [matches])
 
   return (
     <div className='admin-wrapper'>
@@ -74,6 +70,15 @@ const AdminPage = () => {
         </div>
 
         <div className='dashboard-disappear-on-width'>
+          <NavLink
+            to="configurations"
+            className="link text"
+          >
+            <FiSettings className='icon'/>
+          </NavLink>
+        </div>
+
+        <div className='dashboard-disappear-on-width'>
           <Form action='/logout' method='post'>
             <Button type='submit'>
               <div className='dashboard-nav-item'>
@@ -108,43 +113,6 @@ const AdminPage = () => {
             }
           </SidebarTrigger>
         </div>
-      </div>
-
-      <div className={`section-menu ${isSticky ? "sticky" : ""}`} ref={stickyRef}>
-        {menuItems.map((item, index) => {
-          const ref = useRef<HTMLAnchorElement>(null)
-
-          React.useEffect(() => {
-            if (matches?.[2]?.pathname === item.active) ref.current?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center',
-              inline: 'center'
-            })
-          }, [matches])
-
-          return (
-            <NavLink
-              key={index}
-              className="section-menu-item"
-              tabIndex={0}
-              role="link"
-              prefetch='render'
-              aria-label={`${item.to}-link`}
-              to={{
-                pathname: item.to,
-                search: searchParams.toString(),
-              }}
-              ref={ref}
-            >
-              {({ isActive }) => (
-                <>
-                  {item.name}
-                  {isActive ? <motion.div className='section-underline' layoutId="delegationPageUnderline" /> : null}
-                </>
-              )}
-            </NavLink>
-          )
-        })}
       </div>
 
       <Outlet context={{ participationMethod }} />

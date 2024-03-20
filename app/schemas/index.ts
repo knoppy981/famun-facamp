@@ -7,6 +7,7 @@ export { createUserSchema } from "./createUser"
 export { updateDelegationSchema } from "./updateDelegation"
 export { createDelegationSchema } from "./createDelegation"
 export { comitteeSchema } from "./comittee"
+export { updateConfigurationSchema } from "./updateConfiguration"
 
 export { customEmail } from "./keys/email"
 export { completePassword } from "./keys/password"

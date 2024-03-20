@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { DelegationType } from "~/models/delegation.server";
-import { ComitteeType } from "~/routes/admin.comittees.$comittee/route";
+import { ComitteeType } from "~/routes/admin._dashboard.comittees.$comittee/route";
 import { getDelegationCharges } from "~/stripe.server";
 
 export type DelegationAooType = {

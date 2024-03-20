@@ -128,7 +128,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     ...session.get("user-participationMethod"),
   }
 
-  console.log(step, userType, participationMethod)
   let data
 
   switch (step) {
