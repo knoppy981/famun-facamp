@@ -28,6 +28,8 @@ export const NumberField = forwardRef<HTMLInputElement, NumberFieldProps>((props
     decrementButtonProps
   } = useNumberField(props, state, inputRef);
 
+  console.log(inputProps)
+
   return (
     <div className={props.className}>
       {error ?
@@ -41,7 +43,7 @@ export const NumberField = forwardRef<HTMLInputElement, NumberFieldProps>((props
       }
 
       <div {...groupProps} className={`numberfield-container ${error ? "error" : ""} ${props.isDisabled ? "disabled" : ""}`}>
-        <input {...inputProps} ref={mergeRefs([inputRef, forwardedRef])} className='numberfield-input' />
+        <input {...inputProps} ref={mergeRefs([inputRef, forwardedRef])} className='numberfield-input' name={props.name}/>
 
         <div className='numberfield-buttons-container'>
           <Button {...incrementButtonProps}><FiPlus /></Button>

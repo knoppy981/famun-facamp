@@ -56,6 +56,11 @@ export const createDelegationSchema = Joi.object({
       'any.only': 'Método de participação obrigatório',
     }),
 
+  maxParticipants: Joi.number()
+    .min(1)
+    .max(10)
+    .required(),
+
   code: Joi.string(),
 
   inviteLink: Joi.string(),

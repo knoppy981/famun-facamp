@@ -23,9 +23,8 @@ import Dialog from "~/components/dialog";
 import { Select, Item } from "~/components/select";
 import { defaultUser } from "./defaultUserData";
 import { iterateObject } from "../dashboard/utils/findDiffrences";
-import { createDelegationChangeNotification } from "~/models/notifications.server";
 import { getCouncils } from "~/models/configuration.server";
-import { createUserEmail, manualCreateUserEmail } from "~/lib/emails";
+import { manualCreateUserEmail } from "~/lib/emails";
 import { sendEmail } from "~/nodemailer.server";
 import { generatePassword } from "./generatePassword";
 
@@ -39,7 +38,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     if (participant.delegate) accumulator += 1
     return accumulator
   }, 0) as number
-  if (count > 10) {
+  if (count > delegation.maxParticipants) {
     return json(
       { errors: { participants: "Maximum delegates reached" } },
       { status: 400 }
@@ -84,8 +83,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   let newUser
 
-
-
   try {
     let [hash, password] = await generatePassword()
     newUser = await createUser({
@@ -106,7 +103,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       subject: "Bem-vindo a Famun",
       html: manualCreateUserEmail(user.name, delegation.school, newUser, password, process.env.WEBSITE_URL ?? "famun.fly.dev")
     })
-    /* await createDelegationChangeNotification(user.id, qs.stringify(data), newUser.id, "delegation", `Created ${newUser.name}, and joined ${delegation.school} delegation`) */
   } catch (e) {
     console.log(e)
   }
@@ -131,7 +127,7 @@ const CreateUser = () => {
   const userType = useUserType()
   const fetcher = useFetcher()
   const { creatingUserType, changeCreatingUserType, creationPermission, handleChange, handleSubmission, editUserDataId } =
-    useUserCreation(user, userType, fetcher, delegatesCount, delegation.id, delegation.participationMethod, councils as string[])
+    useUserCreation(user, userType, fetcher, delegatesCount, delegation, delegation.participationMethod, councils as string[])
   const [buttonLabel, buttonIcon, buttonColor] = useButtonState(creationPermission?.allowed, fetcher.state)
   const [modalContext, state] = useModalContext(fetcher)
 
@@ -192,7 +188,7 @@ const CreateUser = () => {
           <div className="delegation-data-delegates-countdown">
             <div className="secondary-button-box red-light">
               <div className='button-child'>
-                {10 - delegatesCount} vagas restantes para delegados
+                {delegation.maxParticipants - delegatesCount} vagas restantes para delegados
               </div>
             </div>
           </div> :

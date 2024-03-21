@@ -20,8 +20,8 @@ export default async function checkJoinDelegation(delegationId: string | undefin
     throw new Error("Delegação não encontrada");
   }
 
-  if (user?.delegate && delegation?._count.participants && delegation?._count.participants >= 10) {
-    throw new Error(`A delegação ${delegation.school} já está lotada, o máximo de delegados permitidos por delegação são 10, entre em contato 
+  if (user?.delegate && delegation?._count.participants && delegation?._count.participants >= delegation.maxParticipants) {
+    throw new Error(`A delegação ${delegation.school} já está lotada, o máximo de delegados permitidos nesta delegação são ${delegation.maxParticipants}, entre em contato 
       com o líder de sua delegação ou com professores orientadores para checar se ainda há uma vaga para você.
       Se o error persistir entre em contanto com a nossa equipe`);
   }

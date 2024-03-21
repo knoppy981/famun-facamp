@@ -4,6 +4,7 @@ import _ from "lodash"
 import qs from "qs"
 
 import { UserType } from "~/models/user.server"
+import { DelegationType } from "~/models/delegation.server"
 
 const newUserDataDefaultValues = (councils: string[], participationMethod: string) => ({
   "delegate.councilPreference": councils,
@@ -11,7 +12,7 @@ const newUserDataDefaultValues = (councils: string[], participationMethod: strin
   participationMethod
 })
 
-export function useUserCreation(user: UserType, userType: "delegate" | "advisor" | undefined, fetcher: FetcherWithComponents<any>, delegatesCount: number, delegationId: string, participationMethod: string, councils: string[]): {
+export function useUserCreation(user: UserType, userType: "delegate" | "advisor" | undefined, fetcher: FetcherWithComponents<any>, delegatesCount: number, delegation: DelegationType, participationMethod: string, councils: string[]): {
   creatingUserType: string,
   changeCreatingUserType: (userType: "delegate" | "advisor") => void,
   creationPermission: { allowed: boolean, type: string } | undefined,
@@ -29,7 +30,7 @@ export function useUserCreation(user: UserType, userType: "delegate" | "advisor"
     setCreationPermission(() => {
       if (userType === "advisor" || user.leader) {
         if (creatingUserType === "delegate") {
-          return delegatesCount < 10 ?
+          return delegatesCount < delegation.maxParticipants ?
             { allowed: true, type: "" } :
             { allowed: false, type: "delegatesCount" }
         } else if (creatingUserType === "advisor") {

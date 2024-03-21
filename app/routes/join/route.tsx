@@ -7,12 +7,9 @@ import { getUserId } from '~/session.server';
 import { checkSubscriptionAvailability } from '~/models/configuration.server';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const userId = await getUserId(request)
   const isSubscriptionAvailable = await checkSubscriptionAvailability()
 
-  const shouldRedirect = userId || !isSubscriptionAvailable
-
-  return shouldRedirect ? redirect('/') : json({})
+  return !isSubscriptionAvailable ? redirect('/') : json({})
 }
 
 const Join = () => {

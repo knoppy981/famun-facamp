@@ -58,6 +58,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
 
     try {
+      console.log(data)
       await delegationStepValidation(Number(step), data)
       if (data.participationMethod === "Escola") await getExistingDelegation({ school: data.school ?? "" })
     } catch (error) {

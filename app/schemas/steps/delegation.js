@@ -21,6 +21,11 @@ const step2 = Joi.object({
   schoolPhoneNumber: customPhoneNumber.phone()
     .required(),
 
+  maxParticipants: Joi.number()
+    .min(1)
+    .max(10)
+    .required(),
+
   participationMethod: Joi.string()
     .valid('Escola', 'Universidade')
     .required()

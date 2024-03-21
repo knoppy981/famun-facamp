@@ -1,6 +1,7 @@
 import React from 'react'
 import ComboBox, { Item } from '~/components/combobox'
 import TextField from '~/components/textfield'
+import { NumberField } from '~/components/textfield/numberField'
 import PhoneNumberField from '~/components/textfield/phoneNumberField'
 import { isoCountries } from '~/lib/ISO-3661-1'
 import { UserType } from '~/models/user.server'
@@ -45,19 +46,18 @@ const CreateDelegation = ({ data, actionData, user }: { data: any, actionData: a
             action={actionData}
           />
 
-          {/* <Select
-            name="participationMethod"
-            label="Método de participação"
-            defaultSelectedKey={data?.participationMethod}
-            items={[
-              { id: "Presencial" },
-              { id: "Online" },
-              { id: "Ambos" }
-            ]}
-            errorMessage={actionData?.errors?.participationMethod}
-          >
-            {(item) => <Item>{item.id}</Item>}
-          </Select> */}
+          <NumberField 
+            className='primary-input-box'
+            name="maxParticipants"
+            label="Número de Delegados"
+            minValue={1}
+            defaultValue={1}
+            maxValue={10}
+          />
+
+          <p className='text italic'>
+            Atenção! a quantidade de delegados que vão se inscrever com esta delegação deve ser definida agora e não poderá ser alterada depois
+          </p>
 
           <input type='hidden' name='participationMethod' value={user.participationMethod} />
         </div>

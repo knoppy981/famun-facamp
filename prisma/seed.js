@@ -293,17 +293,6 @@ async function seed() {
 
 	// await createXDelegations(20)
 
-	await prisma.configuration.update({
-		where: {
-			name: "default"
-		},
-		data: {
-			conselhosEscolas: {
-				set: [""]
-			}
-		}
-	})
-
 	console.log(`Database has been seeded. 🌱`);
 }
 

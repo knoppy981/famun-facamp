@@ -9,8 +9,6 @@ import { RadioGroup, Radio } from '~/components/radioGroup';
 import TextArea from '~/components/textfield/textArea';
 
 const DelegateData = ({ data, actionData, participationMethod }: { data: any; actionData: any, participationMethod: string }) => {
-  console.log(data)
-
   const list = useListData({
     initialItems: data.councilPreference ?
       Object.values(qs.parse(data.councilPreference)).map(item => ({ id: item })) : data.councils.map((item: string) => ({ id: item }))
