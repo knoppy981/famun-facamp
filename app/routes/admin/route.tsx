@@ -1,7 +1,7 @@
 import React, { Key, useRef } from 'react'
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { requireAdminId } from '~/session.server';
-import { FiChevronRight, FiLogOut, FiMenu, FiSettings, FiX } from "react-icons/fi/index.js";
+import { FiArrowLeft, FiChevronRight, FiLogOut, FiMenu, FiSettings, FiX } from "react-icons/fi/index.js";
 import { Form, NavLink, Outlet, useMatches, useNavigate, useSearchParams } from '@remix-run/react';
 import Button from '~/components/button';
 import { SidebarTrigger } from '../dashboard/sidebar';
@@ -51,22 +51,31 @@ const AdminPage = () => {
 
       <div className='dashboard-navbar'>
         <div className='dashboard-nav-item'>
-          <Select
-            className="admin-title-select"
-            name="pm"
-            aria-label="Posição do(a) Professor(a) Orientador(a)"
-            hideLabel={true}
-            selectedKey={participationMethod}
-            onSelectionChange={(key: React.Key) => {
-              setParticipationMethod(key)
-            }}
-            items={[
-              { id: "Escola", textValue: "Ensino Medio" },
-              { id: "Universidade", textValue: "Universidade" },
-            ]}
-          >
-            {(item) => <Item textValue={item.id}>{item.textValue}</Item>}
-          </Select>
+          {matches?.[2].pathname === "/admin/configurations" ?
+            <NavLink
+              to="/admin/delegations"
+              className="link text"
+            >
+              <FiArrowLeft className='icon' /> Voltar
+            </NavLink>
+            :
+            <Select
+              className="admin-title-select"
+              name="pm"
+              aria-label="Posição do(a) Professor(a) Orientador(a)"
+              hideLabel={true}
+              selectedKey={participationMethod}
+              onSelectionChange={(key: React.Key) => {
+                setParticipationMethod(key)
+              }}
+              items={[
+                { id: "Escola", textValue: "Ensino Medio" },
+                { id: "Universidade", textValue: "Universidade" },
+              ]}
+            >
+              {(item) => <Item textValue={item.id}>{item.textValue}</Item>}
+            </Select>
+          }
         </div>
 
         <div className='dashboard-disappear-on-width'>
@@ -74,7 +83,7 @@ const AdminPage = () => {
             to="configurations"
             className="link text"
           >
-            <FiSettings className='icon'/>
+            <FiSettings className='icon' />
           </NavLink>
         </div>
 
