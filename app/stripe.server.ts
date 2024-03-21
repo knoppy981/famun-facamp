@@ -128,7 +128,7 @@ export async function handleWebHook(request: Request) {
 
     const info = await sendEmail({
       to: user.email,
-      subject: "Pagamento Confirmado!",
+      subject: `FAMUN ${new Date().getFullYear()}: Pagamento confirmado`,
       html: paymentCompletedEmail(user as UserType, paidUsers as UserType[], "", new Date(event.data.object.created * 1000).toLocaleDateString("pt-BR"))
     })
   }

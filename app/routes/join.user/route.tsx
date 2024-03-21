@@ -85,7 +85,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         user = await createUser(userData)
         const info = await sendEmail({
           to: user.email,
-          subject: "Bem-vindo a Famun",
+          subject: `Bem-vindo(a) ao FAMUN ${new Date().getFullYear()}!`,
           html: createUserEmail(user)
         })
       } catch (error) {

@@ -27,6 +27,11 @@ export async function getDelegationById(id: Delegation["id"]) {
 							comittee: true
 						}
 					},
+					files: {
+						select: {
+							name: true,
+						}
+					},
 					delegationAdvisor: true,
 					foodRestrictions: true,
 				}

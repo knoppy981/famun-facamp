@@ -93,7 +93,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         delegation = await createDelegation(delegationData, user.id)
         const info = await sendEmail({
           to: user.email,
-          subject: "Bem-vindo a Famun",
+          subject: `FAMUN ${new Date().getFullYear()}: Sua delegação foi criada com sucesso!`,
           html: createDelegationEmail(delegation, user as UserType)
         })
       } catch (error) {
