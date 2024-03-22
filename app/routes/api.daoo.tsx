@@ -11,7 +11,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireAdminId(request)
   let aoo: any
 
-
   try {
     const delegations = await getAllDelegations(participationMethod)
     if (delegations === undefined) return

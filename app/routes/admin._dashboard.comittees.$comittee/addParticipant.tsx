@@ -15,7 +15,7 @@ import { ComitteeType } from './route';
 
 const AddParticipant = ({ state, comittee, participationMethod }: { state: OverlayTriggerState, comittee: ComitteeType, participationMethod: ParticipationMethod }) => {
   const fetcher = useFetcher<any>()
-  const [delegatesList, selectedDelegates, handleDelegateSelection, clearSelectedDelegates, handleSubmission] = useAddParticipant(fetcher, comittee, state)
+  const [delegatesList, selectedDelegates, handleDelegateSelection, clearSelectedDelegates, handleSubmission] = useAddParticipant(fetcher, comittee, state, participationMethod)
   const [fieldState, onSelectionChange, onInputChange, onOpenChange] = useComboBox(delegatesList, handleDelegateSelection)
 
   return (
@@ -72,7 +72,7 @@ const AddParticipant = ({ state, comittee, participationMethod }: { state: Overl
   )
 }
 
-function useAddParticipant(fetcher: FetcherWithComponents<any>, comittee: any, state: OverlayTriggerState): [
+function useAddParticipant(fetcher: FetcherWithComponents<any>, comittee: any, state: OverlayTriggerState, participationMethod: ParticipationMethod): [
   any[], { id: string; name: string; }[], (delegate: { id: string; name: string; }) => void, () => void, () => void
 ] {
   const listDelegatesFetcher = useFetcher<any>()
@@ -111,7 +111,10 @@ function useAddParticipant(fetcher: FetcherWithComponents<any>, comittee: any, s
   }, [listDelegatesFetcher.data])
 
   React.useEffect(() => {
-    if (state.isOpen) listDelegatesFetcher.submit({}, { method: "GET", action: "/api/delegatesList" })
+    if (state.isOpen) {
+      const searchParams = new URLSearchParams([["pm", participationMethod]]);
+      listDelegatesFetcher.load(`/api/cdl?${searchParams}`)
+    }
     clearSelectedDelegates()
   }, [state.isOpen])
 

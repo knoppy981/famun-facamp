@@ -6,8 +6,10 @@ import { useUser } from '~/utils'
 
 import { OutletType } from '../dashboard.payments/types'
 import { HTMLLink } from '~/components/link'
-import { FiCreditCard, FiExternalLink } from 'react-icons/fi/index.js'
+import { FiCreditCard, FiExternalLink, FiInfo } from 'react-icons/fi/index.js'
 import { getCurrentLocale } from '~/hooks/useCurrentLocale'
+import PopoverTrigger from '~/components/popover/trigger'
+import ParticipantsList from './paidParticipantsList'
 
 const CompletedPayments = () => {
   const { paymentsList }: OutletType = useOutletContext()
@@ -51,6 +53,10 @@ const CompletedPayments = () => {
                     <td className='table-cell'>
                       <div className='table-flex-cell'>
                         Inscrição de {item?.metadata?.paidUsersIds ? ` ${Object.keys(qs.parse(item?.metadata?.paidUsersIds)).length}x participante${Object.keys(qs.parse(item?.metadata?.paidUsersIds)).length > 1 ? "s" : ""}` : ''}
+
+                        <PopoverTrigger label={<FiInfo className="icon" />}>
+                          <ParticipantsList ids={item?.metadata?.paidUsersIds} />
+                        </PopoverTrigger>
                       </div>
                     </td>
 

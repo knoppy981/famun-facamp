@@ -38,6 +38,20 @@ export async function getUserById(id: User["id"]) {
 	});
 }
 
+export async function getManyUsersById(ids: (string)[]) {
+	return prisma.user.findMany({
+		where: {
+			id: {
+				in: ids
+			}
+		},
+		select: {
+			name: true,
+			socialName: true
+		}
+	})
+}
+
 export async function getUserByEmail(email: User["email"]) {
 	return prisma.user.findUnique({
 		where: { email },
