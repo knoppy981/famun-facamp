@@ -88,7 +88,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
           pdfUrl: pi.next_action?.boleto_display_details?.pdf,
           isVisible: true
         })
-        console.log(pi.metadata)
       }
     })
     const promises = requiresActionPayments.map(async (requiresActionPayment, index) => {
@@ -98,10 +97,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
           .filter((id): id is string => typeof id === 'string')
       )
 
-      console.log(users)
-
       if (users.some((user) => user.stripePaidId)) {
-        console.log("canceling")
         requiresActionPayments[index].isVisible = false
       }
     })

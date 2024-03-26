@@ -29,7 +29,5 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     )
   }
 
-  console.log(users)
-
   return json({ users })
 }

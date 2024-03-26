@@ -32,7 +32,7 @@ const ParticipantsList = (props: any) => {
 }
 
 function useAddParticipant(fetcher: FetcherWithComponents<any>, open: boolean, ids: string) {
-  useDidMountEffect(() => {
+  React.useEffect(() => {
     if (open) {
       const searchParams = new URLSearchParams([["ids", ids]]);
       fetcher.load(`/api/gpi?${searchParams}`)

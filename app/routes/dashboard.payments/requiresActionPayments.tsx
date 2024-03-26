@@ -25,7 +25,7 @@ const RequiresActionPayments = ({ requiresActionPayments }: { requiresActionPaym
       <div className='text label'>
         Você tem
         {requiresActionPayments.length === 1 ?
-          " 1 pagamento, que precisa de ações necessárias para ser concluído"
+          " 1 pagamento que precisa de ações necessárias para ser concluído"
           : " " + requiresActionPayments.length + " pagamentos que precisam de ações necessárias para serem concluídos"
         }
       </div>
