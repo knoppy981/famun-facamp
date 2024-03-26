@@ -64,7 +64,7 @@ const CompletedPayments = () => {
                       <div className='table-flex-cell'>
                         <div className="secondary-button-box green-light">
                           <div className='button-child'>
-                            {(item.amount / 100).toLocaleString(locale, { style: "currency", currency: item.currency })}
+                            <>{(item.amount / 100).toLocaleString(locale, { style: "currency", currency: item.currency })}</>
                           </div>
                         </div>
                       </div>
@@ -83,7 +83,14 @@ const CompletedPayments = () => {
                     </td>
 
                     <td className='table-cell'>
-                      {new Date(item.created * 1000).toLocaleDateString('pt-BR')}
+                      <>
+                        {new Date(item.created * 1000).toLocaleString('pt-BR', {
+                          timeZone: 'America/Sao_Paulo',
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric'
+                        })}
+                      </>
                     </td>
                   </tr>
                 )

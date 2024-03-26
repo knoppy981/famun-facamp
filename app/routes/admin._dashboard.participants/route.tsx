@@ -130,7 +130,12 @@ const Participants = () => {
                   </td>
 
                   <td className='table-cell'>
-                    {new Date(item.createdAt).toLocaleDateString('pt-BR')}
+                    {new Date(item.createdAt).toLocaleString('pt-BR', {
+                      timeZone: 'America/Sao_Paulo',
+                      year: 'numeric',
+                      month: 'numeric',
+                      day: 'numeric'
+                    })}
                   </td>
                 </tr>
               )

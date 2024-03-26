@@ -92,7 +92,12 @@ const PendingPayments = () => {
 
                     <td className='table-cell'>
                       <div className={`table-flex-cell ${item.expired ? "error" : ""}`}>
-                        {expiresAt.toLocaleDateString("pt-BR")}
+                        {expiresAt.toLocaleString('pt-BR', {
+                          timeZone: 'America/Sao_Paulo',
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric'
+                        })}
 
                         {item.expired ?
                           <PopoverTrigger label={<FiAlertCircle className='icon error' />}>

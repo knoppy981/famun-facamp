@@ -50,7 +50,7 @@ const ParticipantModal = ({ state, participant }: { state: OverlayTriggerState, 
                 onPress={() => setSelectedMenu("payments")}
                 className={`secondary-button-box ${selectedMenu === "payments" ? buttonColor ? buttonColor + "-dark" : "" : "grey-dark"}`}
               >
-                <FiCreditCard className="icon"/> Pagamentos
+                <FiCreditCard className="icon" /> Pagamentos
               </Button>
 
               {participant.files?.length && participant.files?.length > 0 ?
@@ -259,7 +259,12 @@ function Notification(notification: {
     <div className={`admin-delegation-notification ${notification.i !== 0 ? "border" : ""}`}>
       <div className={`admin-delegation-notification-date ${notification.seen ? "" : "not-seen"}`}>
         <p className="text">
-          {new Date(notification.createdAt).toLocaleDateString("pt-br", { hour: "2-digit", minute: "2-digit" })}
+          {new Date(notification.createdAt).toLocaleString('pt-BR', {
+            timeZone: 'America/Sao_Paulo',
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric'
+          })}
         </p>
       </div>
 

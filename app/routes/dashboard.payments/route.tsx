@@ -127,7 +127,7 @@ const Payments = () => {
         Pagamentos
       </h2>
 
-      <RequiresActionPayments requiresActionPayments={requiresActionPayments as RequiresActionPaymentsType}/>
+      <RequiresActionPayments requiresActionPayments={requiresActionPayments as RequiresActionPaymentsType} />
 
       <AnimatePresence>
         {state.isOpen ?
@@ -144,7 +144,8 @@ const Payments = () => {
                   </div>
 
                   <div className="dialog-subitem">
-                    {new Date(recentPayment?.next_action?.boleto_display_details.expires_at as number * 1000).toLocaleDateString("pt-BR", {
+                    {new Date(recentPayment?.next_action?.boleto_display_details.expires_at as number * 1000).toLocaleString("pt-BR", {
+                      timeZone: 'America/Sao_Paulo',
                       weekday: 'long',
                       year: 'numeric',
                       month: 'long',

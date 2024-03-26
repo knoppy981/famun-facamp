@@ -252,7 +252,12 @@ const Delegation = () => {
                       </td>
 
                       <td className='table-cell'>
-                        {new Date(participant.createdAt).toLocaleDateString('pt-BR')}
+                        {new Date(participant.createdAt).toLocaleString('pt-BR', {
+                          timeZone: 'America/Sao_Paulo',
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric'
+                        })}
                       </td>
                     </tr>
                   )
@@ -270,7 +275,12 @@ const Delegation = () => {
       }
       <div className='comittee-title'>
         <div className='text'>
-          Limite para o pagamento: {new Date(delegation.paymentExpirationDate).toLocaleDateString("pt-BR")}
+          Limite para o pagamento: {new Date(delegation.paymentExpirationDate).toLocaleString('pt-BR', {
+            timeZone: 'America/Sao_Paulo',
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric'
+          })}
         </div>
 
         <Button
@@ -278,7 +288,7 @@ const Delegation = () => {
           isDisabled={!delegation}
           onPress={() => handlePostponePayment(delegation.id)}
         >
-          {postponePaymentState !== 'idle' && <Spinner dim="18px" color='green'/>}
+          {postponePaymentState !== 'idle' && <Spinner dim="18px" color='green' />}
           Adiar Pagamento
         </Button>
       </div>

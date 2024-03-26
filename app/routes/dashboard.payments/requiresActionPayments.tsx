@@ -78,7 +78,15 @@ const RequiresActionPayments = ({ requiresActionPayments }: { requiresActionPaym
                   </td>
 
                   <td className='table-cell'>
-                    Expira em: {item.expiresAt ? new Date(item.expiresAt * 1000).toLocaleDateString("pt-BR") : null}
+                    Expira em: {item.expiresAt ? new Date(item.expiresAt * 1000).toLocaleString('pt-BR', {
+                      timeZone: 'America/Sao_Paulo',
+                      year: 'numeric',
+                      month: 'numeric',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit'
+                    }) : null}
                   </td>
                 </tr>
               )
