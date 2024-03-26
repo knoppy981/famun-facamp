@@ -24,16 +24,6 @@ import { createUserEmail, manualCreateUserEmail } from '~/lib/emails'
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const user = await requireUser(request)
-  const info = await sendEmail({
-    to: user.email,
-    subject: `Bem-vindo(a) ao FAMUN ${new Date().getFullYear()}!`,
-    html: createUserEmail(user as UserType)
-  })
-
-  console.log(info)
-
-  return json({})
-
   const formData = await request.formData();
   let changes = qs.parse(formData.get("changes") as string)
   let data: any = {}
