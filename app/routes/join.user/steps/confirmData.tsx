@@ -54,7 +54,7 @@ const ConfirmData = ({ data, userType }: { data: any, userType: any }) => {
           <div className='join-confirm-data-list-label'>
             Data de Nascimento
           </div>
-          {data.birthDate ? parseDate(data?.birthDate).toDate(getLocalTimeZone()).toLocaleDateString() : ""}
+          {data.birthDate ? parseDate(data?.birthDate).toDate(getLocalTimeZone()).toLocaleDateString("pt-BR") : ""}
         </div>
 
         {data.foodRestrictions ?

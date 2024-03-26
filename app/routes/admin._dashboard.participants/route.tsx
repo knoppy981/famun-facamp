@@ -95,43 +95,46 @@ const Participants = () => {
           </thead>
 
           <tbody>
-            {participants.map((item, index) => (
-              <tr
-                className="table-row cursor"
-                key={index}
-                onClick={() => { }}
+            {participants.map((item, index) => {
+              console.log(item.name + " " + item.createdAt)
+              return (
+                <tr
+                  className="table-row cursor"
+                  key={index}
+                /* onClick={() => { }}
                 tabIndex={0}
                 role="link"
-                aria-label={`Details for delegation ${" "}`}
+                aria-label={` ${item.delegation?.school}`}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' || event.key === 'Space') {
                     event.preventDefault();
                   }
-                }}
-              >
-                <td className='table-cell'>
-                  {item.name}
-                </td>
+                }} */
+                >
+                  <td className='table-cell'>
+                    {item.name}
+                  </td>
 
-                <td className='table-cell'>
-                  {item.delegation?.school}
-                </td>
+                  <td className='table-cell'>
+                    {item.delegation?.school}
+                  </td>
 
-                <td className='table-cell'>
-                  <div className='table-flex-cell'>
-                    <div className={`secondary-button-box ${item.delegationAdvisor ? 'green-light' : 'blue-light'}`}>
-                      <div className='button-child'>
-                        {item.delegationAdvisor ? item?.delegationAdvisor?.advisorRole : "Delegado"}
+                  <td className='table-cell'>
+                    <div className='table-flex-cell'>
+                      <div className={`secondary-button-box ${item.delegationAdvisor ? 'green-light' : 'blue-light'}`}>
+                        <div className='button-child'>
+                          {item.delegationAdvisor ? item?.delegationAdvisor?.advisorRole : "Delegado"}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </td>
+                  </td>
 
-                <td className='table-cell'>
-                  {new Date(item.createdAt).toLocaleDateString('pt-BR')}
-                </td>
-              </tr>
-            ))}
+                  <td className='table-cell'>
+                    {new Date(item.createdAt).toLocaleDateString('pt-BR')}
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
@@ -182,26 +185,28 @@ function useDelegationsList(submit: SubmitFunction, formRef: React.RefObject<HTM
   // adding this extra state so that the form is only submitted when handle is triggered, can't modify formRef.current have to wait to state to update
   const [testState, setTestState] = React.useState(false)
 
-  const handleSearchIndex = (isAdding: boolean) => {
+  function handleSearchIndex(isAdding: boolean) {
     setSearchIndex(prevValue => isAdding ? prevValue + 1 : prevValue - 1)
     setTestState(!testState)
   }
 
-  const handleOrderBy = (value: string) => {
+  function handleOrderBy(value: string) {
     setOrderBy(value)
     resetIndex()
     setTestState(!testState)
   }
 
-  const resetIndex = () => {
+  function resetIndex() {
     setSearchIndex(0)
   }
 
   useDidMountEffect(() => {
+    console.log("submitting get form")
     submit(formRef.current, { method: "GET" })
   }, [testState])
 
   useDidMountEffect(() => {
+    console.log("resetting index when pm changes")
     resetIndex()
   }, [participationMethod])
 

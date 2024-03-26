@@ -83,7 +83,7 @@ const CompletedPayments = () => {
                     </td>
 
                     <td className='table-cell'>
-                      {new Date(item.created * 1000).toLocaleDateString()}
+                      {new Date(item.created * 1000).toLocaleDateString('pt-BR')}
                     </td>
                   </tr>
                 )

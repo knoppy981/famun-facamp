@@ -6,19 +6,19 @@ import { ParticipationMethod } from '@prisma/client';
 import { useOverlayTriggerState } from 'react-stately';
 
 import { requireAdminId } from '~/session.server';
-
-import Button from '~/components/button';
-import Link from '~/components/link';
-import { FiArrowLeft, FiBell, FiDollarSign, FiDownload, FiFile, FiTrash2 } from "react-icons/fi/index.js";
 import { delegationAoo } from '~/sheets/data';
 import { exportAoo } from '~/sheets';
 import { DelegationType, adminDelegationData } from '~/models/delegation.server';
 import { getDelegationCharges } from '~/stripe.server';
-import ParticipantModal from './participant';
 import { iterateObject } from '../dashboard/utils/findDiffrences';
 import { updateUserSchema } from '~/schemas';
 import { getExistingUser, updateUser } from '~/models/user.server';
 import { getCorrectErrorMessage } from '~/utils/error';
+
+import Button from '~/components/button';
+import Link from '~/components/link';
+import { FiArrowLeft, FiBell, FiDollarSign, FiDownload, FiFile, FiTrash2 } from "react-icons/fi/index.js";
+import ParticipantModal from './participant';
 import ModalTrigger from '~/components/modalOverlay/trigger';
 import Dialog from '~/components/dialog';
 import Spinner from '~/components/spinner';
@@ -252,7 +252,7 @@ const Delegation = () => {
                       </td>
 
                       <td className='table-cell'>
-                        {new Date(participant.createdAt).toLocaleDateString()}
+                        {new Date(participant.createdAt).toLocaleDateString('pt-BR')}
                       </td>
                     </tr>
                   )

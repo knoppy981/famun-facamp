@@ -90,7 +90,7 @@ const DelegationParticipants = () => {
                 </td>
 
                 <td className='table-cell'>
-                  {new Date(item.createdAt).toLocaleDateString()}
+                  {new Date(item.createdAt).toLocaleDateString("pt-BR")}
                 </td>
               </tr>
             )
