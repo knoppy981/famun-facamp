@@ -28,6 +28,10 @@ export async function getPaymentsIntentByCustomerId(customerId: UserType["stripe
   return stripe.paymentIntents.list({ customer: customerId })
 }
 
+export async function cancelPaymentIntentById(id: string) {
+  return stripe.paymentIntents.cancel(id)
+}
+
 export async function getChargesByCustomerId(customerId: UserType["stripeCustomerId"]): Promise<Stripe.ApiListPromise<Stripe.Charge> | undefined> {
 
   if (customerId === null) {

@@ -1,4 +1,5 @@
 import React from 'react'
+import qs from "qs"
 import Stripe from 'stripe'
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node'
 import { useLoaderData, NavLink, Outlet, useRouteError, Link } from '@remix-run/react'
@@ -7,12 +8,15 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useStickyContainer } from '~/hooks/useStickyContainer'
 import { getDelegationId, requireUser } from '~/session.server'
 import { getRequiredPayments } from '~/models/payments.server'
-import { getChargesByCustomerId, getPaymentIntentById, getPaymentsIntentByCustomerId } from '~/stripe.server'
-import { ensureStripeCostumer } from '~/models/user.server';
+import { cancelPaymentIntentById, getChargesByCustomerId, getPaymentIntentById, getPaymentsIntentByCustomerId } from '~/stripe.server'
+import { ensureStripeCostumer, getManyUsersById } from '~/models/user.server';
 import { useModalContext } from './useModalContext'
 import Modal from '~/components/modalOverlay'
 import Dialog from '~/components/dialog'
 import Button from '~/components/button'
+import { HTMLLink } from '~/components/link'
+import { FiExternalLink } from 'react-icons/fi/index.js'
+import RequiresActionPayments, { RequiresActionPaymentsType } from './requiresActionPayments'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -37,6 +41,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   }[] = []
 
   try {
+    // handle completed payments
     const charges = await getChargesByCustomerId(user.stripeCustomerId)
     charges?.data.forEach((ch: Stripe.Charge, index) => {
       paymentsList.push({
@@ -53,6 +58,58 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     console.log(error)
   }
 
+  const requiresActionPayments: {
+    id: string,
+    amount: number,
+    currency: string,
+    status: string,
+    metadata: any,
+    created: number,
+    expiresAt: number | undefined | null,
+    payUrl: string | undefined | null,
+    pdfUrl: string | undefined | null,
+    isVisible: boolean,
+  }[] = []
+
+  try {
+    // handle payments that requires action
+    const paymentIntents = await getPaymentsIntentByCustomerId(user.stripeCustomerId)
+    paymentIntents.data.forEach(async (pi) => {
+      if (pi.next_action) {
+        requiresActionPayments.push({
+          id: pi.id,
+          amount: pi.amount,
+          currency: pi.currency,
+          status: pi.status,
+          metadata: pi.metadata,
+          created: pi.created,
+          expiresAt: pi.next_action?.boleto_display_details?.expires_at,
+          payUrl: pi.next_action?.boleto_display_details?.hosted_voucher_url,
+          pdfUrl: pi.next_action?.boleto_display_details?.pdf,
+          isVisible: true
+        })
+        console.log(pi.metadata)
+      }
+    })
+    const promises = requiresActionPayments.map(async (requiresActionPayment, index) => {
+      const users = await getManyUsersById(
+        Object.values(qs.parse(requiresActionPayment.metadata?.paidUsersIds))
+          .flat()
+          .filter((id): id is string => typeof id === 'string')
+      )
+
+      console.log(users)
+
+      if (users.some((user) => user.stripePaidId)) {
+        console.log("canceling")
+        requiresActionPayments[index].isVisible = false
+      }
+    })
+    await Promise.all(promises);
+  } catch (error) {
+    console.log(error)
+  }
+
   const redirectStatus = url.searchParams.get("redirect_status");
   const paymentIntentId = url.searchParams.get("payment_intent")
   let recentPayment
@@ -60,13 +117,13 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     recentPayment = await getPaymentIntentById(paymentIntentId)
   }
 
-  return json({ requiredPayments, paymentsList, recentPayment })
+  return json({ requiredPayments, paymentsList, recentPayment, requiresActionPayments })
 }
 
 const Payments = () => {
-  const { requiredPayments, paymentsList, recentPayment } = useLoaderData<typeof loader>()
+  const { requiredPayments, paymentsList, recentPayment, requiresActionPayments } = useLoaderData<typeof loader>()
   const [stickyRef, isSticky] = useStickyContainer()
-  const [modalContext, state] = useModalContext(recentPayment as any)
+  const [state] = useModalContext(recentPayment as any)
 
   return (
     <div className='section-wrapper'>
@@ -74,21 +131,65 @@ const Payments = () => {
         Pagamentos
       </h2>
 
+      <RequiresActionPayments requiresActionPayments={requiresActionPayments as RequiresActionPaymentsType}/>
+
       <AnimatePresence>
         {state.isOpen ?
           <Modal state={state} isDismissable>
             <Dialog maxWidth>
-              <div className="dialog-subitem">
-                Seu pagamento será processado e poder levar até 5 minutos para que ele seja contabilizado em nosso sistema.
-              </div>
+              {recentPayment?.next_action?.boleto_display_details ?
+                <>
+                  <div className="dialog-subitem">
+                    Seu pagamento será processado após o pagamento do boleto.
+                  </div>
 
-              <div className="dialog-subitem">
-                Em breve você receberá o recibo da transação por e-mail.
-              </div>
+                  <div className="dialog-subitem">
+                    O boleto expira em:
+                  </div>
 
-              <div className="dialog-subitem" style={{ marginBottom: "10px" }}>
-                Caso seu pagamento não apareça como efetuado ou não seja enviado o recibo por e-mail, entre em contato com famun@facamp.com.br
-              </div>
+                  <div className="dialog-subitem">
+                    {new Date(recentPayment?.next_action?.boleto_display_details.expires_at as number * 1000).toLocaleDateString("pt-BR", {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit'
+                    })}
+                  </div>
+
+                  <div className="dialog-subitem">
+                    Você receberá o recibo da transação por e-mail
+                  </div>
+
+                  <div className="dialog-subitem" style={{ marginBottom: "10px" }}>
+                    Caso seu pagamento por boleto não apareça como efetuado ou não seja enviado o recibo por e-mail, entre em contato com famun@facamp.com.br
+                  </div>
+
+                  <HTMLLink href={recentPayment?.next_action?.boleto_display_details.hosted_voucher_url as string | undefined} target="_blank" rel="noopener noreferrer">
+                    <div className="secondary-button-box blue-light">
+                      <div className='button-child'>
+                        <FiExternalLink className='icon' /> Pagar
+                      </div>
+                    </div>
+                  </HTMLLink>
+                </>
+                :
+                <>
+                  <div className="dialog-subitem">
+                    Seu pagamento será processado e poder levar até 5 minutos para que ele seja contabilizado em nosso sistema.
+                  </div>
+
+                  <div className="dialog-subitem">
+                    Em breve você receberá o recibo da transação por e-mail.
+                  </div>
+
+                  <div className="dialog-subitem" style={{ marginBottom: "10px" }}>
+                    Caso seu pagamento não apareça como efetuado ou não seja enviado o recibo por e-mail, entre em contato com famun@facamp.com.br
+                  </div>
+                </>
+              }
 
               <Button className="secondary-button-box blue-dark" onPress={state.close}>
                 Fechar
