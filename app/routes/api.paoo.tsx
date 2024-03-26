@@ -1,4 +1,4 @@
-// delegation aoo
+// participants aoo
 import { ParticipationMethod } from "@prisma/client"
 import { LoaderFunctionArgs, json } from "@remix-run/node"
 import { getAllDelegations } from "~/models/delegation.server"
@@ -9,12 +9,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireAdminId(request)
   const url = new URL(request.url);
   const participationMethod = url.searchParams.get("pm") as ParticipationMethod
+  const type = url.searchParams.get("type") as ParticipationMethod
   let aoo: any
 
+  console.log(participationMethod, type)
+
   try {
-    const delegations = await getAllDelegations(participationMethod)
-    if (delegations === undefined) return
-    aoo = await delegationsAoo(delegations)
+
   } catch (error) {
     console.log(error)
     return json(

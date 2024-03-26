@@ -1,6 +1,7 @@
 // comittee delegates list
 import { ParticipationMethod } from "@prisma/client"
 import { LoaderFunctionArgs, json } from "@remix-run/node"
+
 import { listDelegates } from "~/models/delegate.server"
 import { requireAdminId } from "~/session.server"
 

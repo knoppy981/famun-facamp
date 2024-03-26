@@ -225,7 +225,6 @@ function useDleegationsSheet(participationMethod: ParticipationMethod): [() => v
 
   React.useEffect(() => {
     if (fetcher.data?.aoo) {
-      console.log(fetcher.data?.aoo)
       exportAoo(fetcher.data?.aoo, "Delegações")
     }
   }, [fetcher.data])

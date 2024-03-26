@@ -3,7 +3,7 @@ import { LoaderFunctionArgs, json } from '@remix-run/node';
 import { FetcherWithComponents, Form, SubmitFunction, useFetcher, useLoaderData, useOutletContext, useSubmit } from '@remix-run/react'
 
 
-import { FiChevronDown, FiChevronLeft, FiChevronRight } from "react-icons/fi/index.js";
+import { FiChevronDown, FiChevronLeft, FiChevronRight, FiDownload } from "react-icons/fi/index.js";
 import { ParticipationMethod } from '@prisma/client';
 import Button from '~/components/button'
 import TextField from '~/components/textfield';
@@ -13,6 +13,8 @@ import PopoverTrigger from '~/components/popover/trigger';
 import Dialog from '~/components/dialog';
 import { Radio, RadioGroup } from '~/components/radioGroup';
 import useDidMountEffect from '~/hooks/useDidMountEffect';
+import { exportAoo } from '~/sheets';
+import Spinner from '~/components/spinner';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -32,6 +34,7 @@ const Participants = () => {
   const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
   const { participants } = useLoaderData<typeof loader>()
   const [searchIndex, handleSearchIndex, orderBy, handleOrderBy, resetIndex] = useDelegationsList(submit, formRef, participationMethod)
+  const [handleParticipantsSheet, downloadState] = useParticipantsSheet(participationMethod)
 
   return (
     <Form ref={formRef} onChange={e => { submit(e.currentTarget, { method: "GET" }) }} className='admin-container' >
@@ -137,7 +140,19 @@ const Participants = () => {
       <input type='hidden' name="pm" value={participationMethod} />
 
       <div className='admin-navigation-button-container'>
-        <div></div>
+        <div>
+          <Button onPress={() => handleParticipantsSheet("rg")} className='secondary-button-box green-light'>
+            {downloadState === "idle" ? <FiDownload className='icon' /> : <Spinner dim='18px' color='green' />} Planilha RG/Passporte
+          </Button>
+
+          <Button onPress={() => handleParticipantsSheet("cracha delegados")} className='secondary-button-box green-light'>
+            {downloadState === "idle" ? <FiDownload className='icon' /> : <Spinner dim='18px' color='green' />} Planilha Cracha Delegados
+          </Button>
+
+          <Button onPress={() => handleParticipantsSheet("cracha orientadores")} className='secondary-button-box green-light'>
+            {downloadState === "idle" ? <FiDownload className='icon' /> : <Spinner dim='18px' color='green' />} Planilha Cracha Orientadores
+          </Button>
+        </div>
 
         <div>
           <Button onPress={() => handleSearchIndex(false)} isDisabled={searchIndex < 1}>
@@ -192,6 +207,23 @@ function useDelegationsList(submit: SubmitFunction, formRef: React.RefObject<HTM
 
 
   return [searchIndex, handleSearchIndex, orderBy, handleOrderBy, resetIndex]
+}
+
+function useParticipantsSheet(participationMethod: ParticipationMethod): [(type: "rg" | "cracha delegados" | "cracha orientadores") => void, "idle" | "loading" | "submitting"] {
+  const fetcher = useFetcher<any>()
+
+  const handleDownload = (type: "rg" | "cracha delegados" | "cracha orientadores") => {
+    const searchParams = new URLSearchParams([["pm", participationMethod], ["type", type]]);
+    fetcher.load(`/api/paoo?${searchParams}`)
+  }
+
+  React.useEffect(() => {
+    if (fetcher.data?.aoo) {
+      // exportAoo(fetcher.data?.aoo, "Delegações")
+    }
+  }, [fetcher.data])
+
+  return [handleDownload, fetcher.state]
 }
 
 export default Participants

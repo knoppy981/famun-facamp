@@ -1004,13 +1004,20 @@ input:-webkit-autofill:active {
   align-items: center;
   justify-content: space-between;
   padding: 0 15px;
+  gap: 15px;
 }
 .admin-navigation-button-container > div {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   align-items: center;
   justify-self: end;
   font-size: 1.6rem;
+}
+@media screen and (max-width: 700px) {
+  .admin-navigation-button-container {
+    flex-wrap: wrap-reverse;
+  }
 }
 
 .admin-search-input-box {

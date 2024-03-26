@@ -8,7 +8,7 @@ import { motion } from 'framer-motion'
 
 import { useUser, useUserType } from '~/utils'
 import { getCorrectErrorMessage } from '~/utils/error'
-import { getExistingUser, updateUser } from '~/models/user.server';
+import { UserType, getExistingUser, updateUser } from '~/models/user.server';
 import { useOnScreen } from '~/hooks/useOnScreen'
 import { updateUserSchema } from '~/schemas'
 
@@ -19,9 +19,21 @@ import { useButtonState } from './useButtonState'
 import { requireUser } from '~/session.server'
 import { iterateObject } from '../dashboard/utils/findDiffrences'
 import { createUserChangeNotification } from '~/models/notifications.server'
+import { sendEmail } from '~/nodemailer.server'
+import { createUserEmail, manualCreateUserEmail } from '~/lib/emails'
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const user = await requireUser(request)
+  const info = await sendEmail({
+    to: user.email,
+    subject: `Bem-vindo(a) ao FAMUN ${new Date().getFullYear()}!`,
+    html: createUserEmail(user as UserType)
+  })
+
+  console.log(info)
+
+  return json({})
+
   const formData = await request.formData();
   let changes = qs.parse(formData.get("changes") as string)
   let data: any = {}

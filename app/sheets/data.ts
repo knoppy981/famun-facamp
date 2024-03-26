@@ -1,5 +1,6 @@
 import _ from "lodash"
 import { DelegationType } from "~/models/delegation.server";
+import { UserType } from "~/models/user.server";
 import { ComitteeType } from "~/routes/admin._dashboard.comittees.$comittee/route";
 import { getDelegationCharges } from "~/stripe.server";
 
@@ -133,6 +134,55 @@ export function comitteeAoo(comittee: ComitteeType) {
       "Female": delegate.user.sex === "Female" ? 1 : 0,
     })
   })
+
+  return aoo
+}
+
+export type ParticipantType = Partial<
+  UserType & {
+    delegation: DelegationType
+  }>
+
+export function participantsAoo(participants: UserType[], type: "rg" | "cracha delegados" | "cracha orientadores") {
+  const aoo: any[] = []
+
+  switch (type) {
+    case "rg":
+      participants.forEach(participant => {
+        aoo.push({
+          "Name": participant.name,
+          "Rg/Passaporte": participant.rg ?? participant.passport
+        })
+      })
+      break;
+    case "cracha delegados":
+      participants.forEach(participant => {
+        aoo.push({
+          "Name": participant.name,
+          "Committee/Council": participant.delegate?.comittee?.name,
+          "Country": participant.delegate?.country,
+        })
+      })
+      break;
+    case "cracha orientadores":
+      participants.forEach(participant => {
+        aoo.push({
+          "Name": participant.name,
+          "School": participant.name,
+          "Role": participant.delegationAdvisor?.advisorRole
+        })
+      })
+      break;
+    default:
+      participants.forEach(participant => {
+        aoo.push({
+          "Name": participant.name,
+          "Rg/Passaporte": participant.rg ?? participant.passport
+        })
+      })
+      break;
+  }
+
 
   return aoo
 }

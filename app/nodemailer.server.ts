@@ -8,17 +8,22 @@ export const sendEmail = async ({
   [key: string]: string
 }) => {
   const transporter = nodeMailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
+    service: "Outlook365",
+    host: 'smtp.office365.com',
+    port: 587,
     secure: true,
+    tls: {
+      ciphers: "SSLv3",
+      rejectUnauthorized: false,
+    },
     auth: {
-      user: 'andre.knopp8@gmail.com',
-      pass: process.env.GMAIL_APP_PASSWORD,
+      user: 'famun@facamp.com.br',
+      pass: process.env.EMAIL_PASSWORD,
     }
   })
 
   const info = await transporter.sendMail({
-    from: 'Equipe FAMUN <andre.knopp8@gmail.com>',
+    from: 'Equipe FAMUN <famun@facamp.com.br>',
     to,
     subject,
     html,
