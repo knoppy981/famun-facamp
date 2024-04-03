@@ -1,11 +1,10 @@
 import React from 'react'
+import { useFetcher, useLoaderData } from '@remix-run/react';
 import qs from "qs"
 import { ParticipationMethod } from '@prisma/client';
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node';
-import Button from '~/components/button'
-import EditConfigurations from './edit-configurations-components';
+
 import { getConfigurations, updateConfiguration } from '~/models/configuration.server';
-import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useConfiuratiionsUpdate } from './useConfigurationsUpdate';
 import { useButtonState } from './useButtonState';
 import { requireAdminId } from '~/session.server';
@@ -13,20 +12,21 @@ import { iterateObject } from '../dashboard/utils/findDiffrences';
 import { getCorrectErrorMessage } from '~/utils/error';
 import { updateConfigurationSchema } from '~/schemas';
 
+import Button from '~/components/button'
+import EditConfigurations from './edit-configurations-components';
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
   const formData = await request.formData();
   let changes = qs.parse(formData.get("changes") as string)
   let data: any = {}
 
-  console.log(changes)
-
   iterateObject(changes, (key, value, path) => {
     if (value === "false" || value === "true") value = value === "true"
     if (key.startsWith("preco")) value = parseInt(value)
 
-    if (key.startsWith("conselhos")) {
-      data[key] = { set: value }
+    if (key.startsWith("conselhos") || key === "representacoesExtras") {
+      data[key] = { set: value === "" ? [] : value }
     } else {
       data[key] = value
     }
@@ -42,8 +42,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       { status: 400 }
     );
   }
-
-  console.log(data)
 
   return updateConfiguration(data)
 }
@@ -65,10 +63,6 @@ const Configurations = () => {
   const { readySubmission, userWantsToChangeData, handleSubmission, handleChange } =
     useConfiuratiionsUpdate(configurations, fetcher)
   const [buttonLabel, buttonIcon, buttonColor] = useButtonState(userWantsToChangeData, readySubmission, fetcher.state)
-
-  React.useEffect(() => {
-    console.log(fetcher.data)
-  }, [fetcher.data])
 
   return (
     <div className='admin-container'>

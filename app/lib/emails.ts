@@ -6,8 +6,6 @@ export const createUserEmail = (user: UserType) => {
     <p>Prezado(a) ${user.name}</p>
     <p>Seja bem-vindo(a) ao FAMUN 2024!</p>
 
-    <p>Sua inscrição foi registrada com sucesso! </p>
-
     <p>Seu cadastro no sistema de inscrições foi realizado com sucesso!</p>
 
     <p>Para que sua INSCRIÇÃO na conferência seja concluída, você deve completar os seguintes passos:</p>
@@ -27,7 +25,7 @@ export const createUserEmail = (user: UserType) => {
       </li>
 
       <li>
-        Realize o pagamento das taxas de inscrição conforme indicado no sistema. ATENÇÃO: Sua inscrição apenas será confirmada após a confirmação do pagamento. 
+        <b>Se você já entrou em uma delegação, realize o pagamento das taxas de inscrição conforme indicado no sistema. ATENÇÃO: Sua inscrição apenas será confirmada após a confirmação do pagamento.</b>
       </li>
     </ol>
 

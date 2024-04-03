@@ -88,7 +88,7 @@ const step5 = Joi.object({
     .required(),
 
   sex: Joi.string()
-    .valid('Male', 'Female')
+    .valid('Masculino', 'Feminino', 'Outro')
     .required()
     .messages({
       'string.empty': 'Sexo obrigatório',

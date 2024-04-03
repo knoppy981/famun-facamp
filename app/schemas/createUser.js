@@ -61,7 +61,7 @@ export const createUserSchema = Joi.object({
     }),
 
   sex: Joi.string()
-    .valid('Male', 'Female')
+    .valid('Masculino', 'Feminino', 'Outro')
     .required()
     .messages({
       'string.empty': 'Sexo obrigatório',

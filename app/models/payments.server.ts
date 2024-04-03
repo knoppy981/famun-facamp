@@ -178,3 +178,15 @@ export async function postponeDelegationPaymentDue(id: string) {
 		}
 	})
 }
+
+export async function toggleFakePayment(userId: string, paymentExists: boolean) {
+  console.log(userId, paymentExists)
+  return prisma.user.update({
+    where: {
+      id: userId
+    },
+    data: {
+      stripePaidId: paymentExists ? null : "fake_payment"
+    }
+  })
+}

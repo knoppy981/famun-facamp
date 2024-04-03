@@ -28,8 +28,6 @@ export const NumberField = forwardRef<HTMLInputElement, NumberFieldProps>((props
     decrementButtonProps
   } = useNumberField(props, state, inputRef);
 
-  console.log(inputProps)
-
   return (
     <div className={props.className}>
       {error ?

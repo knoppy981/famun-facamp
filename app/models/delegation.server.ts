@@ -24,7 +24,7 @@ export async function getDelegationById(id: Delegation["id"]) {
 				include: {
 					delegate: {
 						include: {
-							comittee: true
+							committee: true
 						}
 					},
 					files: {
@@ -87,7 +87,7 @@ export async function getDelegationBySchool(school: string) {
 				include: {
 					delegate: {
 						include: {
-							comittee: true
+							committee: true
 						}
 					},
 					delegationAdvisor: true,
@@ -185,7 +185,7 @@ export async function adminDelegationData(school: Delegation["school"]) {
 				include: {
 					delegate: {
 						include: {
-							comittee: true
+							committee: true
 						}
 					},
 					delegationAdvisor: true,
@@ -358,7 +358,7 @@ export async function getExistingDelegation({
 
 	if (values.school === delegation.school) {
 		field = "school"
-		errorMsg = "Name already taken"
+		errorMsg = "Este nome já está sendo utilizado"
 	}
 
 	const errorDetails = [
@@ -448,31 +448,6 @@ export async function deleteDelegation(id: string) {
 	return prisma.delegation.delete({
 		where: {
 			id
-		}
-	})
-}
-
-export async function getAllDelegations(pm: ParticipationMethod): Promise<any[]> {
-	const currentYear = new Date().getFullYear();
-	const startDate = new Date(currentYear, 0, 1);
-	const endDate = new Date(currentYear + 1, 0, 1);
-
-	return prisma.delegation.findMany({
-		where: {
-			createdAt: {
-				gte: startDate,
-				lt: endDate
-			},
-			participationMethod: pm
-		},
-		include: {
-			address: true,
-			participants: {
-				include: {
-					delegate: true,
-					delegationAdvisor: true,
-				},
-			}
 		}
 	})
 }

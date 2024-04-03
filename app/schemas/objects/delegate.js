@@ -56,7 +56,7 @@ export const updateDelegateSchema = Joi.object({
       'string.empty': 'Selecione uma nacionalidade'
     }),
 
-  comittee: Joi.any(),
+  committee: Joi.any(),
 
   advisorRole: Joi.forbidden(),
   Facebook: Joi.forbidden(),

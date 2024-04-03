@@ -74,7 +74,7 @@ const FileForm = ({ state, user, selectedFiles, actionData }:
                   <input type='text' id="file-type" name="file-type" hidden readOnly value={selectedFileName} />
                   <input
                     type="file" id="my-file" name="my-file" hidden ref={ref} onChange={onFileChange}
-                    accept={`.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,${selectedFileName === "Liability Waiver" ? "image/jpeg" : ""}`}
+                    accept={`.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,image/jpeg,image/png`}
                   />
 
                   {!file ?

@@ -33,7 +33,7 @@ function useAddParticipant(fetcher: FetcherWithComponents<any>, open: boolean, i
   React.useEffect(() => {
     if (open) {
       const searchParams = new URLSearchParams([["ids", ids]]);
-      fetcher.load(`/api/gpi?${searchParams}`)
+      fetcher.load(`/api/participant/getParticipants?${searchParams}`)
     }
   }, [open])
 }

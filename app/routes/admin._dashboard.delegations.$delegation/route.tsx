@@ -1,27 +1,26 @@
 import React from 'react'
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from '@remix-run/node'
-import { useFetcher, useLoaderData, useOutletContext, useSearchParams, useSubmit } from '@remix-run/react'
+import { useFetcher, useLoaderData, useSearchParams, useSubmit } from '@remix-run/react'
 import qs from 'qs'
-import { ParticipationMethod } from '@prisma/client';
-import { useOverlayTriggerState } from 'react-stately';
+import { Notifications, ParticipationMethod } from '@prisma/client';
 
 import { requireAdminId } from '~/session.server';
-import { delegationAoo } from '~/sheets/data';
-import { exportAoo } from '~/sheets';
-import { DelegationType, adminDelegationData } from '~/models/delegation.server';
+import { adminDelegationData } from '~/models/delegation.server';
 import { getDelegationCharges } from '~/stripe.server';
 import { iterateObject } from '../dashboard/utils/findDiffrences';
 import { updateUserSchema } from '~/schemas';
-import { getExistingUser, updateUser } from '~/models/user.server';
+import { UserType, getExistingUser, updateUser } from '~/models/user.server';
 import { getCorrectErrorMessage } from '~/utils/error';
 
 import Button from '~/components/button';
 import Link from '~/components/link';
-import { FiArrowLeft, FiBell, FiDollarSign, FiDownload, FiFile, FiTrash2 } from "react-icons/fi/index.js";
-import ParticipantModal from './participant';
+import { FiArrowLeft, FiBell, FiDollarSign, FiFile, FiTrash2 } from "react-icons/fi/index.js";
 import ModalTrigger from '~/components/modalOverlay/trigger';
 import Dialog from '~/components/dialog';
 import Spinner from '~/components/spinner';
+import ParticipantModal from '../admin._dashboard/participantModal';
+import { useParticipantModal } from '../admin._dashboard/participantModal/useParticipantModal';
+import { useDelegationData } from './useDelegationData';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
@@ -40,7 +39,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         if (field === "foodRestrictions") {
           data[field]["upsert"]["create"][nestedField] = value ?? null;
           data[field]["upsert"]["update"][nestedField] = value ?? null;
-        } else if (nestedField === "comittee" && nested2Field === "id") {
+        } else if (nestedField === "committee" && nested2Field === "id") {
           data[field]["update"][nestedField] = { connect: { id: value ?? null } }
         } else {
           data[field]["update"][nestedField] = value ?? null;
@@ -48,7 +47,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       } else {
         if (field === "foodRestrictions") {
           data[field] = { upsert: { create: { [nestedField]: value ?? null }, update: { [nestedField]: value ?? null } } };
-        } else if (nestedField === "comittee" && nested2Field === "id") {
+        } else if (nestedField === "committee" && nested2Field === "id") {
           data[field] = { update: { [nestedField]: { connect: { id: value ?? null } } } }
         } else {
           data[field] = { update: { [nestedField]: value ?? null } };
@@ -110,33 +109,14 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 const Delegation = () => {
   const { delegation } = useLoaderData<typeof loader>()
   const [searchParams] = useSearchParams()
-  const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
-  const [selectedParticipant, setSelectedParticipant] = React.useState<any>()
-  const overlayState = useOverlayTriggerState({})
-  const hasDelegates = delegation.participants.length > 0
-  const sentDocuments = delegation.participants?.reduce((accumulator, participant) => {
-    if (participant.delegate) {
-      if (participant.files?.filter(file => file.name === "Liability Waiver" || file.name === "Position Paper").length === 2) accumulator += 1
-    } else if (participant.delegationAdvisor) {
-      if (participant.files?.filter(file => file.name === "Liability Waiver").length === 1) accumulator += 1
-    }
-    return accumulator
-  }, 0) as number
-  const paidParticipants = delegation.participants?.reduce((accumulator, participant) => {
-    if (participant.stripePaidId) accumulator += 1
-    return accumulator
-  }, 0) as number
+  const [overlayState, selectedParticipantId, handleParticipantChange] = useParticipantModal()
   const [handleRemoveParticipant] = useDeleteDelegation()
   const [handlePostponePayment, postponePaymentState] = usePostponePayment()
-
-  const totalPaid = `
-  ${delegation.amountPaid.brl > 0 ? (delegation.amountPaid.brl / 100).toLocaleString("pt-BR", { style: "currency", currency: "brl" }) : ""}
-  ${delegation.amountPaid.usd > 0 ? (delegation.amountPaid.usd / 100).toLocaleString("pt-BR", { style: "currency", currency: "usd" }) : ""}
-  `
+  const [hasDelegates, participantLength, sentDocuments, paidParticipants, totalPaid] = useDelegationData(delegation)
 
   return (
     <div className='admin-container'>
-      <div className='comittee-return-link'>
+      <div className='committee-return-link'>
         <Link
           to={{
             pathname: '/admin/delegations',
@@ -147,18 +127,18 @@ const Delegation = () => {
         </Link>
       </div>
 
-      <div className='comittee-title'>
+      <div className='committee-title'>
         {delegation.school}
       </div>
 
       <div className='admin-delegation-subtitle'>
         <div className="admin-delegation-subtitle-item">
-          <span>{delegation?.participants?.length}</span> participante{delegation?.participants?.length !== 1 ? "s" : ""}
+          <span>{participantLength}</span> participante{participantLength !== 1 ? "s" : ""}
         </div>
 
         <div className="admin-delegation-subtitle-item">
-          <span>{paidParticipants}</span> inscriç{paidParticipants !== 1 ? "ões" : "ão"} paga{paidParticipants !== 1 ? "s, " : ", "}
-          total pago: {totalPaid}
+          <span>{paidParticipants}</span> inscriç{paidParticipants !== 1 ? "ões" : "ão"} paga{paidParticipants !== 1 ? "s" : ""}
+          {totalPaid !== "" ? ", total pago:" + totalPaid : ""}
         </div>
 
         <div className="admin-delegation-subtitle-item">
@@ -168,7 +148,7 @@ const Delegation = () => {
 
       {hasDelegates ?
         <>
-          <ParticipantModal state={overlayState} participant={selectedParticipant} />
+          <ParticipantModal state={overlayState} participant={delegation.participants.find(participant => participant.id === selectedParticipantId) as any} />
 
           <div className='overflow-container'>
             <table className='table'>
@@ -183,7 +163,7 @@ const Delegation = () => {
                   </td>
 
                   <td className='table-cell'>
-                    Conselho
+                    Comitê/Conselho
                   </td>
 
                   <td className='table-cell'>
@@ -207,7 +187,7 @@ const Delegation = () => {
                       className="table-row cursor"
                       key={i}
                       onClick={() => {
-                        setSelectedParticipant(participant)
+                        handleParticipantChange(participant.id)
                         overlayState.toggle()
                       }}
                       tabIndex={0}
@@ -216,7 +196,7 @@ const Delegation = () => {
                       onKeyDown={(event) => {
                         if (event.key === 'Enter' || event.key === 'Space') {
                           event.preventDefault();
-                          setSelectedParticipant(participant)
+                          handleParticipantChange(participant.id)
                           overlayState.toggle()
                         }
                       }}
@@ -244,7 +224,7 @@ const Delegation = () => {
                       </td>
 
                       <td className='table-cell'>
-                        {participant.delegate ? delegate?.comittee?.council.replace(/_/g, " ") ?? <p className='text italic'>Não definido</p> : ""}
+                        {participant.delegate ? delegate?.committee?.council.replace(/_/g, " ") ?? <p className='text italic'>Não definido</p> : ""}
                       </td>
 
                       <td className='table-cell'>
@@ -267,13 +247,13 @@ const Delegation = () => {
           </div>
         </>
         :
-        <div className='comittee-title'>
+        <div className='committee-title'>
           <div className='text italic'>
             Ainda não há delegados nesta conferência
           </div>
         </div>
       }
-      <div className='comittee-title'>
+      <div className='committee-title'>
         <div className='text'>
           Limite para o pagamento: {new Date(delegation.paymentExpirationDate).toLocaleString('pt-BR', {
             timeZone: 'America/Sao_Paulo',
@@ -293,7 +273,7 @@ const Delegation = () => {
         </Button>
       </div>
 
-      <div className='comittee-title'>
+      <div className='committee-title'>
         <ModalTrigger
           buttonClassName='secondary-button-box red-light'
           label={<><FiTrash2 className='icon' /> Excluír Delegação</>}
@@ -341,7 +321,7 @@ function useDeleteDelegation() {
   const handleRemoveParticipant = (delegationId: string) => {
     submit(
       { delegationId },
-      { method: "post", action: "/api/adminDeleteDelegation", navigate: false }
+      { method: "post", action: "/api/admin/deleteDelegation", navigate: false }
     )
   }
 
@@ -354,7 +334,7 @@ function usePostponePayment(): [(delegationId: string) => void, "idle" | "loadin
   const handlePostponePayment = (delegationId: string) => {
     fetcher.submit(
       { delegationId },
-      { method: "post", action: "/api/ppd", navigate: false }
+      { method: "post", action: "/api/admin/delegation/paymentDue", navigate: false }
     )
   }
 

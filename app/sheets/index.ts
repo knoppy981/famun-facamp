@@ -1,5 +1,4 @@
 import XLSX from "xlsx";
-import { delegationAoo } from "./data";
 
 export function exportAoo(aoo: { [key: string]: string | undefined | number; }[], fileName: string) {
   var ws = XLSX.utils.json_to_sheet(aoo);

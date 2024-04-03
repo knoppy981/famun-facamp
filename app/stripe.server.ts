@@ -74,16 +74,19 @@ export async function createPaymentIntent({
 
 export async function getDelegationCharges(delegation: DelegationType) {
   let query = ""
+  let count = 0
   delegation.participants?.map(participant => participant?.stripeCustomerId)?.forEach((customerId, index) => {
     if (customerId !== null) {
-      query += `${index !== 0 ? " OR " : ""}customer:"${customerId}"`
+      query += `${count !== 0 ? " OR " : ""}customer:"${customerId}"`
+      count += 1
     }
   })
 
   if (query === "") return
 
   return stripe.charges.search({
-    query
+    query,
+    limit: 30,
   });
 }
 

@@ -108,9 +108,9 @@ const ConfirmData = ({ data, userType }: { data: any, userType: any }) => {
 
               {Array.isArray(data.languagesSimulates) ?
                 data.languagesSimulates.map((item: any, index: number) => (
-                  <p className='join-confirm-data-list-item' key={index}>{item}</p>
+                  <p className='join-confirm-data-list-item' key={index}>{handleLanguageSpelling(item)}</p>
                 )) :
-                data.languagesSimulates
+                handleLanguageSpelling(data.languagesSimulates)
               }
             </div>
           </>
@@ -144,6 +144,17 @@ const ConfirmData = ({ data, userType }: { data: any, userType: any }) => {
       </div>
     </>
   )
+}
+
+function handleLanguageSpelling(language: string) {
+  switch (language.toLowerCase()){
+    case "portugues":
+      return "Protugês"
+    case "ingles":
+      return "Inglês"
+    case "espanhol":
+      return "Espanhol"
+  }
 }
 
 export default ConfirmData

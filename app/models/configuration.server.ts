@@ -9,6 +9,7 @@ export async function getConfigurations() {
     select: {
       conselhosEscolas: true,
       conselhosUniversidades: true,
+      representacoesExtras: true,
       coupons: true,
       precoDelegadoEnsinoMedio: true,
       precoDelegadoInternacional: true,
@@ -49,19 +50,23 @@ export async function getCouncils(participationMethod: "Escola" | "Universidade"
   return participationMethod === "Escola" ? config?.conselhosEscolas : config?.conselhosUniversidades
 }
 
+export async function getExtraRepresentations() {
+  return prisma.configuration.findUnique({
+    where: {
+      name: "default"
+    },
+    select: {
+      representacoesExtras: true
+    }
+  })
+}
+
 export async function updateConfiguration(values: { [key: string]: string | any }) {
   return prisma.configuration.update({
     where: {
       name: "default"
     },
     data: values,
-    select: {
-      precoDelegadoEnsinoMedio: true,
-      precoDelegadoInternacional: true,
-      precoDelegadoUniversidade: true,
-      precoFacultyAdvisors: true,
-      precoProfessorOrientador: true,
-    }
   })
 }
 

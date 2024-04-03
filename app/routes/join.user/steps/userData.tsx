@@ -24,7 +24,7 @@ const UserData = ({ data, actionData }: { data: any; actionData: any }) => {
           <TextField
             className='primary-input-box'
             name="name"
-            label="Nome"
+            label="Nome completo"
             type="text"
             defaultValue={data?.name}
             errorMessage={actionData?.errors?.name}
@@ -114,8 +114,9 @@ const UserData = ({ data, actionData }: { data: any; actionData: any }) => {
             errorMessage={actionData?.errors?.sex}
             action={actionData}
           >
-            <Radio value="Male">Masculino</Radio>
-            <Radio value='Female'>Feminino</Radio>
+            <Radio value="Masculino">Masculino</Radio>
+            <Radio value='Feminino'>Feminino</Radio>
+            <Radio value='Outro'>Outro</Radio>
           </RadioGroup>
 
           <CheckboxGroup

@@ -1,4 +1,4 @@
-import React, { Key, useRef } from 'react'
+import React, { Key } from 'react'
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { requireAdminId } from '~/session.server';
 import { FiArrowLeft, FiChevronRight, FiLogOut, FiMenu, FiSettings, FiX } from "react-icons/fi/index.js";
@@ -6,9 +6,6 @@ import { Form, NavLink, Outlet, useMatches, useNavigate, useSearchParams } from 
 import Button from '~/components/button';
 import { SidebarTrigger } from '../dashboard/sidebar';
 import { Select, Item } from './select';
-import { motion } from 'framer-motion';
-import { useStickyContainer } from '~/hooks/useStickyContainer';
-import Link from '~/components/link';
 import useDidMountEffect from '~/hooks/useDidMountEffect';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -28,10 +25,6 @@ const AdminPage = () => {
   useDidMountEffect(() => {
     if (matches?.[3]?.pathname) navigate(`${matches[3].pathname}?pm=${participationMethod}`, { replace: true })
   }, [participationMethod])
-
-  React.useEffect(() => {
-    console.log(matches)
-  }, [matches])
 
   return (
     <div className='admin-wrapper'>

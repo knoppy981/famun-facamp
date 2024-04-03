@@ -1,6 +1,6 @@
 {
   "exclude": ["./cypress", "./cypress.config.ts"],
-  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx", "server.js", "prisma/seed.js", "app/routes/admin._dashboard.comittees._index", "app/routes/admin._dashboard.comittees.$comittee"],
+  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx", "server.js", "prisma/seed.js", "app/routes/admin._dashboard.committees._index", "app/routes/admin._dashboard.committees.$committee"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2020"],
     "types": ["vitest/globals"],

@@ -5,11 +5,11 @@ import { prisma } from "~/db.server";
 import { ValidationError } from "~/utils/error";
 import { stripe } from "~/stripe.server";
 
-import type { Password, User, Delegate, DelegationAdvisor, File, FoodRestrictions, ParticipationMethod, Comittee } from "@prisma/client";
+import type { Password, User, Delegate, DelegationAdvisor, File, FoodRestrictions, ParticipationMethod, Committee } from "@prisma/client";
 
 export type UserType = User & {
 	delegate?: Delegate & {
-		comittee?: Comittee
+		committee?: Committee
 	},
 	delegationAdvisor?: DelegationAdvisor,
 	files?: Partial<File>[],
@@ -22,7 +22,7 @@ export async function getUserById(id: User["id"]) {
 		include: {
 			delegate: {
 				include: {
-					comittee: true
+					committee: true
 				}
 			},
 			delegationAdvisor: true,
@@ -114,19 +114,19 @@ export async function getExistingUser({ userId, ...values }: { userId?: User["id
 
 	if (values.email === user.email) {
 		field = "email"
-		errorMsg = "E-mail already being used"
+		errorMsg = "Este e-mail já está sendo usado"
 	} else if (values.name === user.name) {
 		field = "name"
-		errorMsg = "Name already being used"
+		errorMsg = "Este nome já está sendo usado"
 	} else if (values.cpf === user.cpf) {
 		field = "cpf"
-		errorMsg = "Cpf already being used"
+		errorMsg = "Este CPF já está sendo usado"
 	} else if (values.rg === user.rg) {
 		field = "rg"
-		errorMsg = "Rg already being used"
+		errorMsg = "Este RG já está sendo usado"
 	} else if (values.passport === user.passport) {
 		field = "passport"
-		errorMsg = "Passport already being used"
+		errorMsg = "Este passporte já está sendo usado"
 	}
 
 	const errorDetails = [
@@ -171,16 +171,33 @@ export async function adminParticipantList(index: number, participationMethod: P
 				mode: "insensitive"
 			} : undefined
 		},
-		select: {
-			id: true,
-			name: true,
+		include: {
+			delegate: {
+				include: {
+					committee: true
+				}
+			},
+			delegationAdvisor: true,
+			foodRestrictions: true,
+			notifications: {
+				orderBy: {
+					createdAt: "desc"
+				}
+			},
+			files: {
+				select: {
+					id: true,
+					name: true,
+					size: true,
+					createdAt: true,
+					fileName: true,
+				}
+			},
 			delegation: {
 				select: {
 					school: true
 				}
-			},
-			createdAt: true,
-			delegationAdvisor: true
+			}
 		},
 		orderBy: orderByObject,
 	})

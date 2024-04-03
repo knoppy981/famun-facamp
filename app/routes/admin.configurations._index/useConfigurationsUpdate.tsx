@@ -54,9 +54,15 @@ export function useConfiuratiionsUpdate(configurations: Partial<Configuration>, 
         defaultValue = defaultValue.sort()
       }
 
-      if (name === "subscriptionAvailable" && typeof value === "string") {
-        value = value === "true"
+      if (Array.isArray(value) && value.length === 0) {
+        if (defaultValue === undefined || defaultValue.length === 0) {
+          delete prevState[name]
+          return { ...prevState }
+        } else {
+          value = null
+        }
       }
+      if (name === "subscriptionAvailable" && typeof value === "string") value = value === "true"
 
       if (_.isEqual(defaultValue, value)) {
         delete prevState[name]

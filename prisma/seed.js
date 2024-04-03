@@ -47,7 +47,7 @@ async function delegationWith10Delegates() {
 				email: `user${i + 1}@gmail.com`,
 				phoneNumber: "+55 19 97154 7424",
 				participationMethod: "Escola",
-				sex: "Male",
+				sex: "Masculino",
 				password: {
 					create: {
 						hash: await bcrypt.hash("Teste123", 10)
@@ -98,7 +98,7 @@ async function delegationWith2Users() {
 			email: "andre.knopp8@gmail.com",
 			phoneNumber: "+55 19 97154 7424",
 			participationMethod: "Escola",
-			sex: "Male",
+			sex: "Masculino",
 			password: {
 				create: {
 					hash: await bcrypt.hash("Dede5562", 10)
@@ -143,7 +143,7 @@ async function delegationWith2Users() {
 			email: "teste@gmail.com",
 			phoneNumber: "+55 19 97154 7424",
 			participationMethod: "Escola",
-			sex: "Female",
+			sex: "Feminino",
 			password: {
 				create: {
 					hash: await bcrypt.hash("teste123", 10)
@@ -240,6 +240,10 @@ async function createAdmin() {
 			conselhosUniversidades: [
 				"Consejo de Seguridad de las Naciones Unidas - Espanhol",
 				"United Nations Environment Assembly - Inglês"
+			],
+			representacoesExtras: [
+				"Unicef",
+				"Vietnamitas"
 			]
 		}
 	})

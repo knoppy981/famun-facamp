@@ -30,9 +30,9 @@ const PopItemsList = forwardRef<HTMLUListElement, any>((props, forwardedRef) => 
     });
   };
   const addItemById = () => {
-    if (props.isDisabled || inputValue === undefined || inputValue === "") return
+    if (props.isDisabled || inputValue === undefined || inputValue === "" || list.some(item => item.id === inputValue)) return
     setList((currentItems) => {
-      const newItems = [...currentItems, { id: inputValue }]
+      const newItems = currentItems?.length > 0 ? [...currentItems, { id: inputValue }] : [{ id: inputValue }]
       props.onSelectionChange(newItems)
       return newItems
     });
@@ -47,25 +47,29 @@ const PopItemsList = forwardRef<HTMLUListElement, any>((props, forwardedRef) => 
         ref={forwardedRef}
         className={`pop-list-box ${props.isDisabled ? "disabled" : ""}`}
       >
-        {list.map((item: any) => (
-          <Option
-            key={item.id}
-            item={item}
-            removeItemById={removeItemById}
-            isDisabled={props.isDisabled}
-          />
-        ))}
+        {list?.length > 0 ?
+          list?.map((item: any) => (
+            <Option
+              key={item.id}
+              item={item}
+              removeItemById={removeItemById}
+              isDisabled={props.isDisabled}
+            />
+          ))
+          :
+          <div className='text italic'>
+            Nenhum item foi adicionado ainda
+          </div>
+        }
       </ul>
 
       {!props.isDisabled ?
         <div className='pop-list-input-wrapper'>
           <TextField
             className="pop-list-box-input"
-            name="conference"
             aria-label="Adicionar"
             type="text"
-            isRequired
-            placeholder='Nome da conferência - Idioma'
+            placeholder={props.placeholder}
             onChange={handleChange}
             value={inputValue}
           />

@@ -12,7 +12,7 @@ const AdminDashboard = () => {
 
   const menuItems = [
     { name: "Delegações", to: "delegations", active: "/admin/delegations" },
-    { name: "Designação", to: "comittees", active: "/admin/comittees" },
+    { name: "Designação", to: "committees", active: "/admin/committees" },
     { name: "Participantes", to: "participants", active: "/admin/participants" },
     { name: "Credenciamento", to: "credentials", active: "/admin/credentials" },
   ]

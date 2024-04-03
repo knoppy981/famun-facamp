@@ -9,9 +9,9 @@ const Representation = (props: any) => {
         Representação
       </h3>
 
-      {defaultValues.delegate?.comittee ?
+      {defaultValues.delegate?.committee ?
         <>
-          <p className="text">{defaultValues.delegate?.comittee?.council.replace(/_/g, " ")}</p>
+          <p className="text" style={{ whiteSpace: "normal", maxWidth: "300px" }}>{defaultValues.delegate?.committee?.council.replace(/_/g, " ")}</p>
 
           <p className="text">{defaultValues.delegate?.country}</p>
         </>

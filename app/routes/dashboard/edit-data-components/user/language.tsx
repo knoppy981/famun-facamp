@@ -23,11 +23,9 @@ const LanguageData = (props: any) => {
           defaultValue={defaultValues?.delegate?.languagesSimulates}
           action={actionData}
         >
-          <Checkbox value='Portugues' isDisabled={isDisabled}>Português</Checkbox>
           <Checkbox value='Ingles' isDisabled={isDisabled}>Inglês</Checkbox>
-          <Checkbox value='Espanhol' isDisabled={isDisabled}>Espanhol</Checkbox>
+          {defaultValues.participationMethod === "Universidade" ? <Checkbox value='Espanhol' isDisabled={isDisabled}>Espanhol</Checkbox> : <Checkbox value='Portugues' isDisabled={isDisabled}>Português</Checkbox>}
         </CheckboxGroup>
-
       </div>
 
       <div className='data-box-border' />

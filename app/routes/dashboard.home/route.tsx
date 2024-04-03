@@ -19,17 +19,17 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   return json({
     delegationId,
-    isDelegationComplete: delegation?.maxParticipants === delegation?._count.participants,
-    isPaymentComplete: delegation?.participants.every(participant => participant.stripePaidId),
-    isDocumentComplete: delegation?.participants.reduce((accumulator, participant) => {
+    isDelegationComplete: delegation && delegation?.maxParticipants === delegation?._count.participants,
+    isPaymentComplete: delegation && delegation?.participants.every(participant => participant.stripePaidId),
+    isDocumentComplete: delegation && delegation?.participants.reduce((accumulator, participant) => {
       if (participant.delegate) {
-        if (participant.files.length >= 2) accumulator +=1
+        if (participant.files.length >= 2) accumulator += 1
       } else if (participant.delegationAdvisor) {
-        if (participant.files.length >= 1) accumulator +=1
+        if (participant.files.length >= 1) accumulator += 1
       }
       return accumulator;
     }, 0) === delegation?.participants.length
-  }) 
+  })
 }
 
 const Home = () => {
@@ -57,10 +57,10 @@ const Home = () => {
               Delegação
             </div>
 
-            {delegationId ? "Todos os participantes inscritos" : "Entrar em uma delegação"}
+            {delegationId ? "Todos os delegados inscritos" : "Entrar em uma delegação"}
 
-            <Button className={`secondary-button-box ${delegationId && isDelegationComplete ? 'green-light' : 'red-light'}`}>
-              {delegationId ? 'Concluído' : 'Entrar'}
+            <Button className={`secondary-button-box ${isDelegationComplete ? 'green-light' : 'red-light'}`}>
+              {delegationId ? isDelegationComplete ? 'Concluído' : 'Pendente' : 'Entrar'}
             </Button>
           </div>
         </Link>
@@ -71,10 +71,10 @@ const Home = () => {
               Pagamentos
             </div>
 
-            Pagar taxa de inscrição de toda delegação 
+            Pagar taxa de inscrição de toda delegação
 
             <Button className={`secondary-button-box ${isDelegationComplete && isPaymentComplete ? 'green-light' : 'red-light'}`}>
-              {isPaymentComplete ? 'Concluído' : 'Pendente'}
+              {delegationId ? isPaymentComplete ? 'Concluído' : 'Pendente' : 'Primeiro entre em uma delegação'}
             </Button>
           </div>
         </Link>
@@ -88,7 +88,7 @@ const Home = () => {
             Enviar documentos de toda delegação
 
             <Button className={`secondary-button-box ${isDelegationComplete && isDocumentComplete ? 'green-light' : 'red-light'}`}>
-              {isDocumentComplete ? 'Concluído' : 'Pendente'}
+              {delegationId ? isDocumentComplete ? 'Concluído' : 'Pendente' : 'Primeiro entre em uma delegação'}
             </Button>
           </div>
         </Link>

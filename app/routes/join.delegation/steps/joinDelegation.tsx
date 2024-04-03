@@ -74,7 +74,7 @@ function useJoinDelegation(fetcher: FetcherWithComponents<{ delegation?: any; er
     if (delegationCode.length === 6) {
       fetcher.submit(
         { delegationCode, userId: user.id },
-        { method: "post", action: "/api/delegationCode" }
+        { method: "post", action: "/api/join/delegationCode" }
       )
     } else {
       setReadySubmission(false)

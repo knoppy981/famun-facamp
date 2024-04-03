@@ -3,7 +3,10 @@ import TextField from '~/components/textfield';
 
 const PaymentConfigurations = (props: any) => {
   const { defaultValues, handleChange, actionData, isDisabled, theme } = props
-
+  const formatter = new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
   return (
     <div className={`data-box-container ${theme ?? ""}`}>
       <h3 className="data-box-container-title blue-border">
@@ -19,11 +22,11 @@ const PaymentConfigurations = (props: any) => {
           ["Internacional (USD)", "precoDelegadoInternacional", "text"],
         ].map((item, index) => {
           const defaultValue = String(defaultValues?.[item[1]])
-          const [value, setValue] = React.useState(defaultValue.length >= 3 ? defaultValue.slice(0, -2) + "," + defaultValue.slice(-2) : defaultValue)
+          const [value, setValue] = React.useState(formatter.format(Number(defaultValue) / 100))
           const handleInputChange = (e: any) => {
             let newValue = e.target.value.replace(/[^0-9]/g, '');
-            if (newValue.length >= 3) newValue = newValue.slice(0, -2) + "," + newValue.slice(-2)
-            setValue(newValue)
+            let formattedValue = formatter.format(Number(newValue) / 100)
+            setValue(formattedValue)
             handleChange({ target: { name: item[1], value: parseInt(newValue.replace(/,/g, '')) } })
           }
           return (
@@ -33,9 +36,8 @@ const PaymentConfigurations = (props: any) => {
               name={item[1]}
               label={item[0]}
               type={item[2]}
-              onChange={handleInputChange}
-              
               value={value}
+              onChange={handleInputChange}
               isDisabled={isDisabled}
               errorMessage={actionData?.errors?.[item[1]]}
               action={actionData}
@@ -54,9 +56,9 @@ const PaymentConfigurations = (props: any) => {
           const defaultValue = String(defaultValues?.[item[1]])
           const [value, setValue] = React.useState(defaultValue.length >= 3 ? defaultValue.slice(0, -2) + "," + defaultValue.slice(-2) : defaultValue)
           const handleInputChange = (e: any) => {
-            let newValue = e.target.value.replace(/,/g, '')
-            if (newValue.length >= 3) newValue = newValue.slice(0, -2) + "," + newValue.slice(-2);
-            setValue(newValue)
+            let newValue = e.target.value.replace(/[^0-9]/g, '');
+            let formattedValue = formatter.format(Number(newValue) / 100)
+            setValue(formattedValue)
             handleChange({ target: { name: item[1], value: parseInt(newValue.replace(/,/g, '')) } })
           }
           return (

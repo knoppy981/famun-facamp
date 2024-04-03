@@ -107,12 +107,12 @@ model Delegate {
   currentYear                 String
   councilPreference           String[]
   languagesSimulates          Languages[]
-  comittee                    Comittee?   @relation(fields: [comitteeId], references: [id])
-  comitteeId                  String?     @db.ObjectId
+  committee                   Committee?  @relation(fields: [committeeId], references: [id])
+  committeeId                 String?     @db.ObjectId
   country                     String?
 }
 
-model Comittee {
+model Committee {
   id        String              @id @default(auto()) @map("_id") @db.ObjectId
   delegates Delegate[]
   council   String
@@ -183,6 +183,7 @@ model Configuration {
   // council
   conselhosUniversidades String[]
   conselhosEscolas       String[]
+  representacoesExtras   String[]
 }
 
 type CouponType {
@@ -198,8 +199,9 @@ enum AdvisorRole {
 }
 
 enum Sex {
-  Male
-  Female
+  Masculino
+  Feminino
+  Outro
 }
 
 enum ParticipationMethod {

@@ -148,7 +148,7 @@ export function useDelegationUpdate(
   const handleRemoveParticipant = (participantId: string) => {
     removeParticipantFetcher.submit(
       { participantId, delegationId: delegation.id },
-      { method: "post", action: "/api/removeDelegationParticipant" }
+      { method: "post", action: "/api/participant/delegation/remove" }
     )
   }
 
@@ -168,7 +168,7 @@ export function useDelegationUpdate(
     const leaderId = delegation.participants?.find(participant => participant.leader)?.id as string
     changeLeaderFetcher.submit(
       { participantId, delegationId: delegation.id, leaderId },
-      { method: "post", action: "/api/changeDelegationLeader" }
+      { method: "post", action: "/api/participant/delegation/leader" }
     )
   }
 

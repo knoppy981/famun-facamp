@@ -500,6 +500,14 @@ input:-webkit-autofill:active {
     font-weight: 900;
   }
 
+  &.s2 {
+    font-size: 1.6rem;
+
+    @media screen and (max-width: 700px) {
+      font-size: 1.8rem;
+    }
+  }
+
   &.overflow {
     white-space: nowrap;
     overflow: hidden;

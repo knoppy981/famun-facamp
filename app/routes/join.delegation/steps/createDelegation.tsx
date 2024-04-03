@@ -40,6 +40,7 @@ const CreateDelegation = ({ data, actionData, user }: { data: any, actionData: a
           <PhoneNumberField
             className='primary-input-box'
             name="schoolPhoneNumber"
+            placeholder='DDI + DDD + número'
             label="Numero de Telefone da Escola / Universidade"
             _defaultValue={data?.schoolPhoneNumber}
             errorMessage={actionData?.errors?.schoolPhoneNumber}

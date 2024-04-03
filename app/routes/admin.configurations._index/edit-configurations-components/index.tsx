@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react"
 import DefaultConfigurations from "./default"
-import ComitteeConfigurations from "./comittee"
+import CommitteeConfigurations from "./committee"
 import PaymentConfigurations from "./payments";
 import { Configuration } from "@prisma/client";
+import RepresentationConfiguration from "./representation";
 
 const EditConfigurations = ({ isDisabled, actionData, defaultValues, handleChange, id }: {
   isDisabled: boolean,
@@ -16,7 +17,14 @@ const EditConfigurations = ({ isDisabled, actionData, defaultValues, handleChang
       className={`data-box-wrapper c`}
       key={id}
     >
-      <ComitteeConfigurations
+      <CommitteeConfigurations
+        defaultValues={defaultValues}
+        isDisabled={isDisabled}
+        handleChange={handleChange}
+        actionData={actionData}
+      />
+
+      <RepresentationConfiguration
         defaultValues={defaultValues}
         isDisabled={isDisabled}
         handleChange={handleChange}

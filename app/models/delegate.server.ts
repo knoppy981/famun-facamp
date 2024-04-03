@@ -4,7 +4,7 @@ import { prisma } from "~/db.server";
 export async function listDelegates(participationMethod: ParticipationMethod) {
   return prisma.delegate.findMany({
     where: {
-      comittee: {
+      committee: {
         is: null
       },
       user: {
@@ -33,13 +33,13 @@ export async function changeDelegateRepresentation(id: string, country: string) 
   })
 }
 
-export async function removeFromComittee(delegateId: string) {
+export async function removeFromCommittee(delegateId: string) {
   return prisma.delegate.update({
     where: {
       id: delegateId
     },
     data: {
-      comittee: {
+      committee: {
         disconnect: true
       }
     }

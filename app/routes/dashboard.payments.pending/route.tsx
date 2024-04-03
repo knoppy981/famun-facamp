@@ -21,11 +21,15 @@ const PendingPayments = () => {
       <i className='payments-warning'>
         Observações:
         <br />
-        Todos os pagamentos devem feitos em até 5 dias úteis após a submissão da inscrição. Cada participante pode realizar seu pagamento individualmente, ou ainda, um único participante pode fazer o pagamento para todos da delegação.
+        Pagamento via PIX: pague o valor correspondente à sua taxa de inscrição usando a Chave PIX: famun@facamp.com.br. Após terminar a transição, anexe o comprovante do PIX na aba “Documentos”. Salve o comprovante com o nome do participante correspondente ao pagamento. 
         <br />
-        Caso os pagamentos não sejam realizados nesse período, a inscrição poderá será cancelada e a delegação deverá realizar uma nova inscrição caso deseje participar da conferência. A nova inscrição dependerá da disponibilidade de vagas.
+        Pagamento via cartão de crédito ou boleto: clique em “Pagar” abaixo. O próprio sistema gerará o recibo e você receberá um email.
         <br />
-        ATENÇÃO:  O FAMUN 2024 não realiza reembolso ou ressarcimento das taxas de inscrição, sob nenhuma circunstância.
+        Os pagamentos podem ser feitos individualmente por cada participante; ou o Professores e Head Delegates podem pagar a inscrição de todos os delegados. A delegação pode escolher a forma que melhor lhe convier. 
+        <br />
+        Todos os pagamentos devem ser feitos em até 5 dias úteis após a criação da delegação. Caso os pagamentos não sejam realizados nesse período, a inscrição será cancelada e a delegação deverá realizar uma nova inscrição caso deseje participar da conferência. A nova inscrição dependerá da disponibilidade de vagas.
+        <br />
+        ATENÇÃO: o FAMUN 2024 não realiza reembolso ou ressarcimento das taxas de inscrição, sob nenhuma circunstância.
       </i>
 
       {requiredPayments?.find(el => el.available) ?

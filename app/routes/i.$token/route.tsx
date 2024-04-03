@@ -86,8 +86,17 @@ const invite = () => {
           </h2>
 
           <h3 className='join-subtitle' style={{ margin: "10px 0" }}>
-            Você foi convidado para participar da delegação do(a) {delegation?.school}
-            {!user && <><br />Cadastre-se ou, se voce ja está cadastrado, entre na sua conta para participar.</>}
+            Você foi convidado(a) para participar da delegação do(a) {delegation?.school}.
+            {!user &&
+              <>
+                <br />
+                Se você não tiver um cadastro, clique em “Fazer cadastro” para preencher a ficha de inscrição e criar seu login e senha.
+                <br />
+                Se você já tiver um cadastro, clique em “Fazer login”.
+                <br />
+                Cadastre-se ou, se voce ja está cadastrado, entre na sua conta para participar.
+              </>
+            }
           </h3>
 
           <div className='join-buttons-container'>

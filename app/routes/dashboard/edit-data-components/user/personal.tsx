@@ -32,7 +32,7 @@ const PersonalData = (props: any) => {
       <div className='data-box-input-container'>
         {[
           ["Email", "email", "email"],
-          ["Nome", "name", "text"],
+          ["Nome completo", "name", "text"],
         ].map((item, index) => (
           <TextField
             className="secondary-input-box"
@@ -92,15 +92,15 @@ const PersonalData = (props: any) => {
           name="sex"
           label="Sexo"
           isRequired
-          /* defaultValue={defaultValues?.sex} */
           onSelectionChange={value => handleChange({ target: { name: "sex", value: value } })}
           defaultSelectedKey={defaultValues?.sex}
           isDisabled={isDisabled}
           errorMessage={actionData?.errors?.birthDate}
           action={actionData}
         >
-          <Item key='Male'>Masculino</Item>
-          <Item key='Female'>Feminino</Item>
+          <Item key='Masculino'>Masculino</Item>
+          <Item key='Feminino'>Feminino</Item>
+          <Item key='Outro'>Outro</Item>
         </Select>
 
         <ComboBox

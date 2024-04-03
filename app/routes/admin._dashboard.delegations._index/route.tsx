@@ -220,7 +220,7 @@ function useDleegationsSheet(participationMethod: ParticipationMethod): [() => v
   const fetcher = useFetcher<any>()
 
   const handleDownload = () => {
-    fetcher.load(`/api/daoo?pm=${participationMethod}`)
+    fetcher.load(`/api/aoo/delegations?pm=${participationMethod}`)
   }
 
   React.useEffect(() => {

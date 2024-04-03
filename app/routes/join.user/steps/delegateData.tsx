@@ -33,7 +33,7 @@ const DelegateData = ({ data, actionData, participationMethod }: { data: any; ac
       <div className='join-container'>
         <ReorderableListBox
           className="primary-reordable-list"
-          label="Coloque em ordem crescente quais Comitês / Conselhos você deseja simular em ordem de preferência. Atenção aos idiomas de cada simulação"
+          label=" Coloque em ordem crescente de preferência quais Comitês/Conselhos você deseja simular. Atenção aos idiomas de cada simulação:"
           aria-label="Preferencia de conselho"
           selectionMode="multiple"
           selectionBehavior="replace"
@@ -54,9 +54,8 @@ const DelegateData = ({ data, actionData, participationMethod }: { data: any; ac
           errorMessage={actionData?.errors.languagesSimulates}
           action={actionData}
         >
-          <Checkbox value="Portugues">Português</Checkbox>
           <Checkbox value="Ingles">Inglês</Checkbox>
-          <Checkbox value="Espanhol">Espanhol</Checkbox>
+          {participationMethod === "Universidade" ? <Checkbox value="Espanhol">Espanhol</Checkbox> : <Checkbox value="Portugues">Português</Checkbox>}
         </CheckboxGroup>
 
         <div className='join-input-container'>
