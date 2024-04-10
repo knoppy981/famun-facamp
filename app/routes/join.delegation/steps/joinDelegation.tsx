@@ -82,7 +82,6 @@ function useJoinDelegation(fetcher: FetcherWithComponents<{ delegation?: any; er
   }
 
   React.useEffect(() => {
-    console.dir(fetcher, { depth: null })
     setReadySubmission(fetcher.data?.delegation && value?.length === 6)
   }, [fetcher.data])
 

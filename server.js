@@ -92,7 +92,7 @@ async function createDevRequestHandler(initialBuild) {
     try {
       return createRequestHandler({
         build,
-        mode: "development",
+        mode: "production",
       })(req, res, next);
     } catch (error) {
       console.log(error)

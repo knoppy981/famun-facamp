@@ -10,7 +10,8 @@ import { FiMinus, FiPlus } from 'react-icons/fi/index.js';
 
 type NumberFieldProps = AriaNumberFieldProps &
   React.InputHTMLAttributes<HTMLInputElement> & {
-    action?: any
+    action?: any;
+    theme?: any;
   }
 
 export const NumberField = forwardRef<HTMLInputElement, NumberFieldProps>((props, forwardedRef) => {
@@ -35,13 +36,18 @@ export const NumberField = forwardRef<HTMLInputElement, NumberFieldProps>((props
           {error}
         </p>
         :
-        <label {...labelProps} className="label">
+        <label {...labelProps} className={`label ${props.theme ?? ""}`}>
           {props.label}
         </label>
       }
 
       <div {...groupProps} className={`numberfield-container ${error ? "error" : ""} ${props.isDisabled ? "disabled" : ""}`}>
-        <input {...inputProps} ref={mergeRefs([inputRef, forwardedRef])} className='numberfield-input' name={props.name}/>
+        <input
+          {...inputProps}
+          ref={mergeRefs([inputRef, forwardedRef])}
+          className={`numberfield-input ${props.theme ?? ""}`}
+          name={props.name}
+        />
 
         <div className='numberfield-buttons-container'>
           <Button {...incrementButtonProps}><FiPlus /></Button>

@@ -211,30 +211,6 @@ export async function adminDelegationData(school: Delegation["school"]) {
 }
 
 export async function joinDelegation(data: { code: string; userId: string }) {
-	const delegation = await prisma.delegation.findUnique({
-		where: {
-			code: data.code
-		},
-		select: {
-			maxParticipants: true,
-			_count: {
-				select: {
-					participants: {
-						where: {
-							delegate: {
-								NOT: {
-									id: undefined
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	})
-
-	if (delegation?._count.participants && delegation?._count.participants >= delegation?.maxParticipants) throw new Error()
-
 	return prisma.delegation.update({
 		where: {
 			code: data.code

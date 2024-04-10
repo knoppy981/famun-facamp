@@ -2465,7 +2465,6 @@ input:-webkit-autofill:active {
 }
 
 .numberfield-container {
-  align-self: flex-start;
   position: relative;
   border: 1px solid #E6E6E6;
   display: flex;
@@ -2486,7 +2485,6 @@ input:-webkit-autofill:active {
 }
 
 .numberfield-buttons-container {
-  flex-grow: 1;
   display: flex;
   justify-content: space-evenly;
   flex-direction: column;
@@ -2508,6 +2506,10 @@ input:-webkit-autofill:active {
   background: transparent;
   letter-spacing: normal;
   -webkit-text-fill-color: #000 !important;
+}
+.numberfield-input.dark {
+  color: #fff;
+  -webkit-text-fill-color: #fff !important;
 }
 
 .textarea-container {

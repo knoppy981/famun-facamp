@@ -21,6 +21,8 @@ import Spinner from '~/components/spinner';
 import ParticipantModal from '../admin._dashboard/participantModal';
 import { useParticipantModal } from '../admin._dashboard/participantModal/useParticipantModal';
 import { useDelegationData } from './useDelegationData';
+import { useOverlayTriggerState } from 'react-stately';
+import ChangeMaxParticipants from './changeMaxParticipants';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
@@ -113,6 +115,7 @@ const Delegation = () => {
   const [handleRemoveParticipant] = useDeleteDelegation()
   const [handlePostponePayment, postponePaymentState] = usePostponePayment()
   const [hasDelegates, participantLength, sentDocuments, paidParticipants, totalPaid] = useDelegationData(delegation)
+  const changeMaxParticipantsState = useOverlayTriggerState({})
 
   return (
     <div className='admin-container'>
@@ -272,6 +275,22 @@ const Delegation = () => {
           Adiar Pagamento
         </Button>
       </div>
+
+      <div className='committee-title'>
+        <div className='text'>
+          Limite de delegados: {delegation.maxParticipants}
+        </div>
+
+        <Button
+          className="secondary-button-box green-light"
+          isDisabled={!delegation}
+          onPress={changeMaxParticipantsState.toggle}
+        >
+          Alterar o Máximo de Delegados
+        </Button>
+      </div>
+
+      <ChangeMaxParticipants state={changeMaxParticipantsState} maxParticipants={delegation.maxParticipants} delegationId={delegation.id}  />
 
       <div className='committee-title'>
         <ModalTrigger

@@ -2,7 +2,6 @@
 
 
 .numberfield-container {
-  align-self: flex-start;
   position: relative;
   border: 1px solid #E6E6E6;
   display: flex;
@@ -29,7 +28,6 @@
 }
 
 .numberfield-buttons-container {
-  flex-grow: 1;
   display: flex;
   justify-content: space-evenly;
   flex-direction: column;
@@ -52,4 +50,9 @@
   background: transparent;
   letter-spacing: normal;
   -webkit-text-fill-color: #000 !important;
+
+  &.dark {
+    color: #fff;
+    -webkit-text-fill-color: #fff !important;
+  }
 }

@@ -8,7 +8,10 @@ export async function listDelegates(participationMethod: ParticipationMethod) {
         is: null
       },
       user: {
-        participationMethod
+        participationMethod,
+        stripePaidId: {
+          not: null
+        }
       }
     },
     select: {

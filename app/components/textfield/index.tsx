@@ -11,12 +11,9 @@ type TextFieldProps = AriaTextFieldProps &
 
 const TextField = forwardRef<HTMLInputElement, TextFieldProps>((props, forwardedRef) => {
   const ref = useRef<HTMLInputElement>(null)
-  const { action, errorMessage, className, label, onChange } = props
-  const [error, handleInputErrorChange] = useError({
-    errorMessage: errorMessage, action: action, ref: ref
-  })
-  const { inputProps, labelProps, descriptionProps, errorMessageProps } =
-    useTextField(props, ref)
+  const { action, errorMessage, className, children, disabled, onChange, name, label, autoComplete = true, ...rest } = props
+  const [error, handleInputErrorChange] = useError({ errorMessage: errorMessage, action: action, ref: ref })
+  const { inputProps, labelProps, descriptionProps, errorMessageProps } = useTextField(props, ref)
 
   const handleChange = (e: any) => {
     handleInputErrorChange()

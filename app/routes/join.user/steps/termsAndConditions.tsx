@@ -2,7 +2,7 @@ import TermsAndConditionsText from '~/lib/termsAndConditions'
 
 import Checkbox from '~/components/checkbox'
 
-const TermsAndConditions = ({ setIsButtonDisabled }: {setIsButtonDisabled: (value: boolean) => void}) => {
+const TermsAndConditions = ({ setIsButtonDisabled }: { setIsButtonDisabled: (value: boolean) => void }) => {
   return (
     <>
       <h2 className='join-title'>

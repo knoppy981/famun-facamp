@@ -297,6 +297,12 @@ async function seed() {
 
 	// await createXDelegations(20)
 
+	await prisma.user.delete({
+		where: {
+			email: "andre.knopp8@gmail.com"
+		}
+	})
+
 	console.log(`Database has been seeded. 🌱`);
 }
 

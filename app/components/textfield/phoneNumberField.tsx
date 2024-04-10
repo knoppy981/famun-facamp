@@ -15,12 +15,9 @@ type TextFieldProps = AriaTextFieldProps &
 
 const PhoneNumberField = forwardRef<HTMLInputElement, TextFieldProps>((props, forwardedRef) => {
   const ref = useRef<HTMLInputElement>(null)
-  const { action, errorMessage, className, children, disabled, onChange, name, label, autoComplete = true, ...rest } =
-    props
-  const [error, handleInputErrorChange] = useError({ 
-    errorMessage, ref: ref, action })
-  const { inputProps, labelProps, descriptionProps, errorMessageProps } =
-    useTextField(props, ref)
+  const { action, errorMessage, className, children, disabled, onChange, name, label, autoComplete = true, ...rest } = props
+  const [error, handleInputErrorChange] = useError({ errorMessage, ref: ref, action })
+  const { inputProps, labelProps, descriptionProps, errorMessageProps } = useTextField(props, ref)
   const [inputValue, setInputValue] = useState<string | undefined>(props._defaultValue)
   const handleChange = (value: any) => {
     handleInputErrorChange()
@@ -42,6 +39,7 @@ const PhoneNumberField = forwardRef<HTMLInputElement, TextFieldProps>((props, fo
 
       <div className={`textfield-container ${error ? "error" : ""} ${props.isDisabled ? "disabled" : ""}`}>
         <PhoneInput
+          smartCaret={false}
           className={`textfield-input ${props.theme ?? ""}`}
           {...inputProps}
           ref={mergeRefs([ref, forwardedRef])}
