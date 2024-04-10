@@ -1,6 +1,7 @@
 const keyToLabelList = {
   email: "E-mail",
   name: "Nome",
+  socialName: "Nome Social",
   password: "Senha",
   sex: "Sexo",
   cpf: "CPF",
