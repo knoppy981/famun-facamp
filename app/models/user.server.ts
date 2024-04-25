@@ -245,7 +245,7 @@ export async function formatUserData({
 				emergencyContactName: data.emergencyContactName,
 				emergencyContactPhoneNumber: data.emergencyContactPhoneNumber,
 				educationLevel: data.educationLevel,
-				currentYear: data.currentYear,
+				currentYear: data.currentYear.trim(),
 			}
 		}
 	} else {
@@ -264,22 +264,22 @@ export async function formatUserData({
 			create: {
 				diet: data.diet,
 				allergy: data.allergy === "on" ? true : false,
-				allergyDescription: data.allergy === "on" ? data.allergyDescription : undefined
+				allergyDescription: data.allergy === "on" ? data.allergyDescription.trim() : undefined
 			}
 		}
 	}
 
 	return {
 		email: data.email,
-		name: data.name,
-		socialName: data.socialName ? data.socialName : null,
+		name: data.name.trim(),
+		socialName: data.socialName ? data.socialName.trim() : null,
 		password: data.password ? {
 			create: {
 				hash: await bcrypt.hash(data.password, 10)
 			}
 		} : undefined,
-		cpf: data.cpf ? data.cpf : null,
-		rg: data.rg ? data.rg : null,
+		cpf: data.cpf ? data.cpf.trim() : null,
+		rg: data.rg ? data.rg.trim() : null,
 		passport: data.passport ? data.passport : null,
 		phoneNumber: data.phoneNumber,
 		birthDate: data.birthDate,

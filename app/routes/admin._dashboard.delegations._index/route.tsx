@@ -87,7 +87,11 @@ const Delegation = () => {
                 }
                 return accumulator;
               }, 0);
-              const documents = delegation.participants.filter(participant => participant._count.files > 0).length === necessaryDocumentsCount
+              let sentDocumentsCount = delegation.participants.reduce((accumulator, participant) => {
+                accumulator += participant._count.files
+                return accumulator;
+              }, 0);
+              const documents = sentDocumentsCount === necessaryDocumentsCount
 
               return participantsCount > 0 ?
                 <tr

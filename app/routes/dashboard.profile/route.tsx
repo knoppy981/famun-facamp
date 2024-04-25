@@ -8,7 +8,7 @@ import { motion } from 'framer-motion'
 
 import { useUser, useUserType } from '~/utils'
 import { getCorrectErrorMessage } from '~/utils/error'
-import { UserType, getExistingUser, updateUser } from '~/models/user.server';
+import { getExistingUser, updateUser } from '~/models/user.server';
 import { useOnScreen } from '~/hooks/useOnScreen'
 import { updateUserSchema } from '~/schemas'
 
@@ -19,8 +19,6 @@ import { useButtonState } from './useButtonState'
 import { requireUser } from '~/session.server'
 import { iterateObject } from '../dashboard/utils/findDiffrences'
 import { createUserChangeNotification } from '~/models/notifications.server'
-import { sendEmail } from '~/nodemailer.server'
-import { createUserEmail, manualCreateUserEmail } from '~/lib/emails'
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const user = await requireUser(request)
@@ -87,7 +85,7 @@ const Profile = () => {
 
   return (
     <Form method="post" className='section-wrapper padding'>
-      <div className='profile-title' ref={buttonRef}>
+      <h2 className='admin-section-title' ref={buttonRef}>
         Dados da Inscrição
 
         <Button
@@ -96,7 +94,7 @@ const Profile = () => {
         >
           {buttonIcon} {buttonLabel}
         </Button>
-      </div>
+      </h2>
 
       <EditUserData
         isDisabled={!userWantsToChangeData}

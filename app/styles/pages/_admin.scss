@@ -18,6 +18,12 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 20px;
+
+  &.padding {
+    @media screen and (max-width: 700px) {
+      padding: 0 15px;
+    }
+  }
 }
 
 .admin-title-box {
@@ -51,10 +57,16 @@
 
 .admin-section-title {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   align-items: center;
   padding: 0 15px;
   font-size: 1.8rem;
+
+  @media screen and (max-width: 700px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .admin-dialog-title {
@@ -91,7 +103,7 @@
   justify-content: space-between;
   padding: 0 15px;
   gap: 15px;
-  
+
   & > div {
     display: flex;
     flex-wrap: wrap;

@@ -104,6 +104,20 @@ const AdminPage = () => {
                   </Button>
                 </div>
 
+                <div className='dashboard-aside-link-container'>
+                  <NavLink
+                    tabIndex={0}
+                    role="link"
+                    aria-label={`settings-link`}
+                    to={"configurations"}
+                    onClick={close}
+                    prefetch='render'
+                    className={`dashboard-item ${matches[2].pathname === "/admin/configurations" ? "" : ""}`}
+                  >
+                    <FiSettings className='icon' /> Configurações
+                  </NavLink>
+                </div>
+
                 <Form action='/logout' method='post' onClick={close}>
                   <Button type='submit'>
                     <FiLogOut className='icon' />

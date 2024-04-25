@@ -14,6 +14,8 @@ import { updateConfigurationSchema } from '~/schemas';
 
 import Button from '~/components/button'
 import EditConfigurations from './edit-configurations-components';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useOnScreen } from '~/hooks/useOnScreen';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
@@ -59,14 +61,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 const Configurations = () => {
   const { configurations } = useLoaderData<typeof loader>()
+  const [buttonRef, isRefVisible] = useOnScreen();
   const fetcher = useFetcher()
   const { readySubmission, userWantsToChangeData, handleSubmission, handleChange } =
     useConfiuratiionsUpdate(configurations, fetcher)
   const [buttonLabel, buttonIcon, buttonColor] = useButtonState(userWantsToChangeData, readySubmission, fetcher.state)
 
   return (
-    <div className='admin-container'>
-      <h2 className='admin-section-title'>
+    <div className='admin-container padding'>
+      <h2 className='admin-section-title' ref={buttonRef}>
         Configurações
 
         <Button
@@ -84,6 +87,24 @@ const Configurations = () => {
         id=""
         handleChange={handleChange}
       />
+
+      <AnimatePresence>
+        {!isRefVisible &&
+          <motion.div
+            className='sticky-button'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Button
+              className={`secondary-button-box ${buttonColor ? `${buttonColor}-light` : ""}`}
+              onPress={handleSubmission}
+            >
+              {buttonIcon} {buttonLabel}
+            </Button>
+          </motion.div>}
+      </AnimatePresence>
     </div>
   )
 }

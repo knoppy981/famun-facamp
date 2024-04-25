@@ -1,6 +1,6 @@
 import React from 'react'
 import { LoaderFunctionArgs, json } from '@remix-run/node';
-import { FetcherWithComponents, Form, SubmitFunction, useFetcher, useLoaderData, useOutletContext, useSubmit } from '@remix-run/react'
+import { Form, SubmitFunction, useFetcher, useLoaderData, useOutletContext, useSubmit } from '@remix-run/react'
 
 
 import { FiChevronDown, FiChevronLeft, FiChevronRight, FiDownload } from "react-icons/fi/index.js";
@@ -8,7 +8,6 @@ import { ParticipationMethod } from '@prisma/client';
 import Button from '~/components/button'
 import TextField from '~/components/textfield';
 import { adminParticipantList } from '~/models/user.server';
-import { ParticipantType } from './types';
 import PopoverTrigger from '~/components/popover/trigger';
 import Dialog from '~/components/dialog';
 import { Radio, RadioGroup } from '~/components/radioGroup';

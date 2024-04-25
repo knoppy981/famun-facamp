@@ -360,11 +360,11 @@ export async function formatDelegationData({ data }: { data: any; }) {
 	// handle address
 	address = {
 		create: {
-			address: data.address,
+			address: data.address.trim(),
 			postalCode: data.postalCode,
-			city: data.city,
+			city: data.city.trim(),
 			country: data.country,
-			state: data.state,
+			state: data.state.trim(),
 		}
 	}
 
@@ -379,7 +379,7 @@ export async function formatDelegationData({ data }: { data: any; }) {
 		inviteLink: await generateDelegationInviteLink(data.code),
 		participationMethod: data.participationMethod,
 		maxParticipants: parseInt(data.maxParticipants),
-		school: data.school,
+		school: data.school.trim(),
 		schoolPhoneNumber: data.schoolPhoneNumber,
 		paymentExpirationDate: data.paymentExpirationDate,
 		address,
