@@ -2,14 +2,13 @@ import React from 'react'
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from '@remix-run/node'
 import { useFetcher, useLoaderData, useSearchParams, useSubmit } from '@remix-run/react'
 import qs from 'qs'
-import { Notifications, ParticipationMethod } from '@prisma/client';
+import { ParticipationMethod } from '@prisma/client';
 
 import { requireAdminId } from '~/session.server';
 import { adminDelegationData } from '~/models/delegation.server';
-import { getDelegationCharges } from '~/stripe.server';
 import { iterateObject } from '../dashboard/utils/findDiffrences';
 import { updateUserSchema } from '~/schemas';
-import { UserType, getExistingUser, updateUser } from '~/models/user.server';
+import { getExistingUser, updateUser } from '~/models/user.server';
 import { getCorrectErrorMessage } from '~/utils/error';
 
 import Button from '~/components/button';
@@ -85,21 +84,24 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const participationMethod = url.searchParams.get("pm") as ParticipationMethod
-  if (!params.delegation) return redirect(`/admin/delegations?pm=${participationMethod}`)
+  if (!params.delegation) return redirect(`/admin/delegations?pm=${participationMethod || "Escola"}`)
 
   const delegation = await adminDelegationData(params.delegation as string)
 
   if (!delegation) {
-    return redirect(`/admin/delegations?pm=${participationMethod}`)
+    return redirect(`/admin/delegations?pm=${participationMethod || "Escola"}`)
   }
 
-  const delegationCharges = await getDelegationCharges(delegation as any)
   const amountPaid: { "usd": number, "brl": number } = { "usd": 0, "brl": 0 }
-  delegationCharges?.data.forEach(charge => {
-    if (amountPaid[charge.currency as "usd" | "brl"]) {
-      amountPaid[charge.currency as "usd" | "brl"] += charge.amount
-    } else {
-      amountPaid[charge.currency as "usd" | "brl"] = charge.amount
+  delegation.participants.forEach(participant => {
+    const amount = participant.stripePaid?.amount
+    const currency = participant.stripePaid?.currency
+    if (amount && currency) {
+      if (currency) {
+        amountPaid[currency.toLocaleLowerCase() as "usd" | "brl"] += parseInt(amount)
+      } else {
+        amountPaid[currency.toLocaleLowerCase() as "usd" | "brl"] = parseInt(amount)
+      }
     }
   });
 
@@ -181,7 +183,7 @@ const Delegation = () => {
                 {delegation.participants.map((participant, i) => {
                   const necessaryFiles = participant.delegate ? 2 : 1
                   const isDocumentsSent = participant.files?.filter((file) => file.name === "Liability Waiver" || file.name === "Position Paper").length === necessaryFiles
-                  const isPaid = participant.stripePaidId
+                  const isPaid = participant.stripePaid
                   const leader = participant.leader
                   const delegate = participant.delegate as any
 
@@ -290,7 +292,7 @@ const Delegation = () => {
         </Button>
       </div>
 
-      <ChangeMaxParticipants state={changeMaxParticipantsState} maxParticipants={delegation.maxParticipants} delegationId={delegation.id}  />
+      <ChangeMaxParticipants state={changeMaxParticipantsState} maxParticipants={delegation.maxParticipants} delegationId={delegation.id} />
 
       <div className='committee-title'>
         <ModalTrigger
@@ -340,7 +342,7 @@ function useDeleteDelegation() {
   const handleRemoveParticipant = (delegationId: string) => {
     submit(
       { delegationId },
-      { method: "post", action: "/api/admin/deleteDelegation", navigate: false }
+      { method: "post", action: "/api/admin/delegation/delete", navigate: false }
     )
   }
 

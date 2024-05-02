@@ -29,7 +29,7 @@ const PendingPayments = () => {
         <br />
         Todos os pagamentos devem ser feitos em até 5 dias úteis após a criação da delegação. Caso os pagamentos não sejam realizados nesse período, a inscrição será cancelada e a delegação deverá realizar uma nova inscrição caso deseje participar da conferência. A nova inscrição dependerá da disponibilidade de vagas.
         <br />
-        ATENÇÃO: o FAMUN 2024 não realiza reembolso ou ressarcimento das taxas de inscrição, sob nenhuma circunstância.
+        ATENÇÃO: o FAMUN {new Date().getFullYear()} não realiza reembolso ou ressarcimento das taxas de inscrição, sob nenhuma circunstância.
       </i>
 
       {requiredPayments?.find(el => el.available) ?

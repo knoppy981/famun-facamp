@@ -286,6 +286,70 @@ async function createXDelegations(max) {
 	}
 }
 
+async function create10Participants(delegationCode) {
+	function generateString(length) {
+		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	
+		let result = '';
+		const charactersLength = characters.length;
+	
+		for (let i = 0; i < length; i++) {
+			result += characters.charAt(Math.floor(Math.random() * charactersLength));
+		}
+	
+		return result;
+	}
+
+	for (let i = 0; i < 10; i++) {
+		const str = generateString(10)
+
+		await prisma.user.delete({ where: { email: `${str}@gmail.com` } }).catch(err => { })
+
+		await prisma.user.create({
+			data: {
+				name: str,
+				birthDate: "2003-06-23",
+				rg: str,
+				email: `${str}@gmail.com`,
+				phoneNumber: "+55 19 97154 7424",
+				participationMethod: "Escola",
+				sex: "Masculino",
+				password: {
+					create: {
+						hash: await bcrypt.hash("asdasdasd", 10)
+					}
+				},
+				nacionality: "Brazil",
+				leader: false,
+				delegate: {
+					create: {
+						councilPreference: {
+							set: [
+								"Assembleia_Geral_da_ONU",
+								"Rio_92",
+								"Conselho_de_Seguranca_da_ONU",
+								"Conselho_de_Juventude_da_ONU",
+							]
+						},
+						languagesSimulates: {
+							set: ["Ingles", "Espanhol"]
+						},
+						emergencyContactName: "Julia",
+						emergencyContactPhoneNumber: "+55 11 99877 2333",
+						educationLevel: "Universidade",
+						currentYear: "4 ano"
+					}
+				},
+				delegation: {
+					connect: {
+						code: delegationCode
+					}
+				}
+			}
+		})
+	}
+}
+
 async function seed() {
 	// await delegationWith2Users()
 
@@ -296,6 +360,19 @@ async function seed() {
 	// await createAdmin()
 
 	// await createXDelegations(20)
+
+	// await create10Participants("012331")
+
+	const users = await prisma.user.update({
+		where: {
+			email: "teste@gmail.com"
+		},
+		data: {
+			stripePaid: null
+		}
+	})
+
+	console.log(users)
 
 	console.log(`Database has been seeded. 🌱`);
 }

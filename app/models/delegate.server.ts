@@ -9,8 +9,8 @@ export async function listDelegates(participationMethod: ParticipationMethod) {
       },
       user: {
         participationMethod,
-        stripePaidId: {
-          not: null
+        stripePaid: {
+          isSet: true
         }
       }
     },

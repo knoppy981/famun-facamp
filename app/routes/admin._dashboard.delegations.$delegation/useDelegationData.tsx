@@ -10,7 +10,7 @@ export function useDelegationData(delegation: any) {
     return accumulator
   }, 0) as number
   const paidParticipants = delegation.participants?.reduce((accumulator: number, participant: any) => {
-    if (participant.stripePaidId) accumulator += 1
+    if (participant.stripePaid) accumulator += 1
     return accumulator
   }, 0) as number
   const totalPaid = `${delegation.amountPaid.brl > 0 ? " " + (delegation.amountPaid.brl / 100).toLocaleString("pt-BR", { style: "currency", currency: "brl" }) : ""}${delegation.amountPaid.usd > 0 ? " " + (delegation.amountPaid.usd / 100).toLocaleString("pt-BR", { style: "currency", currency: "usd" }) : ""}`

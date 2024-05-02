@@ -37,11 +37,19 @@ model User {
   // stripe
   stripeCustomerId    String?
   stripePaidId        String?
+  stripePaid          Paid?
   stripePaymentsId    String[]
   // 
   confirmationCode    ConfirmationCode?
   changesMade         Notifications[]
   notifications       Notifications[]     @relation("user_change")
+}
+
+type Paid {
+  createdAt DateTime @default(now())
+  amount    String
+  currency  String
+  isFake    Boolean? @default(false)
 }
 
 type ConfirmationCode {

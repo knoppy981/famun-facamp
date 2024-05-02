@@ -8,7 +8,6 @@ import { FiBell, FiCheckCircle, FiChevronLeft, FiChevronRight, FiDownload, FiXCi
 import { ParticipationMethod } from '@prisma/client';
 import Button from '~/components/button'
 import TextField from '~/components/textfield';
-import { adminDelegationType } from './types';
 import useDidMountEffect from '~/hooks/useDidMountEffect';
 import { exportAoo } from '~/sheets';
 import Spinner from '~/components/spinner';
@@ -75,7 +74,7 @@ const Delegation = () => {
               const participantsCount = delegation.participants.length
               const info = true
               let paymentsCount = delegation.participants?.reduce((accumulator, participant) => {
-                if (participant.stripePaidId) accumulator += 1
+                if (participant.stripePaid) accumulator += 1
                 return accumulator
               }, 0) as number
               const payments = paymentsCount === participantsCount

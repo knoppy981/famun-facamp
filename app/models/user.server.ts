@@ -48,7 +48,7 @@ export async function getManyUsersById(ids: (string)[]) {
 		select: {
 			name: true,
 			socialName: true,
-			stripePaidId: true
+			stripePaid: true
 		}
 	})
 }

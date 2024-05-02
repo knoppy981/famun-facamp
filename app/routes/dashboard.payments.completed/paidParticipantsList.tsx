@@ -1,4 +1,5 @@
 import React from 'react'
+import qs from "qs"
 import { FetcherWithComponents, useFetcher } from '@remix-run/react';
 
 import Dialog from '~/components/dialog'
@@ -32,7 +33,7 @@ const ParticipantsList = (props: any) => {
 function useAddParticipant(fetcher: FetcherWithComponents<any>, open: boolean, ids: string) {
   React.useEffect(() => {
     if (open) {
-      const searchParams = new URLSearchParams([["ids", ids]]);
+      const searchParams = new URLSearchParams([["ids", qs.stringify(ids)]]);
       fetcher.load(`/api/participant/getParticipants?${searchParams}`)
     }
   }, [open])

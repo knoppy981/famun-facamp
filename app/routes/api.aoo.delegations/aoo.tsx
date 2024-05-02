@@ -38,25 +38,23 @@ type DelegationAooType = Partial<{
 export async function delegationsAoo(delegations: DelegationType[]) {
   let aoo: DelegationAooType = []
 
-  const promises = delegations.map(async (delegation) => {
-    const delegationCharges = await getDelegationCharges(delegation as any)
+  delegations.forEach((delegation) => {
     const amountPaid: { "usd": number, "brl": number } = { "usd": 0, "brl": 0 }
-    delegationCharges?.data.forEach(charge => {
-      if (amountPaid[charge.currency as "usd" | "brl"]) {
-        amountPaid[charge.currency as "usd" | "brl"] += charge.amount
-      } else {
-        amountPaid[charge.currency as "usd" | "brl"] = charge.amount
+    delegation.participants?.forEach(participant => {
+      const amount = participant.stripePaid?.amount
+      const currency = participant.stripePaid?.currency
+      if (amount && currency) {
+        if (currency) {
+          amountPaid[currency.toLocaleLowerCase() as "usd" | "brl"] += parseInt(amount)
+        } else {
+          amountPaid[currency.toLocaleLowerCase() as "usd" | "brl"] = parseInt(amount)
+        }
       }
     });
-    const paidString = `
-      ${amountPaid.brl > 0 ? (amountPaid.brl / 100).toLocaleString("pt-BR", { style: "currency", currency: "brl" }) : ""}
-      ${amountPaid.usd > 0 ? (amountPaid.usd / 100).toLocaleString("pt-BR", { style: "currency", currency: "usd" }) : ""}
-    `.trim()
+    const paidString = `${amountPaid.brl > 0 ? (amountPaid.brl / 100).toLocaleString("pt-BR", { style: "currency", currency: "brl" }) : ""}${amountPaid.usd > 0 ? (amountPaid.usd / 100).toLocaleString("pt-BR", { style: "currency", currency: "usd" }) : ""}`.trim()
 
     aoo.push(...delegationAoo(delegation, paidString))
   })
-
-  await Promise.all(promises);
 
   return aoo
 }
@@ -66,12 +64,12 @@ function delegationAoo(delegation: DelegationType, amountPaid: string) {
   const advisors = delegation?.participants?.filter((participant) => participant.delegationAdvisor !== null && participant.id)
 
   let advisorsPaid = advisors?.reduce((accumulator, delegate) => {
-    if (delegate.stripePaidId) accumulator += 1
+    if (delegate.stripePaid) accumulator += 1
     return accumulator
   }, 0) as number
 
   let delegatesPaid = delegates?.reduce((accumulator, delegate) => {
-    if (delegate.stripePaidId) accumulator += 1
+    if (delegate.stripePaid) accumulator += 1
     return accumulator
   }, 0) as number
 
@@ -87,7 +85,7 @@ function delegationAoo(delegation: DelegationType, amountPaid: string) {
       "School and city": `${delegation.school}, ${delegation.address?.city}`,
       "Total number of paid delegates": delegatesPaid,
       "Total number of FA paid": advisorsPaid,
-      "Delegates": delegates?.length,
+      "Delegates": delegation.maxParticipants,
       "FA's": advisors?.length,
       "Full name": "",
       "Waiver": participantsWithLiabilityWaiverSent,
@@ -103,9 +101,9 @@ function delegationAoo(delegation: DelegationType, amountPaid: string) {
     aoo.push({
       "Delegates": 1,
       "Full name": participant.name,
-      "Waiver": participant.files?.find(file => file.name === "Liability Waiver") ? 1 : 0,
-      "Amount Paid": participant.stripePaidId ? "150" : "0",
-      "Status": participant.stripePaidId ? "Pago" : "Não pago",
+      "Waiver": participant.files?.some(file => file.name === "Liability Waiver") ? 1 : 0,
+      "Amount Paid": participant.stripePaid ? `${(parseInt(participant.stripePaid.amount) / 100).toLocaleString("pt-BR", { style: "currency", currency: participant.stripePaid.currency })}` : "0",
+      "Status": participant.stripePaid ? "Pago" : "Não pago",
       "Registration date": typeof participant.createdAt === "string" ? new Date(participant.createdAt).toLocaleDateString("pt-BR") : participant.createdAt.toLocaleDateString("pt-BR"),
     })
   })
@@ -115,8 +113,8 @@ function delegationAoo(delegation: DelegationType, amountPaid: string) {
       "FA's": 1,
       "Full name": participant.name,
       "Waiver": participant.files?.find(file => file.name === "Liability Waiver") ? 1 : 0,
-      "Amount Paid": participant.stripePaidId ? "30" : "0",
-      "Status": participant.stripePaidId ? "Pago" : "Não pago",
+      "Amount Paid": participant.stripePaid ? `${(parseInt(participant.stripePaid.amount) / 100).toLocaleString("pt-BR", { style: "currency", currency: participant.stripePaid.currency })}` : "0",
+      "Status": participant.stripePaid ? "Pago" : "Não pago",
       "Registration date": typeof participant.createdAt === "string" ? new Date(participant.createdAt).toLocaleDateString("pt-BR") : participant.createdAt.toLocaleDateString("pt-BR"),
     })
   })

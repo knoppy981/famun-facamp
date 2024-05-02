@@ -142,7 +142,7 @@ export async function adminDelegationsList(index: number, participationMethod: P
 					name: true,
 					delegate: true,
 					delegationAdvisor: true,
-					stripePaidId: true,
+					stripePaid: true,
 					_count: {
 						select: {
 							files: {

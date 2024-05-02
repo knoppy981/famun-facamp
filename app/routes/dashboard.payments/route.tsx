@@ -91,13 +91,22 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       }
     })
     const promises = requiresActionPayments.map(async (requiresActionPayment, index) => {
+      const parsed = qs.parse(requiresActionPayment?.metadata?.data) as {
+        payerId: string,
+        payments: {
+          amount: string,
+          currency: string,
+          userId: string
+        }[]
+      }
+
       const users = await getManyUsersById(
-        Object.values(qs.parse(requiresActionPayment.metadata?.paidUsersIds))
+        Object.values(parsed.payments?.map(p => p.userId))
           .flat()
           .filter((id): id is string => typeof id === 'string')
       )
 
-      if (users.some((user) => user.stripePaidId)) {
+      if (users.some((user) => user.stripePaid)) {
         requiresActionPayments[index].isVisible = false
       }
     })

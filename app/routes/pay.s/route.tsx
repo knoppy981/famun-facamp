@@ -38,7 +38,7 @@ const SelectPayments = () => {
   return (
     <Form action="/pay/c" method="get" className='pay-container'>
       <h1 className='auth-title'>
-        FAMUN 2024
+        FAMUN {new Date().getFullYear()}
       </h1>
 
       <div className='pay-grid'>

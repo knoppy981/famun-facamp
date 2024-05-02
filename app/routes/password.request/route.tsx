@@ -60,7 +60,7 @@ const PasswordRequest = () => {
   return (
     <Form className='auth-container' style={{ gap: "15px" }} noValidate method='post'>
       <h1 className='auth-title'>
-        FAMUN 2024
+        FAMUN {new Date().getFullYear()}
       </h1>
 
       <div className='join-wrapper'>

@@ -85,7 +85,7 @@ const Login = () => {
     <main className="auth-wrapper">
       <div className='auth-container'>
         <h1 className='auth-title'>
-          FAMUN 2024
+          FAMUN {new Date().getFullYear()}
         </h1>
 
         <fetcher.Form method='post' className='auth-form' noValidate>

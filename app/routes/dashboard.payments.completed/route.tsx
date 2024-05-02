@@ -6,7 +6,7 @@ import { useUser } from '~/utils'
 
 import { OutletType } from '../dashboard.payments/types'
 import { HTMLLink } from '~/components/link'
-import { FiCreditCard, FiExternalLink, FiInfo } from 'react-icons/fi/index.js'
+import { FiExternalLink, FiInfo } from 'react-icons/fi/index.js'
 import { getCurrentLocale } from '~/hooks/useCurrentLocale'
 import PopoverTrigger from '~/components/popover/trigger'
 import ParticipantsList from './paidParticipantsList'
@@ -44,6 +44,15 @@ const CompletedPayments = () => {
             <tbody>
               {paymentsList.map((item: typeof paymentsList[0], index) => {
                 if (item.status !== "succeeded") return
+                const parsed = qs.parse(item?.metadata?.data) as {
+                  payerId: string,
+                  payments: {
+                    amount: string,
+                    currency: string,
+                    userId: string
+                  }[]
+                }
+
                 return (
                   <tr
                     className="table-row"
@@ -52,10 +61,10 @@ const CompletedPayments = () => {
                   >
                     <td className='table-cell'>
                       <div className='table-flex-cell'>
-                        Inscrição de {item?.metadata?.paidUsersIds ? ` ${Object.keys(qs.parse(item?.metadata?.paidUsersIds)).length}x participante${Object.keys(qs.parse(item?.metadata?.paidUsersIds)).length > 1 ? "s" : ""}` : ''}
+                        Inscrição de {item?.metadata?.data ? ` ${parsed.payments?.length}x participante${parsed.payments?.length as number > 1 ? "s" : ""}` : ''}
 
                         <PopoverTrigger label={<FiInfo className="icon" />}>
-                          <ParticipantsList ids={item?.metadata?.paidUsersIds} />
+                          <ParticipantsList ids={parsed.payments?.map(p => p.userId)} />
                         </PopoverTrigger>
                       </div>
                     </td>

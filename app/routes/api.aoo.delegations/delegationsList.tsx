@@ -20,6 +20,12 @@ export async function delegationsList(pm: ParticipationMethod): Promise<any[]> {
         include: {
           delegate: true,
           delegationAdvisor: true,
+          files: {
+            select: {
+              fileName: true,
+              name: true,
+            }
+          }
         },
       }
     }

@@ -8,7 +8,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireAdminId(request)
   const url = new URL(request.url);
   let stripeCustomerId = url.searchParams.get("stripeCustomerId")
-  let stripePaidId = url.searchParams.get("stripePaidId")
 
   const paymentsList: {
     amount: number,
@@ -19,7 +18,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     receiptUrl: string | null,
     paymentMethod: string | undefined
   }[] = []
-  let paymentIntent: Stripe.PaymentIntent | null = null
 
   try {
     const operations = [];
@@ -42,13 +40,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       })());
     }
 
-    if (stripePaidId) {
-      operations.push((async () => {
-        paymentIntent = stripePaidId ? await getPaymentIntentById(stripePaidId) : null
-        return
-      })());
-    }
-
     await Promise.all(operations);
   } catch (error) {
     console.log(error)
@@ -58,5 +49,5 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     )
   }
 
-  return json({ paymentsList, paymentIntent })
+  return json({ paymentsList })
 }

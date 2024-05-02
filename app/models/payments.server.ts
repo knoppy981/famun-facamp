@@ -6,52 +6,41 @@ import type { UserType } from '~/models/user.server';
 import { getPaymentPrices } from './configuration.server';
 import { Languages, ParticipationMethod } from '@prisma/client';
 
-export async function getPaidUsersIds(paidUsersIds: UserType["id"][]) {
+export async function getPaidUsers(paidUsersIds: UserType["id"][]) {
   const arr: Array<any> = []
   paidUsersIds.forEach(el => {
     arr.push({ id: el })
   })
 
-  return prisma.user.findMany({
+  const query = await prisma.user.findMany({
     where: {
       OR: arr
     },
     select: {
       name: true,
-      email: true,
-      delegate: true,
-      delegationAdvisor: true
     }
   })
+
+  return query.map(user => user.name)
 }
 
-export async function updateUsersPaymentStatus({
-  paidUsersIds,
-  stripePaymentId
-}: {
-  paidUsersIds: Array<string>; stripePaymentId: string
-}) {
-  const arr: Array<any> = []
-  paidUsersIds.forEach(el => {
-    arr.push({ id: el })
-  })
-
-  return prisma.user.updateMany({
+export async function updateUsersPaymentStatus(payments: { amount: string, currency: string, userId: string }[]) {
+  console.log("...updating paids")
+  return prisma.$transaction(payments.map(p => prisma.user.update({
     where: {
-      OR: arr
+      id: p.userId
     },
     data: {
-      stripePaidId: stripePaymentId
+      stripePaid: {
+        amount: p.amount,
+        currency: p.currency
+      }
     }
-  })
+  })))
 }
 
-export async function updateUserPayments({
-  userId,
-  stripePaymentId
-}: {
-  userId: UserType["id"]; stripePaymentId: string
-}) {
+export async function updateUserPayments(userId: string, stripePaymentId: string) {
+  console.log("updating payer")
   return prisma.user.update({
     where: {
       id: userId
@@ -99,8 +88,8 @@ export async function getRequiredPayments({
       participants: {
         where: {
           OR: [
-            { stripePaidId: { isSet: false } },
-            { stripePaidId: { equals: "" } }
+            { stripePaid: { isSet: false } },
+            { stripePaid: { equals: null } },
           ]
         },
         select: {
@@ -170,23 +159,27 @@ export async function getRequiredPayments({
 
 export async function postponeDelegationPaymentDue(id: string) {
   return prisma.delegation.update({
-		where: {
-			id
-		},
-		data: {
-			paymentExpirationDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
-		}
-	})
+    where: {
+      id
+    },
+    data: {
+      paymentExpirationDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
+    }
+  })
 }
 
-export async function toggleFakePayment(userId: string, paymentExists: boolean) {
-  console.log(userId, paymentExists)
+export async function toggleFakePayment(userId: string, status: boolean, amount: string, currency: string) {
+  console.log(userId, status)
   return prisma.user.update({
     where: {
       id: userId
     },
     data: {
-      stripePaidId: paymentExists ? null : "fake_payment"
+      stripePaid: status ? null : {
+        amount: amount,
+        currency: currency,
+        isFake: true
+      }
     }
   })
 }

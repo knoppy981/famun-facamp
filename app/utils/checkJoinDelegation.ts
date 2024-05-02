@@ -21,9 +21,11 @@ export default async function checkJoinDelegation(delegationId: string | undefin
   }
 
   if (user?.delegate && delegation?._count.participants && delegation?._count.participants >= delegation.maxParticipants) {
-    throw new Error(`A delegação ${delegation.school} já está lotada, o máximo de delegados permitidos nesta delegação são ${delegation.maxParticipants}, entre em contato 
-      com o líder de sua delegação ou com professores orientadores para checar se ainda há uma vaga para você.
-      Se o error persistir entre em contanto com a nossa equipe`);
+    throw new Error(`
+    A delegação ${delegation.school} já atingiu o número máximo de delegados permitidos, que são ${delegation.maxParticipants}, 
+    Entre em contato com seu(sua) Chefe de Delegação ou seu(a) Professor(a) Orientador(a) para verificar se ainda há uma vaga para você. Se o erro persistir, 
+    entre em contato com nossa equipe pelo email famun@facamp.com.br 
+    `);
   }
 
   if (user.participationMethod !== delegation.participationMethod) {

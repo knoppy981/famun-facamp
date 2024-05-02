@@ -27,7 +27,7 @@ const PaymentConfigurations = (props: any) => {
             let newValue = e.target.value.replace(/[^0-9]/g, '');
             let formattedValue = formatter.format(Number(newValue) / 100)
             setValue(formattedValue)
-            handleChange({ target: { name: item[1], value: parseInt(newValue.replace(/,/g, '')) } })
+            handleChange({ target: { name: item[1], value: parseInt(newValue.replace(/[,.]/g, '')) } })
           }
           return (
             <TextField
@@ -59,7 +59,7 @@ const PaymentConfigurations = (props: any) => {
             let newValue = e.target.value.replace(/[^0-9]/g, '');
             let formattedValue = formatter.format(Number(newValue) / 100)
             setValue(formattedValue)
-            handleChange({ target: { name: item[1], value: parseInt(newValue.replace(/,/g, '')) } })
+            handleChange({ target: { name: item[1], value: parseInt(newValue.replace(/[,.]/g, '')) } })
           }
           return (
             <TextField

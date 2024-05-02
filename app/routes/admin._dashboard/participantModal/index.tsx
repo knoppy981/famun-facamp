@@ -50,7 +50,7 @@ const ParticipantModal = ({ state, participant }: { state: OverlayTriggerState, 
       case "payments":
         return <Payments
           stripeCustomerId={participant.stripeCustomerId}
-          stripePaidId={participant.stripePaidId}
+          stripePaid={participant.stripePaid}
           userId={participant.id}
         />
       case "documents":

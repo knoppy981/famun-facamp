@@ -28,10 +28,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   if (payments?.length === 0 || payments === undefined) return redirect("/pay/s")
   const isCouponValid = await checkCuponCode(coupon as string, user.participationMethod)
 
-  const usersIdsThatWillBePaid = payments
-    .filter(payment => payment.available === true)
-    .map(payment => payment.id) as string[];
-
   // get the total price
   const price = payments.reduce((sum, item) => {
     if (item.available) {
@@ -44,7 +40,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   let paymentIntent
   try {
     paymentIntent = await createPaymentIntent(
-      { price, userId: user.id, email: user.email, stripeCustomerId: user.stripeCustomerId as string, usersIdsThatWillBePaid, currency: payments[0].currency }
+      { price, userId: user.id, email: user.email, stripeCustomerId: user.stripeCustomerId as string, payments, currency: payments[0].currency }
     )
   } catch (error) {
     console.log(error)
@@ -67,7 +63,7 @@ const CompletePayments = () => {
   return (
     <div className='auth-container' style={{ gap: "15px" }}>
       <h1 className='auth-title'>
-        FAMUN 2024
+        FAMUN {new Date().getFullYear()}
       </h1>
 
       <h2 className='join-title'>

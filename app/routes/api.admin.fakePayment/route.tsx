@@ -8,16 +8,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
 
   const formData = await request.formData()
-  const stripePaidId = formData.get("stripePaidId")
   const userId = formData.get("userId")
-
-  console.log(stripePaidId, userId)
+  const amount = formData.get("amount") as string
+  const currency = formData.get("currency") as string
+  const status = formData.get("status")
 
   try {
-    if (typeof userId === "string" && (stripePaidId === "null" || stripePaidId === "fake_payment")) {
+    if (typeof userId === "string" && typeof status === "string" && (status === "null" || status === "fake")) {
       console.log("passed")
-      console.log(stripePaidId)
-      const user = await toggleFakePayment(userId, stripePaidId === "fake_payment")
+      console.log(status) 
+      const user = await toggleFakePayment(userId, status === "fake", amount, currency)
       console.log(user)
     }
   } catch (error) {

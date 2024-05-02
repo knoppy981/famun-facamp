@@ -172,7 +172,7 @@ const JoinUser = () => {
   return (
     <Form className='auth-container' noValidate method='post'>
       <h1 className='auth-title'>
-        FAMUN 2024
+        FAMUN {new Date().getFullYear()}
       </h1>
 
       <input type="hidden" name="step" value={step} />

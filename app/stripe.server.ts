@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { updateUsersPaymentStatus, updateUserPayments, getUserPaymentsIds, getPaidUsersIds } from "./models/payments.server";
+import { updateUsersPaymentStatus, updateUserPayments, getUserPaymentsIds, getPaidUsers } from "./models/payments.server";
 import qs from "qs"
 
 import { getUserByCustomerId, getUserById, type UserType } from '~/models/user.server';
@@ -52,10 +52,21 @@ export async function createPaymentIntent({
   userId,
   email,
   stripeCustomerId,
-  usersIdsThatWillBePaid,
+  payments,
   currency
 }: {
-  price: number; userId: UserType["id"]; email: UserType["email"]; stripeCustomerId: Stripe.Customer["id"], usersIdsThatWillBePaid: Array<string>, currency: string
+  price: number; userId: UserType["id"]; email: UserType["email"]; stripeCustomerId: Stripe.Customer["id"],
+  payments: {
+    id: string;
+    name: string;
+    price: number;
+    currency: string;
+    type: "delegate" | "advisor";
+    available: boolean;
+    expiresAt: Date;
+    expired: boolean;
+  }[],
+  currency: string
 }) {
   return stripe.paymentIntents.create({
     customer: stripeCustomerId,
@@ -66,8 +77,10 @@ export async function createPaymentIntent({
       enabled: true,
     },
     metadata: {
-      payerId: userId,
-      paidUsersIds: qs.stringify(usersIdsThatWillBePaid),
+      data: qs.stringify({
+        payerId: userId,
+        payments: payments.map(p => ({ amount: p.price, currency: p.currency, userId: p.id })),
+      }),
     },
   });
 }
@@ -122,21 +135,28 @@ export async function handleWebHook(request: Request) {
   if (event.type === 'payment_intent.succeeded') {
     const { id, metadata } = event.data.object
 
-    const parsed = qs.parse(metadata.paidUsersIds)
-    const paidUsersIds: Array<string> = Object.values(parsed).filter((value): value is string => typeof value === 'string');
+    const parsed = qs.parse(metadata.data) as {
+      payerId: string,
+      payments: {
+        amount: string,
+        currency: string,
+        userId: string
+      }[]
+    }
 
-    const user = await getUserById(metadata.payerId)
-    const paidUsers = await getPaidUsersIds(paidUsersIds)
+    const paidUsersIds = parsed.payments.map(item => item.userId)
+    const user = await getUserById(parsed.payerId)
+    const paidUsers = await getPaidUsers(paidUsersIds)
 
     if (!user) return
 
-    await updateUsersPaymentStatus({ paidUsersIds, stripePaymentId: id })
-    await updateUserPayments({ userId: metadata.payerId, stripePaymentId: id })
+    await updateUsersPaymentStatus(parsed.payments)
+    await updateUserPayments(parsed.payerId, id)
 
     const info = await sendEmail({
       to: user.email,
       subject: `FAMUN ${new Date().getFullYear()}: Pagamento confirmado`,
-      html: paymentCompletedEmail(user as UserType, paidUsers as UserType[], "", new Date(event.data.object.created * 1000).toLocaleDateString("pt-BR"))
+      html: paymentCompletedEmail(user.name, paidUsers, new Date(event.data.object.created * 1000).toLocaleDateString("pt-BR"))
     })
   }
 

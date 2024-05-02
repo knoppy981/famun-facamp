@@ -43,7 +43,7 @@ const Dashboard = () => {
     <div className='dashboard-wrapper'>
       <div className='dashboard-title-box'>
         <h2 className='dashboard-title'>
-          FAMUN 2024
+          FAMUN {new Date().getFullYear()}
         </h2>
 
         <div className='dashboard-aux-div'>

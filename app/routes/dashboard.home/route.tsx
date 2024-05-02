@@ -20,7 +20,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({
     delegationId,
     isDelegationComplete: delegation && delegation?.maxParticipants === delegation?._count.participants,
-    isPaymentComplete: delegation && delegation?.participants.every(participant => participant.stripePaidId),
+    isPaymentComplete: delegation && delegation?.participants.every(participant => participant.stripePaid),
     isDocumentComplete: delegation && delegation?.participants.reduce((accumulator, participant) => {
       if (participant.delegate) {
         if (participant.files.length >= 2) accumulator += 1
