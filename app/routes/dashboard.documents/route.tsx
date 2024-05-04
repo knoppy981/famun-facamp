@@ -1,6 +1,6 @@
 import React from 'react'
 import { ActionFunctionArgs, LoaderFunctionArgs, UploadHandler, UploadHandlerPart, json, redirect, unstable_parseMultipartFormData } from '@remix-run/node';
-import { useActionData, useLoaderData, useRouteError } from '@remix-run/react';
+import { Form, useActionData, useFetcher, useLoaderData, useRouteError } from '@remix-run/react';
 
 import Link from '~/components/link';
 import { getDelegationFilesDescription, uploadFile } from '~/models/file.server';
@@ -36,13 +36,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     filename,
     contentType,
   }: UploadHandlerPart) => {
-    console.log('name ', name)
-    console.log('in uploadHandler', contentType)
+    // console.log('name ', name)
+    // console.log('in uploadHandler', contentType)
 
     if (name === "my-file") {
-      console.log(name, filename)
+      // console.log(name, filename)
       fileContentType = contentType;
-
     } else if (name === "user-id" || name === "file-type") {
       const chunks = []
       for await (const chunk of data) chunks.push(chunk)
@@ -55,15 +54,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       return
     }
 
-    console.log("userId: " + userId)
-    console.log("fileType: " + fileType)
+    // console.log("userId: " + userId)
+    // console.log("fileType: " + fileType)
 
     // Get the file as a buffer
     const chunks = []
     for await (const chunk of data) chunks.push(chunk)
     const buffer = Buffer.concat(chunks)
 
-    console.log(buffer.length)
+    // console.log(buffer.length)
 
     try {
       await uploadFile({ userId, stream: buffer, filename, name: fileType, size: buffer.length, contentType: fileContentType })
@@ -71,7 +70,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       console.log(error)
     }
 
-    console.log('returning', filename)
+    // console.log('returning', filename)
     return filename
   };
 
@@ -82,7 +81,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const fileInfo = { fileName: form.get('my-file'), userId: form.get("user-id"), fileType: form.get("file-type") };
 
   // this is response from upload handler
-  console.log('the form', fileInfo);
+  // console.log('the form', fileInfo);
 
   return fileInfo || null;
 };
@@ -99,6 +98,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 const Documents = () => {
   const user = useUser()
+  const fetcher = useFetcher<any>()
   const actionData = useActionData<typeof action>();
   const { delegation } = useLoaderData<typeof loader>()
   const [selectedUserId, setSelectedUserId] = React.useState<UserType["id"]>(actionData?.userId ? actionData.userId as string : user.id);
@@ -168,9 +168,10 @@ const Documents = () => {
 
         <FileForm
           state={state}
-          user={selectedUser}
+          user={selectedUser as any}
           selectedFiles={selectedFiles}
           actionData={actionData}
+          fetcher={fetcher}
         />
       </div>
     </div>

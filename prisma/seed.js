@@ -270,7 +270,7 @@ async function createXDelegations(max) {
 				school: `teste ${i}`,
 				schoolPhoneNumber: "+55 19 97866 7676",
 				maxParticipants: 10,
-				participationMethod: /* i % 2 === 0 */false ? "Escola" : "Universidade",
+				participationMethod: /* i % 2 === 0 */true ? "Escola" : "Universidade",
 				paymentExpirationDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
 				address: {
 					create: {
@@ -279,6 +279,50 @@ async function createXDelegations(max) {
 						address: "Rua Elviro",
 						postalCode: "12099522",
 						country: "Brasil",
+					}
+				},
+			}
+		})
+	}
+}
+
+async function createXParticipants(max) {
+	for (let i = 0; i < max; i++) {
+		await prisma.user.delete({ where: { email: `testxxx${i}@gmail.com` } }).catch(err => { console.log('no delegation found') })
+
+		await prisma.user.create({
+			data: {
+				name: `user ${i + 1}`,
+				birthDate: "2003-06-23",
+				rg: `11.111.981-${i + 1}`,
+				email: `testxxx${i}@gmail.com`,
+				phoneNumber: "+55 19 97154 7424",
+				participationMethod: "Escola",
+				sex: "Masculino",
+				password: {
+					create: {
+						hash: await bcrypt.hash("Teste123", 10)
+					}
+				},
+				nacionality: "Brazil",
+				leader: i === 0,
+				delegate: {
+					create: {
+						councilPreference: {
+							set: [
+								"Assembleia_Geral_da_ONU",
+								"Rio_92",
+								"Conselho_de_Seguranca_da_ONU",
+								"Conselho_de_Juventude_da_ONU",
+							]
+						},
+						languagesSimulates: {
+							set: ["Ingles", "Espanhol"]
+						},
+						emergencyContactName: "Julia",
+						emergencyContactPhoneNumber: "+55 11 99877 2333",
+						educationLevel: "Universidade",
+						currentYear: "4 ano"
 					}
 				},
 			}
@@ -357,22 +401,13 @@ async function seed() {
 
 	// await postponePaymentExpiration("111111")
 
-	// await createAdmin()
+	await createAdmin()
 
-	// await createXDelegations(20)
+	// await createXDelegations(30)
+
+	// await createXParticipants(30)
 
 	// await create10Participants("012331")
-
-	const users = await prisma.user.update({
-		where: {
-			email: "teste@gmail.com"
-		},
-		data: {
-			stripePaid: null
-		}
-	})
-
-	console.log(users)
 
 	console.log(`Database has been seeded. 🌱`);
 }

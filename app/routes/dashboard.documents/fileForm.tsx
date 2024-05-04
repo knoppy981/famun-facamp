@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, useNavigation } from '@remix-run/react'
+import { FetcherWithComponents, Form, useNavigation } from '@remix-run/react'
 
 import Button from '~/components/button'
 import Dialog from '~/components/dialog'
@@ -12,14 +12,15 @@ import { OverlayTriggerState } from 'react-stately'
 import { AnimatePresence } from 'framer-motion'
 import Modal from '~/components/modalOverlay'
 import Spinner from '~/components/spinner'
+import { UserType } from '~/models/user.server'
 
-const FileForm = ({ state, user, selectedFiles, actionData }:
-  { state: OverlayTriggerState, user: any, selectedFiles: selectedFilesType, actionData: any }
+const FileForm = ({ state, user, selectedFiles, actionData, fetcher }:
+  { state: OverlayTriggerState, user: UserType, selectedFiles: selectedFilesType, actionData: any, fetcher: FetcherWithComponents<any> }
 ) => {
   const ref = React.useRef<HTMLInputElement>(null)
   const navigation = useNavigation()
   const [file, setFile, selectedFileName, setSelectedFileName, isImageUploaded, imagePreview, isDragging, onDragOver, onDragLeave, handleDrop, onFileChange] =
-    useFileSubmission(actionData, state, ref)
+    useFileSubmission(fetcher.data, state, ref, user)
 
   return (
     <AnimatePresence>
@@ -45,7 +46,7 @@ const FileForm = ({ state, user, selectedFiles, actionData }:
                     aria-label="Tipo do documento"
                     action={undefined}
                     isDisabled={undefined}
-                    defaultValue={selectedFileName}
+                    value={selectedFileName}
                     onChange={setSelectedFileName}
                   >
                     {documentsType.map((item, i) => {
@@ -60,14 +61,13 @@ const FileForm = ({ state, user, selectedFiles, actionData }:
                   null
                 }
 
-                <Form
+                <form
                   method='post'
                   encType="multipart/form-data"
                   className={`documents-form ${isDragging ? "dragging" : ""}`}
                   onDragOver={onDragOver}
                   onDragLeave={onDragLeave}
                   onDrop={handleDrop}
-                  replace
                 >
                   {/* it is important that the file input comes at last */}
                   <input type='text' id="user-id" name="user-id" hidden readOnly value={user.id} />
@@ -111,7 +111,7 @@ const FileForm = ({ state, user, selectedFiles, actionData }:
                       </div>
                     </>
                   }
-                </Form>
+                </form>
               </>
               :
               <div className='documents-form-uploaded'>
@@ -126,7 +126,7 @@ const FileForm = ({ state, user, selectedFiles, actionData }:
   )
 }
 
-function useFileSubmission(actionData: any, state: OverlayTriggerState, ref: React.RefObject<HTMLInputElement>): [
+function useFileSubmission(actionData: any, state: OverlayTriggerState, ref: React.RefObject<HTMLInputElement>, user: UserType): [
   File | null,
   React.Dispatch<any>,
   string,
@@ -142,8 +142,12 @@ function useFileSubmission(actionData: any, state: OverlayTriggerState, ref: Rea
   const [file, setFile] = React.useState<File | null>(null)
   const [imagePreview, setImagePreview] = React.useState<string | null>(null)
   const [isDragging, setIsDragging] = React.useState<boolean>(false)
-  const [selectedFileName, setSelectedFileName] = React.useState<string>("Position Paper")
+  const [selectedFileName, setSelectedFileName] = React.useState<string>(user.delegate ? "Position Paper" : "Liability Waiver")
   const [isImageUploaded, setIsImageUploaded] = React.useState<boolean>(false)
+
+  React.useEffect(() => {
+    setSelectedFileName(user.delegate ? "Position Paper" : "Liability Waiver")
+  }, [user])
 
   React.useEffect(() => {
     setFile(null)
@@ -177,6 +181,7 @@ function useFileSubmission(actionData: any, state: OverlayTriggerState, ref: Rea
 
     if (files.length) {
       setFile(files[0])
+      setImagePreview(files[0] ? URL.createObjectURL(files[0]) : null)
     }
   }
 
