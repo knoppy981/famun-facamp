@@ -13,7 +13,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   try {
     const delegations = await delegationsList(participationMethod)
-    console.dir(delegations, { depth: null })
     if (delegations === undefined) return
     aoo = await delegationsAoo(delegations)
   } catch (error) {
