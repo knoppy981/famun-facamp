@@ -63,7 +63,7 @@ const AddParticipant = ({ state, committee, participationMethod }: { state: Over
             }
 
             <Button type='submit' className='committee-add-form-button' isDisabled={selectedDelegates.length === 0 || fetcher.state !== "idle"} onPress={handleSubmission}>
-              {fetcher.state !== "idle" ? "Adicionando" : "Adicionar "}
+              {fetcher.state !== "idle" ? "Adicionando" : "Adicionar"}
             </Button>
           </Dialog>
         </Modal>

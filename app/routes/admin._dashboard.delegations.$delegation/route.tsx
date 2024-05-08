@@ -5,7 +5,7 @@ import qs from 'qs'
 import { ParticipationMethod } from '@prisma/client';
 
 import { requireAdminId } from '~/session.server';
-import { adminDelegationData } from '~/models/delegation.server';
+import { DelegationType, adminDelegationData } from '~/models/delegation.server';
 import { iterateObject } from '../dashboard/utils/findDiffrences';
 import { updateUserSchema } from '~/schemas';
 import { getExistingUser, updateUser } from '~/models/user.server';
@@ -13,7 +13,7 @@ import { getCorrectErrorMessage } from '~/utils/error';
 
 import Button from '~/components/button';
 import Link from '~/components/link';
-import { FiArrowLeft, FiBell, FiDollarSign, FiFile, FiTrash2 } from "react-icons/fi/index.js";
+import { FiArrowLeft, FiAward, FiBell, FiDollarSign, FiFile, FiTrash2 } from "react-icons/fi/index.js";
 import ModalTrigger from '~/components/modalOverlay/trigger';
 import Dialog from '~/components/dialog';
 import Spinner from '~/components/spinner';
@@ -22,6 +22,7 @@ import { useParticipantModal } from '../admin._dashboard/participantModal/usePar
 import { useDelegationData } from './useDelegationData';
 import { useOverlayTriggerState } from 'react-stately';
 import ChangeMaxParticipants from './changeMaxParticipants';
+import ChangeLeader from './changeLeader';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
@@ -118,6 +119,7 @@ const Delegation = () => {
   const [handlePostponePayment, postponePaymentState] = usePostponePayment()
   const [hasDelegates, participantLength, sentDocuments, paidParticipants, totalPaid] = useDelegationData(delegation)
   const changeMaxParticipantsState = useOverlayTriggerState({})
+  const changeLeaderState = useOverlayTriggerState({})
 
   return (
     <div className='admin-container'>
@@ -293,6 +295,18 @@ const Delegation = () => {
       </div>
 
       <ChangeMaxParticipants state={changeMaxParticipantsState} maxParticipants={delegation.maxParticipants} delegationId={delegation.id} />
+
+      <div className='committee-title'>
+        <Button
+          className="secondary-button-box blue-light"
+          isDisabled={!delegation}
+          onPress={changeLeaderState.toggle}
+        >
+          <FiAward className='icon' /> Designar novo Líder
+        </Button>
+      </div>
+
+      <ChangeLeader state={changeLeaderState} delegation={delegation as any} />
 
       <div className='committee-title'>
         <ModalTrigger
