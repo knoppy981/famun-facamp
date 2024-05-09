@@ -209,7 +209,6 @@ function handleSearchIndex(submit: SubmitFunction, formRef: React.RefObject<HTML
 
   useDidMountEffect(() => {
     submit(formRef.current, { method: "GET" })
-    console.log("submitting")
   }, [testState])
 
   useDidMountEffect(() => {
