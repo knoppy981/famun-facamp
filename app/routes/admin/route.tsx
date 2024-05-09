@@ -24,6 +24,7 @@ const AdminPage = () => {
 
   useDidMountEffect(() => {
     if (matches?.[3]?.pathname) navigate(`${matches[3].pathname}?pm=${participationMethod}`, { replace: true })
+    console.log("moving")
   }, [participationMethod])
 
   return (

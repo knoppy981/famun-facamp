@@ -41,7 +41,7 @@ const AdminDashboard = () => {
               aria-label={`${item.to}-link`}
               to={{
                 pathname: item.to,
-                search: searchParams.toString(),
+                search: `pm=${participationMethod}`,
               }}
               ref={ref}
             >

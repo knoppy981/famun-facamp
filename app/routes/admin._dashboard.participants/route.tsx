@@ -217,6 +217,7 @@ function useDelegationsList(submit: SubmitFunction, formRef: React.RefObject<HTM
 
   useDidMountEffect(() => {
     submit(formRef.current, { method: "GET" })
+    console.log("submitting")
   }, [testState])
 
   useDidMountEffect(() => {
