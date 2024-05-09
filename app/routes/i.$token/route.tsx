@@ -77,7 +77,7 @@ const invite = () => {
 
       <div className='auth-container'>
         <h1 className='auth-title'>
-          FAMUN 2023
+          FAMUN {new Date().getFullYear()}
         </h1>
 
         <fetcher.Form method='post'>
