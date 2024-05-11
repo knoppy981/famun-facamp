@@ -5,7 +5,8 @@ export const findUser = Joi.object({
   email: Joi.string()
     .email()
     .messages({
-      'string.empty': 'E-mail is required',
-      'string.email': "Invalid e-mail"
+      'string.empty': "E-mail obrigatório",
+      'string.email': "Invalid e-mail",
+      'any.required': "E-mail obrigatório"
     }),
 }).xor('id', 'email')

@@ -40,6 +40,26 @@ export async function createDelegationChangeNotification(userId: string, data: s
   })
 }
 
+export async function createUserDocumentNotification(userId: string, data: string, targetId: string, description?: string) {
+  return prisma.notifications.create({
+    data: {
+      data,
+      type: "document",
+      description,
+      targetUser: {
+        connect: {
+          id: targetId
+        }
+      },
+      user: {
+        connect: {
+          id: userId
+        }
+      }
+    }
+  })
+}
+
 export async function seeNotification(id: string) {
   return prisma.notifications.update({
     where: {

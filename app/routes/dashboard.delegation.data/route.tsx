@@ -239,10 +239,14 @@ const DelegationData = () => {
                         Tem certeza que deseja nomear {delegation.participants?.find(el => el.id === selectedUserId)?.name} o líder da delegação?
                       </div>
 
-                      <div className="dialog-subitem">
-                        Obs: Quando você deixa de ser o líder da delegação você perde o privilégio de alterar dados da sua delegação e de seus participantes e
-                        de realizar pagamentos e enviar documentos para a delegação toda
-                      </div>
+                      <span className="dialog-subitem">
+                        Tem certeza que deseja nomear xxxx o chefe da delegação?
+                        Obs.: Quando você deixa de ser o chefe de delegação, você perde o privilégio de alterar os dados de sua delegação e de seus participantes, de realizar pagamentos e enviar documentos para a delegação toda.
+                      </span>
+
+                      <b style={{ fontSize: "1.3rem" }}>
+                        ATENÇÃO: Esses privilégios se mantêm para os Professores Orientadores.
+                      </b>
 
                       <Button
                         className="secondary-button-box red-dark"

@@ -8,31 +8,36 @@ const addressSchema = Joi.object({
   address: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Endereço obrigatório'
+      'string.empty': 'Endereço obrigatório',
+      'any.required': "Endereço obrigatório"
     }),
 
   country: Joi.string()
     .required()
     .messages({
-      'string.empty': 'País obrigatório'
+      'string.empty': 'País obrigatório',
+      'any.required': "País obrigatório"
     }),
 
   postalCode: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Código postal obrigatório'
+      'string.empty': 'Código postal obrigatório',
+      'any.required': "Código postal obrigatório"
     }),
 
   state: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Estado obrigatório'
+      'string.empty': 'Estado obrigatório',
+      'any.required': "Estado obrigatório"
     }),
 
   city: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Cidade obrigatório'
+      'string.empty': 'Cidade obrigatório',
+      'any.required': "Cidade obrigatório"
     }),
 })
 
@@ -42,6 +47,7 @@ export const createDelegationSchema = Joi.object({
     .max(60)
     .required()
     .messages({
+      'any.required': "Nome obrigatório",
       'string.min': 'Nome deve conter pelo menos 3 letras',
       'string.max': "Nome não pode conter mais de 60 lentras",
       'string.empty': 'Nome é necessário',
@@ -54,6 +60,7 @@ export const createDelegationSchema = Joi.object({
     .required()
     .messages({
       'any.only': 'Método de participação obrigatório',
+      'any.required': 'Método de participação obrigatório',   
     }),
 
   maxParticipants: Joi.number()

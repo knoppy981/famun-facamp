@@ -46,7 +46,7 @@ export function useButtonState(
 
   React.useEffect(() => {
     setRemoveParticipantButtonIcon(removeParticipantsTransition !== "idle" ?
-      <Spinner dim="18px" color='red' /> :
+      <Spinner dim="18px" /> :
       <FiTrash2 className="icon" />)
     setRemoveParticipantButtonLabel(removeParticipantsTransition !== "idle" ? "Removendo" : "Remover Participante")
   }, [removeParticipantsTransition])

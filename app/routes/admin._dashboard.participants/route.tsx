@@ -1,21 +1,22 @@
 import React from 'react'
 import { LoaderFunctionArgs, json } from '@remix-run/node';
 import { Form, SubmitFunction, useFetcher, useLoaderData, useOutletContext, useSubmit } from '@remix-run/react'
-
-
-import { FiChevronDown, FiChevronLeft, FiChevronRight, FiDownload } from "react-icons/fi/index.js";
 import { ParticipationMethod } from '@prisma/client';
+
+import { exportAoo } from '~/sheets';
+import { adminParticipantList } from '~/models/user.server';
+import useDidMountEffect from '~/hooks/useDidMountEffect';
+
 import Button from '~/components/button'
 import TextField from '~/components/textfield';
-import { adminParticipantList } from '~/models/user.server';
 import PopoverTrigger from '~/components/popover/trigger';
 import Dialog from '~/components/dialog';
 import { Radio, RadioGroup } from '~/components/radioGroup';
-import useDidMountEffect from '~/hooks/useDidMountEffect';
-import { exportAoo } from '~/sheets';
 import Spinner from '~/components/spinner';
 import { useParticipantModal } from '../admin._dashboard/participantModal/useParticipantModal';
 import ParticipantModal from '../admin._dashboard/participantModal';
+import { FiCheckSquare, FiChevronDown, FiChevronLeft, FiChevronRight, FiDownload, FiX } from "react-icons/fi/index.js";
+import Checkbox from '~/components/checkbox';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -34,9 +35,10 @@ const Participants = () => {
   const formRef = React.useRef<HTMLFormElement>(null)
   const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
   const { participants } = useLoaderData<typeof loader>()
-  const [searchIndex, handleSearchIndex, orderBy, handleOrderBy, resetIndex] = useDelegationsList(submit, formRef, participationMethod)
+  const [searchIndex, handleSearchIndex, orderBy, handleOrderBy, resetIndex] = useParticipantslist(submit, formRef, participationMethod)
   const [handleParticipantsSheet, downloadState] = useParticipantsSheet(participationMethod)
   const [overlayState, selectedParticipantId, handleParticipantChange] = useParticipantModal()
+  const [presenceControlActive, togglePresenceControl, submitPresence, submitObservation, buttonLabel, buttonIcon] = usePresenceControl()
 
   return (
     <>
@@ -54,25 +56,31 @@ const Participants = () => {
             placeholder='Procurar...'
           />
 
-          <PopoverTrigger label={<>Ordenar por <FiChevronDown className='icon' /></>}>
-            <Dialog maxWidth style={{ padding: "15px 15px 15px 10px" }}>
-              <RadioGroup
-                className='documents-radio-input-box'
-                aria-label="Ordenar por"
-                name='order-by'
-                action={undefined}
-                isDisabled={undefined}
-                value={orderBy}
-                onChange={handleOrderBy}
-              >
-                {[["Ordem alfabética", "name"], ["Delegação", "delegation"], ["Data de inscrição", "createdAt"], ["Posição", "position"]].map((item, i) => {
-                  return (
-                    <Radio key={i} value={item[1]}>{item[0]}</Radio>
-                  )
-                })}
-              </RadioGroup>
-            </Dialog>
-          </PopoverTrigger>
+          <div className='admin-search-filter-box'>
+            <PopoverTrigger label={<>Ordenar por <FiChevronDown className='icon' /></>}>
+              <Dialog maxWidth style={{ padding: "15px 15px 15px 10px" }}>
+                <RadioGroup
+                  className='documents-radio-input-box'
+                  aria-label="Ordenar por"
+                  name='order-by'
+                  action={undefined}
+                  isDisabled={undefined}
+                  value={orderBy}
+                  onChange={handleOrderBy}
+                >
+                  {[["Ordem alfabética", "name"], ["Delegação", "delegation"], ["Data de inscrição", "createdAt"], ["Posição", "position"]].map((item, i) => {
+                    return (
+                      <Radio key={i} value={item[1]}>{item[0]}</Radio>
+                    )
+                  })}
+                </RadioGroup>
+              </Dialog>
+            </PopoverTrigger>
+          </div>
+
+          {/* <Button className={`secondary-button-box ${presenceControlActive ? "red-light" : "blue-light"}`} onPress={togglePresenceControl}>
+            {buttonIcon} {buttonLabel}
+          </Button> */}
 
           <input type='hidden' name='order-by' value={orderBy} />
         </div>
@@ -103,25 +111,33 @@ const Participants = () => {
               {participants.map((participant, index) => {
                 return (
                   <tr
-                    className="table-row cursor"
+                    className={`table-row ${!presenceControlActive ? "cursor" : ""}`}
                     key={index}
                     onClick={() => {
-                      handleParticipantChange(participant.id)
-                      overlayState.toggle()
+                      if (!presenceControlActive) {
+                        handleParticipantChange(participant.id)
+                        overlayState.toggle()
+                      }
                     }}
                     tabIndex={0}
                     role="link"
                     aria-label={`Change representation for ${" "}`}
                     onKeyDown={(event) => {
                       if (event.key === 'Enter' || event.key === 'Space') {
-                        event.preventDefault();
-                        handleParticipantChange(participant.id)
-                        overlayState.toggle()
+                        if (!presenceControlActive) {
+                          event.preventDefault();
+                          handleParticipantChange(participant.id)
+                          overlayState.toggle()
+                        }
                       }
                     }}
                   >
                     <td className='table-cell'>
-                      {participant.name}
+                      <div className='table-flex-cell'>
+                        {presenceControlActive ? <Checkbox name="check" aria-label='check-presence' /> : null}
+
+                        {participant.name}
+                      </div>
                     </td>
 
                     <td className='table-cell'>
@@ -188,7 +204,7 @@ const Participants = () => {
   )
 }
 
-function useDelegationsList(submit: SubmitFunction, formRef: React.RefObject<HTMLFormElement>, participationMethod: ParticipationMethod,): [
+function useParticipantslist(submit: SubmitFunction, formRef: React.RefObject<HTMLFormElement>, participationMethod: ParticipationMethod,): [
   number,
   (isAdding: boolean) => void,
   string,
@@ -242,6 +258,34 @@ function useParticipantsSheet(participationMethod: ParticipationMethod): [(type:
   }, [fetcher.data])
 
   return [handleDownload, fetcher.state]
+}
+
+function usePresenceControl(): [
+  boolean, () => void, (participantId: string, checked: boolean) => void, (participantId: string, observation: string) => void, string, JSX.Element
+] {
+  const [active, setActive] = React.useState(false)
+  const [buttonLabel, setButtonLabel] = React.useState("")
+  const [buttonIcon, setButtonIcon] = React.useState(<FiCheckSquare className='icon' />)
+  const submit = useSubmit()
+
+  React.useEffect(() => {
+    setButtonLabel(active ? "Cancelar Credeciamento" : "Credenciamento")
+    setButtonIcon(active ? <FiX className='icon' /> : <FiCheckSquare className='icon' />)
+  }, [active])
+
+  const submitPresence = (participantId: string, checked: boolean) => {
+    if (active) {
+      submit({ participantId, checked }, { method: "POST", preventScrollReset: true })
+    }
+  }
+
+  const submitObservation = (participantId: string, observation: string) => {
+    if (active) {
+      submit({ participantId, observation }, { method: "POST", preventScrollReset: true })
+    }
+  }
+
+  return [active, () => setActive(!active), submitPresence, submitObservation, buttonLabel, buttonIcon]
 }
 
 export default Participants

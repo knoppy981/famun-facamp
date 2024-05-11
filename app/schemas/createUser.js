@@ -11,6 +11,7 @@ export const createUserSchema = Joi.object({
     .email()
     .required()
     .messages({
+      'any.required': 'E-mail obrigatório',
       'string.empty': 'E-mail obrigatório',
       'string.email': "E-mail inválido"
     }),
@@ -22,6 +23,7 @@ export const createUserSchema = Joi.object({
     .pattern(/^[^\d]*$/)
     .messages({
       'string.empty': 'Nome obrigatório',
+      'any.required': 'Nome obrigatório',
       'string.pattern.base': 'Nome inválido',
       'string.min': 'Nome deve conter pelo menos 3 letras',
       'string.max': "Nome não pode conter mais de 60 lentras",
@@ -52,12 +54,14 @@ export const createUserSchema = Joi.object({
     .required()
     .messages({
       'date.base': 'Data de nascimento obrigatório',
+      'any.required': 'Data de nascimento obrigatório',
     }),
 
   nacionality: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Selecione sua nacionalidade'
+      'string.empty': 'Selecione sua nacionalidade',
+      'any.required': 'Selecione sua nacionalidade'
     }),
 
   sex: Joi.string()
@@ -65,6 +69,7 @@ export const createUserSchema = Joi.object({
     .required()
     .messages({
       'string.empty': 'Sexo obrigatório',
+      'any.required': 'Sexo obrigatório',
       'string.pattern.base': 'Sexo inválido'
     }),
 

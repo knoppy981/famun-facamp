@@ -1014,6 +1014,8 @@ input:-webkit-autofill:active {
 @media screen and (max-width: 700px) {
   .admin-search-container {
     padding: 0 15px;
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
@@ -1056,6 +1058,12 @@ input:-webkit-autofill:active {
 }
 .admin-search-input-box input {
   padding: 0 10px;
+}
+
+@media screen and (max-width: 700px) {
+  .admin-search-filter-box {
+    padding: 0 10px;
+  }
 }
 
 .admin-delegation-subtitle {

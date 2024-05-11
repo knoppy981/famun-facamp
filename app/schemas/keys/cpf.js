@@ -29,6 +29,7 @@ export const customCpf = Joi.extend({
 	base: Joi.string(),
 	messages: {
 		'cpf.invalid': 'CPF inválido',
+		'any.required': "CPF obrigatório"
 	},
 	validate(value, helpers) {
 		if (!isValidCpf(value)) {

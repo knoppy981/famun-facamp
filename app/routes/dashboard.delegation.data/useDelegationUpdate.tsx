@@ -109,6 +109,10 @@ export function useDelegationUpdate(
             return { ...prevState }
           }
 
+          if (name === "nacionality" && (prevState.rg !== user.rg || prevState.passport !== user.passport)) {
+            return { ...prevState, [name]: value }
+          }
+
           if (prevState.nacionality && (name === "passport" || name === "rg" || name === "cpf")) {
             return { ...prevState, [name]: value }
           }
@@ -148,7 +152,7 @@ export function useDelegationUpdate(
   const handleRemoveParticipant = (participantId: string) => {
     removeParticipantFetcher.submit(
       { participantId, delegationId: delegation.id },
-      { method: "post", action: "/api/participant/delegation/remove" }
+      { method: "post", action: "/api/participant/delegation/remove", navigate: true }
     )
   }
 
@@ -168,7 +172,7 @@ export function useDelegationUpdate(
     const leaderId = delegation.participants?.find(participant => participant.leader)?.id as string
     changeLeaderFetcher.submit(
       { participantId, delegationId: delegation.id, leaderId },
-      { method: "post", action: "/api/participant/delegation/leader" }
+      { method: "post", action: "/api/participant/delegation/leader", navigate: true }
     )
   }
 

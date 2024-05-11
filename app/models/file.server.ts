@@ -55,8 +55,11 @@ export async function uploadFile({ userId, stream, filename, name, size, content
     },
     update: {
       fileName: filename,
+      name,
       size,
-      stream
+      stream,
+      url: undefined,
+      contentType,
     },
     create: {
       user: {

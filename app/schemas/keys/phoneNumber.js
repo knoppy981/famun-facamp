@@ -7,7 +7,8 @@ export const customPhoneNumber = Joi.extend({
   messages: {
     'phone.invalid': 'Telefone inválido',
     'phone.required': 'Telefone é necessário',
-    'string.empty': 'Telefone é necessário'
+    'string.empty': 'Telefone é necessário',
+    'any.required': 'Telefone é necessário',
   },
   validate(value, helpers) {
     if (!isValidPhoneNumber(value)) {

@@ -34,11 +34,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData()
   const newUserData = qs.parse(formData.get("newUserData") as string)
 
-  const count = delegation.participants?.reduce((accumulator, participant) => {
-    if (participant.delegate) accumulator += 1
-    return accumulator
-  }, 0) as number
-  if (count > delegation.maxParticipants) {
+  const count = delegation.participants.filter(p => p.delegate).length
+  if (count >= delegation.maxParticipants) {
     return json(
       { errors: { participants: "Maximum delegates reached" } },
       { status: 400 }
@@ -101,7 +98,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const info = await sendEmail({
       to: newUser.email,
       subject: "Bem-vindo a Famun",
-      html: manualCreateUserEmail(user.name, delegation.school, newUser, password, process.env.WEBSITE_URL ?? "famun.fly.dev")
+      html: manualCreateUserEmail(user.name, delegation.school, newUser, password, process.env.WEBSITE_URL ?? "app.famun.com.br")
     })
   } catch (e) {
     console.log(e)
@@ -132,7 +129,7 @@ const CreateUser = () => {
   const [modalContext, state] = useModalContext(fetcher)
 
   return (
-    <Form className="delegation-data-form" method="post">
+    <div className="delegation-data-form">
       {state.isOpen &&
         <Modal state={state} isDismissable>
           <Dialog maxWidth>
@@ -225,7 +222,7 @@ const CreateUser = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </Form >
+    </div>
   )
 }
 

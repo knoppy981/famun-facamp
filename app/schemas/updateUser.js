@@ -11,6 +11,7 @@ export const updateUserSchema = Joi.object({
     .email()
     .messages({
       'string.empty': 'E-mail obrigatório',
+      'any.required': 'E-mail obrigatório',
       'string.email': "E-mail inválido"
     }),
 
@@ -20,6 +21,7 @@ export const updateUserSchema = Joi.object({
     .pattern(/^[^\d]*$/)
     .messages({
       'string.empty': 'Nome obrigatório',
+      'any.required': 'Nome obrigatório',
       'string.pattern.base': 'Nome inválido',
       'string.min': 'Nome deve conter pelo menos 3 letras',
       'string.max': "Nome não pode conter mais de 60 lentras",

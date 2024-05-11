@@ -43,6 +43,7 @@ model User {
   confirmationCode    ConfirmationCode?
   changesMade         Notifications[]
   notifications       Notifications[]     @relation("user_change")
+  presenceControl     PresenceControl?
 }
 
 type Paid {
@@ -56,6 +57,11 @@ type ConfirmationCode {
   code      String
   createdAt DateTime @default(now())
   expiresAt DateTime
+}
+
+type PresenceControl {
+  checked     Boolean @default(false)
+  observation String?
 }
 
 model FoodRestrictions {

@@ -5,5 +5,6 @@ export const customEmail = Joi.string()
   .required()
   .messages({
     'string.empty': 'E-mail obrigatório',
-    'string.email': "E-mail inválido"
+    'string.email': "E-mail inválido",
+    'any.required': "E-mail inválido",
   })

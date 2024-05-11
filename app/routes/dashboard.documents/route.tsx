@@ -4,7 +4,7 @@ import { Form, useActionData, useFetcher, useLoaderData, useRouteError } from '@
 
 import Link from '~/components/link';
 import { getDelegationFilesDescription, uploadFile } from '~/models/file.server';
-import { getDelegationId } from '~/session.server';
+import { getDelegationId, requireUserId } from '~/session.server';
 import { Item, Select } from '~/components/select';
 import { UserType } from '~/models/user.server';
 
@@ -14,6 +14,7 @@ import FileForm from './fileForm';
 import { useUser, useUserType } from '~/utils';
 import { useOverlayTriggerState } from 'react-stately';
 import Button from '~/components/button';
+import { createUserDocumentNotification } from '~/models/notifications.server';
 
 export type filesType = "Position Paper" | "Liability Waiver" | "Payment Voucher"
 export type selectedFilesType = {
@@ -28,7 +29,8 @@ export const documentsType = [
 ]
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  let userId: string, fileType: string, fileContentType: string
+  const userId = await requireUserId(request)
+  let selectedUserId: string, fileType: string, fileContentType: string
 
   let uploadHandler = async ({
     name,
@@ -47,7 +49,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       for await (const chunk of data) chunks.push(chunk)
       let decoder = new TextDecoder()
       let string = decoder.decode(chunks[0])
-      if (name === "user-id") userId = string
+      if (name === "user-id") selectedUserId = string
       if (name === "file-type") fileType = string
       return string
     } else {
@@ -65,7 +67,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     // console.log(buffer.length)
 
     try {
-      await uploadFile({ userId, stream: buffer, filename, name: fileType, size: buffer.length, contentType: fileContentType })
+      await uploadFile({ userId: selectedUserId, stream: buffer, filename, name: fileType, size: buffer.length, contentType: fileContentType })
+      await createUserDocumentNotification(userId, filename as string, selectedUserId, fileType)
     } catch (error) {
       console.log(error)
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
-import { useLoaderData, Outlet, NavLink, useRouteError } from '@remix-run/react';
+import { useLoaderData, Outlet, NavLink, useRouteError, useMatches } from '@remix-run/react';
 import { motion } from 'framer-motion';
 
 import { getDelegationId } from '~/session.server';
@@ -31,6 +31,7 @@ const Delegation = () => {
   const { delegation } = useLoaderData<typeof loader>()
   const [stickyRef, isSticky] = useStickyContainer()
   const [isCopied, handleCopyClick] = useCopyToClipboard(delegation?.inviteLink)
+  const matches = useMatches()
 
   return (
     <div className='section-wrapper'>
@@ -74,27 +75,40 @@ const Delegation = () => {
 
       <div className={`section-menu ${isSticky ? "sticky" : ""}`} ref={stickyRef}>
         {[
-          { to: "participants", title: "Participantes" },
-          { to: "createUser", title: "Adicionar Participante" },
-          { to: "data", title: "Dados" }
-        ].map((item, index) => (
-          <NavLink
-            key={index}
-            className="section-menu-item"
-            tabIndex={0}
-            role="link"
-            prefetch='render'
-            aria-label={`${item.title}-page`}
-            to={item.to}
-          >
-            {({ isActive }) => (
-              <>
-                {item.title}
-                {isActive ? <motion.div className='section-underline' layoutId="delegationPageUnderline" /> : null}
-              </>
-            )}
-          </NavLink>
-        ))}
+          { to: "participants", title: "Participantes", active: "/dashboard/delegation/participants" },
+          { to: "createUser", title: "Adicionar Participante", active: "/dashboard/delegation/createUser" },
+          { to: "data", title: "Dados", active: "/dashboard/delegation/data" }
+        ].map((item, index) => {
+          const ref = React.useRef<HTMLAnchorElement>(null)
+
+          React.useEffect(() => {
+            if (matches?.[3]?.pathname === item.active) ref.current?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+              inline: 'center'
+            })
+          }, [matches])
+
+          return (
+            <NavLink
+              key={index}
+              className="section-menu-item"
+              tabIndex={0}
+              role="link"
+              prefetch='render'
+              aria-label={`${item.title}-page`}
+              to={item.to}
+              ref={ref}
+            >
+              {({ isActive }) => (
+                <>
+                  {item.title}
+                  {isActive ? <motion.div className='section-underline' layoutId="delegationPageUnderline" /> : null}
+                </>
+              )}
+            </NavLink>
+          )
+        })}
       </div>
 
       <Outlet context={delegation} />

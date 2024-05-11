@@ -48,6 +48,13 @@ export function useUserCreation(user: UserType, userType: "delegate" | "advisor"
       setNewUserData(newUserDataDefaultValues)
       setEditUserDataId(prevValue => !prevValue)
       changeCreatingUserType("delegate")
+      setCreationPermission(() => {
+        if (fetcher.data.newUser && delegation.participants?.filter(p => p.delegate) && delegation.participants?.filter(p => p.delegate).length + 1 >= delegation.maxParticipants) {
+          return { allowed: false, type: "delegatesCount" }
+        } else {
+          return { allowed: true, type: "" }
+        }
+      })
     }
   }, [fetcher.data])
 
@@ -82,7 +89,7 @@ export function useUserCreation(user: UserType, userType: "delegate" | "advisor"
     if (!creationPermission?.allowed) return
     fetcher.submit(
       { newUserData: qs.stringify(newUserData) },
-      { method: "post", preventScrollReset: true, navigate: false }
+      { method: "post", preventScrollReset: false, navigate: false }
     )
   }
 

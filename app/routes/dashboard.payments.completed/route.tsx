@@ -44,14 +44,16 @@ const CompletedPayments = () => {
             <tbody>
               {paymentsList.map((item: typeof paymentsList[0], index) => {
                 if (item.status !== "succeeded") return
-                const parsed = qs.parse(item?.metadata?.data) as {
+                /* const parsed = qs.parse(item?.metadata?.data) as {
                   payerId: string,
                   payments: {
                     amount: string,
                     currency: string,
                     userId: string
                   }[]
-                }
+                } */
+
+                const data = parseObjectValues(item?.metadata)
 
                 return (
                   <tr
@@ -61,10 +63,10 @@ const CompletedPayments = () => {
                   >
                     <td className='table-cell'>
                       <div className='table-flex-cell'>
-                        Inscrição de {item?.metadata?.data ? ` ${parsed.payments?.length}x participante${parsed.payments?.length as number > 1 ? "s" : ""}` : ''}
+                        Inscrição de {data ? ` ${data.length}x participante${data.length as number > 1 ? "s" : ""}` : ''}
 
                         <PopoverTrigger label={<FiInfo className="icon" />}>
-                          <ParticipantsList ids={parsed.payments?.map(p => p.userId)} />
+                          <ParticipantsList ids={data.map(p => p.userId)} />
                         </PopoverTrigger>
                       </div>
                     </td>
@@ -115,6 +117,24 @@ const CompletedPayments = () => {
       }
     </>
   )
+}
+
+function parseObjectValues(obj: any) {
+  const parsedArray: {
+    amount: string,
+    currency: string,
+    userId: string
+  }[] = [];
+
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key) && key !== "payerId") {
+      const decoded = decodeURIComponent(obj[key]);
+
+      parsedArray.push(qs.parse(decoded) as any);
+    }
+  }
+
+  return parsedArray;
 }
 
 export default CompletedPayments

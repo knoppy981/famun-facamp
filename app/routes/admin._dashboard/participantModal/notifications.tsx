@@ -33,7 +33,7 @@ const Notification = (notification: {
   targetDelegationId: string | null;
 }) => {
   const [open, setOpen] = React.useState(false)
-  const [data, handleSeeNotification] = handleNotification(notification.data, notification.seen, notification.id, open)
+  const [data, handleSeeNotification] = handleNotification(notification.data, notification.type, notification.description ?? "", notification.seen, notification.id, open)
 
   return (
     <div className={`admin-delegation-notification`}>
@@ -56,7 +56,7 @@ const Notification = (notification: {
         <div className="admin-delegation-notification-container">
           {data.map((item, index) => (
             <li key={index} className={`admin-delegation-notification-item ${Array.isArray(item.value) ? "array" : ""}`}>
-              <div className="text italic">{keyToLabel(item.key)}: </div>
+              <div className="text italic">{item.type !== "document" ? keyToLabel(item.key) : item.key}: </div>
               {Array.isArray(item.value) ?
                 <ul>
                   {item.value.map((value, i) => (
@@ -78,11 +78,18 @@ const Notification = (notification: {
 
 function handleNotification(
   data: string,
+  type: string,
+  description: string,
   seen: boolean,
   id: string,
   open: boolean
 ): [
-    { key: string; value: string; }[], (notificationId: string) => void
+    {
+      key: string;
+      value: string;
+      type: string;
+    }[],
+    (notificationId: string) => void
   ] {
   const submit = useSubmit()
 
@@ -99,15 +106,20 @@ function handleNotification(
     }
   }, [open])
 
-  const handleNotificationData = (dataString: string) => {
-    return Object.entries(qs.parse(dataString))
-      .map((item) => {
-        const correctKey = item[0].split('.')
-        return { key: correctKey[correctKey.length - 1], value: item[1] as string }
-      })
+  const handleNotificationData = (dataString: string, type: string, description: string) => {
+    return type !== "document" ?
+      Object.entries(qs.parse(dataString))
+        .map((item) => {
+          const correctKey = item[0].split('.')
+          return { key: correctKey[correctKey.length - 1], value: item[1] as string, type }
+        })
+      :
+      [{ key: description, value: dataString, type }]
   }
 
-  return [handleNotificationData(data), handleSeeNotification]
+  const formattedData = handleNotificationData(data, type, description)
+
+  return [formattedData, handleSeeNotification]
 }
 
 export default NotificationsContainer

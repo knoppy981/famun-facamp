@@ -81,7 +81,7 @@ const AdminPage = () => {
         </div>
 
         <div className='dashboard-disappear-on-width'>
-          <Form action='/logout' method='post'>
+          <Form action='/logout' method='post' reloadDocument>
             <Button type='submit'>
               <div className='dashboard-nav-item'>
                 <FiLogOut className='icon' />
@@ -118,7 +118,7 @@ const AdminPage = () => {
                   </NavLink>
                 </div>
 
-                <Form action='/logout' method='post' onClick={close}>
+                <Form action='/logout' method='post' onClick={close} reloadDocument>
                   <Button type='submit'>
                     <FiLogOut className='icon' />
 

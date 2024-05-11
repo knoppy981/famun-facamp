@@ -95,7 +95,7 @@ const PersonalData = (props: any) => {
           onSelectionChange={value => handleChange({ target: { name: "sex", value: value } })}
           defaultSelectedKey={defaultValues?.sex}
           isDisabled={isDisabled}
-          errorMessage={actionData?.errors?.birthDate}
+          errorMessage={actionData?.errors?.sex}
           action={actionData}
         >
           <Item key='Masculino'>Masculino</Item>
@@ -139,7 +139,12 @@ const PersonalData = (props: any) => {
             type="text"
             isRequired
             defaultValue={defaultValues?.passport ?? ""}
-            onChange={handleChange}
+            onChange={(e: any) => {
+              handleChange({ ...e, delete: e.target.value === defaultValues.passport })
+              if (country) {
+                handleChange({ target: { name: "nacionality", value: country }, delete: e.target.value === defaultValues.passport && country === defaultValues.nacionality })
+              }
+            }}
             isDisabled={isDisabled}
             errorMessage={actionData?.errors?.passport}
             action={actionData}
@@ -154,7 +159,12 @@ const PersonalData = (props: any) => {
               type="text"
               isRequired
               defaultValue={defaultValues?.rg}
-              onChange={handleChange}
+              onChange={(e: any) => {
+                handleChange({ ...e, delete: e.target.value === defaultValues.rg })
+                if (country) {
+                  handleChange({ target: { name: "nacionality", value: country }, delete: (e.target.value === defaultValues.rg && country === defaultValues.nacionality) })
+                }
+              }}
               isDisabled={isDisabled}
               errorMessage={actionData?.errors?.rg}
               action={actionData}

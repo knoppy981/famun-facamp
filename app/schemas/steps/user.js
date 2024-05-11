@@ -16,7 +16,8 @@ const step3 = Joi.object({
   nacionality: Joi.string()
     .required()
     .messages({
-      'string.empty': 'Selecione uma nacionalidade'
+      'string.empty': 'Selecione uma nacionalidade',
+      'any.required': 'Selecione uma nacionalidade'
     })
 })
 
@@ -26,7 +27,8 @@ const step4 = Joi.object({
     .required()
     .messages({
       'string.empty': 'E-mail obrigatório',
-      'string.email': "E-mail inválido"
+      'string.email': "E-mail inválido",
+      'any.required': 'E-mail obrigatório'
     }),
 
   password: customPassword.password()
@@ -37,7 +39,8 @@ const step4 = Joi.object({
     .valid(Joi.ref('password'))
     .messages({
       'any.only': "Senhas diferentes",
-      'string.empty': 'É necessário confirmar a senha'
+      'string.empty': 'É necessário confirmar a senha',
+      'any.required': 'É necessário confirmar a senha'
     })
 })
 
@@ -52,6 +55,7 @@ const step5 = Joi.object({
       'string.pattern.base': 'Nome inválido',
       'string.min': 'Nome deve conter pelo menos 3 letras',
       'string.max': "Nome não pode conter mais de 60 lentras",
+      'any.required': 'Nome obrigatório'
     }),
 
   socialName: Joi.string()
@@ -63,6 +67,7 @@ const step5 = Joi.object({
       'string.pattern.base': 'Nome inválido',
       'string.min': 'Nome deve conter pelo menos 3 letras',
       'string.max': "Nome não pode conter mais de 60 lentras",
+      'any.required': 'Nome inválido'
     }),
 
 
@@ -73,6 +78,7 @@ const step5 = Joi.object({
   passport: Joi.string()
     .messages({
       'string.empty': 'Passporte obrigatório',
+      'any.required': 'Passporte obrigatório'
     }),
 
   birthDate: Joi.date()
@@ -82,6 +88,7 @@ const step5 = Joi.object({
     .required()
     .messages({
       'date.base': 'Data de nascimento obrigatória',
+      'any.required': 'Data de nascimento obrigatória'
     }),
 
   phoneNumber: customPhoneNumber.phone()
@@ -92,7 +99,8 @@ const step5 = Joi.object({
     .required()
     .messages({
       'string.empty': 'Sexo obrigatório',
-      'string.pattern.base': 'Sexp inválido'
+      'string.pattern.base': 'Sexp inválido',
+      'any.required': 'Sexo obrigatório'
     }),
 
   diet: Joi.string()

@@ -68,6 +68,16 @@ export async function createPaymentIntent({
   }[],
   currency: string
 }) {
+  const metadata: any = {
+    payerId: userId,
+  }
+
+  payments.forEach((p, i) => {
+    metadata[i] = qs.stringify({ amount: p.price, currency: p.currency, userId: p.id })
+  })
+
+  console.log(metadata)
+
   return stripe.paymentIntents.create({
     customer: stripeCustomerId,
     amount: price,
@@ -76,12 +86,7 @@ export async function createPaymentIntent({
     automatic_payment_methods: {
       enabled: true,
     },
-    metadata: {
-      data: qs.stringify({
-        payerId: userId,
-        payments: payments.map(p => ({ amount: p.price, currency: p.currency, userId: p.id })),
-      }),
-    },
+    metadata,
   });
 }
 
@@ -135,23 +140,34 @@ export async function handleWebHook(request: Request) {
   if (event.type === 'payment_intent.succeeded') {
     const { id, metadata } = event.data.object
 
-    const parsed = qs.parse(metadata.data) as {
-      payerId: string,
-      payments: {
+    function parseObjectValues(obj: any) {
+      const parsedArray: {
         amount: string,
         currency: string,
         userId: string
-      }[]
+      }[] = [];
+
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key) && key !== "payerId") {
+          const decoded = decodeURIComponent(obj[key]);
+
+          parsedArray.push(qs.parse(decoded) as any);
+        }
+      }
+
+      return parsedArray;
     }
 
-    const paidUsersIds = parsed.payments.map(item => item.userId)
-    const user = await getUserById(parsed.payerId)
+    const data = parseObjectValues(metadata)
+
+    const paidUsersIds = data.map(item => item.userId)
+    const user = await getUserById(metadata.payerId)
     const paidUsers = await getPaidUsers(paidUsersIds)
 
     if (!user) return
 
-    await updateUsersPaymentStatus(parsed.payments)
-    await updateUserPayments(parsed.payerId, id)
+    await updateUsersPaymentStatus(data)
+    await updateUserPayments(metadata.payerId, id)
 
     const info = await sendEmail({
       to: user.email,

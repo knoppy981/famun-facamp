@@ -11,7 +11,8 @@ export const updateDelegateSchema = Joi.object({
     .pattern(/^[^\d]*$/)
     .messages({
       'string.empty': 'Nome é necessário',
-      'string.pattern.base': 'Nome inválido'
+      'string.pattern.base': 'Nome inválido',
+      'any.required': 'Nome é necessário',
     }),
 
   emergencyContactPhoneNumber: customPhoneNumber.phone(),
@@ -41,7 +42,7 @@ export const updateDelegateSchema = Joi.object({
   languagesSimulates: Joi.alternatives()
     .try(
       Joi.array().items(Joi.string().valid('Portugues', 'Ingles', 'Espanhol')).min(1).max(3).required(),
-      Joi.string().valid('Portugues', 'Ingles', 'Espanhol')
+      Joi.string().valid('Portugues', 'Ingles', 'Espanhol').required()
     )
     .messages({
       'alternatives.all': `Pelo menos um idioma necessário`,
@@ -53,7 +54,8 @@ export const updateDelegateSchema = Joi.object({
 
   country: Joi.string()
     .messages({
-      'string.empty': 'Selecione uma nacionalidade'
+      'string.empty': 'Selecione uma nacionalidade',
+      'any.required': 'Selecione uma nacionalidade',
     }),
 
   committee: Joi.any(),
@@ -74,7 +76,8 @@ export const createDelegateSchema = Joi.object({
     .pattern(/^[^\d]*$/)
     .messages({
       'string.empty': 'Nome é necessário',
-      'string.pattern.base': 'Nome inválido'
+      'string.pattern.base': 'Nome inválido',
+      'any.required': 'Nome é necessário',
     }),
 
   emergencyContactPhoneNumber: customPhoneNumber.phone()
