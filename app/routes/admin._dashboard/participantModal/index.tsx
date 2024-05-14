@@ -11,13 +11,14 @@ import { useButtonState } from "./useButtonState"
 import Button from "~/components/button"
 import Dialog from "~/components/dialog"
 import Modal from "~/components/modalOverlay"
-import { FiBell, FiCreditCard, FiFile, FiX } from "react-icons/fi/index.js";
+import { FiBell, FiCreditCard, FiFile, FiUserMinus, FiX } from "react-icons/fi/index.js";
 import EditUserData from "~/routes/admin._dashboard/edit-data-components/user"
 import Documents from "./documents"
 import NotificationsContainer from "./notifications"
 import Payments from "./payments"
+import DeleteParticipant from "./deleteParticipant"
 
-type menus = "notifications" | "data" | "documents" | "payments"
+type menus = "notifications" | "data" | "documents" | "payments" | "delete"
 
 const ParticipantModal = ({ state, participant }: { state: OverlayTriggerState, participant: UserType & { notifications?: Notifications[] } }) => {
   const fetcher = useFetcher<any>()
@@ -32,6 +33,7 @@ const ParticipantModal = ({ state, participant }: { state: OverlayTriggerState, 
     { index: "payments" as menus, display: <><FiCreditCard className="icon" /> Pagamentos</>, isVisible: true },
     { index: "documents" as menus, display: <><FiFile className="icon" /> Documentos</>, isVisible: true },
     { index: "notifications" as menus, display: <><FiBell className="icon" /> Notificações</>, isVisible: participant?.notifications?.length && participant.notifications?.length > 0 },
+    { index: "delete" as menus, display: <><FiUserMinus className="icon" /></>, isVisible: true },
   ]
 
   const menu = () => {
@@ -57,6 +59,8 @@ const ParticipantModal = ({ state, participant }: { state: OverlayTriggerState, 
         return <Documents participant={participant} />
       case "notifications":
         return <NotificationsContainer participant={participant} />
+      case "delete":
+        return <DeleteParticipant state={state} participantId={participant.id} />
       default:
         return null
     }

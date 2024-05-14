@@ -152,14 +152,14 @@ export function useDelegationUpdate(
   const handleRemoveParticipant = (participantId: string) => {
     removeParticipantFetcher.submit(
       { participantId, delegationId: delegation.id },
-      { method: "post", action: "/api/participant/delegation/remove", navigate: true }
+      { method: "post", action: "/api/participant/delete", navigate: true }
     )
   }
 
   React.useEffect(() => {
     if (removeParticipantFetcher.state === 'loading' && !removeParticipantFetcher.data.errors) {
       // reset the selected user
-      setSelectedUserId(removeParticipantFetcher.data?.delegation.participants?.[0].id as string)
+      setSelectedUserId(delegation.participants?.filter(p => p.id !== selectedUserId)[0].id as string)
       // set these variables to original state
       setReadySubmission(false)
       setUserWantsToChangeData(false)

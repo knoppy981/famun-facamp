@@ -10,8 +10,8 @@ export function useUserUpdate(
   user: UserType,
   fetcher: FetcherWithComponents<any>,
   state: OverlayTriggerState,
-  selectedMenu: "data" | "notifications" | "documents" | "payments",
-  setSelectedMenu: React.Dispatch<React.SetStateAction<"notifications" | "data" | "documents" | "payments">>
+  selectedMenu: "data" | "notifications" | "documents" | "payments" | "delete",
+  setSelectedMenu: React.Dispatch<React.SetStateAction<"notifications" | "data" | "documents" | "payments" | "delete">>
 ): {
   readySubmission: boolean,
   userWantsToChangeData: boolean,

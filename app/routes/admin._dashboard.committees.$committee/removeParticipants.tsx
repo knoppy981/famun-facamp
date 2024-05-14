@@ -12,10 +12,10 @@ import { FetcherWithComponents, useFetcher } from '@remix-run/react'
 import { CommitteeType } from './route'
 import { useFilter } from 'react-aria'
 
-const RemoveParticipant = ({ state, committee }: { state: OverlayTriggerState, committee: CommitteeType }) => {
+const RemoveParticipants = ({ state, committee }: { state: OverlayTriggerState, committee: CommitteeType }) => {
   const fetcher = useFetcher<any>()
   const delegates = committee.delegates.map(delegate => ({ id: delegate.id, name: delegate.user.name }))
-  const [selectedDelegates, handleDelegateSelection, clearSelectedDelegates, handleSubmission] = useRemoveParticipant(fetcher, state, committee)
+  const [selectedDelegates, handleDelegateSelection, clearSelectedDelegates, handleSubmission] = useRemoveParticipants(fetcher, state, committee)
   const [fieldState, onSelectionChange, onInputChange, onOpenChange] = useComboBox(delegates, handleDelegateSelection)
 
   return (
@@ -52,7 +52,7 @@ const RemoveParticipant = ({ state, committee }: { state: OverlayTriggerState, c
             {selectedDelegates.length > 0 ?
               <>
                 <div className='committee-selected-delegates'>
-                  Delegados a serem excluídos: {selectedDelegates.map((item, index) => <span key={index}>{index !== 0 ? ", " : ""} {item.name}</span>)}
+                  Delegados a serem removidos: {selectedDelegates.map((item, index) => <span key={index}>{index !== 0 ? ", " : ""} {item.name}</span>)}
                 </div>
 
                 <Button className='text italic' onPress={clearSelectedDelegates}>
@@ -71,16 +71,18 @@ const RemoveParticipant = ({ state, committee }: { state: OverlayTriggerState, c
   )
 }
 
-function useRemoveParticipant(fetcher: FetcherWithComponents<any>, state: OverlayTriggerState, committee: CommitteeType): [
+function useRemoveParticipants(fetcher: FetcherWithComponents<any>, state: OverlayTriggerState, committee: CommitteeType): [
   { id: string; name: string }[], (delegate: { id: string; name: string }) => void, () => void, () => void
 ] {
   const [selectedDelegates, setSelectedDelegates] = React.useState<{ id: string; name: string }[]>([])
 
   const handleSubmission = () => {
-    fetcher.submit(
-      qs.stringify({ ids: selectedDelegates.map(item => item.id), committeeId: committee.id, actionType: "remove" }),
-      { method: "POST" }
-    )
+    if (selectedDelegates.length > 0) {
+      fetcher.submit(
+        qs.stringify({ ids: selectedDelegates.map(item => item.id), committeeId: committee.id, actionType: "remove" }),
+        { method: "POST" }
+      )
+    }
   }
 
   const handleDelegateSelection = (delegate: { id: string, name: string }) => {
@@ -164,4 +166,4 @@ function useComboBox(delegatesList: any, handleDelegateSelection: (delegate: { i
   return [fieldState, onSelectionChange, onInputChange, onOpenChange]
 }
 
-export default RemoveParticipant
+export default RemoveParticipants

@@ -298,8 +298,8 @@ export async function createUser(data: any) {
 	return user
 }
 
-export async function deleteUserByEmail(email: User["email"]) {
-	return prisma.user.delete({ where: { email } });
+export async function deleteUserById(id: User["id"]) {
+	return prisma.user.delete({ where: { id } });
 }
 
 export async function verifyLogin(
@@ -456,3 +456,4 @@ export async function getConfirmationCode(email: User["email"]) {
 
 	return user.confirmationCode
 }
+

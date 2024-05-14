@@ -14,10 +14,11 @@ import { FiX } from "react-icons/fi/index.js";
 import { DelegationType } from '~/models/delegation.server';
 import { UserType } from '~/models/user.server';
 
-const ChangeLeader = ({ state, delegation }: { state: OverlayTriggerState, delegation: DelegationType }) => {
+const RemoveParticipants = ({ state, delegation }: { state: OverlayTriggerState, delegation: DelegationType }) => {
   const fetcher = useFetcher<any>()
-  const [selectedParticipant, handleParticipantSelection, handleSubmission] = useChangeLeader(fetcher, state, delegation)
-  const [fieldState, onSelectionChange, onInputChange, onOpenChange] = useComboBox(delegation.participants ?? [], handleParticipantSelection, state)
+  const participants = delegation.participants?.map(p => ({ id: p.id, name: p.name }))
+  const [selectedParticipants, handleParticipantSelection, clearSelectedParticipants, handleSubmission] = useChangeLeader(fetcher, delegation, state)
+  const [fieldState, onSelectionChange, onInputChange, onOpenChange] = useComboBox(participants ?? [], handleParticipantSelection, state.close)
 
   return (
     <AnimatePresence>
@@ -26,7 +27,7 @@ const ChangeLeader = ({ state, delegation }: { state: OverlayTriggerState, deleg
           <Dialog>
             <div className="admin-dialog-title">
               <h2>
-                Designar novo líder
+                Remover Participantes da Delegação
               </h2>
 
               <Button onPress={state.close}>
@@ -51,8 +52,20 @@ const ChangeLeader = ({ state, delegation }: { state: OverlayTriggerState, deleg
               {(item) => <Item key={item.id}>{item.name}</Item>}
             </ComboBox>
 
-            <Button type='submit' className='committee-add-form-button' isDisabled={!selectedParticipant} onPress={handleSubmission}>
-              {fetcher.state !== "idle" ? "Designando" : "Designar"}
+            {selectedParticipants.length > 0 ?
+              <>
+                <div className='committee-selected-delegates'>
+                  Participantes a serem removidos: {selectedParticipants.map((item, index) => <span key={index}>{index !== 0 ? ", " : ""} {item.name}</span>)}
+                </div>
+
+                <Button className='text italic' onPress={clearSelectedParticipants}>
+                  Limpar
+                </Button>
+              </> : null
+            }
+
+            <Button type='submit' className='committee-add-form-button' isDisabled={selectedParticipants.length === 0} onPress={handleSubmission}>
+              {fetcher.state !== "idle" ? "Removendo" : "Remover"}
             </Button>
           </Dialog>
         </Modal>
@@ -61,53 +74,66 @@ const ChangeLeader = ({ state, delegation }: { state: OverlayTriggerState, deleg
   )
 }
 
-function useChangeLeader(fetcher: FetcherWithComponents<any>, state: OverlayTriggerState, delegation: DelegationType): [
-  UserType | undefined, (participant: UserType) => void, () => void
+function useChangeLeader(fetcher: FetcherWithComponents<any>, delegation: DelegationType, state: OverlayTriggerState): [
+  { id: string; name: string }[], (delegate: { id: string; name: string; }) => void, () => void, () => void
 ] {
-  const [selectedParticipant, setSelectedParticipant] = React.useState<UserType | undefined>()
+  const [selectedParticipants, setSelectedParticipants] = React.useState<{ id: string; name: string }[]>([])
 
-  const handleParticipantSelection = (participant: UserType) => {
-    setSelectedParticipant(participant)
+  const handleParticipantSelection = (delegate: { id: string, name: string }) => {
+    if (delegate === undefined) return
+
+    setSelectedParticipants((prevSelectedParticipants) => {
+      const isAlreadySelected = prevSelectedParticipants.some((d) => d.id === delegate.id)
+
+      if (isAlreadySelected) {
+        return prevSelectedParticipants.filter((d) => d.id !== delegate.id)
+      } else {
+        return [...prevSelectedParticipants, delegate]
+      }
+    });
   }
 
+  const clearSelectedParticipants = () => setSelectedParticipants([])
+
   const handleSubmission = () => {
-    if (selectedParticipant?.id) {
+    if (selectedParticipants.length > 0) {
       fetcher.submit(
-        { participantId: selectedParticipant.id, leaderId: delegation.participants?.find(p => p.leader)?.id ?? "", delegationId: delegation.id },
-        { method: "post", action: "/api/participant/delegation/leader" }
+        qs.stringify({ ids: selectedParticipants.map(item => item.id), delegationId: delegation.id }),
+        { method: "POST", action: "/api/admin/delegation/remove" }
       )
     }
   }
 
   React.useEffect(() => {
-    if (fetcher.data?.delegation) state.close()
+    if (fetcher.data?.delegation) {
+      clearSelectedParticipants()
+      state.close()
+    }
   }, [fetcher.data])
 
   React.useEffect(() => {
-    if (state.isOpen) setSelectedParticipant(undefined)
+    clearSelectedParticipants()
   }, [state.isOpen])
 
-  return [selectedParticipant, handleParticipantSelection, handleSubmission]
+  return [selectedParticipants, handleParticipantSelection, clearSelectedParticipants, handleSubmission]
 }
 
-function useComboBox(participants: UserType[], handleParticipantSelection: (participant: UserType) => void, state: OverlayTriggerState): [
+function useComboBox(participants: { id: string; name: any; }[], handleParticipantSelection: (delegate: { id: string; name: string; }) => void, close: () => void): [
   { selectedKey: any; inputValue: string; items: any; }, (key: React.Key) => void, (value: string) => void, (isOpen: boolean, menuTrigger?: any) => void
 ] {
-  const filteredParticipants = participants.filter(p => !p.leader)
-
   let [fieldState, setFieldState] = React.useState({
     selectedKey: "" as any,
     inputValue: "" as string,
-    items: filteredParticipants
+    items: participants
   });
 
   React.useEffect(() => {
-    if (state.isOpen) setFieldState({
+    if (true) setFieldState({
       selectedKey: "" as any,
       inputValue: "" as string,
-      items: filteredParticipants
+      items: participants
     })
-  }, [state])
+  }, [])
 
   // Implement custom filtering logic and control what items are
   // available to the ComboBox.
@@ -122,11 +148,9 @@ function useComboBox(participants: UserType[], handleParticipantSelection: (part
         handleParticipantSelection(selectedItem)
       }
       return ({
-        inputValue: selectedItem?.name ?? '',
-        selectedKey: key,
-        items: filteredParticipants.filter((item) =>
-          startsWith(item.name, selectedItem?.name ?? '')
-        )
+        inputValue: "",
+        selectedKey: "",
+        items: []
       });
     });
   };
@@ -137,7 +161,7 @@ function useComboBox(participants: UserType[], handleParticipantSelection: (part
     setFieldState((prevState) => ({
       inputValue: value,
       selectedKey: value === '' ? null : prevState.selectedKey,
-      items: filteredParticipants.filter((item) => startsWith(item.name, value))
+      items: participants.filter((item) => startsWith(item.name, value))
     }));
   };
 
@@ -147,7 +171,7 @@ function useComboBox(participants: UserType[], handleParticipantSelection: (part
       setFieldState((prevState) => ({
         inputValue: prevState.inputValue,
         selectedKey: prevState.selectedKey,
-        items: filteredParticipants
+        items: participants
       }));
     }
   };
@@ -155,4 +179,4 @@ function useComboBox(participants: UserType[], handleParticipantSelection: (part
   return [fieldState, onSelectionChange, onInputChange, onOpenChange]
 }
 
-export default ChangeLeader
+export default RemoveParticipants

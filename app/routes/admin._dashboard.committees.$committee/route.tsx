@@ -16,7 +16,7 @@ import { FiArrowLeft, FiDownload, FiTrash2, FiUserMinus, FiUserPlus } from "reac
 import { changeDelegateRepresentation } from '~/models/delegate.server';
 import { isoCountries } from '~/lib/ISO-3661-1';
 import DeleteCommittee from './deleteCommittee';
-import RemoveParticipant from './removeParticipant';
+import RemoveParticipants from './removeParticipants';
 import { exportAoo } from '~/sheets';
 import { committeeAoo } from './aoo';
 import { getExtraRepresentations } from '~/models/configuration.server';
@@ -149,7 +149,7 @@ const Committee = () => {
 
       <DeleteCommittee state={deleteCommitteeState} committee={committee as CommitteeType} />
 
-      <RemoveParticipant state={removeParticipantState} committee={committee as CommitteeType} />
+      <RemoveParticipants state={removeParticipantState} committee={committee as CommitteeType} />
 
       {hasDelegates ?
         <div className='overflow-container'>

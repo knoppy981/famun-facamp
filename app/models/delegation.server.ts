@@ -240,33 +240,6 @@ export async function joinDelegationById(delegationId: Delegation["id"], userId:
 	})
 }
 
-export async function removeDelegationParticipant(participantId: User["id"], delegationId: Delegation["id"]) {
-	const delegation = await prisma.delegation.update({
-		where: {
-			id: delegationId
-		},
-		data: {
-			participants: {
-				delete: {
-					id: participantId
-				}
-			}
-		},
-		include: {
-			address: true,
-			participants: {
-				include: {
-					delegate: true,
-					delegationAdvisor: true,
-					foodRestrictions: true,
-				}
-			}
-		}
-	})
-
-	return delegation
-}
-
 export async function updateDelegation({
 	delegationId,
 	values
@@ -426,4 +399,17 @@ export async function deleteDelegation(id: string) {
 			id
 		}
 	})
+}
+
+export async function removeParticipants(id: string, participantsIds: { id: string }[]) {
+  return prisma.delegation.update({
+    where: {
+      id
+    },
+    data: {
+      participants: {
+        disconnect: participantsIds
+      }
+    }
+  })
 }

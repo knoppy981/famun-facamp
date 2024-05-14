@@ -11,7 +11,7 @@ import { NumberField } from '~/components/textfield/numberField'
 import TextField from '~/components/textfield'
 import Spinner from '~/components/spinner'
 
-const ChangeMaxParticipants = ({ state, maxParticipants, delegationId }: { state: OverlayTriggerState, maxParticipants: number, delegationId: string }) => {
+const ChangeMaxParticipants = ({ state, maxParticipants, delegationId, participantsCount }: { state: OverlayTriggerState, maxParticipants: number, delegationId: string, participantsCount: number }) => {
   const fetcher = useFetcher<any>()
   const [handleChangeMaxParticipants, value, setValue] = useChangeMaxParticipants(state, fetcher, maxParticipants, delegationId)
 
@@ -36,7 +36,7 @@ const ChangeMaxParticipants = ({ state, maxParticipants, delegationId }: { state
                 name="maxParticipants"
                 label="Número de Delegados"
                 theme='dark'
-                minValue={1}
+                minValue={participantsCount}
                 value={value}
                 onChange={e => setValue(e as number)}
                 maxValue={20}
@@ -74,6 +74,10 @@ function useChangeMaxParticipants(state: OverlayTriggerState, fetcher: FetcherWi
   React.useEffect(() => {
     if (fetcher.data?.delegation) state.close()
   }, [fetcher.data])
+
+  React.useEffect(() => {
+    setValue(maxParticipants)
+  }, [state.isOpen])
 
   return [handleChangeMaxParticipants, value, setValue]
 }

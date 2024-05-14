@@ -236,11 +236,10 @@ const DelegationData = () => {
                   {(close: () => void) =>
                     <Dialog maxWidth>
                       <div className="dialog-title">
-                        Tem certeza que deseja nomear {delegation.participants?.find(el => el.id === selectedUserId)?.name} o líder da delegação?
+                        Tem certeza que deseja nomear {delegation.participants?.find(el => el.id === selectedUserId)?.name} o chefe da delegação?
                       </div>
 
                       <span className="dialog-subitem">
-                        Tem certeza que deseja nomear xxxx o chefe da delegação?
                         Obs.: Quando você deixa de ser o chefe de delegação, você perde o privilégio de alterar os dados de sua delegação e de seus participantes, de realizar pagamentos e enviar documentos para a delegação toda.
                       </span>
 

@@ -1,0 +1,30 @@
+import qs, { ParsedQs } from "qs"
+import { ActionFunctionArgs, json } from "@remix-run/node"
+import { removeParticipants } from "~/models/delegation.server"
+import { requireAdminId } from "~/session.server"
+
+interface ExtendedParsedQs extends ParsedQs {
+  ids: string[];
+  delegationId: string;
+}
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  await requireAdminId(request)
+
+  const text = await request.text()
+  const { ids, delegationId, ...rest } = qs.parse(text) as ExtendedParsedQs
+  console.log(ids, delegationId)
+  let delegation
+
+  try {
+    delegation = await removeParticipants(delegationId, ids.map(id => ({ id: id })))
+  } catch (error) {
+    console.log(error)
+    return json(
+      { errors: { deleteParticipant: "Failed removing participant" } },
+      { status: 400 }
+    )
+  }
+
+  return json({ delegation })
+}

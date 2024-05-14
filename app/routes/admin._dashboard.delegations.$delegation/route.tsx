@@ -13,7 +13,7 @@ import { getCorrectErrorMessage } from '~/utils/error';
 
 import Button from '~/components/button';
 import Link from '~/components/link';
-import { FiArrowLeft, FiAward, FiBell, FiDollarSign, FiFile, FiTrash2 } from "react-icons/fi/index.js";
+import { FiArrowLeft, FiAward, FiBell, FiDollarSign, FiFile, FiTrash2, FiUserMinus } from "react-icons/fi/index.js";
 import ModalTrigger from '~/components/modalOverlay/trigger';
 import Dialog from '~/components/dialog';
 import Spinner from '~/components/spinner';
@@ -23,6 +23,7 @@ import { useDelegationData } from './useDelegationData';
 import { useOverlayTriggerState } from 'react-stately';
 import ChangeMaxParticipants from './changeMaxParticipants';
 import ChangeLeader from './changeLeader';
+import RemoveParticipants from './removeParticipants';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
@@ -120,6 +121,7 @@ const Delegation = () => {
   const [hasDelegates, participantLength, sentDocuments, paidParticipants, totalPaid] = useDelegationData(delegation)
   const changeMaxParticipantsState = useOverlayTriggerState({})
   const changeLeaderState = useOverlayTriggerState({})
+  const removeParticipantsState = useOverlayTriggerState({})
 
   return (
     <div className='admin-container'>
@@ -294,7 +296,7 @@ const Delegation = () => {
         </Button>
       </div>
 
-      <ChangeMaxParticipants state={changeMaxParticipantsState} maxParticipants={delegation.maxParticipants} delegationId={delegation.id} />
+      <ChangeMaxParticipants state={changeMaxParticipantsState} maxParticipants={delegation.maxParticipants} delegationId={delegation.id} participantsCount={delegation.participants.length ?? 1} />
 
       <div className='committee-title'>
         <Button
@@ -307,6 +309,18 @@ const Delegation = () => {
       </div>
 
       <ChangeLeader state={changeLeaderState} delegation={delegation as any} />
+
+      <div className='committee-title'>
+        <Button
+          className='secondary-button-box red-light'
+          isDisabled={!delegation}
+          onPress={removeParticipantsState.toggle}
+        >
+          <FiUserMinus className='icon' /> Remover Participantes
+        </Button>
+      </div>
+
+      <RemoveParticipants state={removeParticipantsState} delegation={delegation as any} />
 
       <div className='committee-title'>
         <ModalTrigger

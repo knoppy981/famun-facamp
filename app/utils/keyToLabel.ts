@@ -9,6 +9,7 @@ const keyToLabelList = {
   passport: "Passaporte",
   phoneNumber: "Telefone",
   birthDate: "Data de nascimento",
+  nacionality: "Nacionalidade",
   diet: "Dieta",
   allergy: "Alergia",
   allergyDescription: "Descrição da alergia",

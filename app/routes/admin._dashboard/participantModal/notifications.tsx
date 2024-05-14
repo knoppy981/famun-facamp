@@ -49,12 +49,12 @@ const Notification = (notification: {
       </div>
 
       <Button onPress={() => setOpen(!open)}>
-        Mudanças <FiChevronDown className='icon' style={{ transform: `translateY(1px) ${open ? "rotate(-180deg)" : ""}` }} />
+        {notification.type === "document" ? "Envio de Documento" : "Mudanças"} <FiChevronDown className='icon' style={{ transform: `translateY(1px) ${open ? "rotate(-180deg)" : ""}` }} />
       </Button>
 
       <div className={`animate-height-container ${open ? "animate" : ""}`}>
         <div className="admin-delegation-notification-container">
-          {data.map((item, index) => (
+          {data.map((item, index) => item.value !== '' ? (
             <li key={index} className={`admin-delegation-notification-item ${Array.isArray(item.value) ? "array" : ""}`}>
               <div className="text italic">{item.type !== "document" ? keyToLabel(item.key) : item.key}: </div>
               {Array.isArray(item.value) ?
@@ -69,7 +69,7 @@ const Notification = (notification: {
               }
 
             </li>
-          ))}
+          ) : null)}
         </div>
       </div>
     </div>
