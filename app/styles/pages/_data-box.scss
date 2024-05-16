@@ -19,7 +19,7 @@
     place-content: normal;
   }
 
-  &.a {
+  &.advisor {
     max-height: 480px;
 
     @media screen and (max-width: 1150px) {
@@ -27,7 +27,7 @@
     }
   }
 
-  &.d {
+  &.delegation {
     max-height: 300px;
 
     @media screen and (max-width: 1150px) {
@@ -35,10 +35,16 @@
     }
   }
 
-  &.c {
-    max-height: 800px;
+  &.admin {
+    @media screen and (max-width: 1500px) {
+      max-height: 650px;
+    }
 
     @media screen and (max-width: 1150px) {
+      max-height: 800px;
+    }
+
+    @media screen and (max-width: 800px) {
       max-height: none;
     }
   }

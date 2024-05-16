@@ -32,6 +32,11 @@ const Delegation = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [handleDelegationsSheet, downloadState] = useDleegationsSheet(participationMethod)
+  
+  const ref = React.useRef<HTMLInputElement>(null)
+  React.useEffect(() => {
+    if (ref.current) ref.current.value = ""
+  }, [participationMethod])
 
   return (
     <Form ref={formRef} onChange={e => { submit(e.currentTarget, { method: "GET" }) }} className='admin-container' >
@@ -44,6 +49,7 @@ const Delegation = () => {
           isRequired
           onChange={resetIndex}
           placeholder='Procurar...'
+          ref={ref}
         />
       </div>
 

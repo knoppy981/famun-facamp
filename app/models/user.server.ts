@@ -161,16 +161,29 @@ export async function adminParticipantList(index: number, participationMethod: P
 			break;
 	}
 
-	return prisma.user.findMany({
-		skip: index * 12,
-		take: 12,
-		where: {
-			participationMethod: participationMethod,
+	const where: any = {
+		participationMethod: participationMethod,
+	}
+
+	if (searchQuery) where.OR = [
+		{
 			name: searchQuery ? {
 				contains: searchQuery,
 				mode: "insensitive"
 			} : undefined
 		},
+		{
+			email: searchQuery ? {
+				contains: searchQuery,
+				mode: "insensitive"
+			} : undefined
+		}
+	]
+
+	return prisma.user.findMany({
+		skip: index * 12,
+		take: 12,
+		where,
 		include: {
 			delegate: {
 				include: {

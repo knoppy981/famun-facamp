@@ -54,6 +54,11 @@ export function useUserUpdate(user: UserType, fetcher: FetcherWithComponents<any
         return { ...prevState }
       }
 
+      if (name === "socialName" && value === "") {
+        delete prevState[name]
+        return { ...prevState }
+      }
+
       if (name === "nacionality" && (prevState.rg !== user.rg || prevState.passport !== user.passport)) {
         return { ...prevState, [name]: value }
       }

@@ -24,7 +24,7 @@ const EditUserData = ({ isDisabled, actionData, defaultValues, handleChange, use
 }) => {
   return (
     <div
-      className={`data-box-wrapper ${userType === "delegate" ? "" : "a"}`}
+      className={`data-box-wrapper ${userType === "delegate" ? "" : "advisor"}`}
       key={id}
     >
       {actionType === "edit" && userType === "delegate" ?

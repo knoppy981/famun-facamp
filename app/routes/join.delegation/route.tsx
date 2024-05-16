@@ -72,12 +72,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     if (Number(step) === LAST_STEP) {
       // create delegation
       const user = await requireUser(request)
+
+      let currentDate = new Date();
+      let dayOfWeek = currentDate.getDay();
+      let daysToAdd = (dayOfWeek >= 2 && dayOfWeek <= 5) ? 7 : 5;
+      let newDate = new Date(currentDate.setDate(currentDate.getDate() + daysToAdd));
+
       let delegationData = {
         ...session.get("delegation-data-2"),
         ...session.get("delegation-data-3"),
         user: user,
         participationMethod: user.participationMethod,
-        paymentExpirationDate: new Date(new Date().setDate(new Date().getDate() + 5)),
+        paymentExpirationDate: newDate,
         code: generateString(6),
       }
 

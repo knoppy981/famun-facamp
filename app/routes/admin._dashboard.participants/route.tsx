@@ -40,6 +40,11 @@ const Participants = () => {
   const [overlayState, selectedParticipantId, handleParticipantChange] = useParticipantModal()
   const [presenceControlActive, togglePresenceControl, submitPresence, submitObservation, buttonLabel, buttonIcon] = usePresenceControl()
 
+  const ref = React.useRef<HTMLInputElement>(null)
+  React.useEffect(() => {
+    if (ref.current) ref.current.value = ""
+  }, [participationMethod])
+
   return (
     <>
       <ParticipantModal state={overlayState} participant={participants.find(participant => participant.id === selectedParticipantId) as any} />
@@ -54,6 +59,7 @@ const Participants = () => {
             isRequired
             onChange={resetIndex}
             placeholder='Procurar...'
+            ref={ref}
           />
 
           <div className='admin-search-filter-box'>

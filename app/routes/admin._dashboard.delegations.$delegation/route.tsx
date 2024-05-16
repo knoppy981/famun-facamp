@@ -296,7 +296,7 @@ const Delegation = () => {
         </Button>
       </div>
 
-      <ChangeMaxParticipants state={changeMaxParticipantsState} maxParticipants={delegation.maxParticipants} delegationId={delegation.id} participantsCount={delegation.participants.length ?? 1} />
+      <ChangeMaxParticipants state={changeMaxParticipantsState} maxParticipants={delegation.maxParticipants} delegationId={delegation.id} participantsCount={delegation.participants.filter(p => p.delegate).length ?? 1} />
 
       <div className='committee-title'>
         <Button

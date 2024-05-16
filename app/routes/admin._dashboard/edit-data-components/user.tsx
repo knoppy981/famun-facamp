@@ -27,7 +27,7 @@ const EditUserData = ({ isDisabled, actionData, defaultValues, handleChange, use
 
   return (
     <div
-      className={`data-box-wrapper ${userType === "delegate" ? "" : "a"}`}
+      className={`data-box-wrapper ${userType === "delegate" ? "admin" : "advisor"}`}
       key={id}
       ref={ref}
       style={{ marginRight: `${Math.max(0, (lines - 1) * 8)}px` }}

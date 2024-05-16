@@ -14,7 +14,7 @@ const EditDelegationData = ({ isDisabled, actionData, defaultValues, handleChang
 }) => {
 
   return (
-    <div className="data-box-wrapper d">
+    <div className="data-box-wrapper delegation">
       <AddressData
         defaultValues={defaultValues}
         handleChange={handleChange}
