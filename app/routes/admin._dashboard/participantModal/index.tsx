@@ -1,34 +1,26 @@
 import React from "react"
-import { AnimatePresence, motion } from "framer-motion"
-import { useFetcher, useMatches } from "@remix-run/react"
-import { OverlayTriggerState } from "react-stately"
+import { AnimatePresence } from "framer-motion"
+import { OverlayTriggerState, useOverlayTriggerState } from "react-stately"
 import { Notifications } from "@prisma/client"
 
 import { UserType } from "~/models/user.server"
-import { useUserUpdate } from "./useUserUpdate"
-import { useButtonState } from "./useButtonState"
 
 import Button from "~/components/button"
 import Dialog from "~/components/dialog"
 import Modal from "~/components/modalOverlay"
 import { FiBell, FiCreditCard, FiFile, FiMenu, FiUser, FiUserMinus, FiX } from "react-icons/fi/index.js";
-import EditUserData from "~/routes/admin._dashboard/edit-data-components/user"
 import Documents from "./documents"
 import NotificationsContainer from "./notifications"
 import Payments from "./payments"
 import DeleteParticipant from "./deleteParticipant"
-import PopoverTrigger from "~/components/popover/trigger"
-import ModalTrigger from "~/components/modalOverlay/trigger"
 import EditData from "./editData"
 
 type menus = "notifications" | "data" | "documents" | "payments" | "delete"
 
 const ParticipantModal = ({ state, participant }: { state: OverlayTriggerState, participant: UserType & { notifications?: Notifications[] } }) => {
-  const fetcher = useFetcher<any>()
   const [selectedMenu, setSelectedMenu] = React.useState<menus>("data")
-  React.useEffect(() => {
-    if (state.isOpen) setSelectedMenu("data")
-  }, [state.isOpen])
+  const removeParticipantsState = useOverlayTriggerState({})
+
   const menus = [
     {
       index: "data" as menus,
@@ -53,38 +45,18 @@ const ParticipantModal = ({ state, participant }: { state: OverlayTriggerState, 
     {
       index: "delete" as menus,
       display:
-        <ModalTrigger buttonClassName="secondary-button-box red-dark" label={<><FiUserMinus className="icon" /> Excluír Participante</>} >
-          {(close: () => void) =>
-            <Dialog maxWidth>
-              <div className="dialog-title">
-                Tem certeza que deseja excluír a conta do(a) {participant.name}?
-              </div>
+        <>
+          <div className='committee-title'>
+            <Button
+              className='secondary-button-box red-dark'
+              onPress={removeParticipantsState.toggle}
+            >
+              <FiUserMinus className='icon' /> Remover Participantes
+            </Button>
+          </div>
 
-              <div className="dialog-subitem">
-                Obs: Todos os dados do participante serão perdidos, se já foi realizado um pagamento
-                para a inscrição deste usuário não haverá nenhum tipo de reembolso
-              </div>
-
-              <Button
-                className="secondary-button-box blue-dark"
-                onPress={() => {
-                  close()
-                }}
-              >
-                Cancelar
-              </Button>
-
-              <Button
-                className="secondary-button-box red-dark"
-                onPress={() => {
-                  close()
-                }}
-              >
-                Excluír
-              </Button>
-            </Dialog>
-          }
-        </ModalTrigger>,
+          <DeleteParticipant state={removeParticipantsState} parentState={state} participant={participant} />
+        </>,
       isVisible: true
     },
   ]
@@ -145,7 +117,7 @@ const ParticipantModal = ({ state, participant }: { state: OverlayTriggerState, 
               })}
             </div>
 
-            <Navbar selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu} menus={menus} />
+            <Navbar selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu} menus={menus} state={state} />
 
             {renderMenu()}
           </Dialog>
@@ -155,10 +127,11 @@ const ParticipantModal = ({ state, participant }: { state: OverlayTriggerState, 
   )
 }
 
-function Navbar({ selectedMenu, setSelectedMenu, menus }: {
+function Navbar({ selectedMenu, setSelectedMenu, menus, state }: {
   selectedMenu: menus;
   setSelectedMenu: React.Dispatch<React.SetStateAction<menus>>;
-  menus: { index: menus; display: JSX.Element; isVisible: boolean; }[]
+  menus: { index: menus; display: JSX.Element; isVisible: boolean; }[],
+  state: OverlayTriggerState
 }) {
   const [open, setOpen] = React.useState(false)
 
@@ -175,6 +148,10 @@ function Navbar({ selectedMenu, setSelectedMenu, menus }: {
       window.removeEventListener('resize', handleResize);
     };
   }, [])
+
+  React.useEffect(() => {
+    if (state.isOpen) setSelectedMenu("data")
+  }, [state.isOpen])
 
   return (
     <>

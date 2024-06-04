@@ -20,8 +20,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   let { password, confirmPassword, email, code, redirectTo } = qs.parse(text)
   redirectTo = safeRedirect(redirectTo as string, "/");
 
-  console.log(password, confirmPassword, email, code, redirectTo)
-
   try {
     await checkConfirmationCode(email as string, code as string)
   } catch (error: any) {

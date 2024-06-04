@@ -334,8 +334,8 @@ const Delegation = () => {
               </div>
 
               <div className="dialog-subitem">
-                Obs: Todos os participantes presentes nesta delegação ficaram sem delegação, os dados da delegação como o endereço e número para contato seram perdidos. <br />
-                É importante ressaltar que delegados presentes nessa delegação que já foram designados para algum comitê/conselho continuaram designados.
+                Obs: Todos os participantes presentes nesta delegação ficaram sem delegação, os dados da delegação como o endereço e número para contato serão perdidos. <br />
+                É importante ressaltar que delegados presentes nessa delegação que já foram designados para algum comitê/conselho continuarão designados.
               </div>
 
               <Button
