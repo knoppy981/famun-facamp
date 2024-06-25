@@ -43,6 +43,11 @@
     resize: none;
     opacity: 1 !important;
   }
+
+  &.dark {
+    color: #fff;
+    -webkit-text-fill-color: #fff !important;
+  }
 }
 
 .textarea-input-box {

@@ -11,7 +11,7 @@ const Representation = (props: any) => {
 
       {defaultValues.delegate?.committee ?
         <>
-          <p className="text" style={{ whiteSpace: "normal", maxWidth: "300px" }}>{defaultValues.delegate?.committee?.council.replace(/_/g, " ")}</p>
+          <p className="text" style={{ whiteSpace: "normal", maxWidth: "300px" }}>{defaultValues.delegate?.committee?.name}</p>
 
           <p className="text">{defaultValues.delegate?.country}</p>
         </>

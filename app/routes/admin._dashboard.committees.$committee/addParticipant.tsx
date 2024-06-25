@@ -154,7 +154,7 @@ function useComboBox(delegatesList: any, handleDelegateSelection: (delegate: { i
     setFieldState((prevState) => ({
       inputValue: value,
       selectedKey: value === '' ? null : prevState.selectedKey,
-      items: delegatesList.filter((item: any) => startsWith(item.name, value))
+      items: delegatesList.filter((item: any) => startsWith(item.name.trim(), value))
     }));
   };
 

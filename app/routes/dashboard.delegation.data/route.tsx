@@ -50,7 +50,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           data[field] = { update: { [nestedField]: value ?? null } };
         }
       } else {
-        data[key] = value
+        data[key] = typeof value === "string" ? value.trim() : value
       }
     })
   }
@@ -75,7 +75,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           }
         }
       } else {
-        participantsData[key] = value
+        participantsData[key] = typeof value === "string" ? value.trim() : value
       }
     })
 

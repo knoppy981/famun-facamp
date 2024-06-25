@@ -137,7 +137,7 @@ function useComboBox(participants: UserType[], handleParticipantSelection: (part
     setFieldState((prevState) => ({
       inputValue: value,
       selectedKey: value === '' ? null : prevState.selectedKey,
-      items: filteredParticipants.filter((item) => startsWith(item.name, value))
+      items: filteredParticipants.filter((item) => startsWith(item.name.trim(), value))
     }));
   };
 

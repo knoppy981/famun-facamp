@@ -82,7 +82,7 @@ const DelegationParticipants = () => {
                 </td>
 
                 <td className='table-cell'>
-                  {item.delegate ? delegate?.committee?.council.replace(/_/g, " ") ?? <p className='text italic'>Não definido</p> : ""}
+                  {item.delegate ? delegate?.committee?.name ?? <p className='text italic'>Não definido</p> : ""}
                 </td>
 
                 <td className='table-cell'>

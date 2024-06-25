@@ -15,7 +15,7 @@ const Representation = (props: any) => {
         Representação
       </h3>
 
-      <p className="text">{defaultValues.delegate?.committee?.council.replace(/_/g, " ")}</p>
+      <p className="text">{defaultValues.delegate?.committee?.name}</p>
 
       <div className='data-box-input-container'>
         <Select

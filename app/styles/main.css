@@ -2640,6 +2640,10 @@ input:-webkit-autofill:active {
   resize: none;
   opacity: 1 !important;
 }
+.textarea-input.dark {
+  color: #fff;
+  -webkit-text-fill-color: #fff !important;
+}
 
 .textarea-input-box {
   display: flex;

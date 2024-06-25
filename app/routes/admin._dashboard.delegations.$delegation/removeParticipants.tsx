@@ -161,7 +161,7 @@ function useComboBox(participants: { id: string; name: any; }[], handleParticipa
     setFieldState((prevState) => ({
       inputValue: value,
       selectedKey: value === '' ? null : prevState.selectedKey,
-      items: participants.filter((item) => startsWith(item.name, value))
+      items: participants.filter((item) => startsWith(item.name.trim(), value))
     }));
   };
 

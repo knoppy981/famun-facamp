@@ -45,7 +45,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         }
       }
     } else {
-      data[key] = value
+      data[key] = typeof value === "string" ? value.trim() : value
     }
   });
 

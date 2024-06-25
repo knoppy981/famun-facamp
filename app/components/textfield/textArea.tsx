@@ -5,7 +5,9 @@ import { mergeRefs } from '~/lib/merge-refs';
 
 type TextFieldProps = AriaTextFieldProps &
   React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
-    action?: any
+    action?: any;
+    theme?: string
+
   }
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextFieldProps>((props, forwardedRef) => {
@@ -31,7 +33,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextFieldProps>((props, forward
           {error}
         </p>
         :
-        <label {...labelProps} className="label">
+        <label {...labelProps} className={`label ${props.theme ?? ""}`}>
           {label}
         </label>
       }
@@ -40,7 +42,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextFieldProps>((props, forward
         <textarea
           {...inputProps}
           ref={mergeRefs([ref, forwardedRef])}
-          className={`textarea-input ${props.isDisabled ? "disabled" : ""}`}
+          className={`textarea-input ${props.isDisabled ? "disabled" : ""} ${props.theme ?? ""}`}
           onChange={handleChange}
         />
 

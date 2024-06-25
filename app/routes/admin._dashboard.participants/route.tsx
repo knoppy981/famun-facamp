@@ -38,7 +38,6 @@ const Participants = () => {
   const [searchIndex, handleSearchIndex, orderBy, handleOrderBy, resetIndex] = useParticipantslist(submit, formRef, participationMethod)
   const [handleParticipantsSheet, downloadState] = useParticipantsSheet(participationMethod)
   const [overlayState, selectedParticipantId, handleParticipantChange] = useParticipantModal()
-  const [presenceControlActive, togglePresenceControl, submitPresence, submitObservation, buttonLabel, buttonIcon] = usePresenceControl()
 
   const ref = React.useRef<HTMLInputElement>(null)
   React.useEffect(() => {
@@ -84,10 +83,6 @@ const Participants = () => {
             </PopoverTrigger>
           </div>
 
-          {/* <Button className={`secondary-button-box ${presenceControlActive ? "red-light" : "blue-light"}`} onPress={togglePresenceControl}>
-            {buttonIcon} {buttonLabel}
-          </Button> */}
-
           <input type='hidden' name='order-by' value={orderBy} />
         </div>
 
@@ -117,31 +112,25 @@ const Participants = () => {
               {participants.map((participant, index) => {
                 return (
                   <tr
-                    className={`table-row ${!presenceControlActive ? "cursor" : ""}`}
+                    className="table-row cursor"
                     key={index}
                     onClick={() => {
-                      if (!presenceControlActive) {
-                        handleParticipantChange(participant.id)
-                        overlayState.toggle()
-                      }
+                      handleParticipantChange(participant.id)
+                      overlayState.toggle()
                     }}
                     tabIndex={0}
                     role="link"
                     aria-label={`Change representation for ${" "}`}
                     onKeyDown={(event) => {
                       if (event.key === 'Enter' || event.key === 'Space') {
-                        if (!presenceControlActive) {
-                          event.preventDefault();
-                          handleParticipantChange(participant.id)
-                          overlayState.toggle()
-                        }
+                        event.preventDefault();
+                        handleParticipantChange(participant.id)
+                        overlayState.toggle()
                       }
                     }}
                   >
                     <td className='table-cell'>
                       <div className='table-flex-cell'>
-                        {presenceControlActive ? <Checkbox name="check" aria-label='check-presence' /> : null}
-
                         {participant.name}
                       </div>
                     </td>

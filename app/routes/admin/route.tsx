@@ -75,6 +75,7 @@ const AdminPage = () => {
           <NavLink
             to="configurations"
             className="link text"
+            preventScrollReset
           >
             <FiSettings className='icon' />
           </NavLink>
@@ -112,6 +113,7 @@ const AdminPage = () => {
                     to={"configurations"}
                     onClick={close}
                     prefetch='render'
+                    preventScrollReset
                     className={`dashboard-item ${matches[2].pathname === "/admin/configurations" ? "" : ""}`}
                   >
                     <FiSettings className='icon' /> Configurações

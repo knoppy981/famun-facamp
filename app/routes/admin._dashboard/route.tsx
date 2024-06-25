@@ -39,6 +39,7 @@ const AdminDashboard = () => {
               role="link"
               prefetch='render'
               aria-label={`${item.to}-link`}
+              preventScrollReset
               to={{
                 pathname: item.to,
                 search: `pm=${participationMethod}`,
