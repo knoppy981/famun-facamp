@@ -30,7 +30,7 @@ const EditUserData = ({ isDisabled, actionData, defaultValues, handleChange, use
       className={`data-box-wrapper ${userType === "delegate" ? "admin" : "advisor"}`}
       key={id}
       ref={ref}
-      style={{ marginRight: `${Math.max(0, (lines - 1) * 8)}px` }}
+      /* style={{ marginRight: `${Math.max(0, (lines - 1) * 8)}px` }} */
     >
       {userType === "delegate" ?
         <Representation

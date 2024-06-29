@@ -98,7 +98,11 @@ const route = () => {
             }}
           >
             <div className='committee-item-title'>
-              {item.name}
+              <div style={{ maxWidth: "600px" }}>
+                <p className='text overflow'>
+                  {item.name}
+                </p>
+              </div>
 
               {item._count.delegates > 0 ?
                 <div>

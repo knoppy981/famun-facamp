@@ -41,7 +41,7 @@
     }
 
     @media screen and (max-width: 1150px) {
-      max-height: 800px;
+      max-height: 900px;
     }
 
     @media screen and (max-width: 800px) {
@@ -63,6 +63,11 @@
     background-color: #fff;
     box-shadow: 0 0 5px -1px #fff;
     color: #000;
+  }
+
+  max-width: 370px;
+  @media screen and (max-width: 800px) {
+    max-width: 500px;
   }
 }
 

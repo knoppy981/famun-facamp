@@ -25,6 +25,7 @@ const Representation = (props: any) => {
           defaultSelectedKey={defaultValues?.delegate?.committee?.id}
           placeholder="Não definido"
           onSelectionChange={value => handleChange({ target: { name: "delegate.committee.id", value } })}
+          maxWidth={270.09}
         >
           {committeeList?.map((item) => <Item key={item.id}>{item.name}</Item>)}
         </Select>

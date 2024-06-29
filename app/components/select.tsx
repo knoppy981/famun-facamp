@@ -17,6 +17,7 @@ type SelectProps<T> = AriaSelectProps<T> & {
   action?: any,
   onChangeUpdateError?: any,
   theme?: string,
+  maxWidth?: number,
 }
 
 export const Select = <T extends object>(props: SelectProps<T>) => {
@@ -50,7 +51,7 @@ export const Select = <T extends object>(props: SelectProps<T>) => {
         </label>
       }
 
-      <div className={`select-container ${props.theme ?? ""} ${error ? "error" : ""} ${props.isDisabled ? "disabled" : ""}`}>
+      <div className={`select-container ${props.theme ?? ""} ${error ? "error" : ""} ${props.isDisabled ? "disabled" : ""}`} /* style={props.maxWidth ? { maxWidth: `${props.maxWidth}px` } : undefined} */>
         <HiddenSelect
           isDisabled={props.isDisabled}
           state={state}
@@ -66,7 +67,7 @@ export const Select = <T extends object>(props: SelectProps<T>) => {
           ref={buttonRef}
           className='select-button-container'
         >
-          <span {...valueProps} style={{ color: props.theme === "dark" ? "#fff" : undefined }}>
+          <span {...valueProps} style={{ color: props.theme === "dark" ? "#fff" : undefined }} className={`${props.maxWidth ? "text overflow" : ""}`}>
             {state.selectedItem
               ? state.selectedItem.rendered
               : <i className='text opacity'>{props.placeholder}</i>}

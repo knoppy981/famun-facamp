@@ -1273,6 +1273,9 @@ input:-webkit-autofill:active {
   gap: 5px;
   font-size: inherit;
 }
+.committee-item-title p {
+  font-size: 1.6rem;
+}
 
 .committee-add-form {
   display: flex;
@@ -1807,7 +1810,7 @@ input:-webkit-autofill:active {
 }
 @media screen and (max-width: 1150px) {
   .data-box-wrapper.admin {
-    max-height: 800px;
+    max-height: 900px;
   }
 }
 @media screen and (max-width: 800px) {
@@ -1824,11 +1827,17 @@ input:-webkit-autofill:active {
   padding: 15px;
   border-radius: 5px;
   box-shadow: 0px 1px 5px -2px #000000;
+  max-width: 370px;
 }
 .data-box-container.dark {
   background-color: #fff;
   box-shadow: 0 0 5px -1px #fff;
   color: #000;
+}
+@media screen and (max-width: 800px) {
+  .data-box-container {
+    max-width: 500px;
+  }
 }
 
 .data-box-border {

@@ -24,7 +24,7 @@ const PersonalData = (props: any) => {
   const passportRef = React.useRef<any>()
 
   return (
-    <div className={`data-box-container ${theme ?? ""}`}>
+    <div className={`data-box-container ${theme ?? ""}`} style={{ placeSelf: "auto", alignSelf: "normal" }}>
       <h3 className="data-box-container-title blue-border">
         Dados Pessoais
       </h3>
