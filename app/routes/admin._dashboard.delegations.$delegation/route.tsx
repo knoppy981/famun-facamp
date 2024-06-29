@@ -1,11 +1,11 @@
 import React from 'react'
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from '@remix-run/node'
-import { useFetcher, useLoaderData, useSearchParams, useSubmit } from '@remix-run/react'
+import { useFetcher, useLoaderData, useSearchParams } from '@remix-run/react'
 import qs from 'qs'
 import { ParticipationMethod } from '@prisma/client';
 
 import { requireAdminId } from '~/session.server';
-import { DelegationType, adminDelegationData } from '~/models/delegation.server';
+import { adminDelegationData } from '~/models/delegation.server';
 import { iterateObject } from '../dashboard/utils/findDiffrences';
 import { updateUserSchema } from '~/schemas';
 import { getExistingUser, updateUser } from '~/models/user.server';
@@ -15,15 +15,14 @@ import Button from '~/components/button';
 import Link from '~/components/link';
 import { FiArrowLeft, FiAward, FiBell, FiDollarSign, FiFile, FiTrash2, FiUserMinus } from "react-icons/fi/index.js";
 import ModalTrigger from '~/components/modalOverlay/trigger';
-import Dialog from '~/components/dialog';
 import Spinner from '~/components/spinner';
-import ParticipantModal from '../admin._dashboard/participantModal';
-import { useParticipantModal } from '../admin._dashboard/participantModal/useParticipantModal';
-import { useDelegationData } from './useDelegationData';
-import { useOverlayTriggerState } from 'react-stately';
-import ChangeMaxParticipants from './changeMaxParticipants';
-import ChangeLeader from './changeLeader';
-import RemoveParticipants from './removeParticipants';
+import ParticipantModal from '../admin._dashboard/components/participantModal';
+import { useParticipantModal } from '../admin._dashboard/hooks/useParticipantModal';
+import ChangeMaxParticipantsModal from './components/changeMaxParticipantsModal';
+import ChangeLeaderModal from './components/changeLeaderModal';
+import RemoveParticipantsModal from './components/removeParticipantsModal';
+import DeleteDelegationModal from './components/deleteDelegationModal';
+import viewDelegationData from './utils/viewDelegationData';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
@@ -116,12 +115,8 @@ const Delegation = () => {
   const { delegation } = useLoaderData<typeof loader>()
   const [searchParams] = useSearchParams()
   const [overlayState, selectedParticipantId, handleParticipantChange] = useParticipantModal()
-  const [handleRemoveParticipant] = useDeleteDelegation()
   const [handlePostponePayment, postponePaymentState] = usePostponePayment()
-  const [hasDelegates, participantLength, sentDocuments, paidParticipants, totalPaid] = useDelegationData(delegation)
-  const changeMaxParticipantsState = useOverlayTriggerState({})
-  const changeLeaderState = useOverlayTriggerState({})
-  const removeParticipantsState = useOverlayTriggerState({})
+  const [hasDelegates, participantLength, sentDocuments, paidParticipants, totalPaid] = viewDelegationData(delegation)
 
   return (
     <div className='admin-container'>
@@ -233,7 +228,7 @@ const Delegation = () => {
                       </td>
 
                       <td className='table-cell'>
-                        {participant.delegate ? delegate?.committee?.council.replace(/_/g, " ") ?? <p className='text italic'>Não definido</p> : ""}
+                        {participant.delegate ? delegate?.committee?.name ?? <p className='text italic'>Não definido</p> : ""}
                       </td>
 
                       <td className='table-cell'>
@@ -287,94 +282,55 @@ const Delegation = () => {
           Limite de delegados: {delegation.maxParticipants}
         </div>
 
-        <Button
-          className="secondary-button-box green-light"
+        <ModalTrigger
+          isDismissable
+          buttonClassName="secondary-button-box green-light"
           isDisabled={!delegation}
-          onPress={changeMaxParticipantsState.toggle}
+          label="Alterar o Máximo de Delegados"
         >
-          Alterar o Máximo de Delegados
-        </Button>
+          {(close: () => void) =>
+            <ChangeMaxParticipantsModal
+              close={close}
+              maxParticipants={delegation.maxParticipants}
+              delegationId={delegation.id}
+              participantsCount={delegation.participants.filter(p => p.delegate).length ?? 1}
+            />
+          }
+        </ModalTrigger>
       </div>
-
-      <ChangeMaxParticipants state={changeMaxParticipantsState} maxParticipants={delegation.maxParticipants} delegationId={delegation.id} participantsCount={delegation.participants.filter(p => p.delegate).length ?? 1} />
 
       <div className='committee-title'>
-        <Button
-          className="secondary-button-box blue-light"
+        <ModalTrigger
+          isDismissable
+          buttonClassName="secondary-button-box blue-light"
           isDisabled={!delegation}
-          onPress={changeLeaderState.toggle}
+          label={<><FiAward className='icon' /> Designar novo Líder</>}
         >
-          <FiAward className='icon' /> Designar novo Líder
-        </Button>
+          {(close: () => void) => <ChangeLeaderModal close={close} delegation={delegation as any} />}
+        </ModalTrigger>
       </div>
-
-      <ChangeLeader state={changeLeaderState} delegation={delegation as any} />
 
       <div className='committee-title'>
-        <Button
-          className='secondary-button-box red-light'
+        <ModalTrigger
+          isDismissable
+          buttonClassName="secondary-button-box red-light"
           isDisabled={!delegation}
-          onPress={removeParticipantsState.toggle}
+          label={<><FiUserMinus className='icon' /> Remover Participantes</>}
         >
-          <FiUserMinus className='icon' /> Remover Participantes
-        </Button>
+          {(close: () => void) => <RemoveParticipantsModal close={close} delegation={delegation as any} />}
+        </ModalTrigger>
       </div>
-
-      <RemoveParticipants state={removeParticipantsState} delegation={delegation as any} />
 
       <div className='committee-title'>
         <ModalTrigger
           buttonClassName='secondary-button-box red-light'
           label={<><FiTrash2 className='icon' /> Excluír Delegação</>}
         >
-          {(close: () => void) =>
-            <Dialog maxWidth>
-              <div className="dialog-title">
-                Tem certeza que deseja excluír essa delegação?
-              </div>
-
-              <div className="dialog-subitem">
-                Obs: Todos os participantes presentes nesta delegação ficaram sem delegação, os dados da delegação como o endereço e número para contato serão perdidos. <br />
-                É importante ressaltar que delegados presentes nessa delegação que já foram designados para algum comitê/conselho continuarão designados.
-              </div>
-
-              <Button
-                className="secondary-button-box red-dark"
-                onPress={() => {
-                  close()
-                }}
-              >
-                Cancelar
-              </Button>
-
-              <Button
-                className="secondary-button-box blue-dark"
-                onPress={() => {
-                  close()
-                  handleRemoveParticipant(delegation.id)
-                }}
-              >
-                <FiTrash2 className='icon' /> Excluír Delegação
-              </Button>
-            </Dialog>
-          }
+          {(close: () => void) => <DeleteDelegationModal close={close} delegationId={delegation.id} />}
         </ModalTrigger>
       </div>
     </div >
   )
-}
-
-function useDeleteDelegation() {
-  const submit = useSubmit()
-
-  const handleRemoveParticipant = (delegationId: string) => {
-    submit(
-      { delegationId },
-      { method: "post", action: "/api/admin/delegation/delete", navigate: false }
-    )
-  }
-
-  return [handleRemoveParticipant]
 }
 
 function usePostponePayment(): [(delegationId: string) => void, "idle" | "loading" | "submitting"] {

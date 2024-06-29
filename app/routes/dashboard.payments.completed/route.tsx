@@ -4,12 +4,12 @@ import { useOutletContext } from '@remix-run/react'
 
 import { useUser } from '~/utils'
 
-import { OutletType } from '../dashboard.payments/types'
+import { OutletType } from '../dashboard.payments/utils/types'
 import { HTMLLink } from '~/components/link'
 import { FiExternalLink, FiInfo } from 'react-icons/fi/index.js'
 import { getCurrentLocale } from '~/hooks/useCurrentLocale'
 import PopoverTrigger from '~/components/popover/trigger'
-import ParticipantsList from './paidParticipantsList'
+import ParticipantsListPopover from './components/paidParticipantsListPopover'
 
 const CompletedPayments = () => {
   const { paymentsList }: OutletType = useOutletContext()
@@ -44,17 +44,7 @@ const CompletedPayments = () => {
             <tbody>
               {paymentsList.map((item: typeof paymentsList[0], index) => {
                 if (item.status !== "succeeded") return
-                /* const parsed = qs.parse(item?.metadata?.data) as {
-                  payerId: string,
-                  payments: {
-                    amount: string,
-                    currency: string,
-                    userId: string
-                  }[]
-                } */
-
                 const data = parseObjectValues(item?.metadata)
-
                 return (
                   <tr
                     className="table-row"
@@ -66,7 +56,7 @@ const CompletedPayments = () => {
                         Inscrição de {data ? ` ${data.length}x participante${data.length as number > 1 ? "s" : ""}` : ''}
 
                         <PopoverTrigger label={<FiInfo className="icon" />}>
-                          <ParticipantsList ids={data.map(p => p.userId)} />
+                          <ParticipantsListPopover ids={data.map(p => p.userId)} />
                         </PopoverTrigger>
                       </div>
                     </td>

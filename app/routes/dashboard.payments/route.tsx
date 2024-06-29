@@ -8,15 +8,15 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useStickyContainer } from '~/hooks/useStickyContainer'
 import { getDelegationId, requireUser } from '~/session.server'
 import { getRequiredPayments } from '~/models/payments.server'
-import { cancelPaymentIntentById, getChargesByCustomerId, getPaymentIntentById, getPaymentsIntentByCustomerId } from '~/stripe.server'
+import { getChargesByCustomerId, getPaymentIntentById, getPaymentsIntentByCustomerId } from '~/stripe.server'
 import { ensureStripeCostumer, getManyUsersById } from '~/models/user.server';
-import { useModalContext } from './useModalContext'
+import { useModalContext } from './hooks/useModalContext'
 import Modal from '~/components/modalOverlay'
 import Dialog from '~/components/dialog'
 import Button from '~/components/button'
 import { HTMLLink } from '~/components/link'
 import { FiExternalLink } from 'react-icons/fi/index.js'
-import RequiresActionPayments, { RequiresActionPaymentsType } from './requiresActionPayments'
+import RequiresActionPaymentsWarning, { RequiresActionPaymentsType } from './components/requiresActionPaymentsWarning'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -136,7 +136,7 @@ const Payments = () => {
         Pagamentos
       </h2>
 
-      <RequiresActionPayments requiresActionPayments={requiresActionPayments as RequiresActionPaymentsType} />
+      <RequiresActionPaymentsWarning requiresActionPayments={requiresActionPayments as RequiresActionPaymentsType} />
 
       <AnimatePresence>
         {state.isOpen ?

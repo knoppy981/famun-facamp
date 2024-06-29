@@ -1,6 +1,6 @@
 import React from 'react'
 import { LoaderFunctionArgs, json } from '@remix-run/node';
-import { FetcherWithComponents, Form, SubmitFunction, useFetcher, useLoaderData, useNavigate, useOutletContext, useSearchParams, useSubmit } from '@remix-run/react'
+import { Form, useLoaderData, useNavigate, useOutletContext, useSearchParams, useSubmit } from '@remix-run/react'
 
 import { adminDelegationsList } from '~/models/delegation.server';
 
@@ -8,9 +8,8 @@ import { FiBell, FiCheckCircle, FiChevronLeft, FiChevronRight, FiDownload, FiXCi
 import { ParticipationMethod } from '@prisma/client';
 import Button from '~/components/button'
 import TextField from '~/components/textfield';
-import useDidMountEffect from '~/hooks/useDidMountEffect';
-import { exportAoo } from '~/sheets';
 import Spinner from '~/components/spinner';
+import useDleegationsSheet from './hooks/useDelegationSheet';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -28,18 +27,12 @@ const Delegation = () => {
   const formRef = React.useRef<HTMLFormElement>(null)
   const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
   const { delegations } = useLoaderData<typeof loader>()
-  const [searchIndex, handle, resetIndex] = handleSearchIndex(submit, formRef, participationMethod)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [handleDelegationsSheet, downloadState] = useDleegationsSheet(participationMethod)
-  
-  const ref = React.useRef<HTMLInputElement>(null)
-  React.useEffect(() => {
-    if (ref.current) ref.current.value = ""
-  }, [participationMethod])
 
   return (
-    <Form ref={formRef} onChange={e => { submit(e.currentTarget, { method: "GET" }) }} className='admin-container' >
+    <Form className='admin-container' preventScrollReset ref={formRef}>
       <div className='admin-search-container'>
         <TextField
           className="admin-search-input-box"
@@ -47,9 +40,12 @@ const Delegation = () => {
           aria-label="Procurar"
           type="text"
           isRequired
-          onChange={resetIndex}
+          onChange={() => {
+            const formData = new FormData(formRef.current ?? undefined);
+            submit(formData, { method: "GET", preventScrollReset: true })
+          }}
+          defaultValue={searchParams.get("participant-search") ?? ""}
           placeholder='Procurar...'
-          ref={ref}
         />
       </div>
 
@@ -171,9 +167,6 @@ const Delegation = () => {
         </table>
       </div>
 
-      <input type='hidden' name="i" value={String(searchIndex)} />
-      <input type='hidden' name="pm" value={participationMethod} />
-
       <div className='admin-navigation-button-container'>
         <div>
           <Button onPress={() => handleDelegationsSheet()} className='secondary-button-box green-light'>
@@ -182,63 +175,39 @@ const Delegation = () => {
         </div>
 
         <div>
-          <Button onPress={() => handle(false)} isDisabled={searchIndex < 1}>
+          <Button
+            onPress={() => {
+              const formData = new FormData(formRef.current ?? undefined);
+              let nextIndex = Number(searchParams.get("i") ?? 0) - 1
+              formData.set('i', String(nextIndex))
+              formData.set('order-by', searchParams.get("order-by") ?? "name")
+              submit(formData, { method: "GET", preventScrollReset: true })
+            }}
+            isDisabled={Number(searchParams.get("i")) < 1}
+          >
             <FiChevronLeft className='icon' />
           </Button>
 
-          Página {searchIndex + 1}
+          Página {Number(searchParams.get("i") ?? 0) + 1}
 
-          <Button onPress={() => handle(true)} isDisabled={delegations.length < 12}>
+          <Button
+            onPress={() => {
+              const formData = new FormData(formRef.current ?? undefined);
+              let nextIndex = Number(searchParams.get("i") ?? 0) + 1
+              formData.set('i', String(nextIndex))
+              formData.set('order-by', searchParams.get("order-by") ?? "name")
+              submit(formData, { method: "GET", preventScrollReset: true })
+            }}
+            isDisabled={delegations.length < 12}
+          >
             <FiChevronRight className='icon' />
           </Button>
         </div>
       </div>
+
+      <input type='hidden' name='pm' value={participationMethod} />
     </Form>
   )
-}
-
-function handleSearchIndex(submit: SubmitFunction, formRef: React.RefObject<HTMLFormElement>, participationMethod: ParticipationMethod): [
-  number,
-  (isAdding: boolean) => void,
-  () => void,
-] {
-  const [searchIndex, setSearchIndex] = React.useState<number>(0)
-  // adding this extra state so that the form is only submitted when handle is triggered, and submit the form directly on handle because I cant modify the value of formRef.current
-  const [testState, setTestState] = React.useState(false)
-
-  const handle = (isAdding: boolean) => {
-    setSearchIndex(prevValue => isAdding ? prevValue + 1 : prevValue - 1)
-    setTestState(!testState)
-  }
-
-  const resetIndex = () => setSearchIndex(0)
-
-  useDidMountEffect(() => {
-    submit(formRef.current, { method: "GET" })
-  }, [testState])
-
-  useDidMountEffect(() => {
-    resetIndex()
-  }, [participationMethod])
-
-
-  return [searchIndex, handle, resetIndex]
-}
-
-function useDleegationsSheet(participationMethod: ParticipationMethod): [() => void, "idle" | "loading" | "submitting"] {
-  const fetcher = useFetcher<any>()
-
-  const handleDownload = () => {
-    fetcher.load(`/api/aoo/delegations?pm=${participationMethod}`)
-  }
-
-  React.useEffect(() => {
-    if (fetcher.data?.aoo) {
-      exportAoo(fetcher.data?.aoo, "Delegações")
-    }
-  }, [fetcher.data])
-
-  return [handleDownload, fetcher.state]
 }
 
 export default Delegation

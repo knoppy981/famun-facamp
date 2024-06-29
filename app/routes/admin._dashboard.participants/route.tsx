@@ -1,6 +1,6 @@
 import React from 'react'
 import { LoaderFunctionArgs, json } from '@remix-run/node';
-import { Form, SubmitFunction, useFetcher, useLoaderData, useOutletContext, useSubmit } from '@remix-run/react'
+import { Form, SubmitFunction, useFetcher, useLoaderData, useOutletContext, useSearchParams, useSubmit } from '@remix-run/react'
 import { ParticipationMethod } from '@prisma/client';
 
 import { exportAoo } from '~/sheets';
@@ -13,8 +13,8 @@ import PopoverTrigger from '~/components/popover/trigger';
 import Dialog from '~/components/dialog';
 import { Radio, RadioGroup } from '~/components/radioGroup';
 import Spinner from '~/components/spinner';
-import { useParticipantModal } from '../admin._dashboard/participantModal/useParticipantModal';
-import ParticipantModal from '../admin._dashboard/participantModal';
+import { useParticipantModal } from '../admin._dashboard/hooks/useParticipantModal';
+import ParticipantModal from '../admin._dashboard/components/participantModal';
 import { FiCheckSquare, FiChevronDown, FiChevronLeft, FiChevronRight, FiDownload, FiX } from "react-icons/fi/index.js";
 import Checkbox from '~/components/checkbox';
 
@@ -35,20 +35,15 @@ const Participants = () => {
   const formRef = React.useRef<HTMLFormElement>(null)
   const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
   const { participants } = useLoaderData<typeof loader>()
-  const [searchIndex, handleSearchIndex, orderBy, handleOrderBy, resetIndex] = useParticipantslist(submit, formRef, participationMethod)
   const [handleParticipantsSheet, downloadState] = useParticipantsSheet(participationMethod)
   const [overlayState, selectedParticipantId, handleParticipantChange] = useParticipantModal()
-
-  const ref = React.useRef<HTMLInputElement>(null)
-  React.useEffect(() => {
-    if (ref.current) ref.current.value = ""
-  }, [participationMethod])
+  const [searchParams] = useSearchParams()
 
   return (
     <>
       <ParticipantModal state={overlayState} participant={participants.find(participant => participant.id === selectedParticipantId) as any} />
 
-      <Form ref={formRef} onChange={e => { submit(e.currentTarget, { method: "GET" }) }} className='admin-container' >
+      <Form className='admin-container' preventScrollReset ref={formRef}>
         <div className='admin-search-container'>
           <TextField
             className="admin-search-input-box"
@@ -56,9 +51,13 @@ const Participants = () => {
             aria-label="Procurar"
             type="text"
             isRequired
-            onChange={resetIndex}
+            onChange={() => {
+              const formData = new FormData(formRef.current ?? undefined);
+              formData.set('order-by', searchParams.get("order-by") ?? "name")
+              submit(formData, { method: "GET", preventScrollReset: true })
+            }}
+            defaultValue={searchParams.get("participant-search") ?? ""}
             placeholder='Procurar...'
-            ref={ref}
           />
 
           <div className='admin-search-filter-box'>
@@ -70,8 +69,12 @@ const Participants = () => {
                   name='order-by'
                   action={undefined}
                   isDisabled={undefined}
-                  value={orderBy}
-                  onChange={handleOrderBy}
+                  defaultValue={searchParams.get("order-by") ?? "name"}
+                  onChange={value => {
+                    const formData = new FormData(formRef.current ?? undefined);
+                    formData.set('order-by', value)
+                    submit(formData, { method: "GET", preventScrollReset: true })
+                  }}
                 >
                   {[["Ordem alfabética", "name"], ["Delegação", "delegation"], ["Data de inscrição", "createdAt"], ["Posição", "position"]].map((item, i) => {
                     return (
@@ -82,8 +85,6 @@ const Participants = () => {
               </Dialog>
             </PopoverTrigger>
           </div>
-
-          <input type='hidden' name='order-by' value={orderBy} />
         </div>
 
         <div className='overflow-container'>
@@ -164,9 +165,6 @@ const Participants = () => {
           </table>
         </div>
 
-        <input type='hidden' name="i" value={String(searchIndex)} />
-        <input type='hidden' name="pm" value={participationMethod} />
-
         <div className='admin-navigation-button-container'>
           <div>
             <Button onPress={() => handleParticipantsSheet("rg")} className='secondary-button-box green-light'>
@@ -183,59 +181,40 @@ const Participants = () => {
           </div>
 
           <div>
-            <Button onPress={() => handleSearchIndex(false)} isDisabled={searchIndex < 1}>
+            <Button
+              onPress={() => {
+                const formData = new FormData(formRef.current ?? undefined);
+                let nextIndex = Number(searchParams.get("i") ?? 0) - 1
+                formData.set('i', String(nextIndex))
+                formData.set('order-by', searchParams.get("order-by") ?? "name")
+                submit(formData, { method: "GET", preventScrollReset: true })
+              }}
+              isDisabled={Number(searchParams.get("i")) < 1}
+            >
               <FiChevronLeft className='icon' />
             </Button>
 
-            Página {searchIndex + 1}
+            Página {Number(searchParams.get("i") ?? 0) + 1}
 
-            <Button onPress={() => handleSearchIndex(true)} isDisabled={participants.length < 12}>
+            <Button
+              onPress={() => {
+                const formData = new FormData(formRef.current ?? undefined);
+                let nextIndex = Number(searchParams.get("i") ?? 0) + 1
+                formData.set('i', String(nextIndex))
+                formData.set('order-by', searchParams.get("order-by") ?? "name")
+                submit(formData, { method: "GET", preventScrollReset: true })
+              }}
+              isDisabled={participants.length < 12}
+            >
               <FiChevronRight className='icon' />
             </Button>
           </div>
         </div>
+
+        <input type='hidden' name='pm' value={participationMethod} />
       </Form >
     </>
   )
-}
-
-function useParticipantslist(submit: SubmitFunction, formRef: React.RefObject<HTMLFormElement>, participationMethod: ParticipationMethod,): [
-  number,
-  (isAdding: boolean) => void,
-  string,
-  (value: string) => void,
-  () => void
-] {
-  const [searchIndex, setSearchIndex] = React.useState<number>(0)
-  const [orderBy, setOrderBy] = React.useState<string>("name")
-  // adding this extra state so that the form is only submitted when handle is triggered, can't modify formRef.current have to wait to state to update
-  const [testState, setTestState] = React.useState(false)
-
-  function handleSearchIndex(isAdding: boolean) {
-    setSearchIndex(prevValue => isAdding ? prevValue + 1 : prevValue - 1)
-    setTestState(!testState)
-  }
-
-  function handleOrderBy(value: string) {
-    setOrderBy(value)
-    resetIndex()
-    setTestState(!testState)
-  }
-
-  function resetIndex() {
-    setSearchIndex(0)
-  }
-
-  useDidMountEffect(() => {
-    submit(formRef.current, { method: "GET" })
-  }, [testState])
-
-  useDidMountEffect(() => {
-    resetIndex()
-  }, [participationMethod])
-
-
-  return [searchIndex, handleSearchIndex, orderBy, handleOrderBy, resetIndex]
 }
 
 function useParticipantsSheet(participationMethod: ParticipationMethod): [(type: "rg" | "cracha delegados" | "cracha orientadores") => void, "idle" | "loading" | "submitting"] {
@@ -253,34 +232,6 @@ function useParticipantsSheet(participationMethod: ParticipationMethod): [(type:
   }, [fetcher.data])
 
   return [handleDownload, fetcher.state]
-}
-
-function usePresenceControl(): [
-  boolean, () => void, (participantId: string, checked: boolean) => void, (participantId: string, observation: string) => void, string, JSX.Element
-] {
-  const [active, setActive] = React.useState(false)
-  const [buttonLabel, setButtonLabel] = React.useState("")
-  const [buttonIcon, setButtonIcon] = React.useState(<FiCheckSquare className='icon' />)
-  const submit = useSubmit()
-
-  React.useEffect(() => {
-    setButtonLabel(active ? "Cancelar Credeciamento" : "Credenciamento")
-    setButtonIcon(active ? <FiX className='icon' /> : <FiCheckSquare className='icon' />)
-  }, [active])
-
-  const submitPresence = (participantId: string, checked: boolean) => {
-    if (active) {
-      submit({ participantId, checked }, { method: "POST", preventScrollReset: true })
-    }
-  }
-
-  const submitObservation = (participantId: string, observation: string) => {
-    if (active) {
-      submit({ participantId, observation }, { method: "POST", preventScrollReset: true })
-    }
-  }
-
-  return [active, () => setActive(!active), submitPresence, submitObservation, buttonLabel, buttonIcon]
 }
 
 export default Participants

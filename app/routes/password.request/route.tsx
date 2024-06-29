@@ -13,7 +13,7 @@ import { getCorrectErrorMessage } from '~/utils/error'
 import Button from '~/components/button'
 import Spinner from '~/components/spinner'
 import TextField from '~/components/textfield'
-import { generateChallengeLink } from './generateChallengeLink'
+import { generateChallengeLink } from './utils/generateChallengeLink'
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();

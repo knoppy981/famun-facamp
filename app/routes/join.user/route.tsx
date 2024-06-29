@@ -8,7 +8,7 @@ import { createUserSchema, userStepValidation } from '~/schemas'
 import { createUser, formatUserData, getExistingUser } from '~/models/user.server'
 import { safeRedirect } from '~/utils'
 import { getCorrectErrorMessage } from '~/utils/error'
-import { useButtonState } from './useButtonState'
+import { useButtonState } from './hooks/useButtonState'
 
 import Button from '~/components/button'
 import TermsAndConditions from './steps/termsAndConditions'

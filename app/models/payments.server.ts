@@ -157,22 +157,6 @@ export async function getRequiredPayments({
   return payments
 }
 
-export async function postponeDelegationPaymentDue(id: string) {
-  let currentDate = new Date();
-  let dayOfWeek = currentDate.getDay();
-  let daysToAdd = (dayOfWeek >= 2 && dayOfWeek <= 5) ? 7 : 5;
-  let newDate = new Date(currentDate.setDate(currentDate.getDate() + daysToAdd));
-
-  return prisma.delegation.update({
-    where: {
-      id
-    },
-    data: {
-      paymentExpirationDate: newDate,
-    }
-  })
-}
-
 export async function toggleFakePayment(userId: string, status: boolean, amount: string, currency: string) {
   return prisma.user.update({
     where: {

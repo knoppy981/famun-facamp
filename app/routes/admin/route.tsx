@@ -2,10 +2,10 @@ import React, { Key } from 'react'
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { requireAdminId } from '~/session.server';
 import { FiArrowLeft, FiChevronRight, FiLogOut, FiMenu, FiSettings, FiX } from "react-icons/fi/index.js";
-import { Form, NavLink, Outlet, useMatches, useNavigate, useSearchParams } from '@remix-run/react';
+import { Form, NavLink, Outlet, useMatches, useNavigate, useSearchParams, useSubmit } from '@remix-run/react';
 import Button from '~/components/button';
-import { SidebarTrigger } from '../dashboard/sidebar';
-import { Select, Item } from './select';
+import { SidebarTrigger } from '../dashboard/components/sidebarTrigger';
+import { Select, Item } from './components/select';
 import useDidMountEffect from '~/hooks/useDidMountEffect';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -19,12 +19,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 const AdminPage = () => {
   const matches = useMatches()
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const [participationMethod, setParticipationMethod] = React.useState<Key>(searchParams.get("pm") ?? "Escola")
-
-  useDidMountEffect(() => {
-    if (matches?.[3]?.pathname) navigate(`${matches[3].pathname}?pm=${participationMethod}`, { replace: true })
-  }, [participationMethod])
 
   return (
     <div className='admin-wrapper'>
@@ -44,7 +40,7 @@ const AdminPage = () => {
 
       <div className='dashboard-navbar'>
         <div className='dashboard-nav-item'>
-          {matches?.[2].pathname === "/admin/configurations" ?
+          {matches?.[2]?.pathname === "/admin/configurations" ?
             <NavLink
               to="/admin/delegations"
               className="link text"
@@ -60,6 +56,7 @@ const AdminPage = () => {
               selectedKey={participationMethod}
               onSelectionChange={(key: React.Key) => {
                 setParticipationMethod(key)
+                navigate(`${matches[3].pathname}?pm=${key}`, { replace: true })
               }}
               items={[
                 { id: "Escola", textValue: "Ensino Medio" },
@@ -114,7 +111,7 @@ const AdminPage = () => {
                     onClick={close}
                     prefetch='render'
                     preventScrollReset
-                    className={`dashboard-item ${matches[2].pathname === "/admin/configurations" ? "" : ""}`}
+                    className={`dashboard-item`}
                   >
                     <FiSettings className='icon' /> Configurações
                   </NavLink>

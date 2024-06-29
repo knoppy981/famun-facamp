@@ -15,10 +15,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   try {
     if (typeof userId === "string" && typeof status === "string" && (status === "null" || status === "fake")) {
-      console.log("passed")
-      console.log(status) 
       const user = await toggleFakePayment(userId, status === "fake", amount, currency)
-      console.log(user)
     }
   } catch (error) {
     console.log(error)

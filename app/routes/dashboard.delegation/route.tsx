@@ -12,7 +12,7 @@ import PopoverTrigger from '~/components/popover/trigger';
 import Dialog from '~/components/dialog';
 import Button from '~/components/button';
 import Link from '~/components/link';
-import { useCopyToClipboard } from './useCopyToClipboard';
+import { useCopyToClipboard } from './hooks/useCopyToClipboard';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);

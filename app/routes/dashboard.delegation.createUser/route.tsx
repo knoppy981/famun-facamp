@@ -11,22 +11,22 @@ import { useOnScreen } from "~/hooks/useOnScreen";
 import { useUser, useUserType } from "~/utils";
 import { getCorrectErrorMessage } from "~/utils/error";
 import { createUserSchema } from "~/schemas";
-import { useUserCreation } from "./useUserCreation";
-import { useButtonState } from "./useButtonState";
-import { useModalContext } from "./useModalContext";
+import { useUserCreation } from "./hooks/useUserCreation";
+import { useButtonState } from "./hooks/useButtonState";
+import { useModalContext } from "./hooks/useModalContext";
 import { requireDelegation, requireUser } from "~/session.server";
 
-import EditUserData from "../dashboard/edit-data-components/user";
+import EditUserData from "../dashboard/components/editUserData/user";
 import Modal from "~/components/modalOverlay";
 import Button from "~/components/button";
 import Dialog from "~/components/dialog";
 import { Select, Item } from "~/components/select";
-import { defaultUser } from "./defaultUserData";
+import { defaultUser } from "./utils/defaultUserData";
 import { iterateObject } from "../dashboard/utils/findDiffrences";
 import { getCouncils } from "~/models/configuration.server";
 import { manualCreateUserEmail } from "~/lib/emails";
 import { sendEmail } from "~/nodemailer.server";
-import { generatePassword } from "./generatePassword";
+import { generatePassword } from "./utils/generatePassword";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const user = await requireUser(request)
@@ -35,7 +35,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const newUserData = qs.parse(formData.get("newUserData") as string)
 
   const count = delegation.participants.filter(p => p.delegate).length
-  if (count >= delegation.maxParticipants) {
+  if (count >= delegation.maxParticipants && !newUserData['delegationAdvisor.advisorRole']) {
     return json(
       { errors: { participants: "Maximum delegates reached" } },
       { status: 400 }

@@ -10,7 +10,7 @@ import Spinner from '~/components/spinner'
 import Button from '~/components/button';
 import { CheckboxGroup, Checkbox } from '~/components/checkbox/checkbox-group'
 import { FiAlertCircle } from 'react-icons/fi/index.js'
-import { handlePaymentsSelection } from './handlePaymentsSelection'
+import { handlePaymentsSelection } from './utils/handlePaymentsSelection'
 import PopoverTrigger from '~/components/popover/trigger'
 import Dialog from '~/components/dialog'
 import { getCurrentLocale } from '~/hooks/useCurrentLocale'

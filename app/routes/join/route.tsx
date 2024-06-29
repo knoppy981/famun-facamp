@@ -2,14 +2,13 @@ import React from 'react'
 import { Outlet, useRouteError, useSearchParams } from '@remix-run/react'
 import Link from '~/components/link'
 import { FiArrowLeft } from "react-icons/fi/index.js";
-import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
-import { getUserId } from '~/session.server';
+import { LoaderFunctionArgs, json } from '@remix-run/node';
 import { checkSubscriptionAvailability } from '~/models/configuration.server';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const isSubscriptionAvailable = await checkSubscriptionAvailability()
 
-  if (!isSubscriptionAvailable) throw json({ message: "Inscrições fechadas", name: "Inscrições" }, { status: 404 });
+  if (!isSubscriptionAvailable) throw json({ message: "Inscrições fechadas", name: "Inscrições" }, { status: 403 });
 
   return json({})
 }
@@ -37,7 +36,6 @@ const Join = () => {
 
 export function ErrorBoundary() {
   const error = useRouteError() as any
-  console.log(error)
 
   if (error?.data) {
     if (error?.data?.name === "Inscrições") {

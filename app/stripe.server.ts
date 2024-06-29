@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { updateUsersPaymentStatus, updateUserPayments, getUserPaymentsIds, getPaidUsers } from "./models/payments.server";
 import qs from "qs"
 
-import { getUserByCustomerId, getUserById, type UserType } from '~/models/user.server';
+import { getUserById, type UserType } from '~/models/user.server';
 import { sendEmail } from "./nodemailer.server";
 import { paymentCompletedEmail } from "./lib/emails";
 import { DelegationType } from "./models/delegation.server";
@@ -28,10 +28,6 @@ export async function getPaymentsIntentByCustomerId(customerId: UserType["stripe
   return stripe.paymentIntents.list({ customer: customerId })
 }
 
-export async function cancelPaymentIntentById(id: string) {
-  return stripe.paymentIntents.cancel(id)
-}
-
 export async function getChargesByCustomerId(customerId: UserType["stripeCustomerId"]): Promise<Stripe.ApiListPromise<Stripe.Charge> | undefined> {
 
   if (customerId === null) {
@@ -39,12 +35,6 @@ export async function getChargesByCustomerId(customerId: UserType["stripeCustome
   }
 
   return stripe.charges.list({ customer: customerId })
-}
-
-export async function getTransactionsByUserId(userId: UserType["id"]) {
-  return stripe.paymentIntents.search({
-    query: `status:\'succeeded\' AND metadata[\'payerId\']:\'${userId}\'`,
-  });
 }
 
 export async function createPaymentIntent({
@@ -178,3 +168,5 @@ export async function handleWebHook(request: Request) {
 
   return {}
 }
+
+export default stripe

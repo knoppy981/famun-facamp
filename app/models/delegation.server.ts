@@ -400,16 +400,3 @@ export async function deleteDelegation(id: string) {
 		}
 	})
 }
-
-export async function removeParticipants(id: string, participantsIds: { id: string }[]) {
-  return prisma.delegation.update({
-    where: {
-      id
-    },
-    data: {
-      participants: {
-        disconnect: participantsIds
-      }
-    }
-  })
-}

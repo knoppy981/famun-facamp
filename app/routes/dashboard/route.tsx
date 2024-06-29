@@ -17,7 +17,7 @@ import {
 } from "react-icons/fi/index.js";
 import { Form, NavLink, Outlet, useMatches } from '@remix-run/react';
 import Button from '~/components/button';
-import { SidebarTrigger } from './sidebar';
+import { SidebarTrigger } from './components/sidebarTrigger';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);

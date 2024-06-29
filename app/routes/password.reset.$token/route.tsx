@@ -12,7 +12,7 @@ import { checkConfirmationCode } from '../password.challenge.$token/route';
 import { completePassword } from '~/schemas';
 import { getCorrectErrorMessage } from '~/utils/error';
 import { unsetConfirmationCode, updateUser } from '~/models/user.server';
-import { generateHash } from './generateHash';
+import { generateHash } from './utils/generateHash';
 import { createUserSession } from '~/session.server';
 
 export const action = async ({ request }: ActionFunctionArgs) => {

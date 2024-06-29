@@ -1,7 +1,7 @@
 // get participants by id
 import { LoaderFunctionArgs, json } from "@remix-run/node"
 import { requireAdminId } from "~/session.server"
-import { getChargesByCustomerId, getPaymentIntentById } from "~/stripe.server"
+import { getChargesByCustomerId } from "~/stripe.server"
 import Stripe from "stripe"
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -44,7 +44,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   } catch (error) {
     console.log(error)
     return json(
-      { errors: { deleteCommittee: "Failed searching users" } },
+      { errors: { error: "Failed searching users" } },
       { status: 400 }
     )
   }

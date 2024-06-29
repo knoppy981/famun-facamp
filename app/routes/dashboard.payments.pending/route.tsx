@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate, useOutletContext } from '@remix-run/react'
 
-import { OutletType } from '../dashboard.payments/types'
+import { OutletType } from '../dashboard.payments/utils/types'
 import { getCurrentLocale } from '~/hooks/useCurrentLocale'
 
 import { FiAlertCircle, FiExternalLink } from 'react-icons/fi/index.js'

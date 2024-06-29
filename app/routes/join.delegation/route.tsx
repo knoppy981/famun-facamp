@@ -14,7 +14,7 @@ import JoinMethod from "./steps/joinMethod";
 import JoinDelegation from "./steps/joinDelegation"
 import CreateDelegation from "./steps/createDelegation"
 import ConfirmData from "./steps/confirmData"
-import { useButtonState } from "./useButtonState";
+import { useButtonState } from "./hooks/useButtonState";
 import { sendEmail } from "~/nodemailer.server";
 import { createDelegationEmail } from "~/lib/emails";
 import { UserType } from "~/models/user.server";

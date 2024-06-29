@@ -10,11 +10,11 @@ import { UserType } from '~/models/user.server';
 
 import ModalTrigger from '~/components/modalOverlay/trigger';
 import { FiFilePlus } from 'react-icons/fi/index.js'
-import FileForm from './fileForm';
 import { useUser, useUserType } from '~/utils';
 import { useOverlayTriggerState } from 'react-stately';
 import Button from '~/components/button';
 import { createUserDocumentNotification } from '~/models/notifications.server';
+import FileFormModal from './components/fileFormModal';
 
 export type filesType = "Position Paper" | "Liability Waiver" | "Payment Voucher"
 export type selectedFilesType = {
@@ -109,7 +109,6 @@ const Documents = () => {
   const selectedFiles = handleSelectedFiles(delegation, selectedUserId)
   const userType = useUserType()
   const allowOtherUsersChanges = userType === "advisor" || user.leader
-  const state = useOverlayTriggerState({})
 
   return (
     <div className='section-wrapper padding'>
@@ -165,17 +164,17 @@ const Documents = () => {
           )
         })}
 
-        <Button className="secondary-button-box blue-light" onPress={state.toggle}>
-          <FiFilePlus className='icon' /> Enviar Arquivos
-        </Button>
-
-        <FileForm
-          state={state}
-          user={selectedUser as any}
-          selectedFiles={selectedFiles}
-          actionData={actionData}
-          fetcher={fetcher}
-        />
+        <ModalTrigger buttonClassName="secondary-button-box blue-light" label={<><FiFilePlus className='icon' /> Enviar Arquivos</>}>
+          {(close: () => void) =>
+            <FileFormModal
+              close={close}
+              user={selectedUser as any}
+              selectedFiles={selectedFiles}
+              actionData={actionData}
+              fetcher={fetcher}
+            />
+          }
+        </ModalTrigger>
       </div>
     </div>
   );

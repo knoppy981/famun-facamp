@@ -1,21 +1,19 @@
 import React from 'react'
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node';
-import { FetcherWithComponents, Form, useFetcher, useLoaderData, useOutletContext, useSearchParams, useSubmit } from '@remix-run/react';
+import { Form, useLoaderData, useOutletContext, useSearchParams, useSubmit } from '@remix-run/react';
 import qs from 'qs'
 import { ParticipationMethod } from '@prisma/client';
 
 import { createCommittee, getCommitteesList, getExistingCommittee } from '~/models/committee.server';
-import { CommitteeList } from './types';
 import { committeeSchema } from '~/schemas';
 import { getCorrectErrorMessage } from '~/utils/error';
 
 import TextField from '~/components/textfield';
 import Link from '~/components/link';
-import Button from '~/components/button';
-import CreateCommittee from './createCommittee';
+import CreateCommitteeModal from './components/createCommitteeModal';
 import { FiPlus, FiUser } from 'react-icons/fi/index.js';
-import { useOverlayTriggerState } from 'react-stately';
 import { getCouncils, getExtraRepresentations } from '~/models/configuration.server';
+import ModalTrigger from '~/components/modalOverlay/trigger';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const text = await request.text()
@@ -66,11 +64,10 @@ const route = () => {
   const formRef = React.useRef<HTMLFormElement>(null)
   const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
   const { committees, councilOptions } = useLoaderData<typeof loader>()
-  const state = useOverlayTriggerState({})
 
   return (
     <div className='admin-container'>
-      <Form ref={formRef} onChange={e => { submit(e.currentTarget, { method: "GET" }) }}>
+      <Form ref={formRef}>
         <div className='admin-search-container'>
           <TextField
             className="admin-search-input-box"
@@ -78,11 +75,16 @@ const route = () => {
             aria-label="Procurar"
             type="text"
             isRequired
+            onChange={() => {
+              const formData = new FormData(formRef.current ?? undefined);
+              submit(formData, { method: "GET", preventScrollReset: true })
+            }}
+            defaultValue={searchParams.get("committee-search") ?? ""}
             placeholder='Procurar...'
           />
         </div>
 
-        <input type='hidden' name="pm" value={participationMethod} />
+        <input type='hidden' name='pm' value={participationMethod} />
       </Form >
 
       <div className='committee-container'>
@@ -112,13 +114,17 @@ const route = () => {
           </Link>
         ))}
 
-        <Button className='committee-item add' onPress={state.toggle}>
-          <div className='committee-item-title add'>
-            Adicionar Conferência <FiPlus className='icon' />
-          </div>
-        </Button>
-
-        <CreateCommittee state={state} participationMethod={participationMethod} councilOptions={councilOptions} />
+        <ModalTrigger
+          isDismissable
+          buttonClassName={"committee-item add"}
+          label={
+            <div className='committee-item-title add'>
+              Adicionar Conferência <FiPlus className='icon' />
+            </div>
+          }
+        >
+          {(close: () => void) => <CreateCommitteeModal close={close} participationMethod={participationMethod} councilOptions={councilOptions} />}
+        </ModalTrigger>
       </div>
     </div>
   )

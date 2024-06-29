@@ -5,15 +5,15 @@ import { ParticipationMethod } from '@prisma/client';
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node';
 
 import { getConfigurations, updateConfiguration } from '~/models/configuration.server';
-import { useConfiuratiionsUpdate } from './useConfigurationsUpdate';
-import { useButtonState } from './useButtonState';
+import { useConfiuratiionsUpdate } from './hooks/useConfigurationsUpdate';
+import { useButtonState } from './hooks/useButtonState';
 import { requireAdminId } from '~/session.server';
 import { iterateObject } from '../dashboard/utils/findDiffrences';
 import { getCorrectErrorMessage } from '~/utils/error';
 import { updateConfigurationSchema } from '~/schemas';
 
 import Button from '~/components/button'
-import EditConfigurations from './edit-configurations-components';
+import EditConfigurations from './components/adminEditConfigurations';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useOnScreen } from '~/hooks/useOnScreen';
 

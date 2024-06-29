@@ -7,7 +7,7 @@ import Button from '~/components/button'
 import Spinner from '~/components/spinner'
 import TextField from '~/components/textfield'
 import { getConfirmationCode } from '~/models/user.server'
-import { generateResetPasswordLink } from './generateResetPasswordLink'
+import { generateResetPasswordLink } from './utils/generateResetPasswordLink'
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();

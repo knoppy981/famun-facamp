@@ -6,10 +6,10 @@ import { loadStripe } from "@stripe/stripe-js";
 import { getRequiredPayments } from "~/models/payments.server";
 import { requireDelegationId, requireUser } from "~/session.server";
 import { createPaymentIntent } from "~/stripe.server";
-import { usePaymentsData } from "./usePaymentsData";
+import { usePaymentsData } from "./hooks/usePaymentsData";
 import { getCurrentLocale } from "~/hooks/useCurrentLocale";
 import { Elements } from "@stripe/react-stripe-js";
-import PaymentForm from "./form";
+import PaymentForm from "./components/paymentForm";
 import { checkCuponCode } from "~/models/configuration.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {

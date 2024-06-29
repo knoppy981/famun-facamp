@@ -3,23 +3,23 @@ import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from '@remix-r
 import { useLoaderData, useOutletContext, useSearchParams } from '@remix-run/react'
 import qs, { ParsedQs } from 'qs'
 import { ParticipationMethod } from '@prisma/client';
-import { useOverlayTriggerState } from 'react-stately';
 
 import { addDelegatesToCommittee, getCommitteeByName, removeDelegates } from '~/models/committee.server';
 import { requireAdminId } from '~/session.server';
 
 import Button from '~/components/button';
 import Link from '~/components/link';
-import AddParticipant from './addParticipant';
-import ChangeRepresentation from './changeRepresentation';
+import AddParticipantModal from './components/addParticipantModal';
+import ChangeRepresentation from './components/changeRepresentationModal';
 import { FiArrowLeft, FiDownload, FiTrash2, FiUserMinus, FiUserPlus } from "react-icons/fi/index.js";
 import { changeDelegateRepresentation } from '~/models/delegate.server';
 import { isoCountries } from '~/lib/ISO-3661-1';
-import DeleteCommittee from './deleteCommittee';
-import RemoveParticipants from './removeParticipants';
+import DeleteCommitteeModal from './components/deleteCommitteeModal';
 import { exportAoo } from '~/sheets';
-import { committeeAoo } from './aoo';
+import { committeeAoo } from './utils/aoo';
 import { getExtraRepresentations } from '~/models/configuration.server';
+import ModalTrigger from '~/components/modalOverlay/trigger';
+import RemoveParticipantsModal from './components/removeParticipantsModal';
 
 interface ExtendedParsedQs extends ParsedQs {
   ids: string[];
@@ -112,11 +112,6 @@ const Committee = () => {
   const { committee, representations } = useLoaderData<typeof loader>()
   const [searchParams] = useSearchParams()
   const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
-  const addUserState = useOverlayTriggerState({})
-  const changeRepresentationState = useOverlayTriggerState({})
-  const deleteCommitteeState = useOverlayTriggerState({})
-  const removeParticipantState = useOverlayTriggerState({})
-  const [selectedDelegate, setSelectedDelegate] = React.useState<typeof committee.delegates[0]>()
   const hasDelegates = committee.delegates.length > 0
 
   return (
@@ -135,21 +130,17 @@ const Committee = () => {
       <div className='committee-title'>
         {committee.name}
 
-        <Button className='secondary-button-box blue-light' onPress={addUserState.toggle}>
-          <FiUserPlus className='icon' /> Adicionar Delegados
-        </Button>
+        <ModalTrigger
+          isDismissable
+          buttonClassName="secondary-button-box blue-light"
+          label={<><FiUserPlus className='icon' /> Adicionar Delegados</>}
+        >
+          {(close: () => void) => <AddParticipantModal close={close} committee={committee as CommitteeType} participationMethod={participationMethod} />}
+        </ModalTrigger>
       </div>
       <div className='committee-title'>
         <p className='text italic'>{committee.council}</p>
       </div>
-
-      <AddParticipant state={addUserState} committee={committee as CommitteeType} participationMethod={participationMethod} />
-
-      <ChangeRepresentation state={changeRepresentationState} committee={committee as CommitteeType} participationMethod={participationMethod} selectedDelegate={selectedDelegate} representations={representations}/>
-
-      <DeleteCommittee state={deleteCommitteeState} committee={committee as CommitteeType} />
-
-      <RemoveParticipants state={removeParticipantState} committee={committee as CommitteeType} />
 
       {hasDelegates ?
         <div className='overflow-container'>
@@ -183,32 +174,45 @@ const Committee = () => {
 
               {committee.delegates.map((delegate, i) => (
                 <tr
-                  className="table-row cursor"
+                  className="table-row"
                   key={i}
-                  onClick={() => {
+                  /* onClick={() => {
                     changeRepresentationState.toggle()
                     setSelectedDelegate(delegate)
-                  }}
+                  }} */
                   tabIndex={0}
                   role="link"
                   aria-label={`Change representation for ${delegate.user.name}`}
-                  onKeyDown={(event) => {
+                  /* onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === 'Space') {
                       event.preventDefault();
                       changeRepresentationState.toggle()
                       setSelectedDelegate(delegate)
                     }
-                  }}
+                  }} */
                 >
                   <td className='table-cell'>
-                    {delegate.country ?
-                      <div className='table-flex-cell'>
-                        <div className={`flag-icon flag-icon-${isoCountries[delegate.country]?.toLowerCase()}`} style={{ fontSize: "2rem" }} />
-                        {delegate.country}
-                      </div>
-                      :
-                      <p className='text italic'>Escolher reprentação</p>
-                    }
+                    <div className='table-flex-cell'>
+                      <ModalTrigger
+                        isDismissable
+                        label={delegate.country ?
+                          <><div className={`flag-icon flag-icon-${isoCountries[delegate.country]?.toLowerCase()}`} style={{ fontSize: "2rem" }} />{delegate.country}</>
+                          :
+                          <p className='text italic'>Escolher reprentação</p>
+                        }
+                      >
+                        {(close: () => void) =>
+                          <ChangeRepresentation
+                            close={close}
+                            committee={committee as CommitteeType}
+                            participationMethod={participationMethod}
+                            selectedDelegate={delegate}
+                            representations={representations}
+                          />
+                        }
+                      </ModalTrigger>
+
+                    </div>
                   </td>
 
                   <td className='table-cell'>
@@ -256,15 +260,23 @@ const Committee = () => {
       </div>
 
       <div className='committee-title'>
-        <Button className='secondary-button-box red-light' onPress={() => removeParticipantState.toggle()}>
-          <FiUserMinus className='icon' /> Remover Delegados
-        </Button>
+        <ModalTrigger
+          isDismissable
+          buttonClassName="secondary-button-box red-light"
+          label={<><FiUserMinus className='icon' /> Remover Delegados</>}
+        >
+          {(close: () => void) => <RemoveParticipantsModal close={close} committee={committee as CommitteeType} />}
+        </ModalTrigger>
       </div>
 
       <div className='committee-title'>
-        <Button className='secondary-button-box red-light' onPress={() => deleteCommitteeState.toggle()}>
-          <FiTrash2 className='icon' /> Excluír Conferência
-        </Button>
+        <ModalTrigger
+          isDismissable
+          buttonClassName="secondary-button-box red-light"
+          label={<><FiTrash2 className='icon' /> Excluír Conferência</>}
+        >
+          {(close: () => void) => <DeleteCommitteeModal close={close} committee={committee as CommitteeType} />}
+        </ModalTrigger>
       </div>
     </div >
   )

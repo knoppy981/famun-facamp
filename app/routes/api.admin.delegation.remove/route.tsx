@@ -1,7 +1,7 @@
 import qs, { ParsedQs } from "qs"
 import { ActionFunctionArgs, json } from "@remix-run/node"
-import { removeParticipants } from "~/models/delegation.server"
 import { requireAdminId } from "~/session.server"
+import { prisma } from "~/db.server";
 
 interface ExtendedParsedQs extends ParsedQs {
   ids: string[];
@@ -27,4 +27,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   return json({ delegation })
+}
+
+async function removeParticipants(id: string, participantsIds: { id: string }[]) {
+  return prisma.delegation.update({
+    where: {
+      id
+    },
+    data: {
+      participants: {
+        disconnect: participantsIds
+      }
+    }
+  })
 }

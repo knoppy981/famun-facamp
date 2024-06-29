@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useMatches, useOutletContext, useSearchParams } from '@remix-run/react'
+import { NavLink, Outlet, useMatches, useOutletContext } from '@remix-run/react'
 import React from 'react'
 import { useStickyContainer } from '~/hooks/useStickyContainer'
 import { motion } from 'framer-motion';
@@ -6,9 +6,7 @@ import { ParticipationMethod } from '@prisma/client';
 
 const AdminDashboard = () => {
   const [stickyRef, isSticky] = useStickyContainer()
-  const [searchParams, setSearchParams] = useSearchParams()
   const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
-  const matches = useMatches()
 
   const menuItems = [
     { name: "Delegações", to: "delegations", active: "/admin/delegations" },
@@ -23,14 +21,6 @@ const AdminDashboard = () => {
         {menuItems.map((item, index) => {
           const ref = React.useRef<HTMLAnchorElement>(null)
 
-          React.useEffect(() => {
-            if (matches?.[3]?.pathname === item.active) ref.current?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center',
-              inline: 'center'
-            })
-          }, [matches])
-
           return (
             <NavLink
               key={index}
@@ -40,6 +30,11 @@ const AdminDashboard = () => {
               prefetch='render'
               aria-label={`${item.to}-link`}
               preventScrollReset
+              onClick={() => ref.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+                inline: 'center'
+              })}
               to={{
                 pathname: item.to,
                 search: `pm=${participationMethod}`,

@@ -2,7 +2,7 @@
 import React from 'react'
 import { ActionFunctionArgs, json } from '@remix-run/node'
 import { requireAdminId } from '~/session.server';
-import { postponeDelegationPaymentDue } from '~/models/payments.server';
+import { prisma } from '~/db.server';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
@@ -24,4 +24,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   return json({ delegation })
+}
+
+async function postponeDelegationPaymentDue(id: string) {
+  let currentDate = new Date();
+  let dayOfWeek = currentDate.getDay();
+  let daysToAdd = (dayOfWeek >= 2 && dayOfWeek <= 5) ? 7 : 5;
+  let newDate = new Date(currentDate.setDate(currentDate.getDate() + daysToAdd));
+
+  return prisma.delegation.update({
+    where: {
+      id
+    },
+    data: {
+      paymentExpirationDate: newDate,
+    }
+  })
 }
