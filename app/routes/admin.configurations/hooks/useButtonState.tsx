@@ -3,7 +3,7 @@ import { FiCheck, FiEdit, FiX } from "react-icons/fi/index.js"
 import Spinner from "~/components/spinner"
 
 export function useButtonState(userWantsToChangeData: boolean, readySubmission: boolean, transition: "idle" | "loading" | "submitting") {
-  const [buttonLabel, setButtonLabel] = React.useState<string>("Editar Configurações")
+  const [buttonLabel, setButtonLabel] = React.useState<string>("Editar")
   const [buttonIcon, setButtonIcon] = React.useState<React.ReactNode>(<FiEdit className="icon"/>)
   const [buttonColor, setButtonColor] = React.useState<string>("blue")
 
@@ -11,7 +11,7 @@ export function useButtonState(userWantsToChangeData: boolean, readySubmission: 
     setButtonLabel(transition !== 'idle' ?
       "Salvando" :
       !userWantsToChangeData ?
-        "Editar Configurações" :
+        "Editar" :
         readySubmission ?
           "Salvar Alterações" :
           "Cancelar")

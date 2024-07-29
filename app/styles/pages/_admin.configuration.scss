@@ -1,0 +1,26 @@
+@import "../abstracts/mixins";
+@import "../abstracts/colors";
+
+.admin-configuration-link-list {
+  display: grid;
+  gap: 15px;
+}
+
+.admin-configuration-link-item {
+  border-radius: 10px;
+  padding: 15px 25px;
+  box-shadow: 0 1px 5px -2px #000;
+  font-size: 1.5rem;
+  min-width: 0;
+  display: flex;
+  gap: 15px;
+
+  svg {
+    flex: 1 0 auto;
+  }
+
+  &.expired {
+    background: #FFEFE1;
+    color: $vermelhoClaro;
+  }
+}

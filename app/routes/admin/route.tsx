@@ -70,7 +70,7 @@ const AdminPage = () => {
 
         <div className='dashboard-disappear-on-width'>
           <NavLink
-            to="configurations"
+            to="configurations/main"
             className="link text"
             preventScrollReset
           >
@@ -106,8 +106,8 @@ const AdminPage = () => {
                   <NavLink
                     tabIndex={0}
                     role="link"
-                    aria-label={`settings-link`}
-                    to={"configurations"}
+                    aria-label="settings-link"
+                    to="configurations/main"
                     onClick={close}
                     prefetch='render'
                     preventScrollReset

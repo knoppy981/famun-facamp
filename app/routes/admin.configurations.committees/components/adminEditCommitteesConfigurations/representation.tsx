@@ -20,6 +20,7 @@ const RepresentationConfiguration = (props: any) => {
           selectionMode="single"
           onSelectionChange={(e: any) => handleChange({ target: { name: "representacoesExtras", value: e.map((item: any) => item.id) } })}
           isDisabled={isDisabled}
+          flexBoxStyle
         >
           {(item: any) => <Item>{item.id}</Item>}
         </PopItemsList>

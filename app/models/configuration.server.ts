@@ -16,7 +16,9 @@ export async function getConfigurations() {
       precoDelegadoUniversidade: true,
       precoFacultyAdvisors: true,
       precoProfessorOrientador: true,
-      subscriptionAvailable: true,
+      subscriptionEM: true,
+      subscriptionUNI: true,
+      generatedJoinAuthentication: true
     }
   })
 }
@@ -76,11 +78,12 @@ export async function checkSubscriptionAvailability() {
       name: "default"
     },
     select: {
-      subscriptionAvailable: true
+      subscriptionEM: true,
+      subscriptionUNI: true,
     }
   })
 
-  return config?.subscriptionAvailable
+  return config
 }
 
 export async function checkCuponCode(code: string, type: ParticipationMethod) {
@@ -96,15 +99,4 @@ export async function checkCuponCode(code: string, type: ParticipationMethod) {
   if (configuration === null) return false
 
   return configuration.coupons.some(coupon => coupon.code === code && coupon.type === type);
-}
-
-export async function changeSucscriptionAvailavilityStatus(boolean: boolean) {
-  return prisma.configuration.update({
-    where: {
-      name: "default"
-    },
-    data: {
-      subscriptionAvailable: boolean
-    }
-  })
 }

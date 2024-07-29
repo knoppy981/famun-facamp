@@ -1,11 +1,11 @@
 import React from 'react'
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from '@remix-run/node'
-import { Form, useActionData, useLoaderData, useNavigation, useSearchParams } from '@remix-run/react'
+import { Form, useActionData, useLoaderData, useNavigation, useOutletContext, useSearchParams } from '@remix-run/react'
 import qs, { ParsedQs } from "qs"
 
 import { sessionStorage, createUserSession, getSession, getUserId } from '~/session.server'
-import { createUserSchema, userStepValidation } from '~/schemas'
-import { createUser, formatUserData, getExistingUser } from '~/models/user.server'
+import { createUserSchema } from '~/schemas'
+import { createUser } from '~/models/user.server'
 import { safeRedirect } from '~/utils'
 import { getCorrectErrorMessage } from '~/utils/error'
 import { useButtonState } from './hooks/useButtonState'
@@ -20,9 +20,12 @@ import AdvisorData from './steps/advisorData'
 import DelegateData from './steps/delegateData'
 import ConfirmData from './steps/confirmData'
 import ParticipationMethod from './steps/participationMethod'
-import { getCouncils } from '~/models/configuration.server'
 import { sendEmail } from '~/nodemailer.server'
 import { createUserEmail } from '~/lib/emails'
+import { verifyJoinAuthentication } from '../join/utils/verifyJoinAuthentication'
+import { getSessionData } from './utils/getSessionData'
+import { verifyStepData } from './utils/verifyStepData'
+import { getUserData } from './utils/getUserData'
 
 interface ExtendedParsedQs extends ParsedQs {
   redirectTo: string;
@@ -37,23 +40,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const text = await request.text()
 
   const { redirectTo, step, action, ...data } = qs.parse(text) as ExtendedParsedQs
-  const searchParams = redirectTo === "" ? "" : new URLSearchParams([["redirectTo", safeRedirect(redirectTo)]])
+  const searchParams = redirectTo === "" ? new URLSearchParams() : new URLSearchParams([["redirectTo", safeRedirect(redirectTo)]])
 
   if (data.userType) session.set('user-type', { userType: data.userType })
   if (data.participationMethod) session.set('user-participationMethod', { participationMethod: data.participationMethod })
 
   if (action === 'next') {
-    try {
-      await userStepValidation(Number(step), data)
-      if (Number(step) === 4 || Number(step) === 5) await getExistingUser({
-        name: data.name === "" ? undefined : data.name,
-        email: data.email === "" ? undefined : data.email,
-        cpf: data.cpf === "" ? undefined : data.cpf,
-        rg: data.rg === "" ? undefined : data.rg,
-        passport: data.passport === "" ? undefined : data.passport,
-      })
-    } catch (error: any) {
-      console.log(error)
+    try { await verifyStepData(data, Number(step)) } catch (error: any) {
       const [label, msg] = getCorrectErrorMessage(error)
       return json(
         { errors: { [label]: msg } },
@@ -62,28 +55,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
 
     if (Number(step) === LAST_STEP) {
-      let userData = {
-        ...session.get("user-data-3"),
-        ...session.get("user-data-4"),
-        ...session.get("user-data-5"),
-        ...session.get("user-data-6"),
-        ...session.get("user-data-7"),
-        ...session.get("user-type"),
-        ...session.get("user-participationMethod"),
-      }
-
-      userData = await formatUserData({
-        data: userData,
-        participationMethod: userData.participationMethod,
-        userType: userData.userType
-      })
-
+      await verifyJoinAuthentication(session.get("user-participationMethod"), session, searchParams)
+      const formattedUserData = await getUserData(session)
       let user
 
       try {
-        await createUserSchema.validateAsync(userData)
-        user = await createUser(userData)
-        const info = await sendEmail({
+        await createUserSchema.validateAsync(formattedUserData)
+        user = await createUser(formattedUserData)
+        await sendEmail({
           to: user.email,
           subject: `Bem-vindo(a) ao FAMUN ${new Date().getFullYear()}!`,
           html: createUserEmail(user)
@@ -118,48 +97,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await getUserId(request)
   if (userId) return redirect("/")
-
   const session = await getSession(request)
+  const data = await getSessionData(LAST_STEP, session)
 
-  const { termsAndConditions, userType, step, participationMethod }: { termsAndConditions: string, userType: string, step: number, participationMethod: string } = {
-    ...session.get("user-data-1"),
-    ...session.get("current-step"),
-    ...session.get("user-type"),
-    ...session.get("user-participationMethod"),
-  }
-
-  let data
-
-  switch (step) {
-    case LAST_STEP:
-      data = {
-        ...session.get("user-data-3"),
-        ...session.get("user-data-4"),
-        ...session.get("user-data-5"),
-        ...session.get("user-data-7"),
-      } ?? {}
-      return json({ data, step, userType, termsAndConditions, participationMethod })
-    case 5:
-      data = {
-        ...session.get(`user-data-3`),
-        ...session.get(`user-data-5`),
-      } ?? {}
-      return json({ data, step, userType, termsAndConditions, participationMethod })
-    case 7:
-      const councils = await getCouncils(participationMethod as "Escola" | "Universidade")
-      data = {
-        ...session.get(`user-data-${step}`),
-        councils
-      } ?? {}
-      return json({ data, step, userType, termsAndConditions, participationMethod })
-    default:
-      data = session.get(`user-data-${step}`) ?? {}
-      return json({ data, step, userType, termsAndConditions, participationMethod })
-  }
+  return json(data)
 }
 
 const JoinUser = () => {
   const [searchParams] = useSearchParams();
+  const { isSubscriptionAvailable } = useOutletContext<{ isSubscriptionAvailable: { subscriptionEM: boolean; subscriptionUNI: boolean; } }>()
   const actionData = useActionData<typeof action>()
   let { userType, step, data, termsAndConditions, participationMethod } = useLoaderData<typeof loader>()
   if (!step) step = 1
@@ -180,7 +126,7 @@ const JoinUser = () => {
 
       <div className='join-wrapper'>
         {step === 1 && <TermsAndConditions setIsButtonDisabled={setIsButtonDisabled} />}
-        {step === 2 && <ParticipationMethod />}
+        {step === 2 && <ParticipationMethod isSubscriptionAvailable={isSubscriptionAvailable} />}
         {step === 3 && <Nacionality data={data} actionData={actionData} />}
         {step === 4 && <CreateUser data={data} actionData={actionData} />}
         {step === 5 && <UserData data={data} actionData={actionData} />}

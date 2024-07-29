@@ -9,7 +9,7 @@ import Button from '~/components/button'
 const DelegationParticipants = () => {
   const delegation: DelegationType = useOutletContext()
   const navigate = useNavigate()
-  const participants = delegation.participants
+  const participants = delegation?.participants
   const user = useUser()
 
   const handleUserClick = (username: string) => {

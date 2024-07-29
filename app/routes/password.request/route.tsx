@@ -1,5 +1,5 @@
 import React from 'react'
-import { json, redirect } from '@remix-run/node'
+import { LoaderFunctionArgs, json, redirect } from '@remix-run/node'
 import { Form, useActionData, useNavigation } from '@remix-run/react'
 import { ActionFunctionArgs } from 'react-router'
 
@@ -34,7 +34,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const user = await updateConfirmationCode(email, code, 15)
     const info = await sendEmail({
       to: email,
-      subject: `${user.name.split(' ', 2)[1] || user.name}, este é seu código ${code}`,
+      subject: `${user.name.split(' ', 2)[0] || user.name}, este é seu código ${code}`,
       html: requestPasswordReset(user, code)
     })
   } catch (error) {

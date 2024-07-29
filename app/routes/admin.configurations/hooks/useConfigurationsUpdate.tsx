@@ -4,8 +4,7 @@ import _ from "lodash"
 import qs from "qs"
 import { Configuration } from "@prisma/client";
 
-
-export function useConfiuratiionsUpdate(configurations: Partial<Configuration>, fetcher: FetcherWithComponents<any>): {
+export function useConfigurationsUpdate(configurations: Partial<Configuration>, fetcher: FetcherWithComponents<any>): {
   readySubmission: boolean,
   userWantsToChangeData: boolean,
   handleSubmission: () => void,
@@ -77,7 +76,7 @@ export function useConfiuratiionsUpdate(configurations: Partial<Configuration>, 
     if (readySubmission) {
       fetcher.submit(
         { changes: qs.stringify(changes) },
-        { method: "post", preventScrollReset: true, navigate: false }
+        { method: "post", action: "/admin/configurations", preventScrollReset: true, navigate: false }
       )
     } else {
       setUserWantsToChangeData(!userWantsToChangeData)

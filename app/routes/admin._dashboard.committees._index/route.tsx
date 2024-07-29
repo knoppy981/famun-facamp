@@ -91,18 +91,16 @@ const route = () => {
         {committees?.map((item, index) => (
           <Link
             prefetch='intent'
-            className='committee-item link' key={index}
+            className='committee-item' key={index}
             to={{
               pathname: item.name,
               search: searchParams.toString(),
             }}
           >
             <div className='committee-item-title'>
-              <div style={{ maxWidth: "600px" }}>
-                <p className='text overflow'>
-                  {item.name}
-                </p>
-              </div>
+              <p className='text overflow'>
+                {item.name}
+              </p>
 
               {item._count.delegates > 0 ?
                 <div>

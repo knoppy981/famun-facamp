@@ -92,6 +92,7 @@ export async function getUserByCustomerId(stripeCustomerId: User["stripeCustomer
 }
 
 export async function getExistingUser({ userId, ...values }: { userId?: User["id"];[key: string]: any }) {
+	console.log("checking existing user")
 	const checkableValues = Object.entries(values).map(entry => {
 		return { [entry[0]]: entry[1] };
 	})

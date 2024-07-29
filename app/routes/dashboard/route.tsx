@@ -30,13 +30,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 const Dashboard = () => {
   const user = useUser()
   const matches = useMatches()
-  const t = (title: string) => (title)
   const menuItems = [
-    { name: t("Início"), to: "home", active: "/dashboard/home", icon: <FiHome className='icon' /> },
-    { name: t("Dados da inscrição"), to: "profile", active: "/dashboard/profile", icon: <FiEdit className='icon' /> },
-    { name: t("Delegação"), to: "delegation/participants", active: "/dashboard/delegation", icon: <FiFlag className='icon' /> },
-    { name: t("Pagamentos"), to: "payments/pending", active: "/dashboard/payments", icon: <FiCreditCard className='icon' /> },
-    { name: t("Documentos"), to: "documents", active: "/dashboard/documents", icon: <FiFile className='icon' /> },
+    { name: "Início", to: "home", active: "/dashboard/home", icon: <FiHome className='icon' /> },
+    { name: "Dados da inscrição", to: "profile", active: "/dashboard/profile", icon: <FiEdit className='icon' /> },
+    { name: "Delegação", to: "delegation/participants", active: "/dashboard/delegation", icon: <FiFlag className='icon' /> },
+    { name: "Pagamentos", to: "payments/pending", active: "/dashboard/payments", icon: <FiCreditCard className='icon' /> },
+    { name: "Documentos", to: "documents", active: "/dashboard/documents", icon: <FiFile className='icon' /> },
   ]
 
   return (
@@ -70,7 +69,7 @@ const Dashboard = () => {
               <div className='dashboard-nav-item'>
                 <FiLogOut className='icon' />
 
-                {t("Sair")}
+                Sair
               </div>
             </Button>
           </Form>

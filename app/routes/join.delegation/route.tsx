@@ -3,11 +3,11 @@ import { redirect, json, ActionFunctionArgs, LoaderFunctionArgs } from "@remix-r
 import { useSearchParams, useLoaderData, useActionData, Form, useNavigation } from "@remix-run/react";
 import qs, { ParsedQs } from "qs"
 
-import { createUserSession, sessionStorage, getSession, requireUserId, requireUser } from "~/session.server";
-import { joinDelegation, createDelegation, formatDelegationData, getExistingDelegation } from "~/models/delegation.server";
-import { safeRedirect, generateString, useUser } from "~/utils";
+import { createUserSession, sessionStorage, getSession, requireUser } from "~/session.server";
+import { joinDelegation, createDelegation } from "~/models/delegation.server";
+import { safeRedirect, useUser } from "~/utils";
 import { getCorrectErrorMessage } from "~/utils/error";
-import { createDelegationSchema, delegationStepValidation } from "~/schemas";
+import { createDelegationSchema } from "~/schemas";
 
 import Button from "~/components/button";
 import JoinMethod from "./steps/joinMethod";
@@ -18,6 +18,10 @@ import { useButtonState } from "./hooks/useButtonState";
 import { sendEmail } from "~/nodemailer.server";
 import { createDelegationEmail } from "~/lib/emails";
 import { UserType } from "~/models/user.server";
+import { verifyJoinAuthentication } from "../join/utils/verifyJoinAuthentication";
+import { getDelegationData } from "./utils/getDelegationData";
+import { getSessionData } from "./utils/getSessionData";
+import { verifyStepData } from "./utils/verifyStepData";
 
 interface ExtendedParsedQs extends ParsedQs {
   redirectTo: string;
@@ -31,18 +35,19 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const text = await request.text()
   const session = await getSession(request)
   const { redirectTo, step, action, ...data } = qs.parse(text) as ExtendedParsedQs
-  const searchParams = redirectTo === "" ? "" : new URLSearchParams([["redirectTo", safeRedirect(redirectTo)]])
+  const searchParams = redirectTo === "" ? new URLSearchParams() : new URLSearchParams([["redirectTo", safeRedirect(redirectTo)]])
 
   if (data.joinMethod) session.set('join-method', { joinMethod: data.joinMethod })
 
   if (action === "next") {
     if (data.delegationCode) {
       // join delegation
-      let userId
+      const user = await requireUser(request)
+      await verifyJoinAuthentication(user.participationMethod, session, searchParams)
       let delegation
+
       try {
-        userId = await requireUserId(request)
-        delegation = await joinDelegation({ code: data.delegationCode as string, userId: userId })
+        delegation = await joinDelegation({ code: data.delegationCode as string, userId: user.id })
       } catch (e) {
         return json(
           { errors: e },
@@ -51,16 +56,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       }
       return createUserSession({
         request,
-        userId: userId,
+        userId: user.id,
         delegationId: delegation.id,
         redirectTo: redirectTo ? safeRedirect(redirectTo) : `/dashboard/home`,
       });
     }
 
-    try {
-      await delegationStepValidation(Number(step), data)
-      await getExistingDelegation({ school: data.school ?? "" })
-    } catch (error) {
+    try { await verifyStepData(data, Number(step)) } catch (error) {
       console.dir(error, { depth: null })
       const [label, msg] = getCorrectErrorMessage(error)
       return json(
@@ -72,31 +74,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     if (Number(step) === LAST_STEP) {
       // create delegation
       const user = await requireUser(request)
-
-      let currentDate = new Date();
-      let dayOfWeek = currentDate.getDay();
-      let daysToAdd = (dayOfWeek >= 2 && dayOfWeek <= 5) ? 7 : 5;
-      let newDate = new Date(currentDate.setDate(currentDate.getDate() + daysToAdd));
-
-      let delegationData = {
-        ...session.get("delegation-data-2"),
-        ...session.get("delegation-data-3"),
-        user: user,
-        participationMethod: user.participationMethod,
-        paymentExpirationDate: newDate,
-        code: generateString(6),
-      }
-
-      delegationData = await formatDelegationData({
-        data: delegationData,
-      })
-
+      await verifyJoinAuthentication(user.participationMethod, session, searchParams)
+      const formattedDelegationData = await getDelegationData(session, user)
       let delegation
 
       try {
-        await createDelegationSchema.validateAsync(delegationData)
-        delegation = await createDelegation(delegationData, user.id)
-        const info = await sendEmail({
+        await createDelegationSchema.validateAsync(formattedDelegationData)
+        delegation = await createDelegation(formattedDelegationData, user.id)
+        await sendEmail({
           to: user.email,
           subject: `FAMUN ${new Date().getFullYear()}: Sua delegação foi criada com sucesso!`,
           html: createDelegationEmail(delegation, user as UserType)
@@ -135,24 +120,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireUser(request)
   if (user.delegationId) return redirect('/')
-
   const session = await getSession(request)
+  const data = await getSessionData(LAST_STEP, session)
 
-  const { joinMethod, step }: { joinMethod: string, step: number } = {
-    ...session.get("delegation-current-step") ?? {},
-    ...session.get("join-method") ?? {},
-  }
-
-  if (step === LAST_STEP) {
-    const data = {
-      ...session.get("delegation-data-2"),
-    }
-    return json({ data, step, joinMethod })
-  } else {
-    const data = session.get(`delegation-data-${step}`) ?? {}
-    return json({ data, step, joinMethod })
-  }
-
+  return json(data)
 }
 
 const delegation = () => {

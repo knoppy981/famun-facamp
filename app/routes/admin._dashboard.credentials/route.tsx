@@ -3,20 +3,23 @@ import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node';
 import { Form, useLoaderData, useOutletContext, useSearchParams, useSubmit } from '@remix-run/react'
 import { ParticipationMethod } from '@prisma/client';
 
+import { requireAdminId } from '~/session.server';
+import usePresenceControl from './hooks/usePresenceControl';
+import { changeObservation, handleCheckIn } from '~/models/credentials.server';
+import { getCredentialsParticipantsList } from './utils/getCredentialsParticipantsList';
+
 import Button from '~/components/button'
 import TextField from '~/components/textfield';
 import PopoverTrigger from '~/components/popover/trigger';
 import Dialog from '~/components/dialog';
 import { Radio, RadioGroup } from '~/components/radioGroup';
 import { FiChevronDown, FiChevronLeft, FiChevronRight } from "react-icons/fi/index.js";
+import { BsUpcScan } from "react-icons/bs/index.js";
 import Checkbox from '~/components/checkbox';
-import { requireAdminId } from '~/session.server';
-import { changeObservation, handleCheckIn } from '~/models/credentials.server';
-import { getCredentialsParticipantsList } from './utils/getCredentialsParticipantsList';
 import ModalTrigger from '~/components/modalOverlay/trigger';
 import ChangeObservationModal from './components/changeObservationModal';
-import usePresenceControl from './hooks/usePresenceControl';
 import Spinner from '~/components/spinner';
+import BarcodeModal from './components/barcodeModal';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
@@ -259,7 +262,14 @@ const Credentials = () => {
 
 
       <div className='admin-navigation-button-container'>
-        <div></div>
+        <div>
+          <ModalTrigger
+            buttonClassName="secondary-button-box blue-light"
+            label={<><BsUpcScan className='icon' /> Credenciamento diário</>}
+          >
+            {(close: () => void) => <BarcodeModal close={close} />}
+          </ModalTrigger>
+        </div>
 
         <div>
           <Button

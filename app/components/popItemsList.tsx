@@ -45,7 +45,7 @@ const PopItemsList = forwardRef<HTMLUListElement, any>((props, forwardedRef) => 
       <div className='label text'>{props.label}</div>
       <ul
         ref={forwardedRef}
-        className={`pop-list-box ${props.isDisabled ? "disabled" : ""}`}
+        className={`pop-list-box ${props.isDisabled ? "disabled" : ""} ${props.flexBoxStyle ? "flexBoxStyle" : ""}`}
       >
         {list?.length > 0 ?
           list?.map((item: any) => (

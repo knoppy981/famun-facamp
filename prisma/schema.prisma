@@ -184,7 +184,9 @@ model Configuration {
   updatedAt DateTime @updatedAt
 
   //
-  subscriptionAvailable Boolean @default(true)
+  subscriptionEM              Boolean              @default(true)
+  subscriptionUNI             Boolean              @default(true)
+  generatedJoinAuthentication JoinAuthentication[]
 
   // payments
   precoDelegadoEnsinoMedio   Int
@@ -203,6 +205,14 @@ model Configuration {
 type CouponType {
   code String
   type ParticipationMethod
+}
+
+type JoinAuthentication {
+  name      String
+  code      String
+  link      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 enum AdvisorRole {

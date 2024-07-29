@@ -43,7 +43,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   if (!user && !admin) {
     return json(
-      { errors: { password: "Invalid email or password" } },
+      { errors: { password: "E-mail ou senha inválidos" } },
       { status: 400 }
     );
   }
@@ -62,8 +62,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     })
 }
 
-export const handle = { i18n: "login" };
-
 interface ActionData {
   errors?: {
     email?: string;
@@ -72,9 +70,6 @@ interface ActionData {
 }
 
 const Login = () => {
-
-  const { t } = useTranslation("login")
-
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/dashboard/home";
   const fetcher = useFetcher()
@@ -90,7 +85,7 @@ const Login = () => {
 
         <fetcher.Form method='post' className='auth-form' noValidate>
           <TextField
-            label={t("email")}
+            label="E-mail"
             className='primary-input-box'
             name="email"
             type="email"
@@ -100,7 +95,7 @@ const Login = () => {
           />
 
           <TextField
-            label={t("password")}
+            label="Senha"
             className='primary-input-box'
             name="password"
             type="password"
@@ -112,12 +107,12 @@ const Login = () => {
           <Checkbox
             name="remember"
           >
-            {t("remember")}
+            Continuar Conectado
           </Checkbox>
 
           <div className='auth-link-box'>
             <DefaultLink to="/password/request" underline={1}>
-              {t("forgotPassword")}
+              Esqueceu a senha?
             </DefaultLink>
           </div>
 
@@ -125,13 +120,13 @@ const Login = () => {
 
           <div className='auth-button-container'>
             <Button type='submit' className='primary-button-box'>
-              {t("login")} {transition !== 'idle' && <Spinner dim="18px" />}
+              Entrar {transition !== 'idle' && <Spinner dim="18px" />}
             </Button>
           </div>
         </fetcher.Form>
 
         <div className='auth-link-box center'>
-          {t("acc")}
+          Ainda não tem uma conta?
           <DefaultLink
             underline={1}
             to={{
@@ -139,7 +134,7 @@ const Login = () => {
               search: searchParams.toString(),
             }}
           >
-            {t("join")}
+            Cadastrar
           </DefaultLink>
         </div>
       </div>

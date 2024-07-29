@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@250;400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;500&display=swap");
 @import url("https://fonts.cdnfonts.com/css/panton");
+@import url('https://fonts.googleapis.com/css2?family=Libre+Barcode+39&display=swap');
 
 * {
   font-family: "Montserrat", "Panton", "Sora", sans-serif;
@@ -542,4 +543,10 @@ input:-webkit-autofill:active {
   &.animate {
     grid-template-rows: 1fr;
   }
+}
+
+.libre-barcode-39-regular {
+  font-family: "Libre Barcode 39", system-ui;
+  font-weight: 400;
+  font-style: normal;
 }

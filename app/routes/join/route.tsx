@@ -1,20 +1,75 @@
 import React from 'react'
-import { Outlet, useRouteError, useSearchParams } from '@remix-run/react'
+import { Outlet, useLoaderData, useRouteError, useSearchParams } from '@remix-run/react'
 import Link from '~/components/link'
 import { FiArrowLeft } from "react-icons/fi/index.js";
-import { LoaderFunctionArgs, json } from '@remix-run/node';
+import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { checkSubscriptionAvailability } from '~/models/configuration.server';
+import invariant from 'tiny-invariant';
+import { decodeJwt } from '~/jwt';
+import { checkJoinAuthenticationCode } from './utils/checkJoinAuthenticationCode';
+import { getSession, getUserId, sessionStorage } from '~/session.server';
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+  const url = new URL(request.url);
+  const token = url.searchParams.get("token");
+  const session = await getSession(request)
   const isSubscriptionAvailable = await checkSubscriptionAvailability()
+  const userId = await getUserId(request)
 
-  if (!isSubscriptionAvailable) throw json({ message: "Inscrições fechadas", name: "Inscrições" }, { status: 403 });
+  if (token && typeof token === "string") {
+    const decoded: any = await decodeJwt(token)
 
-  return json({})
+    if (decoded.err) throw json(
+      { message: "Link inválido", name: "Erro no Link" },
+      { status: 403 }
+    );
+
+    if (decoded.payload.code) {
+      const check = await checkJoinAuthenticationCode(decoded.payload.code)
+
+      if (!check) {
+        throw json(
+          { message: "Link inválido", name: "Erro no Link" },
+          { status: 403 }
+        )
+      } else {
+        session.set("join-authentication", token)
+
+        return redirect(`/join/${userId ? "delegation" : "user"}`, {
+          headers: {
+            'Set-cookie': await sessionStorage.commitSession(session),
+          },
+        })
+      }
+    }
+  } else if (session.get("join-authentication")) {
+    const token = session.get("join-authentication")
+
+    const decoded: any = await decodeJwt(token)
+
+    if (decoded.err) {
+      throw json(
+        { message: "Link inválido", name: "Erro no Link" },
+        { status: 403 }
+      );
+    } else {
+      return json({ isSubscriptionAvailable: { subscriptionEM: true, subscriptionUNI: true, } })
+    }
+  }
+
+  if (!isSubscriptionAvailable?.subscriptionEM && !isSubscriptionAvailable?.subscriptionUNI) {
+    throw json(
+      { message: "Inscrições fechadas", name: "Inscrições" },
+      { status: 403 }
+    )
+  }
+
+  return json({ isSubscriptionAvailable })
 }
 
 const Join = () => {
   const [searchParams] = useSearchParams();
+  const { isSubscriptionAvailable } = useLoaderData<typeof loader>()
 
   return (
     <div className='auth-wrapper'>
@@ -29,7 +84,7 @@ const Join = () => {
         </Link>
       </div>
 
-      <Outlet />
+      <Outlet context={{ isSubscriptionAvailable }} />
     </div>
   )
 }

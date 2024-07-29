@@ -151,7 +151,7 @@ export function ErrorBoundary() {
           </h2>
 
           <div className='error-message'>
-            {error?.data}
+            {error?.data?.message}
           </div>
 
           <div className='error-link-container'>
