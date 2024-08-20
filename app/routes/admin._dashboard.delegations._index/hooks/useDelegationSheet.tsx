@@ -3,7 +3,7 @@ import { ParticipationMethod } from "@prisma/client"
 import { useFetcher } from "@remix-run/react"
 import { exportAoo } from "~/sheets"
 
-export default function useDleegationsSheet(participationMethod: ParticipationMethod): [() => void, "idle" | "loading" | "submitting"] {
+export default function useDelegationsSheet(participationMethod: ParticipationMethod): [() => void, "idle" | "loading" | "submitting"] {
   const fetcher = useFetcher<any>()
 
   const handleDownload = () => {

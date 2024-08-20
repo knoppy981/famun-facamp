@@ -5,7 +5,7 @@ import qs from "qs"
 
 import { UserType } from "~/models/user.server";
 
-export function useUserUpdate(user: UserType, fetcher: FetcherWithComponents<any>): {
+export function useUserUpdate(user: UserType, fetcher: FetcherWithComponents<any>, allow: boolean): {
   readySubmission: boolean,
   userWantsToChangeData: boolean,
   handleSubmission: () => void,
@@ -85,6 +85,7 @@ export function useUserUpdate(user: UserType, fetcher: FetcherWithComponents<any
   }
 
   const handleSubmission = () => {
+    if (!allow) return
     if (readySubmission) {
       fetcher.submit(
         { changes: qs.stringify(changes) },

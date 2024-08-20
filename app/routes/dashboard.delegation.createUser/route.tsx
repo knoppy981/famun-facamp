@@ -23,7 +23,7 @@ import Dialog from "~/components/dialog";
 import { Select, Item } from "~/components/select";
 import { defaultUser } from "./utils/defaultUserData";
 import { iterateObject } from "../dashboard/utils/findDiffrences";
-import { getCouncils } from "~/models/configuration.server";
+import { getCouncils, getParticipantConfigurationRequirements } from "~/models/configuration.server";
 import { manualCreateUserEmail } from "~/lib/emails";
 import { sendEmail } from "~/nodemailer.server";
 import { generatePassword } from "./utils/generatePassword";
@@ -31,6 +31,12 @@ import { generatePassword } from "./utils/generatePassword";
 export const action = async ({ request }: ActionFunctionArgs) => {
   const user = await requireUser(request)
   const delegation = await requireDelegation(request)
+  const config = await getParticipantConfigurationRequirements()
+  
+  if (!config?.allowParticipantsChangeData ?? false) return json(
+    { errors: { error: "Prazo para edição de dados encerrou" } },
+    { status: 400 }
+  );
   const formData = await request.formData()
   const newUserData = qs.parse(formData.get("newUserData") as string)
 
@@ -117,15 +123,22 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 const CreateUser = () => {
   const [buttonRef, isRefVisible] = useOnScreen();
-  const delegation: DelegationType = useOutletContext()
+  const { delegation, config }: {
+    delegation: DelegationType, config: {
+      allowParticipantsChangeData: boolean | null;
+      allowParticipantsPayments: boolean | null;
+      allowParticipantsSendDocuments: boolean | null;
+    }
+  } = useOutletContext()
+  const allowParticipantsChangeData = config?.allowParticipantsChangeData ?? false
   const { councils } = useLoaderData<typeof loader>()
   const delegatesCount = delegation.participants?.filter(user => user.delegate !== null).length as number
   const user = useUser()
   const userType = useUserType()
   const fetcher = useFetcher()
   const { creatingUserType, changeCreatingUserType, creationPermission, handleChange, handleSubmission, editUserDataId } =
-    useUserCreation(user, userType, fetcher, delegatesCount, delegation, delegation.participationMethod, councils as string[])
-  const [buttonLabel, buttonIcon, buttonColor] = useButtonState(creationPermission?.allowed, fetcher.state)
+    useUserCreation(user, userType, fetcher, delegatesCount, delegation, delegation.participationMethod, councils as string[], allowParticipantsChangeData)
+  const [buttonLabel, buttonIcon, buttonColor] = useButtonState(creationPermission?.allowed, fetcher.state, allowParticipantsChangeData)
   const [modalContext, state] = useModalContext(fetcher)
 
   return (
@@ -165,6 +178,12 @@ const CreateUser = () => {
           }
         </div>
       </div>
+
+      {!allowParticipantsChangeData && <i className='payments-warning'>
+        Aviso:
+        <br />
+        O prazo para adicionar participantes foi encerrado!
+      </i>}
 
       <div className="delegation-data-title-box">
         <Select

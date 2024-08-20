@@ -1,7 +1,9 @@
 import { ActionFunctionArgs, json } from "@remix-run/node"
 import { deleteCommittee } from "~/models/committee.server"
+import { requireAdminId } from "~/session.server"
 
 export const action = async ({ request }: ActionFunctionArgs) => {
+  await requireAdminId(request)
   const formData = await request.formData()
   const committeeId = formData.get("id") as string
   let committee = {}

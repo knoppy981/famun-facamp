@@ -13,13 +13,14 @@ import TextField from '~/components/textfield';
 import PopoverTrigger from '~/components/popover/trigger';
 import Dialog from '~/components/dialog';
 import { Radio, RadioGroup } from '~/components/radioGroup';
-import { FiChevronDown, FiChevronLeft, FiChevronRight } from "react-icons/fi/index.js";
+import { FiChevronDown, FiChevronLeft, FiChevronRight, FiDownload, FiExternalLink } from "react-icons/fi/index.js";
 import { BsUpcScan } from "react-icons/bs/index.js";
 import Checkbox from '~/components/checkbox';
 import ModalTrigger from '~/components/modalOverlay/trigger';
 import ChangeObservationModal from './components/changeObservationModal';
 import Spinner from '~/components/spinner';
 import BarcodeModal from './components/barcodeModal';
+import Link from '~/components/link';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
@@ -260,7 +261,6 @@ const Credentials = () => {
         </table>
       </div>
 
-
       <div className='admin-navigation-button-container'>
         <div>
           <ModalTrigger
@@ -269,6 +269,13 @@ const Credentials = () => {
           >
             {(close: () => void) => <BarcodeModal close={close} />}
           </ModalTrigger>
+
+          <Link to="/api/admin/credentials/pdf" target='_blank' className='secondary-button-box blue-light'>
+            <div className='button-child'>
+              <FiExternalLink className='icon' />
+              PDF com Códigos de Barras
+            </div>
+          </Link>
         </div>
 
         <div>

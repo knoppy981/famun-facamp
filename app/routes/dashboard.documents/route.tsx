@@ -1,6 +1,6 @@
 import React from 'react'
 import { ActionFunctionArgs, LoaderFunctionArgs, UploadHandler, UploadHandlerPart, json, redirect, unstable_parseMultipartFormData } from '@remix-run/node';
-import { Form, useActionData, useFetcher, useLoaderData, useRouteError } from '@remix-run/react';
+import { Form, useActionData, useFetcher, useLoaderData, useOutletContext, useRouteError } from '@remix-run/react';
 
 import Link from '~/components/link';
 import { getDelegationFilesDescription, uploadFile } from '~/models/file.server';
@@ -15,6 +15,7 @@ import { useOverlayTriggerState } from 'react-stately';
 import Button from '~/components/button';
 import { createUserDocumentNotification } from '~/models/notifications.server';
 import FileFormModal from './components/fileFormModal';
+import { getParticipantConfigurationRequirements } from '~/models/configuration.server';
 
 export type filesType = "Position Paper" | "Liability Waiver" | "Payment Voucher"
 export type selectedFilesType = {
@@ -30,6 +31,12 @@ export const documentsType = [
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const userId = await requireUserId(request)
+  const config = await getParticipantConfigurationRequirements()
+  
+  if (!config?.allowParticipantsChangeData ?? false) throw json(
+    { errors: { error: "Prazo para edição de dados encerrou" } },
+    { status: 400 }
+  );
   let selectedUserId: string, fileType: string, fileContentType: string
 
   let uploadHandler = async ({
@@ -109,6 +116,14 @@ const Documents = () => {
   const selectedFiles = handleSelectedFiles(delegation, selectedUserId)
   const userType = useUserType()
   const allowOtherUsersChanges = userType === "advisor" || user.leader
+  const { config } = useOutletContext<{
+    config: {
+      allowParticipantsChangeData: boolean | null;
+      allowParticipantsPayments: boolean | null;
+      allowParticipantsSendDocuments: boolean | null;
+    }
+  }>()
+  const allowParticipantsSendDocuments = config?.allowParticipantsSendDocuments ?? false
 
   return (
     <div className='section-wrapper padding'>
@@ -164,7 +179,13 @@ const Documents = () => {
           )
         })}
 
-        <ModalTrigger buttonClassName="secondary-button-box blue-light" label={<><FiFilePlus className='icon' /> Enviar Arquivos</>}>
+        {!allowParticipantsSendDocuments && <i className='payments-warning'>
+          Aviso:
+          <br />
+          O prazo para envio de documentos foi encerrado!
+        </i>}
+
+        {allowParticipantsSendDocuments ? <ModalTrigger buttonClassName="secondary-button-box blue-light" label={<><FiFilePlus className='icon' /> Enviar Arquivos</>}>
           {(close: () => void) =>
             <FileFormModal
               close={close}
@@ -174,7 +195,13 @@ const Documents = () => {
               fetcher={fetcher}
             />
           }
-        </ModalTrigger>
+        </ModalTrigger> :
+          <div className="secondary-button-box gray-light">
+            <div className='button-child'>
+              <FiFilePlus className='icon' /> Enviar Arquivos
+            </div>
+          </div>
+        }
       </div>
     </div>
   );

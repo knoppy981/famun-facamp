@@ -7,7 +7,7 @@ import { DelegationType } from '~/models/delegation.server'
 import Button from '~/components/button'
 
 const DelegationParticipants = () => {
-  const delegation: DelegationType = useOutletContext()
+  const { delegation }: { delegation: DelegationType } = useOutletContext()
   const navigate = useNavigate()
   const participants = delegation?.participants
   const user = useUser()

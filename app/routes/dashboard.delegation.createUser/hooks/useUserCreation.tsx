@@ -12,7 +12,7 @@ const newUserDataDefaultValues = (councils: string[], participationMethod: strin
   participationMethod
 })
 
-export function useUserCreation(user: UserType, userType: "delegate" | "advisor" | undefined, fetcher: FetcherWithComponents<any>, delegatesCount: number, delegation: DelegationType, participationMethod: string, councils: string[]): {
+export function useUserCreation(user: UserType, userType: "delegate" | "advisor" | undefined, fetcher: FetcherWithComponents<any>, delegatesCount: number, delegation: DelegationType, participationMethod: string, councils: string[], allow: boolean): {
   creatingUserType: string,
   changeCreatingUserType: (userType: "delegate" | "advisor") => void,
   creationPermission: { allowed: boolean, type: string } | undefined,
@@ -86,7 +86,7 @@ export function useUserCreation(user: UserType, userType: "delegate" | "advisor"
   }
 
   const handleSubmission = () => {
-    if (!creationPermission?.allowed) return
+    if (!creationPermission?.allowed || !allow) return
     fetcher.submit(
       { newUserData: qs.stringify(newUserData) },
       { method: "post", preventScrollReset: false, navigate: false }

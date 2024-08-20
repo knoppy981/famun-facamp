@@ -60,8 +60,9 @@ type ConfirmationCode {
 }
 
 type PresenceControl {
-  checked     Boolean @default(false)
-  observation String?
+  checked      Boolean  @default(false)
+  observation  String?
+  dailyCheckIn String[]
 }
 
 model FoodRestrictions {
@@ -187,6 +188,11 @@ model Configuration {
   subscriptionEM              Boolean              @default(true)
   subscriptionUNI             Boolean              @default(true)
   generatedJoinAuthentication JoinAuthentication[]
+
+  //
+  allowParticipantsChangeData Boolean? @default(true)
+  allowParticipantsPayments Boolean? @default(true)
+  allowParticipantsSendDocuments Boolean? @default(true)
 
   // payments
   precoDelegadoEnsinoMedio   Int

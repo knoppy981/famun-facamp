@@ -3,7 +3,7 @@ import { getUserType } from '~/models/user.server';
 import { requireUser } from '~/session.server';
 
 import type { UserType } from '~/models/user.server';
-import { getPaymentPrices } from './configuration.server';
+import { getParticipantConfigurationRequirements, getPaymentPrices } from './configuration.server';
 import { Languages, ParticipationMethod } from '@prisma/client';
 
 export async function getPaidUsers(paidUsersIds: UserType["id"][]) {
@@ -122,6 +122,9 @@ export async function getRequiredPayments({
     throw new Error('delegation not found');
   }
 
+  const config = await getParticipantConfigurationRequirements()
+  const allowParticipantsPayments = config?.allowParticipantsPayments ?? false
+
   delegation.participants?.forEach(participant => {
     let price
     if (participant.delegate) {
@@ -150,7 +153,7 @@ export async function getRequiredPayments({
       type: participant.delegate ? "delegate" : "advisor",
       available: isLeader || userType === 'advisor' ? true : userId === participant.id,
       expiresAt: delegation.paymentExpirationDate,
-      expired: new Date() > delegation.paymentExpirationDate
+      expired: allowParticipantsPayments ? new Date() > delegation.paymentExpirationDate : true
     })
   })
 

@@ -18,7 +18,23 @@ export async function getConfigurations() {
       precoProfessorOrientador: true,
       subscriptionEM: true,
       subscriptionUNI: true,
-      generatedJoinAuthentication: true
+      generatedJoinAuthentication: true,
+      allowParticipantsChangeData: true,
+      allowParticipantsPayments: true,
+      allowParticipantsSendDocuments: true,
+    }
+  })
+}
+
+export async function getParticipantConfigurationRequirements() {
+  return prisma.configuration.findUnique({
+    where: {
+      name: "default"
+    },
+    select: {
+      allowParticipantsChangeData: true,
+      allowParticipantsPayments: true,
+      allowParticipantsSendDocuments: true,
     }
   })
 }

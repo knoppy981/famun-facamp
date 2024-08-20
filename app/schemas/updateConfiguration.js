@@ -3,6 +3,9 @@ import Joi from "joi";
 export const updateConfigurationSchema = Joi.object({
   subscriptionEM: Joi.boolean(),
   subscriptionUNI: Joi.boolean(),
+  allowParticipantsChangeData: Joi.boolean(),
+  allowParticipantsPayments: Joi.boolean(),
+  allowParticipantsSendDocuments: Joi.boolean(),
 
   conselhosEscolas: Joi.object({
     set: Joi.alternatives()

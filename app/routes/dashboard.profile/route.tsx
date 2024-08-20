@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, useFetcher } from '@remix-run/react'
+import { Form, useFetcher, useOutletContext } from '@remix-run/react'
 import { ActionFunctionArgs, json } from '@remix-run/node'
 import { AnimatePresence } from 'framer-motion'
 import qs from 'qs'
@@ -19,9 +19,17 @@ import { useButtonState } from './hooks/useButtonState'
 import { requireUser } from '~/session.server'
 import { iterateObject } from '../dashboard/utils/findDiffrences'
 import { createUserChangeNotification } from '~/models/notifications.server'
+import { getParticipantConfigurationRequirements } from '~/models/configuration.server'
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const user = await requireUser(request)
+  const config = await getParticipantConfigurationRequirements()
+  
+  if (!config?.allowParticipantsChangeData ?? false) return json(
+    { errors: { error: "Prazo para edição de dados encerrou" } },
+    { status: 400 }
+  );
+
   const formData = await request.formData();
   let changes = qs.parse(formData.get("changes") as string)
   let data: any = {}
@@ -76,12 +84,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 const Profile = () => {
   const fetcher = useFetcher()
   const actionData = fetcher.data
+  const { config } = useOutletContext<{
+    config: {
+      allowParticipantsChangeData: boolean | null;
+      allowParticipantsPayments: boolean | null;
+      allowParticipantsSendDocuments: boolean | null;
+    }
+  }>()
+  const allowParticipantsChangeData = config?.allowParticipantsChangeData ?? false
   const [buttonRef, isRefVisible] = useOnScreen();
   const user = useUser()
   const userType = useUserType()
-  const { readySubmission, userWantsToChangeData, handleSubmission, handleChange, } =
-    useUserUpdate(user, fetcher)
-  const [buttonLabel, buttonIcon, buttonColor] = useButtonState(userWantsToChangeData, readySubmission, fetcher.state)
+  const { readySubmission, userWantsToChangeData, handleSubmission, handleChange } =
+    useUserUpdate(user, fetcher, allowParticipantsChangeData)
+  const [buttonLabel, buttonIcon, buttonColor] = useButtonState(userWantsToChangeData, readySubmission, fetcher.state, allowParticipantsChangeData)
 
   return (
     <Form method="post" className='section-wrapper padding'>
@@ -95,6 +111,12 @@ const Profile = () => {
           {buttonIcon} {buttonLabel}
         </Button>
       </h2>
+
+      {!allowParticipantsChangeData && <i className='payments-warning'>
+        Aviso:
+        <br />
+        O prazo para edição de dados foi encerrado!
+      </i>}
 
       <EditUserData
         isDisabled={!userWantsToChangeData}

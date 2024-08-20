@@ -13,6 +13,7 @@ import PopoverTrigger from '~/components/popover/trigger';
 import LinkInfoModal from './components/linkInfoModal';
 import CreateLinkModal from './components/createLinkModal';
 import Spinner from '~/components/spinner';
+import ChangeParticipantsPermissionsModal from './components/changeParticipantsPermissionsModal';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData()
@@ -73,6 +74,56 @@ const Configurations = () => {
           </div>}
         >
           {(close: () => void) => <SubscriptionStatusModal close={close} status={configurations.subscriptionUNI} type="uni" />}
+        </ModalTrigger>
+      </div>
+
+      <div className='home-container'>
+        <ModalTrigger
+          label={<div className='home-item'>
+            <div className='home-item-title'>
+              Edição de dados dos participantes
+            </div>
+
+            <div className={`secondary-button-box ${configurations.allowParticipantsChangeData ? 'green-light' : 'red-light'}`}>
+              <div className='button-child'>
+                <FiEdit className='icon' /> {configurations.allowParticipantsChangeData ? "Abertas" : "Fechadas"}
+              </div>
+            </div>
+          </div>}
+        >
+          {(close: () => void) => <ChangeParticipantsPermissionsModal close={close} status={configurations.allowParticipantsChangeData ?? false} type="data" />}
+        </ModalTrigger>
+
+        <ModalTrigger
+          label={<div className='home-item'>
+            <div className='home-item-title'>
+              Pagamentos dos participantes
+            </div>
+
+            <div className={`secondary-button-box ${configurations.allowParticipantsPayments ? 'green-light' : 'red-light'}`}>
+              <div className='button-child'>
+                <FiEdit className='icon' /> {configurations.allowParticipantsPayments ? "Abertas" : "Fechadas"}
+              </div>
+            </div>
+          </div>}
+        >
+          {(close: () => void) => <ChangeParticipantsPermissionsModal close={close} status={configurations.allowParticipantsPayments ?? false} type="payment" />}
+        </ModalTrigger>
+
+        <ModalTrigger
+          label={<div className='home-item'>
+            <div className='home-item-title'>
+              Envio de documentos dos participantes
+            </div>
+
+            <div className={`secondary-button-box ${configurations.allowParticipantsSendDocuments ? 'green-light' : 'red-light'}`}>
+              <div className='button-child'>
+                <FiEdit className='icon' /> {configurations.allowParticipantsSendDocuments ? "Abertas" : "Fechadas"}
+              </div>
+            </div>
+          </div>}
+        >
+          {(close: () => void) => <ChangeParticipantsPermissionsModal close={close} status={configurations.allowParticipantsSendDocuments ?? false} type="document" />}
         </ModalTrigger>
       </div>
 

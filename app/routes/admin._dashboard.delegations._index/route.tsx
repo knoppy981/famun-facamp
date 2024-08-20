@@ -9,7 +9,7 @@ import { ParticipationMethod } from '@prisma/client';
 import Button from '~/components/button'
 import TextField from '~/components/textfield';
 import Spinner from '~/components/spinner';
-import useDleegationsSheet from './hooks/useDelegationSheet';
+import useDelegationsSheet from './hooks/useDelegationSheet';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -29,7 +29,7 @@ const Delegation = () => {
   const { delegations } = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const [handleDelegationsSheet, downloadState] = useDleegationsSheet(participationMethod)
+  const [handleDelegationsSheet, downloadState] = useDelegationsSheet(participationMethod)
 
   return (
     <Form className='admin-container' preventScrollReset ref={formRef}>

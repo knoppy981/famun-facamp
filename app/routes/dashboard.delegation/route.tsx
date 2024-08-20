@@ -1,6 +1,6 @@
 import React from 'react';
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node';
-import { useLoaderData, Outlet, NavLink, useRouteError, useMatches } from '@remix-run/react';
+import { useLoaderData, Outlet, NavLink, useRouteError, useMatches, useOutletContext } from '@remix-run/react';
 import { motion } from 'framer-motion';
 
 import { getDelegationId } from '~/session.server';
@@ -32,6 +32,14 @@ const Delegation = () => {
   const [stickyRef, isSticky] = useStickyContainer()
   const [isCopied, handleCopyClick] = useCopyToClipboard(delegation?.inviteLink)
   const matches = useMatches()
+  const { config } = useOutletContext<{
+    config: {
+      allowParticipantsChangeData: boolean | null;
+      allowParticipantsPayments: boolean | null;
+      allowParticipantsSendDocuments: boolean | null;
+    }
+  }>()
+  const allowParticipantsChangeData = config?.allowParticipantsChangeData ?? false
 
   return (
     <div className='section-wrapper'>
@@ -111,7 +119,7 @@ const Delegation = () => {
         })}
       </div>
 
-      <Outlet context={delegation} />
+      <Outlet context={{ delegation, config }} />
     </div>
   )
 }

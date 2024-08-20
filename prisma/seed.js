@@ -209,42 +209,53 @@ async function postponePaymentExpiration(code) {
 }
 
 async function createAdmin() {
-	await prisma.admin.delete({ where: { email: "admin@famun.com" } }).catch(err => { console.log('no admin found') })
-	await prisma.configuration.delete({ where: { name: "default" } }).catch(err => { console.log('no configuration found') })
+	/* 	await prisma.admin.delete({ where: { email: "admin@famun.com" } }).catch(err => { console.log('no admin found') })
+		await prisma.configuration.delete({ where: { name: "default" } }).catch(err => { console.log('no configuration found') })
+	
+		const admin = await prisma.admin.create({
+			data: {
+				email: "admin@famun.com",
+				password: "Teste123"
+			}
+		})
+	
+		const basicConifuration = await prisma.configuration.create({
+			data: {
+				name: "default",
+				precoDelegadoEnsinoMedio: 16000,
+				precoDelegadoUniversidade: 16000,
+				precoProfessorOrientador: 16000,
+				precoDelegadoInternacional: 16000,
+				precoFacultyAdvisors: 16000,
+				coupons: {
+					code: "MUNPARTNER50",
+					type: "Universidade"
+				},
+				conselhosEscolas: [
+					"United Nations Security Council - Inglês",
+					"Conselho de Segurança da ONU - Português",
+					"United Nations Environment Assembly - Inglês",
+					"Assembleia do Meio Ambiente da ONU - Português"
+				],
+				conselhosUniversidades: [
+					"Consejo de Seguridad de las Naciones Unidas - Espanhol",
+					"United Nations Environment Assembly - Inglês"
+				],
+				representacoesExtras: [
+					"Unicef",
+					"Vietnamitas"
+				]
+			}
+		}) */
 
-	const admin = await prisma.admin.create({
+	await prisma.configuration.update({
+		where: {
+			name: "default"
+		},
 		data: {
-			email: "admin@famun.com",
-			password: "Teste123"
-		}
-	})
-
-	const basicConifuration = await prisma.configuration.create({
-		data: {
-			name: "default",
-			precoDelegadoEnsinoMedio: 16000,
-			precoDelegadoUniversidade: 16000,
-			precoProfessorOrientador: 16000,
-			precoDelegadoInternacional: 16000,
-			precoFacultyAdvisors: 16000,
-			coupons: {
-				code: "MUNPARTNER50",
-				type: "Universidade"
-			},
-			conselhosEscolas: [
-				"United Nations Security Council - Inglês",
-				"Conselho de Segurança da ONU - Português",
-				"United Nations Environment Assembly - Inglês",
-				"Assembleia do Meio Ambiente da ONU - Português"
-			],
-			conselhosUniversidades: [
-				"Consejo de Seguridad de las Naciones Unidas - Espanhol",
-				"United Nations Environment Assembly - Inglês"
-			],
-			representacoesExtras: [
-				"Unicef",
-				"Vietnamitas"
-			]
+			allowParticipantsChangeData: true,
+			allowParticipantsPayments: true,
+			allowParticipantsSendDocuments: true
 		}
 	})
 }
@@ -333,14 +344,14 @@ async function createXParticipants(max) {
 async function create10Participants(delegationCode) {
 	function generateString(length) {
 		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-	
+
 		let result = '';
 		const charactersLength = characters.length;
-	
+
 		for (let i = 0; i < length; i++) {
 			result += characters.charAt(Math.floor(Math.random() * charactersLength));
 		}
-	
+
 		return result;
 	}
 

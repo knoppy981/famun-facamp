@@ -2,7 +2,7 @@ import React from 'react'
 import qs from "qs"
 import Stripe from 'stripe'
 import { LoaderFunctionArgs, json, redirect } from '@remix-run/node'
-import { useLoaderData, NavLink, Outlet, useRouteError, Link } from '@remix-run/react'
+import { useLoaderData, NavLink, Outlet, useRouteError, Link, useOutletContext } from '@remix-run/react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import { useStickyContainer } from '~/hooks/useStickyContainer'
@@ -129,12 +129,26 @@ const Payments = () => {
   const { requiredPayments, paymentsList, recentPayment, requiresActionPayments } = useLoaderData<typeof loader>()
   const [stickyRef, isSticky] = useStickyContainer()
   const [state] = useModalContext(recentPayment as any)
+  const { config } = useOutletContext<{
+    config: {
+      allowParticipantsChangeData: boolean | null;
+      allowParticipantsPayments: boolean | null;
+      allowParticipantsSendDocuments: boolean | null;
+    }
+  }>()
+  const allowParticipantsPayments = config?.allowParticipantsPayments ?? false
 
   return (
     <div className='section-wrapper'>
       <h2 className='section-title padding'>
         Pagamentos
       </h2>
+
+      {!allowParticipantsPayments && <i className='payments-warning'>
+        Aviso:
+        <br />
+        O prazo para pagamentos foi encerrado!
+      </i>}
 
       <RequiresActionPaymentsWarning requiresActionPayments={requiresActionPayments as RequiresActionPaymentsType} />
 

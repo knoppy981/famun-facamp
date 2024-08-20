@@ -15,21 +15,25 @@ import {
   FiX,
   FiChevronRight,
 } from "react-icons/fi/index.js";
-import { Form, NavLink, Outlet, useMatches } from '@remix-run/react';
+import { Form, NavLink, Outlet, useLoaderData, useMatches } from '@remix-run/react';
 import Button from '~/components/button';
 import { SidebarTrigger } from './components/sidebarTrigger';
+import { getParticipantConfigurationRequirements } from '~/models/configuration.server';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   if (url.pathname === "/dashboard") return redirect("/dashboard/home")
 
+  const config = await getParticipantConfigurationRequirements()
+
   const userId = await requireUserId(request)
-  return json({ userId })
+  return json({ userId, config })
 };
 
 const Dashboard = () => {
   const user = useUser()
   const matches = useMatches()
+  const { config } = useLoaderData<typeof loader>()
   const menuItems = [
     { name: "Início", to: "home", active: "/dashboard/home", icon: <FiHome className='icon' /> },
     { name: "Dados da inscrição", to: "profile", active: "/dashboard/profile", icon: <FiEdit className='icon' /> },
@@ -37,6 +41,8 @@ const Dashboard = () => {
     { name: "Pagamentos", to: "payments/pending", active: "/dashboard/payments", icon: <FiCreditCard className='icon' /> },
     { name: "Documentos", to: "documents", active: "/dashboard/documents", icon: <FiFile className='icon' /> },
   ]
+
+  console.log(config)
 
   return (
     <div className='dashboard-wrapper'>
@@ -134,7 +140,7 @@ const Dashboard = () => {
         </div>
 
         <div className='dashboard-outlet-wrapper'>
-          <Outlet context={{ user }} />
+          <Outlet context={{ user, config }} />
         </div>
       </div>
     </div >

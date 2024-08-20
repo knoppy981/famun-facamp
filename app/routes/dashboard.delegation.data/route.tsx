@@ -25,11 +25,18 @@ import { requireDelegationId, requireUserId } from "~/session.server";
 import { updateDelegationSchema } from "~/schemas";
 import PopoverTrigger from "~/components/popover/trigger";
 import { createDelegationChangeNotification, createUserChangeNotification } from "~/models/notifications.server";
+import { getParticipantConfigurationRequirements } from "~/models/configuration.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const userId = await requireUserId(request)
   const delegationId = await requireDelegationId(request)
+  const config = await getParticipantConfigurationRequirements()
+  
+  if (!config?.allowParticipantsChangeData ?? false) return json(
+    { errors: { error: "Prazo para edição de dados encerrou" } },
+    { status: 400 }
+  );
   let delegationChanges = qs.parse(formData.get("delegationChanges") as string)
   let participantChanges = qs.parse(formData.get("participantChanges") as string)
   let selectedUserId = formData.get("selectedUserId") as string
@@ -125,14 +132,21 @@ export type FetcherType = DelegationType & {
 
 const DelegationData = () => {
   const user = useUser()
-  const delegation: DelegationType = useOutletContext()
+  const { delegation, config }: {
+    delegation: DelegationType, config: {
+      allowParticipantsChangeData: boolean | null;
+      allowParticipantsPayments: boolean | null;
+      allowParticipantsSendDocuments: boolean | null;
+    }
+  } = useOutletContext()
+  const allowParticipantsChangeData = config?.allowParticipantsChangeData ?? false
   const fetcher = useFetcher<FetcherType>()
   const removeParticipantFetcher = useFetcher()
   const changeLeaderFetcher = useFetcher()
   const userType = useUserType()
   const [searchParams] = useSearchParams();
   const [buttonRef, isRefVisible] = useOnScreen();
-  const allowChanges = userType === "advisor" || user.leader // only allow advisors or delegation leader to make changes
+  const allowChanges = allowParticipantsChangeData ? userType === "advisor" || user.leader : false
   const { selectedUserId, setSelectedUserId, readySubmission, userWantsToChangeData, allowChangeParticipant, handleSubmission, handleChange, handleRemoveParticipant, handleChangeLeader } =
     useDelegationUpdate(allowChanges, delegation, fetcher as FetcherWithComponents<FetcherType>, removeParticipantFetcher, changeLeaderFetcher)
   const userDataRef =
@@ -142,6 +156,12 @@ const DelegationData = () => {
 
   return (
     <Form className="delegation-data-form" method="post">
+      {!allowParticipantsChangeData && <i className='payments-warning'>
+        Aviso:
+        <br />
+        O prazo para edição de dados foi encerrado!
+      </i>}
+
       {allowChanges &&
         <div className="delegation-data-title-box" style={{ marginTop: 0 }}>
           <div className="delegation-data-title" ref={buttonRef}>
