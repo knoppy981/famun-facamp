@@ -308,7 +308,7 @@ async function createXParticipants(max) {
 				rg: `11.111.981-${i + 1}`,
 				email: `testxxx${i}@gmail.com`,
 				phoneNumber: "+55 19 97154 7424",
-				participationMethod: "Escola",
+				participationMethod: "Universidade",
 				sex: "Masculino",
 				password: {
 					create: {
@@ -317,6 +317,11 @@ async function createXParticipants(max) {
 				},
 				nacionality: "Brazil",
 				leader: i === 0,
+				delegation: {
+					connect: {
+						code: "112331"
+					}
+				},
 				delegate: {
 					create: {
 						councilPreference: {
@@ -412,11 +417,11 @@ async function seed() {
 
 	// await postponePaymentExpiration("111111")
 
-	await createAdmin()
+	// await createAdmin()
 
-	// await createXDelegations(30)
+	await createXDelegations(1)
 
-	// await createXParticipants(30)
+	await createXParticipants(30)
 
 	// await create10Participants("012331")
 

@@ -18,7 +18,7 @@ export function committeeAoo(committee: CommitteeType) {
       "Representation": delegate.country ?? "",
       "School": delegate.user.delegation?.school,
       "Delegate": delegate.user.name,
-      "Head Delegate": delegate.user.delegation?.participants[0].name,
+      "Head Delegate": delegate.user.delegation?.participants[0]?.name ?? "",
       "Position Paper": delegate.user._count.files > 0 ? 1 : 0,
       "Male": delegate.user.sex === "Masculino" ? 1 : 0,
       "Female": delegate.user.sex === "Feminino" ? 1 : 0,
