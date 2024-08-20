@@ -50,7 +50,7 @@ async function getAllUsers() {
 // Register the barcode font
 Font.register({
   family: 'Barcode39',
-  src: path.join(process.cwd(), "public", "fonts", "3OF9_NEW.ttf"),
+  src: path.join(process.cwd(), "public", "fonts", "3OF9_NEW.TTF"),
 });
 
 // Define styles for the PDF
