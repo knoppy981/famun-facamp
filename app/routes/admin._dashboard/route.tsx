@@ -29,7 +29,6 @@ const AdminDashboard = () => {
               role="link"
               prefetch='render'
               aria-label={`${item.to}-link`}
-              preventScrollReset
               onClick={() => ref.current?.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center',

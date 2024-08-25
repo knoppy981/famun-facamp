@@ -50,6 +50,10 @@ export async function getCredentialsParticipantsList(index: number, participatio
 			files: {
 				where: {
 					name: "Liability Waiver"
+				},
+				select: {
+					name: true,
+					fileName: true,
 				}
 			},
 			delegate: true,

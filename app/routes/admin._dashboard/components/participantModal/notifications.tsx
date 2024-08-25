@@ -22,7 +22,7 @@ const NotificationsContainer = ({ participant }: { participant: UserType & { not
 const Notification = (notification: {
   i: number;
   id: string;
-  userId: string;
+  userId: string | null;
   createdAt: Date;
   updatedAt: Date;
   seen: boolean;
