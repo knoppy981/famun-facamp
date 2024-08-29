@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
   barcode: {
     fontFamily: 'Barcode39',
-    fontSize: 32,
+    fontSize: 28,
     marginTop: 5,
   },
   text: {
