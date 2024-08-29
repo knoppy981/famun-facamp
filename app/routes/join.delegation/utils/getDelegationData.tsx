@@ -1,4 +1,5 @@
 import { Session, SessionData } from "@remix-run/node";
+import { prisma } from "~/db.server";
 import { generateDelegationInviteLink } from "~/models/delegation.server";
 import { generateString } from "~/utils";
 
@@ -9,7 +10,7 @@ export async function getDelegationData(session: Session<SessionData | SessionDa
     user: user,
     participationMethod: user.participationMethod,
     paymentExpirationDate: generateDate(),
-    code: generateString(6),
+    code: await generateDelegationCode(),
   }
 
   return {
@@ -43,4 +44,31 @@ function generateDate(){
   let daysToAdd = (dayOfWeek >= 2 && dayOfWeek <= 5) ? 7 : 5;
   let newDate = new Date(currentDate.setDate(currentDate.getDate() + daysToAdd));
   return newDate
+}
+
+async function generateDelegationCode() {
+  let code;
+  let isUnique = false;
+
+  while (!isUnique) {
+    // Generate a new 6-digit string
+    code = generateString(6);
+
+    try {
+      // Try to find a delegation with the generated code
+      await prisma.delegation.findFirstOrThrow({
+        where: {
+          code,
+        },
+      });
+
+      // If no error is thrown, the code exists, so continue looping
+    } catch (e) {
+      // If an error is thrown, the code does not exist, so it's unique
+      isUnique = true;
+    }
+  }
+
+  // Return the unique code
+  return code;
 }

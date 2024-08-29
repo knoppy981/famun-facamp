@@ -13,7 +13,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const text = await request.text()
   const { ids, delegationId, ...rest } = qs.parse(text) as ExtendedParsedQs
-  console.log(ids, delegationId)
   let delegation
 
   try {

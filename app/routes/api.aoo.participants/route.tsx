@@ -28,7 +28,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 }
 
 async function getParticipantsList(participationMethod: ParticipationMethod, type: "rg" | "cracha delegados" | "cracha orientadores") {
-  console.log(participationMethod, type)
   let query
   let select
 

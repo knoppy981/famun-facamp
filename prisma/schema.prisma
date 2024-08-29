@@ -44,6 +44,7 @@ model User {
   changesMade         Notifications[]
   notifications       Notifications[]     @relation("user_change")
   presenceControl     PresenceControl?
+  numericId           Int?
 }
 
 type Paid {
@@ -190,8 +191,8 @@ model Configuration {
   generatedJoinAuthentication JoinAuthentication[]
 
   //
-  allowParticipantsChangeData Boolean? @default(true)
-  allowParticipantsPayments Boolean? @default(true)
+  allowParticipantsChangeData    Boolean? @default(true)
+  allowParticipantsPayments      Boolean? @default(true)
   allowParticipantsSendDocuments Boolean? @default(true)
 
   // payments

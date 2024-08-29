@@ -4,8 +4,6 @@ import { generateString } from "~/utils";
 import jwt from "jsonwebtoken";
 
 export async function createNewJoinAuthentication(linkName: string) {
-  console.log("linkName type")
-  console.log(typeof linkName)
   const { JSON_WEB_TOKEN_SECRET, WEBSITE_URL } = process.env;
   const expiresIn = 5 * 24 * 60 * 60 * 1000
   let code = generateString(6)

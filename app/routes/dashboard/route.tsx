@@ -42,8 +42,6 @@ const Dashboard = () => {
     { name: "Documentos", to: "documents", active: "/dashboard/documents", icon: <FiFile className='icon' /> },
   ]
 
-  console.log(config)
-
   return (
     <div className='dashboard-wrapper'>
       <div className='dashboard-title-box'>

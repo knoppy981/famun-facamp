@@ -38,8 +38,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 async function getAllUsers() {
   return prisma.user.findMany({
     select: {
-      id: true,
       name: true,
+      numericId: true
     },
     orderBy: {
       name: "asc"
@@ -73,13 +73,13 @@ const styles = StyleSheet.create({
 });
 
 // Define the PDF Document
-const PDFDocument = ({ users }: { users: { name: string; id: string }[] }) => (
+const PDFDocument = ({ users }: { users: { name: string; numericId: number | null }[] }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       {users.map((user, index) => (
         <View key={index} style={styles.section}>
           <Text style={styles.text}>Name: {user.name}</Text>
-          <Text style={styles.barcode}>*{user.id}*</Text>
+          <Text style={styles.barcode}>*{user.numericId}*</Text>
         </View>
       ))}
     </Page>

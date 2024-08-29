@@ -40,7 +40,7 @@ const BarcodeModal = ({ close }: { close: () => void }) => {
         <input
           ref={inputRef}
           type="text"
-          onInput={handleInput}
+          onChange={handleInput}
           style={{ position: 'absolute', left: '-9999px' }}
           autoFocus
         />
@@ -55,6 +55,8 @@ function useBarcodeScan() {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const fetcher = useFetcher<any>()
   const [isEntering, setIsEntering] = React.useState(false)
+  const [prevRegistered, setPrevRegistered] = React.useState(false)
+
   let isSubmitting = fetcher.state !== "idle"
 
   React.useEffect(() => {
@@ -71,17 +73,14 @@ function useBarcodeScan() {
     };
   }, []);
 
-  // *6632dd291bb7e617f834072f*
-  // 6632dd291bb7e617f834072f*
-  // *6632dd291bb7e617f834072f
-  // 6632dd291bb7e617f834072f
-
   const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
-    if (value && /^\*.*\*$/.test(value) && !isSubmitting) {
-      fetcher.submit({ id: value.replace(/^\*+|\*+$/g, '') }, { action: "/api/admin/credentials", method: "post" })
+    if (value && value.length === 8) {
+      if (!isSubmitting) {
+        fetcher.submit({ id: value, isEntering }, { action: "/api/admin/credentials", method: "post" })
+      }
+      e.currentTarget.value = '';
     }
-    e.currentTarget.value = '';
   };
 
   return { inputRef, handleInput, isSubmitting, isEntering, setIsEntering }

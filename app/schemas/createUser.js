@@ -40,6 +40,8 @@ export const createUserSchema = Joi.object({
       'string.max': "Nome não pode conter mais de 60 lentras",
     }),
 
+  numericId: Joi.number(),
+
   password: Joi.object({
     create: Joi.object({
       hash: Joi.string()
