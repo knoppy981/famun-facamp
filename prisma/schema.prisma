@@ -44,7 +44,7 @@ model User {
   changesMade         Notifications[]
   notifications       Notifications[]     @relation("user_change")
   presenceControl     PresenceControl?
-  numericId           Int?
+  numericId           Int                 @unique
 }
 
 type Paid {
