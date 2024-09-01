@@ -1,17 +1,19 @@
 import _ from "lodash"
 
-export function credentialsAoa(users: { name: string, presenceControl: { dailyCheckIn: string[] } | null }[]): (string | string[])[][] {
+export function credentialsAoa(users: { name: string, presenceControl: { dailyCheckIn: string[] } | null }[]): (string | string[])[][] | undefined{
   // Step 1: Create a Set to store unique dates
   const uniqueDates = new Set<string>();
 
   // Step 2: Create a Map to store user-wise and date-wise time and text entries
   const userDateMap = new Map<string, Map<string, string>>();
 
+  if (users.length === 0) return 
+
   // Step 3: Iterate over the input array and process each user's dailyCheckIn
   users.forEach(user => {
     const userMap = new Map<string, string>();
 
-    user.presenceControl?.dailyCheckIn.forEach(data => {
+    user.presenceControl?.dailyCheckIn?.forEach(data => {
       const [date, time, text] = data.split(',').map(item => item.trim());
 
       // Add the date to the Set of unique dates

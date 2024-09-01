@@ -14,6 +14,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   try {
     const list = await dailyCheckInList(participationMethod)
     aoa = credentialsAoa(list)
+    if (aoa === undefined) throw new Error ("Failed") 
   } catch (error) {
     console.log(error)
     return json(
