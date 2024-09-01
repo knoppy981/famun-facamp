@@ -25,3 +25,11 @@ export function exportAoo(aoo: { [key: string]: string | undefined | number; }[]
   XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
   XLSX.writeFile(wb, `${fileName}.xlsx`);
 }
+
+export function exportAoa(aoa: string[][], fileName: string) {
+  var ws = XLSX.utils.aoa_to_sheet(aoa);
+  var wb = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+  XLSX.writeFile(wb, `${fileName}.xlsx`);
+}

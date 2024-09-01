@@ -59,7 +59,14 @@ async function assignNumericIds() {
 }
 
 async function seed() {
-	await assignNumericIds()
+	// await assignNumericIds()
+
+	console.log(await prisma.user.findMany({
+		select: {
+			name: true,
+			numericId: true,
+		}
+	}))
 
 	console.log(`Database has been seeded. 🌱`);
 }

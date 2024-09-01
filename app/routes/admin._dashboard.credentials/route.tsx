@@ -21,6 +21,7 @@ import ChangeObservationModal from './components/changeObservationModal';
 import Spinner from '~/components/spinner';
 import BarcodeModal from './components/barcodeModal';
 import Link from '~/components/link';
+import useCredentialsSheet from './hooks/useCredentialsSheet';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
@@ -73,6 +74,7 @@ const Credentials = () => {
   const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
   const { participants } = useLoaderData<typeof loader>()
   const [checkInFetcherState, handleCheckin, userIdBeingCheckIn] = usePresenceControl()
+  const { downloadCredentialsSheet, isDownloadingCredentialsSheet } = useCredentialsSheet(participationMethod)
   const formRef = React.useRef<HTMLFormElement>(null)
 
   return (
@@ -276,6 +278,10 @@ const Credentials = () => {
               PDF com Códigos de Barras
             </div>
           </Link>
+
+          <Button onPress={() => downloadCredentialsSheet()} className='secondary-button-box green-light'>
+            {isDownloadingCredentialsSheet ? <Spinner dim='18px' color='green' /> : <FiDownload className='icon' />} Planilha Credenciamento Diário {participationMethod === "Escola" ? "EM" : "UNI"}
+          </Button>
         </div>
 
         <div>

@@ -12,7 +12,7 @@ import { UserType } from '~/models/user.server'
 import TextArea from '~/components/textfield/textArea'
 
 const BarcodeModal = ({ close }: { close: () => void }) => {
-  const { inputRef, handleInput, isSubmitting, isEntering, setIsEntering } = useBarcodeScan()
+  const { inputRef, handleInput, isSubmitting, error, isEntering, setIsEntering, prevRegistered } = useBarcodeScan()
 
   return (
     <Dialog>
@@ -45,7 +45,14 @@ const BarcodeModal = ({ close }: { close: () => void }) => {
           autoFocus
         />
 
-        {isSubmitting && <Spinner dim='18px' color='#fff' />}
+        {isSubmitting ? <Spinner dim='32px' color='#fff' /> :
+          error ? <div className='text label error'>{error}</div> :
+            prevRegistered.length > 0 ?
+            prevRegistered.slice(-5).reverse().map((item, index) => (
+              <div key={index} className='committee-selected-delegates'>{index + 1}. {item.name}, {item.timeString} {item.school ? `, ${item.school}` : ""}</div>
+            ))
+            : null
+        }
       </Form>
     </Dialog>
   )
@@ -55,9 +62,20 @@ function useBarcodeScan() {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const fetcher = useFetcher<any>()
   const [isEntering, setIsEntering] = React.useState(false)
-  const [prevRegistered, setPrevRegistered] = React.useState(false)
-
+  const [prevRegistered, setPrevRegistered] = React.useState<{ name: string, timeString: string, school?: string }[]>([])
   let isSubmitting = fetcher.state !== "idle"
+  let [error, setError] = React.useState<null | "">(null)
+
+  const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+    const value = e.currentTarget.value;
+    if (value && value.length >= 8) {
+      if (!isSubmitting) {
+        console.log(value)
+        fetcher.submit({ id: value, isEntering }, { action: "/api/admin/credentials", method: "post" })
+      }
+      e.currentTarget.value = '';
+    }
+  };
 
   React.useEffect(() => {
     const handleFocus = () => {
@@ -73,17 +91,18 @@ function useBarcodeScan() {
     };
   }, []);
 
-  const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
-    const value = e.currentTarget.value;
-    if (value && value.length === 8) {
-      if (!isSubmitting) {
-        fetcher.submit({ id: value, isEntering }, { action: "/api/admin/credentials", method: "post" })
+  React.useEffect(() => {
+    if (fetcher.data) {
+      if (fetcher.data.name) {
+        setError(null)
+        setPrevRegistered((prevState) => ([...prevState, fetcher.data]))
+      } else if (fetcher.data?.errors?.barCode) {
+        setError(fetcher.data?.errors?.barCode)
       }
-      e.currentTarget.value = '';
     }
-  };
+  }, [fetcher.data])
 
-  return { inputRef, handleInput, isSubmitting, isEntering, setIsEntering }
+  return { inputRef, handleInput, isSubmitting, error, isEntering, setIsEntering, prevRegistered }
 }
 
 export default BarcodeModal

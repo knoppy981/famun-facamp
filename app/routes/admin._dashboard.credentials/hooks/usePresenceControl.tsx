@@ -9,7 +9,7 @@ export default function usePresenceControl(): ["idle" | "loading" | "submitting"
     setUserIdBeingCheckIn(participantId)
     fetcher.submit(
       { participantId, checkin },
-      { method: "post", preventScrollReset: true }
+      { method: "post", preventScrollReset: true, navigate: false }
     )
   }
 

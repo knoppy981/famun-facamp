@@ -7,9 +7,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData()
   const id = formData.get("id") as string
   const isEntering = formData.get("isEntering") as string === "true"
-  let date = new Date()
+  let timeString = `${new Date().toLocaleString("pt-BR")}, ${isEntering ? "entrando" : "saindo"}`
 
   try {
+    if (!Number(id)) throw new Error("Código inválido")
+
     let user = await prisma.user.update({
       where: {
         numericId: Number(id)
@@ -18,24 +20,38 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         presenceControl: {
           upsert: {
             set: {
-              dailyCheckIn: [`${date.toLocaleString("pt-BR")}, ${isEntering ? "entrando" : "saindo"}`]
+              dailyCheckIn: [timeString]
             },
             update: {
               dailyCheckIn: {
-                push: `${date.toLocaleString("pt-BR")}, ${isEntering ? "entrando" : "saindo"}`
+                push: timeString
               }
             }
           }
         }
       },
+      select: {
+        name: true,
+        delegation: {
+          select: {
+            school: true
+          }
+        }
+      }
     })
 
-    console.log(user)
-
-    return json({ user: { name} })
-  } catch (error) {
-    console.log(error)
+    return json({ name: user.name, timeString, school: user.delegation?.school ?? "" })
+  } catch (error: any) {
+    console.dir(error, { depth: null })
+    if (error.code === "P2025") {
+      return json(
+        { errors: { barCode: "Usuário não encontrado!" } },
+        { status: 400 }
+      );
+    }
+    return json(
+      { errors: { barCode: error.message } },
+      { status: 400 }
+    );
   }
-
-  return json({})
 }

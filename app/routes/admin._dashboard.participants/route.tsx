@@ -6,6 +6,7 @@ import { ParticipationMethod } from '@prisma/client';
 import { exportAoo } from '~/sheets';
 import { adminParticipantList } from '~/models/user.server';
 import useDidMountEffect from '~/hooks/useDidMountEffect';
+import useParticipantsSheet from './hooks/useParticipantsSheet';
 
 import Button from '~/components/button'
 import TextField from '~/components/textfield';
@@ -35,7 +36,7 @@ const Participants = () => {
   const formRef = React.useRef<HTMLFormElement>(null)
   const { participationMethod } = useOutletContext<{ participationMethod: ParticipationMethod }>()
   const { participants } = useLoaderData<typeof loader>()
-  const [handleParticipantsSheet, downloadState] = useParticipantsSheet(participationMethod)
+  const {downloadParticipantsSheet, downloadingSheet, isDownloadingParticipantsSheet} = useParticipantsSheet(participationMethod)
   const [overlayState, selectedParticipantId, handleParticipantChange] = useParticipantModal()
   const [searchParams] = useSearchParams()
 
@@ -167,16 +168,16 @@ const Participants = () => {
 
         <div className='admin-navigation-button-container'>
           <div>
-            <Button onPress={() => handleParticipantsSheet("rg")} className='secondary-button-box green-light'>
-              {downloadState === "idle" ? <FiDownload className='icon' /> : <Spinner dim='18px' color='green' />} Planilha RG/Passporte
+            <Button onPress={() => downloadParticipantsSheet("rg")} className='secondary-button-box green-light'>
+              {isDownloadingParticipantsSheet && downloadingSheet === "rg" ? <Spinner dim='18px' color='green' /> : <FiDownload className='icon' />} Planilha RG/Passporte
             </Button>
 
-            <Button onPress={() => handleParticipantsSheet("cracha delegados")} className='secondary-button-box green-light'>
-              {downloadState === "idle" ? <FiDownload className='icon' /> : <Spinner dim='18px' color='green' />} Planilha Cracha Delegados
+            <Button onPress={() => downloadParticipantsSheet("cracha delegados")} className='secondary-button-box green-light'>
+              {isDownloadingParticipantsSheet && downloadingSheet === "cracha delegados" ? <Spinner dim='18px' color='green' /> : <FiDownload className='icon' />} Planilha Cracha Delegados
             </Button>
 
-            <Button onPress={() => handleParticipantsSheet("cracha orientadores")} className='secondary-button-box green-light'>
-              {downloadState === "idle" ? <FiDownload className='icon' /> : <Spinner dim='18px' color='green' />} Planilha Cracha Orientadores
+            <Button onPress={() => downloadParticipantsSheet("cracha orientadores")} className='secondary-button-box green-light'>
+              {isDownloadingParticipantsSheet && downloadingSheet === "cracha orientadores" ? <Spinner dim='18px' color='green' /> : <FiDownload className='icon' />} Planilha Cracha Orientadores
             </Button>
           </div>
 
@@ -215,23 +216,6 @@ const Participants = () => {
       </Form >
     </>
   )
-}
-
-function useParticipantsSheet(participationMethod: ParticipationMethod): [(type: "rg" | "cracha delegados" | "cracha orientadores") => void, "idle" | "loading" | "submitting"] {
-  const fetcher = useFetcher<any>()
-
-  const handleDownload = (type: "rg" | "cracha delegados" | "cracha orientadores") => {
-    const searchParams = new URLSearchParams([["pm", participationMethod], ["type", type]]);
-    fetcher.load(`/api/aoo/participants?${searchParams}`)
-  }
-
-  React.useEffect(() => {
-    if (fetcher.data?.aoo && fetcher.data?.type) {
-      exportAoo(fetcher.data?.aoo, `Participantes_${participationMethod === "Escola" ? "Ensino Médio" : participationMethod}_${fetcher.data?.type}`)
-    }
-  }, [fetcher.data])
-
-  return [handleDownload, fetcher.state]
 }
 
 export default Participants

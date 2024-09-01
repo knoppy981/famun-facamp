@@ -3,10 +3,11 @@ import { ParticipationMethod } from "@prisma/client"
 import { useFetcher } from "@remix-run/react"
 import { exportAoo } from "~/sheets"
 
-export default function useDelegationsSheet(participationMethod: ParticipationMethod): [() => void, "idle" | "loading" | "submitting"] {
+export default function useDelegationsSheet(participationMethod: ParticipationMethod) {
   const fetcher = useFetcher<any>()
+  let isDownloadingDelegationSheet = fetcher.state !== "idle"
 
-  const handleDownload = () => {
+  const downloadDelegationsSheet = () => {
     fetcher.load(`/api/aoo/delegations?pm=${participationMethod}`)
   }
 
@@ -16,5 +17,5 @@ export default function useDelegationsSheet(participationMethod: ParticipationMe
     }
   }, [fetcher.data])
 
-  return [handleDownload, fetcher.state]
+  return {downloadDelegationsSheet, isDownloadingDelegationSheet}
 }

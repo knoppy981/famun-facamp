@@ -29,7 +29,7 @@ const Delegation = () => {
   const { delegations } = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const [handleDelegationsSheet, downloadState] = useDelegationsSheet(participationMethod)
+  const {downloadDelegationsSheet, isDownloadingDelegationSheet} = useDelegationsSheet(participationMethod)
 
   return (
     <Form className='admin-container' preventScrollReset ref={formRef}>
@@ -169,8 +169,8 @@ const Delegation = () => {
 
       <div className='admin-navigation-button-container'>
         <div>
-          <Button onPress={() => handleDelegationsSheet()} className='secondary-button-box green-light'>
-            {downloadState === "idle" ? <FiDownload className='icon' /> : <Spinner dim='18px' color='green' />} Planilha
+          <Button onPress={() => downloadDelegationsSheet()} className='secondary-button-box green-light'>
+            {isDownloadingDelegationSheet ? <Spinner dim='18px' color='green' /> : <FiDownload className='icon' />} Planilha
           </Button>
         </div>
 
