@@ -1,7 +1,6 @@
 import React from 'react'
-import { NavLink, Outlet, useFetcher, useLoaderData, useOutletContext } from '@remix-run/react';
+import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import qs from "qs"
-import { ParticipationMethod, Configuration } from '@prisma/client';
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node';
 
 import { getConfigurations, updateConfiguration } from '~/models/configuration.server';
@@ -9,11 +8,9 @@ import { requireAdminId } from '~/session.server';
 import { iterateObject } from '../dashboard/utils/findDiffrences';
 import { getCorrectErrorMessage } from '~/utils/error';
 import { updateConfigurationSchema } from '~/schemas';
-
-import Button from '~/components/button'
-import { AnimatePresence, motion } from 'framer-motion';
-import { useOnScreen } from '~/hooks/useOnScreen';
 import { useStickyContainer } from '~/hooks/useStickyContainer';
+
+import { motion } from 'framer-motion';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
@@ -94,7 +91,7 @@ const AdminConfigurations = () => {
               {({ isActive }) => (
                 <>
                   {item.name}
-                  {isActive ? <motion.div className='section-underline' layoutId="delegationPageUnderline" /> : null}
+                  {isActive ? <motion.div className='section-underline' layoutId="configurationPageUnderline" /> : null}
                 </>
               )}
             </NavLink>

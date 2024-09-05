@@ -162,13 +162,13 @@ const Credentials = () => {
                 Delegação
               </td>
 
-              <td className='table-cell'>
+              {/* <td className='table-cell'>
                 Head Delegate
               </td>
 
               <td className='table-cell'>
                 FA
-              </td>
+              </td> */}
             </tr>
           </thead>
 
@@ -249,13 +249,13 @@ const Credentials = () => {
                     {participant.delegation?.school}
                   </td>
 
-                  <td className='table-cell'>
+                  {/* <td className='table-cell'>
                     {participant.delegation?.participants.find(p => p.leader)?.name}
                   </td>
 
                   <td className='table-cell'>
                     {participant.delegation?.participants.find(p => p.delegationAdvisor)?.name}
-                  </td>
+                  </td> */}
                 </tr>
               )
             })}

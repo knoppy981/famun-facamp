@@ -7,6 +7,7 @@ import Button from '~/components/button';
 import { SidebarTrigger } from '../dashboard/components/sidebarTrigger';
 import { Select, Item } from './components/select';
 import useDidMountEffect from '~/hooks/useDidMountEffect';
+import { BsUpcScan } from 'react-icons/bs/index.js';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireAdminId(request)
@@ -40,7 +41,7 @@ const AdminPage = () => {
 
       <div className='dashboard-navbar'>
         <div className='dashboard-nav-item'>
-          {matches?.[2]?.pathname === "/admin/configurations" ?
+          {matches?.[2]?.id !== "routes/admin._dashboard" ?
             <NavLink
               to="/admin/delegations"
               className="link text"
@@ -75,6 +76,16 @@ const AdminPage = () => {
             preventScrollReset
           >
             <FiSettings className='icon' />
+          </NavLink>
+        </div>
+
+        <div className='dashboard-disappear-on-width'>
+          <NavLink
+            to="presence_control"
+            className="link text"
+            preventScrollReset
+          >
+            <BsUpcScan className='icon' />
           </NavLink>
         </div>
 
@@ -114,6 +125,19 @@ const AdminPage = () => {
                     className={`dashboard-item`}
                   >
                     <FiSettings className='icon' /> Configurações
+                  </NavLink>
+
+                  <NavLink
+                    tabIndex={0}
+                    role="link"
+                    aria-label="settings-link"
+                    to="presence_control"
+                    onClick={close}
+                    prefetch='render'
+                    preventScrollReset
+                    className={`dashboard-item`}
+                  >
+                    <BsUpcScan className='icon' /> Controled de Presença
                   </NavLink>
                 </div>
 

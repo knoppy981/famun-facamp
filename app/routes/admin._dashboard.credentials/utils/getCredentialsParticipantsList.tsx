@@ -61,7 +61,7 @@ export async function getCredentialsParticipantsList(index: number, participatio
 			delegation: {
 				select: {
 					school: true,
-					participants: {
+					/* participants: {
 						where: {
 							OR: [
 								{
@@ -86,7 +86,7 @@ export async function getCredentialsParticipantsList(index: number, participatio
 								}
 							}
 						}
-					}
+					} */
 				}
 			},
 		},

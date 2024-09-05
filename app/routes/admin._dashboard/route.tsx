@@ -43,7 +43,7 @@ const AdminDashboard = () => {
               {({ isActive }) => (
                 <>
                   {item.name}
-                  {isActive ? <motion.div className='section-underline' layoutId="delegationPageUnderline" /> : null}
+                  {isActive ? <motion.div className='section-underline' layoutId="adminPageUnderline" /> : null}
                 </>
               )}
             </NavLink>
