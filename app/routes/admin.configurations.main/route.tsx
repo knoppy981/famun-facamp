@@ -4,7 +4,7 @@ import { Configuration } from '@prisma/client';
 
 import Button from '~/components/button'
 import ModalTrigger from '~/components/modalOverlay/trigger';
-import { FiCheck, FiCopy, FiEdit, FiInfo, FiLink, FiTrash2 } from 'react-icons/fi/index.js';
+import { FiCheck, FiCopy, FiEdit, FiInfo, FiLink, FiLock, FiTrash2 } from 'react-icons/fi/index.js';
 import SubscriptionStatusModal from './components/changeSubscriptionStatusModal';
 import { ActionFunctionArgs, json } from '@remix-run/node';
 import { createNewJoinAuthentication, deleteJoinAuthenticationItem } from './utils/handleGeneratedLinksCodes';
@@ -14,6 +14,7 @@ import LinkInfoModal from './components/linkInfoModal';
 import CreateLinkModal from './components/createLinkModal';
 import Spinner from '~/components/spinner';
 import ChangeParticipantsPermissionsModal from './components/changeParticipantsPermissionsModal';
+import ChangeAdminPasswordModal from './components/changeAdminPasswordModal';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData()
@@ -152,6 +153,18 @@ const Configurations = () => {
         <br />
         Se o Link for deletado, ele não poderá ser mais usado por ninguem
       </i>
+
+      <h2 className='section-title'>
+        Trocar a senha do admin
+      </h2>
+
+      <ModalTrigger
+        isDismissable
+        buttonClassName="secondary-button-box blue-light"
+        label={<><FiLock className='icon' /> Alterar a senha</>}
+      >
+        {(close: () => void) => <ChangeAdminPasswordModal close={close} />}
+      </ModalTrigger>
     </div>
   )
 }

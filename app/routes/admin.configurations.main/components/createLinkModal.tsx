@@ -2,10 +2,9 @@ import React from 'react'
 import { FetcherWithComponents, Form, useActionData, useFetcher, useNavigation } from '@remix-run/react'
 import Button from '~/components/button'
 import Dialog from '~/components/dialog'
-import { FiX } from "react-icons/fi/index.js";
 import TextField from '~/components/textfield'
 import Spinner from '~/components/spinner'
-import { FiCheck, FiCopy, FiEdit, FiInfo, FiLink, FiTrash2 } from 'react-icons/fi/index.js';
+import { FiLink, FiX } from 'react-icons/fi/index.js';
 
 const CreateLinkModal = ({ close }: { close: () => void }) => {
   const fetcher = useFetcher<any>()

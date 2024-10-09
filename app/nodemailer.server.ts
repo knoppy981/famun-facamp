@@ -4,7 +4,7 @@ export const sendEmail = async ({
   to,
   subject,
   html,
-} : {
+}: {
   [key: string]: string
 }) => {
   const transporter = nodeMailer.createTransport({

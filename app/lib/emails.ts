@@ -142,3 +142,21 @@ export const requestPasswordReset = (user: UserType, code: string) => {
     <p>Equipe Organizadora do FAMUN ${year}</p>
   `
 }
+
+export const adminRequestPasswordReset = (code: string) => {
+  return `
+    <h1 style="color: #183567;">Famun ${year}</h1>
+
+    <h2>Olá, Organizadores.</h2>
+
+    <p>Insira este código para concluir a redefinição </p>
+
+    <h2>${code}</h2>
+
+    <p>Se você não solicitou este código, entre em contato com nossa equipe de desenvolvedores </p>
+
+    <p>Atenciosamente, </p>
+
+    <p>Desenvolvedores do FAMUN ${year}</p>
+  `
+}

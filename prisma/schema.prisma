@@ -175,9 +175,10 @@ model Address {
 }
 
 model Admin {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  email    String @unique
-  password String
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  email            String            @unique
+  hash             String
+  confirmationCode ConfirmationCode?
 }
 
 model Configuration {
