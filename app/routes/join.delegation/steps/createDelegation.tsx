@@ -57,7 +57,7 @@ const CreateDelegation = ({ data, actionData, user }: { data: any, actionData: a
           />
 
           <p className='text italic'>
-            Atenção! a quantidade de delegados que vão se inscrever com esta delegação deve ser definida agora e não poderá ser alterada depois
+            Atenção! A quantidade de delegados que vão se inscrever com esta delegação deve ser definida agora e não poderá ser alterada depois
           </p>
 
           <input type='hidden' name='participationMethod' value={user.participationMethod} />

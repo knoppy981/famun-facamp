@@ -34,7 +34,7 @@ const ConfirmData = ({ data, userType }: { data: any, userType: any }) => {
 
         <div className='join-confirm-data-list-item'>
           <div className='join-confirm-data-list-label'>
-            {data.nacionality === "Brazil" ? "Rg" : "Número do Passaporte"}
+            {data.nacionality === "Brazil" ? "RG" : "Número do Passaporte"}
           </div>
           {data.nacionality === "Brazil" ? data.rg : data.passport}
         </div>
@@ -79,7 +79,7 @@ const ConfirmData = ({ data, userType }: { data: any, userType: any }) => {
           <>
             <div className='join-confirm-data-list-item two-columns-span'>
               <div className='join-confirm-data-list-label'>
-                Preferência de Conselho
+                Preferência de Simulação
               </div>
 
               {Object.values(qs.parse(data.councilPreference)).map((item, index) => {
@@ -149,7 +149,7 @@ const ConfirmData = ({ data, userType }: { data: any, userType: any }) => {
 function handleLanguageSpelling(language: string) {
   switch (language.toLowerCase()){
     case "portugues":
-      return "Protugês"
+      return "Português"
     case "ingles":
       return "Inglês"
     case "espanhol":

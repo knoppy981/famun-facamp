@@ -14,7 +14,7 @@ const ConfirmData = ({ data }: { data: any }) => {
       <div className='join-confirm-data-list'>
         {[
           ["Escola / Universidade", "school"],
-          ["Numero Telefone", "schoolPhoneNumber"],
+          ["Número Telefone", "schoolPhoneNumber"],
           ["Metodo de Participação", "participationMethod"],
           ["País", "country"],
           ["Cidade", "city"],

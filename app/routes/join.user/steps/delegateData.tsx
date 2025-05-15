@@ -55,7 +55,7 @@ const DelegateData = ({ data, actionData, participationMethod }: { data: any; ac
           action={actionData}
         >
           <Checkbox value="Ingles">Inglês</Checkbox>
-          {participationMethod === "Universidade" ? <Checkbox value="Espanhol">Espanhol</Checkbox> : <Checkbox value="Portugues">Português</Checkbox>}
+          {participationMethod === "Universidade" ? null : <Checkbox value="Portugues">Português</Checkbox>}
         </CheckboxGroup>
 
         <div className='join-input-container'>

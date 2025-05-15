@@ -2013,6 +2013,9 @@ input:-webkit-autofill:active {
 .payments-warning {
   font-size: 1.4rem;
 }
+.payments-warning * {
+  font-size: 1.4rem;
+}
 @media screen and (max-width: 700px) {
   .payments-warning {
     padding: 0 15px;

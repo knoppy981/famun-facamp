@@ -10,7 +10,7 @@ const ParticipationMethod = ({ isSubscriptionAvailable }: { isSubscriptionAvaila
   return (
     <>
       <h2 className='join-title'>
-        Você está se inscrevendo como participante de uma:
+        Você está se inscrevendo como participante de:
       </h2>
 
       <div className='join-choice-buttons-container'>

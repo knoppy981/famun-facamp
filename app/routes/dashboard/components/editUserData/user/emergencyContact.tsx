@@ -7,7 +7,7 @@ const EmergencyContactData = (props: any) => {
   return (
     <div className={`data-box-container ${theme ?? ""}`} style={{ placeSelf: "auto", alignSelf: "normal" }}>
       <h3 className="data-box-container-title blue-border">
-        Contato de Emergencia
+        Contato de Emergência
       </h3>
 
       <div className='data-box-input-container'>

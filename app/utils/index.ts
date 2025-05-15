@@ -2,6 +2,7 @@ import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
 
 import type { User } from "@prisma/client"; 
+import { prisma } from "~/db.server";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -96,4 +97,31 @@ export function generateString(length: number) {
 
 export async function timeout(ms: number) {
 	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export async function generateNumercId() {
+  let code;
+  let isUnique = false;
+
+  while (!isUnique) {
+    // Generate a new 6-digit string
+    code = Math.floor(10000000 + Math.random() * 90000000);
+
+    try {
+      // Try to find a delegation with the generated code
+      await prisma.user.findFirstOrThrow({
+        where: {
+          numericId: code,
+        },
+      });
+
+      // If no error is thrown, the code exists, so continue looping
+    } catch (e) {
+      // If an error is thrown, the code does not exist, so it's unique
+      isUnique = true;
+    }
+  }
+
+  // Return the unique code
+  return code;
 }

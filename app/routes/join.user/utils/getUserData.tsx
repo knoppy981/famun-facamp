@@ -3,6 +3,7 @@ import { Session, SessionData } from "@remix-run/node";
 import bcrypt from "bcryptjs";
 import qs from "qs"
 import { prisma } from "~/db.server";
+import { generateNumercId } from "~/utils";
 
 export async function getUserData(session: Session<SessionData | SessionData>) {
   const { userType, participationMethod, ...data }: { userType: string, participationMethod: ParticipationMethod, [key: string]: any } = {
@@ -13,7 +14,7 @@ export async function getUserData(session: Session<SessionData | SessionData>) {
     ...session.get("user-data-7"),
     ...session.get("user-type"),
     ...session.get("user-participationMethod"),
-    numericId: await generateDelegationCode()
+    numericId: await generateNumercId()
   }
 
   return {
@@ -63,31 +64,4 @@ export async function getUserData(session: Session<SessionData | SessionData>) {
       }
     } : undefined,
   }
-}
-
-async function generateDelegationCode() {
-  let code;
-  let isUnique = false;
-
-  while (!isUnique) {
-    // Generate a new 6-digit string
-    code = Math.floor(10000000 + Math.random() * 90000000);
-
-    try {
-      // Try to find a delegation with the generated code
-      await prisma.user.findFirstOrThrow({
-        where: {
-          numericId: code,
-        },
-      });
-
-      // If no error is thrown, the code exists, so continue looping
-    } catch (e) {
-      // If an error is thrown, the code does not exist, so it's unique
-      isUnique = true;
-    }
-  }
-
-  // Return the unique code
-  return code;
 }

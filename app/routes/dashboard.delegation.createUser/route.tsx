@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { createUser, getExistingUser } from "~/models/user.server"
 import { DelegationType } from "~/models/delegation.server"
 import { useOnScreen } from "~/hooks/useOnScreen";
-import { useUser, useUserType } from "~/utils";
+import { generateNumercId, useUser, useUserType } from "~/utils";
 import { getCorrectErrorMessage } from "~/utils/error";
 import { createUserSchema } from "~/schemas";
 import { useUserCreation } from "./hooks/useUserCreation";
@@ -33,7 +33,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const delegation = await requireDelegation(request)
   const config = await getParticipantConfigurationRequirements()
   
-  if (!config?.allowParticipantsChangeData ?? false) return json(
+  if (!config?.allowParticipantsChangeData) return json(
     { errors: { error: "Prazo para edição de dados encerrou" } },
     { status: 400 }
   );
@@ -99,7 +99,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         create: {
           hash: hash
         }
-      }
+      },
+      numericId: await generateNumercId()
     })
     const info = await sendEmail({
       to: newUser.email,
