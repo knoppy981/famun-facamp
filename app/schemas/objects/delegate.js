@@ -13,6 +13,7 @@ export const updateDelegateSchema = Joi.object({
       'string.empty': 'Nome é necessário',
       'string.pattern.base': 'Nome inválido',
       'any.required': 'Nome é necessário',
+      'string.min': 'Nome deve conter pelo menos 3 letras'
     }),
 
   emergencyContactPhoneNumber: customPhoneNumber.phone(),

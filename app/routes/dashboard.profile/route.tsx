@@ -25,7 +25,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const user = await requireUser(request)
   const config = await getParticipantConfigurationRequirements()
   
-  if (!config?.allowParticipantsChangeData ?? false) return json(
+  if (!config?.allowParticipantsChangeData) return json(
     { errors: { error: "Prazo para edição de dados encerrou" } },
     { status: 400 }
   );

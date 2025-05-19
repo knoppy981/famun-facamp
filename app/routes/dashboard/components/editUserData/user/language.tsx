@@ -24,7 +24,7 @@ const LanguageData = (props: any) => {
           action={actionData}
         >
           <Checkbox value='Ingles' isDisabled={isDisabled}>Inglês</Checkbox>
-          {defaultValues.participationMethod === "Universidade" ? <Checkbox value='Espanhol' isDisabled={isDisabled}>Espanhol</Checkbox> : <Checkbox value='Portugues' isDisabled={isDisabled}>Português</Checkbox>}
+          {defaultValues.participationMethod === "Universidade" ? null : <Checkbox value='Portugues' isDisabled={isDisabled}>Português</Checkbox>}
         </CheckboxGroup>
       </div>
 
