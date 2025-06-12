@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 
 export async function createNewJoinAuthentication(linkName: string) {
   const { JSON_WEB_TOKEN_SECRET, WEBSITE_URL } = process.env;
-  const expiresIn = 5 * 24 * 60 * 60 * 1000
+  const expiresIn = 7 * 24 * 60 * 60 * 1000
   let code = generateString(6)
 
 	const token = jwt.sign(

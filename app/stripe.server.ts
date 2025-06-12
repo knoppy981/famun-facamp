@@ -25,7 +25,12 @@ export async function getPaymentsIntentByCustomerId(customerId: UserType["stripe
     throw new Error(`Error loading payments id`)
   }
 
-  return stripe.paymentIntents.list({ customer: customerId })
+  const now = new Date()
+  const currentYear = now.getFullYear()
+  const startOfYear = new Date(currentYear, 0, 1, 0, 0, 0)
+  const timestampStartOfYearInSeconds = Math.floor(startOfYear.getTime() / 1000)
+
+  return stripe.paymentIntents.list({ customer: customerId, created: { gte: timestampStartOfYearInSeconds } })
 }
 
 export async function getChargesByCustomerId(customerId: UserType["stripeCustomerId"]): Promise<Stripe.ApiListPromise<Stripe.Charge> | undefined> {
@@ -34,7 +39,12 @@ export async function getChargesByCustomerId(customerId: UserType["stripeCustome
     return
   }
 
-  return stripe.charges.list({ customer: customerId })
+  const now = new Date()
+  const currentYear = now.getFullYear()
+  const startOfYear = new Date(currentYear, 0, 1, 0, 0, 0)
+  const timestampStartOfYearInSeconds = Math.floor(startOfYear.getTime() / 1000)
+
+  return stripe.charges.list({ customer: customerId, created: { gte: timestampStartOfYearInSeconds } })
 }
 
 export async function createPaymentIntent({
