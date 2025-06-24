@@ -40,6 +40,10 @@ const PopItemsList = forwardRef<HTMLUListElement, any>((props, forwardedRef) => 
   };
   const handleChange = (e: any) => setInputValue(e.target.value)
 
+  React.useEffect(() => {
+    console.log(list)
+  }, [list])
+
   return (
     <div className='pop-list-box-wrapper'>
       <div className='label text'>{props.label}</div>

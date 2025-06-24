@@ -15,7 +15,7 @@ import { motion } from 'framer-motion';
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
   const formData = await request.formData();
-  let changes = qs.parse(formData.get("changes") as string)
+  let changes = JSON.parse(formData.get("changes") as string)
   let data: any = {}
 
   iterateObject(changes, (key, value, path) => {

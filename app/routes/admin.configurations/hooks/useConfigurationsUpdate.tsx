@@ -1,7 +1,6 @@
 import React from "react";
 import { FetcherWithComponents } from "@remix-run/react";
 import _ from "lodash"
-import qs from "qs"
 import { Configuration } from "@prisma/client";
 
 export function useConfigurationsUpdate(configurations: Partial<Configuration>, fetcher: FetcherWithComponents<any>): {
@@ -75,7 +74,7 @@ export function useConfigurationsUpdate(configurations: Partial<Configuration>, 
   const handleSubmission = () => {
     if (readySubmission) {
       fetcher.submit(
-        { changes: qs.stringify(changes) },
+        { changes: JSON.stringify(changes) },
         { method: "post", action: "/admin/configurations", preventScrollReset: true, navigate: false }
       )
     } else {
