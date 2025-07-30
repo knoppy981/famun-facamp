@@ -1,11 +1,12 @@
 import { ActionFunctionArgs, json, redirect } from "@remix-run/node"
 import { updateDelegation } from "~/models/delegation.server"
-import { getUserById } from "~/models/user.server"
+
 import { getAdminId, getUserId } from "~/session.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const userId = await getUserId(request);
-  const adminId = await getAdminId(request)
+  const adminId = await getAdminId(request);
+
   if (!userId && !adminId) {
     const searchParams = new URLSearchParams([["redirectTo", new URL(request.url).pathname]]);
     throw redirect(`/login?${searchParams}`);
@@ -24,7 +25,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       values: {
         participants: {
           updateMany: [
-            leaderId !== "undefined" ? {
+            leaderId !== "" ? {
               where: {
                 id: leaderId
               },
