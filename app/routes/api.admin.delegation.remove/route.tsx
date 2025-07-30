@@ -29,6 +29,27 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 }
 
 async function removeParticipants(id: string, participantsIds: { id: string }[]) {
+  
+  await prisma.delegation.update({
+    where: {
+      id
+    },
+    data: {
+      participants: {
+        updateMany: participantsIds.map((value: {id: string}, idx) => {
+          return {
+            where: {
+              id: value.id
+            },
+            data: {
+              leader: false
+            }
+          }
+        })
+      }
+    }
+  })
+
   return prisma.delegation.update({
     where: {
       id
