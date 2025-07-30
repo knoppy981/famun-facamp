@@ -24,7 +24,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       values: {
         participants: {
           updateMany: [
-            leaderId !== "undefined" ? {
+            leaderId !== "" ? {
               where: {
                 id: leaderId
               },

@@ -126,5 +126,18 @@
   },
   "prisma": {
     "seed": "ts-node -r tsconfig-paths/register prisma/seed.js"
-  }
+  },
+  "version": "1.0.0",
+  "main": "remix.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knoppy981/famun-facamp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/knoppy981/famun-facamp/issues"
+  },
+  "homepage": "https://github.com/knoppy981/famun-facamp#readme",
+  "description": ""
 }
