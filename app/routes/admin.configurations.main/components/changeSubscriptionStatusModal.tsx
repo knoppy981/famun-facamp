@@ -37,7 +37,7 @@ function useChangeSubscriptionStatus(close: () => void, fetcher: FetcherWithComp
 ] {
   const changeSubscriptionStatus = () => {
     fetcher.submit(
-      { changes: type === "em" ? qs.stringify({ subscriptionEM: !status }) : qs.stringify({ subscriptionUNI: !status }) },
+      { changes: type === "em" ? JSON.stringify({ subscriptionEM: !status }) : JSON.stringify({ subscriptionUNI: !status }) },
       { method: "post", action: "/admin/configurations" }
     )
   }

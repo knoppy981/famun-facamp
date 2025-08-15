@@ -18,6 +18,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   let changes = JSON.parse(formData.get("changes") as string)
   let data: any = {}
 
+  console.log(changes)
+
   iterateObject(changes, (key, value, path) => {
     if (value === "false" || value === "true") value = value === "true"
     if (key.startsWith("preco")) value = parseInt(value)
